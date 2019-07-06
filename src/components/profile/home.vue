@@ -1,0 +1,930 @@
+<template>
+  <div class="home">
+    <el-container class="module-container">
+      <el-header class="module-header">
+        <el-breadcrumb separator-class="el-icon-arrow-right">
+          <el-breadcrumb-item>首页</el-breadcrumb-item>
+        </el-breadcrumb>
+      </el-header>
+      <el-main class="module-main" ref="homeMain">
+        <div class="search">
+          <span>组织机构</span>
+          <el-input style="width: 240px; margin-left: 10px; margin-right: 20px;" :disabled="true" v-model="orgName"></el-input>
+          <el-button type="primary" @click="clickOrgan">选择组织</el-button>
+        </div>
+        <div class="dices">
+          <el-row :gutter="60">
+            <el-col :span="8">
+              <div class="item staff">
+                <div class="details">
+                  <p class="single">
+                    <span class="num">{{ dicesData.loginSize }}人</span>
+                    <span class="txt">在线人数</span>
+                  </p>
+                  <p class="single">
+                    <span class="num">{{ dicesData.userSize }}人</span>
+                    <span class="txt">员工数量</span>
+                  </p>
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div class="item project">
+                <div class="details">
+                  <p class="single">
+                    <span class="num">{{ dicesData.projectSize }}个</span>
+                    <span class="txt">上线项目</span>
+                  </p>
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div class="item facility">
+                <div class="details">
+                  <p class="single">
+                    <span class="num">{{ dicesData.onlineDevice }}个</span>
+                    <span class="txt">在线设备</span>
+                  </p>
+                  <p class="single">
+                    <span class="num">{{ dicesData.deviceSize }}个</span>
+                    <span class="txt">设备数量</span>
+                  </p>
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+        <div class="charts">
+          <el-row :gutter="6" style="margin-bottom: 6px;">
+            <el-col :span="12">
+              <div class="item">
+                <div class="item-title">
+                  <span class="chunk"></span>
+                  <p class="txt">巡检统计</p>
+                </div>
+                <div class="item-content">
+                  <div class="describe two">
+                    <div class="details">
+                      <p class="single"><span class="txt">今日巡检任务</span><span class="num">{{ task.todayTask }}个</span></p>
+                      <p class="single"><span class="txt">巡检任务准时率</span><span class="num">{{ task.endTimelyRatio | formatPercent }}</span></p>
+                      <p class="single"><span class="txt">巡检任务完成率</span><span class="num">{{ task.endRatio | formatPercent }}</span></p>
+                      <p class="single"><span class="txt">异常任务</span><span class="num">{{ task.abnormalSize }}个</span></p>
+                    </div>
+                  </div>
+                  <div class="chart">
+                    <Chart :parOption="taskOption" id="home_task" :domWidth="domWidth"></Chart>
+                  </div>
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="12">
+              <div class="item">
+                <div class="item-title">
+                  <span class="chunk"></span>
+                  <p class="txt">工单统计</p>
+                </div>
+                <div class="item-content">
+                  <div class="describe two">
+                    <div class="details">
+                      <p class="single"><span class="txt">今日工单总数</span><span class="num">{{ work.todayWork }}个</span></p>
+                      <p class="single"><span class="txt">工单完成率</span><span class="num">{{ work.woContinueRate | formatPercent }}</span></p>
+                      <p class="single"><span class="txt">平均响应时间</span><span class="num">{{ work.xywotimeAV | formatInteger }}分</span></p>
+                      <p class="single"><span class="txt">平均处理时间</span><span class="num">{{ work.clwotimeAV | formatInteger }}分</span></p>
+                    </div>
+                  </div>
+                  <div class="chart">
+                    <Chart :parOption="workOption" id="home_work" :domWidth="domWidth"></Chart>
+                  </div>
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+          <el-row :gutter="6">
+            <el-col :span="8">
+              <div class="item">
+                <div class="item-title">
+                  <span class="chunk"></span>
+                  <p class="txt">点名管理统计</p>
+                </div>
+                <div class="item-content">
+                  <div class="describe three">
+                    <div class="details">
+                      <p class="single"><span class="txt">点名成功人数</span><span class="num">{{ callname.callnameSucceed }}人</span></p>
+                      <p class="single"><span class="txt">点名失败人数</span><span class="num">{{ callname.callnameFailed }}人</span></p>
+                    </div>
+                  </div>
+                  <div class="chart">
+                    <Chart :parOption="callnameOption" id="home_callname" :domWidth="domWidth"></Chart>
+                  </div>
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div class="item">
+                <div class="item-title">
+                  <span class="chunk"></span>
+                  <p class="txt">位置打卡统计</p>
+                </div>
+                <div class="item-content">
+                  <div class="describe three">
+                    <div class="details">
+                      <p class="single"><span class="txt">打卡有记录</span><span class="num">{{ position.positionExist }}个</span></p>
+                      <p class="single"><span class="txt">打卡无记录</span><span class="num">{{ position.positionWithout }}个</span></p>
+                    </div>
+                  </div>
+                  <div class="chart">
+                    <Chart :parOption="positionOption" id="home_position" :domWidth="domWidth"></Chart>
+                  </div>
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div class="item">
+                <div class="item-title">
+                  <span class="chunk"></span>
+                  <p class="txt">固定岗打卡统计</p>
+                </div>
+                <div class="item-content">
+                  <div class="describe three">
+                    <div class="details">
+                      <p class="single"><span class="txt">打卡成功</span><span class="num">{{ fixation.fixationSucceed }}次</span></p>
+                      <p class="single"><span class="txt">打卡失败</span><span class="num">{{ fixation.fixationFailed }}次</span></p>
+                    </div>
+                  </div>
+                  <div class="chart">
+                    <Chart :parOption="fixationOption" id="home_fixation" :domWidth="domWidth"></Chart>
+                  </div>
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+      </el-main>
+    </el-container>
+    <!-- 选择组织机构 -->
+    <el-dialog title="选择组织机构" :visible.sync="orgDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+      <el-tree
+        :data="orgData"
+        ref="orgTree"
+        show-checkbox
+        default-expand-all
+        check-strictly
+        node-key="id"
+        @check-change="orgCheckChange"
+        @node-click="orgNodeClick"
+        :props="defaultProps">
+      </el-tree>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="orgDialog = false">取 消</el-button>
+        <el-button type="primary" :disabled="orgDisabled" @click="selectOrgan">确 定</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+// 引入chart
+import Chart from '@/components/public/chart'
+import { mapState } from 'vuex'
+export default{
+  name: 'home',
+  data () {
+    return {
+      orgDialog: false,
+      orgData: [],
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
+      orgName: '',
+      orgId: '',
+      nowOrgName: '',
+      nowOrgId: '',
+      orgDisabled: true,
+      whetherChange: false,
+      dicesData: {
+        loginSize: 0,
+        userSize: 0,
+        projectSize: 0,
+        onlineDevice: 0,
+        deviceSize: 0
+      },
+      task: {
+        todayTask: 0,
+        endTimelyRatio: 0,
+        endRatio: 0,
+        abnormalSize: 0
+      },
+      taskOption: {
+        // title: {
+        //   text: '',
+        //   left: 'center',
+        //   bottom: '5px',
+        //   textStyle: {
+        //     color: '#272727',
+        //     fontWeight: 'normal',
+        //     fontSize: 16
+        //   }
+        // },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        series: [
+          {
+            name: '巡检统计',
+            type: 'pie',
+            radius: ['45%', '65%'],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  formatter: '{b} : {c}'
+                },
+                labelLine: {show: true}
+              }
+            },
+            label: {
+              normal: {
+                show: true,
+                position: 'outside',
+                textStyle: {
+                  fontSize: '14',
+                  fontWeight: 'bold',
+                  color: '#646565'
+                },
+                formatter: '{b}\n{d}%'
+              },
+              emphasis: {
+                show: true,
+                textStyle: {
+                  fontSize: '14',
+                  fontWeight: 'bold'
+                }
+              }
+            },
+            labelLine: {
+              normal: {
+                show: true,
+                length: 15,
+                length2: 10,
+                lineStyle: {
+                  // color: '#666',
+                  // width: 1
+                }
+              }
+            },
+            data: []
+          }
+        ],
+        color: ['#44bd8a', '#d8d8d8']
+      },
+      work: {
+        todayWork: 0,
+        endTimelyRatio: 0,
+        endRatio: 0,
+        abnormalSize: 0
+      },
+      workOption: {
+        // title: {
+        //   text: '',
+        //   left: 'center',
+        //   bottom: '5px',
+        //   textStyle: {
+        //     color: '#272727',
+        //     fontWeight: 'normal',
+        //     fontSize: 16
+        //   }
+        // },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        series: [
+          {
+            name: '工单统计',
+            type: 'pie',
+            radius: ['45%', '65%'],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  formatter: '{b} : {c}'
+                },
+                labelLine: {show: true}
+              }
+            },
+            label: {
+              normal: {
+                show: true,
+                position: 'outside',
+                textStyle: {
+                  fontSize: '14',
+                  fontWeight: 'bold',
+                  color: '#646565'
+                },
+                formatter: '{b}\n{d}%'
+              },
+              emphasis: {
+                show: true,
+                textStyle: {
+                  fontSize: '14',
+                  fontWeight: 'bold'
+                }
+              }
+            },
+            labelLine: {
+              normal: {
+                show: true,
+                length: 15,
+                length2: 10,
+                lineStyle: {
+                  // color: '#666',
+                  // width: 1
+                }
+              }
+            },
+            data: []
+          }
+        ],
+        color: ['#62a8e8', '#d8d8d8']
+      },
+      callname: {
+        callnameSucceed: 0,
+        callnameFailed: 0
+      },
+      callnameOption: {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        series: [
+          {
+            name: '点名管理统计',
+            type: 'pie',
+            radius: ['45%', '65%'],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  formatter: '{b} : {c}'
+                },
+                labelLine: {show: true}
+              }
+            },
+            label: {
+              normal: {
+                show: true,
+                position: 'outside',
+                textStyle: {
+                  fontSize: '14',
+                  fontWeight: 'bold',
+                  color: '#646565'
+                },
+                formatter: '{b}\n{d}%'
+              },
+              emphasis: {
+                show: true,
+                textStyle: {
+                  fontSize: '14',
+                  fontWeight: 'bold'
+                }
+              }
+            },
+            labelLine: {
+              normal: {
+                show: true,
+                length: 15,
+                length2: 10,
+                lineStyle: {
+                  // color: '#666',
+                  // width: 1
+                }
+              }
+            },
+            data: []
+          }
+        ],
+        color: ['#44bd8a', '#d8d8d8']
+      },
+      position: {
+        positionExist: 0,
+        positionWithout: 0
+      },
+      positionOption: {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        series: [
+          {
+            name: '位置打卡统计',
+            type: 'pie',
+            radius: ['45%', '65%'],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  formatter: '{b} : {c}'
+                },
+                labelLine: {show: true}
+              }
+            },
+            label: {
+              normal: {
+                show: true,
+                position: 'outside',
+                textStyle: {
+                  fontSize: '14',
+                  fontWeight: 'bold',
+                  color: '#646565'
+                },
+                formatter: '{b}\n{d}%'
+              },
+              emphasis: {
+                show: true,
+                textStyle: {
+                  fontSize: '14',
+                  fontWeight: 'bold'
+                }
+              }
+            },
+            labelLine: {
+              normal: {
+                show: true,
+                length: 15,
+                length2: 10,
+                lineStyle: {
+                  // color: '#666',
+                  // width: 1
+                }
+              }
+            },
+            data: []
+          }
+        ],
+        color: ['#f1a555', '#d8d8d8']
+      },
+      fixation: {
+        fixationSucceed: 0,
+        fixationFailed: 0
+      },
+      fixationOption: {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        series: [
+          {
+            name: '固定岗打卡统计',
+            type: 'pie',
+            radius: ['45%', '65%'],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  formatter: '{b} : {c}'
+                },
+                labelLine: {show: true}
+              }
+            },
+            label: {
+              normal: {
+                show: true,
+                position: 'outside',
+                textStyle: {
+                  fontSize: '14',
+                  fontWeight: 'bold',
+                  color: '#646565'
+                },
+                formatter: '{b}\n{d}%'
+              },
+              emphasis: {
+                show: true,
+                textStyle: {
+                  fontSize: '14',
+                  fontWeight: 'bold'
+                }
+              }
+            },
+            labelLine: {
+              normal: {
+                show: true,
+                length: 15,
+                length2: 10,
+                lineStyle: {
+                  // color: '#666',
+                  // width: 1
+                }
+              }
+            },
+            data: []
+          }
+        ],
+        color: ['#44bd8a', '#d8d8d8']
+      },
+      domWidth: this.$common.getDomClientSize().width
+    }
+  },
+  created () {
+
+  },
+  mounted () {
+    // 监控窗口变化
+    window.onresize = () => {
+      const domWidth = this.$common.getDomClientSize().width
+      this.domWidth = domWidth
+    }
+    this.orgName = this.nowProname
+    this.orgId = this.nowOrgid
+    // 获取数据
+    this.getHomeData()
+  },
+  components: {
+    Chart
+  },
+  computed: {
+    ...mapState(
+      {
+        companyId: state => state.info.companyId,
+        userId: state => state.info.userId,
+        nowOrgid: state => state.nowOrgid,
+        nowProname: state => state.nowProname
+      }
+    )
+  },
+  methods: {
+    clickOrgan () {
+      this.orgDialog = true
+      this.nowOrgName = this.orgName
+      this.nowOrgId = this.orgId
+      if (this.orgData.length > 0) {
+        setTimeout(() => {
+          this.$refs.orgTree.setCheckedKeys([this.orgId])
+        }, 100)
+      } else {
+        // 获取组织树
+        this.getOrganTree()
+      }
+    },
+    // 获取组织树
+    getOrganTree () {
+      let params = {
+        user_id: this.userId
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.2/selOgzTrees',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          let orgData = res.data.data1
+          // 处理部门树
+          orgData = this.initDisSecTree(orgData)
+          this.orgData = orgData
+          setTimeout(() => {
+            this.$refs.orgTree.setCheckedKeys([this.orgId])
+          }, 100)
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
+    // 初始化处理部门
+    initDisSecTree (treeData) {
+      treeData.forEach((item, index, array) => {
+        if (item.organize_type === 4) {
+          item.disabled = true
+        }
+        if (item.children) {
+          this.initRecSecTree(item.children)
+        }
+      })
+      return treeData
+    },
+    initRecSecTree (data) {
+      data.forEach((item, index, array) => {
+        if (item.organize_type === 4) {
+          item.disabled = true
+        }
+        if (item.children) {
+          this.initRecSecTree(item.children)
+        }
+      })
+    },
+    // 点击机构树
+    orgCheckChange (data, checked, self) {
+      if (checked === true) {
+        if (this.nowOrgId === data.id) return
+        this.$refs.orgTree.setCheckedKeys([data.id])
+        this.nowOrgName = data.name
+        this.nowOrgId = data.id
+      } else {
+        if (this.nowOrgId === data.id) {
+          this.$refs.orgTree.setCheckedKeys([data.id])
+        }
+      }
+    },
+    orgNodeClick (data, node, self) {
+      if (data.disabled) return
+      if (node.checked) return
+      this.$refs.orgTree.setCheckedKeys([data.id])
+      this.nowOrgName = data.name
+      this.nowOrgId = data.id
+    },
+    // 确定
+    selectOrgan () {
+      this.orgDialog = false
+      this.orgName = this.nowOrgName
+      this.orgId = this.nowOrgId
+      // 获取数据
+      this.getHomeData()
+    },
+    // 获取数据
+    getHomeData () {
+      let params = {
+        organize_id: this.orgId
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.7/selMain',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          const homeData = res.data.data1
+          /* 概况 */
+          this.dicesData = {
+            loginSize: homeData.loginSize,
+            userSize: homeData.userSize,
+            projectSize: homeData.projectSize,
+            onlineDevice: homeData.onlineDevice,
+            deviceSize: homeData.deviceSize
+          }
+
+          /* 巡检统计 */
+          this.task = {
+            todayTask: homeData.taskData.taskSize || 0,
+            endTimelyRatio: homeData.taskData.endTimelyRatio,
+            endRatio: homeData.taskData.endRatio,
+            abnormalSize: homeData.taskData.abnormalSize
+          }
+          // 今日任务
+          // const todayTask = homeData.taskData.taskSize
+          // 已完成任务
+          const finishTask = homeData.taskData.endTaskSize || 0
+          // 未完成任务
+          const undoneTask = homeData.taskData.notTaskSize || 0
+          const taskChart = [
+            {value: finishTask, name: '巡检任务已完成'},
+            {value: undoneTask, name: '巡检任务未完成'}
+          ]
+          // this.taskOption.title.text = '今日巡检任务' + todayTask
+          this.taskOption.series[0].data = taskChart
+
+          /* 工单统计 */
+          this.work = {
+            todayWork: homeData.woSize || 0,
+            woContinueRate: homeData.woContinueRate,
+            xywotimeAV: homeData.xywotimeAV,
+            clwotimeAV: homeData.clwotimeAV
+          }
+          // 今日工单
+          // const todayWork = homeData.woSize || 0
+          // 已完成工单
+          const finishWork = homeData.allContinueWoSize || 0
+          // 未完成工单
+          const undoneWork = homeData.notContinueWoSize || 0
+          const workChart = [
+            {value: finishWork, name: '已完成工单'},
+            {value: undoneWork, name: '未完成工单'}
+          ]
+          // this.workOption.title.text = '今日工单总数' + todayWork
+          this.workOption.series[0].data = workChart
+
+          /* 点名管理统计 */
+          const callnameSucceed = homeData.rollCallData.rcSucessSize || 0
+          const callnameFailed = homeData.rollCallData.rcFailedSize || 0
+          this.callname = {
+            callnameSucceed: callnameSucceed,
+            callnameFailed: callnameFailed
+          }
+          const callnameChart = [
+            {value: callnameSucceed, name: '成功人数'},
+            {value: callnameFailed, name: '失败人数'}
+          ]
+          this.callnameOption.series[0].data = callnameChart
+
+          /* 位置打卡统计 */
+          const positionExist = homeData.positionRecordData.haveRecordSize || 0
+          const positionWithout = homeData.positionRecordData.notRecordSize || 0
+          this.position = {
+            positionExist: positionExist,
+            positionWithout: positionWithout
+          }
+          const positionChart = [
+            {value: positionExist, name: '有记录'},
+            {value: positionWithout, name: '无记录'}
+          ]
+          this.positionOption.series[0].data = positionChart
+
+          /* 固定岗打卡统计 */
+          const fixationSucceed = homeData.permanentData.permanentSucessSize || 0
+          const fixationFailed = homeData.permanentData.permanentFailedSize || 0
+          this.fixation = {
+            fixationSucceed: fixationSucceed,
+            fixationFailed: fixationFailed
+          }
+          const fixationChart = [
+            {value: fixationSucceed, name: '成功数'},
+            {value: fixationFailed, name: '失败数'}
+          ]
+          this.fixationOption.series[0].data = fixationChart
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        // this.$message({
+        //   showClose: true,
+        //   message: '服务器连接失败！',
+        //   type: 'error'
+        // })
+      })
+    }
+  },
+  watch: {
+    nowOrgId (val, oldVal) {
+      if (val) {
+        this.orgDisabled = false
+      } else {
+        this.orgDisabled = true
+      }
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.home{
+  height: 100%;
+  .module-container{
+    height: 100%;
+    padding: 0;
+    .module-header{
+      padding-left: 0;
+      padding-right: 0;
+      padding-bottom: 20px;
+      .el-breadcrumb{
+        padding-top: 15px;
+        padding-left: 20px;
+        padding-bottom: 15px;
+        background: #ffffff;
+      }
+    }
+    .module-main{
+      padding: 0;
+      margin-left: 20px;
+      margin-right: 20px;
+      .search{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 70px;
+        padding-left: 20px;
+        background: #ffffff;
+
+      }
+      .dices{
+        background: #ffffff;
+        overflow: hidden;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-bottom: 15px;
+        .item{
+          display: flex;
+          align-items: center;
+          height: 120px;
+          padding: 10px;
+          border-radius: 6px;
+          .details{
+            width: 100%;
+            .single{
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              height: 40px;
+              .num{
+                flex-grow: 1;
+                text-align: center;
+                font-size: 24px;
+                font-weight: 600;
+                color: #ffffff;
+              }
+              .txt{
+                flex-grow: 1;
+                text-align: center;
+                font-size: 18px;
+                color: #ffffff;
+              }
+            }
+          }
+          &.staff{
+            background:url(../../assets/images/staff-bg.jpg) no-repeat;
+            background-size: cover;
+          }
+          &.project{
+            background:url(../../assets/images/project-bg.jpg) no-repeat;
+            background-size: cover;
+          }
+          &.facility{
+            background:url(../../assets/images/facility-bg.jpg) no-repeat;
+            background-size: cover;
+          }
+        }
+      }
+      .charts{
+        margin-top: 10px;
+        overflow: hidden;
+        .item{
+          display: flex;
+          flex-direction: column;
+          padding: 20px;
+          background: #ffffff;
+          .item-title {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            height: 30px;
+            .chunk {
+              width: 12px;
+              height: 12px;
+              border-radius: 50%;
+              background: #4e97d8;
+            }
+            .txt {
+              padding-left: 10px;
+              font-size: 18px;
+              color: #333;
+            }
+          }
+          .item-content{
+            display: flex;
+            flex-direction: row;
+            height: 230px;
+            .describe{
+              display: flex;
+              align-items: center;
+              .details{
+                .single{
+                  display: flex;
+                  flex-direction: row;
+                  align-items: center;
+                  height: 35px;
+                  .txt{
+                    font-size: 14px;
+                  }
+                  .num{
+                    font-size: 14px;
+                  }
+                }
+              }
+              &.two{
+                width: 240px;
+                .txt{
+                  width: 120px;
+                }
+              }
+              &.three{
+                width: 180px;
+                .txt{
+                  width: 100px;
+                }
+              }
+            }
+            .chart{
+              flex-grow: 1;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</style>
