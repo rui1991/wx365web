@@ -93,11 +93,7 @@
             <div class="mapshow">
               <img :src="imgUrl" width="800" height="600" alt="">
               <div class="point" :title="item.name" v-for="item in pointData" :key="item.id" v-show="item.id === pointId" :style="{left: item.coordX -50 + 'px', top: item.coordY -20 + 'px'}">
-<<<<<<< HEAD
-                <i class="iconfont icon-xiaoren"></i>
-=======
                 <i class="iconfont icon-xunluorenyuan"></i>
->>>>>>> 2019-07-06日更新
                 <p class="txt">{{ item.name }}</p>
               </div>
             </div>

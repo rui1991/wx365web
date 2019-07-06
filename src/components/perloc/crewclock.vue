@@ -68,16 +68,12 @@
               <span v-else>0</span>
             </template>
           </el-table-column>
-<<<<<<< HEAD
-          <el-table-column prop="in_out_size" label="打卡次数"></el-table-column>
-=======
           <el-table-column label="打卡率">
             <template slot-scope="scope">
               <span>{{ scope.row.po_size | countRate(scope.row.position_size) }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="in_out_size" label="进入次数"></el-table-column>
->>>>>>> 2019-07-06日更新
           <el-table-column label="点位平均停留时长（分）">
             <template slot-scope="scope">
               <span v-if="scope.row.avwaittime">{{ scope.row.avwaittime | formatNum }}</span>
@@ -160,8 +156,6 @@ export default{
       }
     )
   },
-<<<<<<< HEAD
-=======
   filters: {
     countRate (want, already) {
       if (!want) return '0%'
@@ -170,7 +164,6 @@ export default{
       return Math.round(rate * 100) + '%'
     }
   },
->>>>>>> 2019-07-06日更新
   methods: {
     // 搜索
     searchList () {

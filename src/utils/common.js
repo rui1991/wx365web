@@ -396,15 +396,12 @@ const errorCodeHint = code => {
     case 10126:
       hintMes = '有用户已经进行过点名设置！'
       break
-<<<<<<< HEAD
-=======
     case 10129:
       hintMes = '删除失败，请先修改原始密码！'
       break
     case 10130:
       hintMes = '非本项目网关！'
       break
->>>>>>> 2019-07-06日更新
     default:
       hintMes = '网络连接超时，请稍后再试！'
   }

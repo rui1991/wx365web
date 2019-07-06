@@ -28,11 +28,7 @@
             <div class="operate">
               <el-button type="primary" @click="searchList">搜索</el-button>
               <el-button type="primary" @click="addClick">新增</el-button>
-<<<<<<< HEAD
-              <el-button type="primary" :disabled="downDisabled" @click="upClick">导入</el-button>
-=======
               <!--<el-button type="primary" :disabled="downDisabled" @click="upClick">导入</el-button>-->
->>>>>>> 2019-07-06日更新
             </div>
           </div>
           <div class="search-input">
@@ -52,11 +48,7 @@
               </el-select>
             </div>
             <div class="operate">
-<<<<<<< HEAD
-              <el-button type="primary" @click="recordClick">导入记录</el-button>
-=======
               <!--<el-button type="primary" @click="recordClick">导入记录</el-button>-->
->>>>>>> 2019-07-06日更新
               <el-button type="primary" @click="warningClick">告警推送</el-button>
             </div>
           </div>
@@ -198,21 +190,12 @@
               <span v-else-if="scope.row.register_state === 1">未绑定</span>
             </template>
           </el-table-column>
-<<<<<<< HEAD
-          <el-table-column label="操作" width="120">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="untieSwgClick(scope.row.gw_id)" v-if="scope.row.gw_type === 'sjwg'">解除关联</a>
-              <a href="javascript:void(0);" class="operate com" @click="untieCardClick(scope.row.card_id)" v-else-if="scope.row.card_type === 'cjk'">解除关联</a>
-            </template>
-          </el-table-column>
-=======
           <!--<el-table-column label="操作" width="120">-->
             <!--<template slot-scope="scope">-->
               <!--<a href="javascript:void(0);" class="operate com" @click="untieSwgClick(scope.row.gw_id)" v-if="scope.row.gw_type === 'sjwg'">解除关联</a>-->
               <!--<a href="javascript:void(0);" class="operate com" @click="untieCardClick(scope.row.card_id)" v-else-if="scope.row.card_type === 'cjk'">解除关联</a>-->
             <!--</template>-->
           <!--</el-table-column>-->
->>>>>>> 2019-07-06日更新
         </el-table>
       </el-form>
       <el-form :model="detEleForm" :label-width="formLabelWidth" v-show="detActive === 'electric'">
@@ -1445,10 +1428,7 @@ export default{
     crewSelectionChange (data) {
       this.linkmanSelection = data
     },
-<<<<<<< HEAD
-=======
     // 添加告警人
->>>>>>> 2019-07-06日更新
     addWarningSend () {
       const selectCrew = this.linkmanSelection
       let uids = []

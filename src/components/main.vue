@@ -130,11 +130,7 @@
               <el-menu-item-group v-if="authority.plan">
                 <el-menu-item index="/main/callname">点名管理</el-menu-item>
               </el-menu-item-group>
-<<<<<<< HEAD
-              <el-menu-item-group v-if="callNameReport">
-=======
               <el-menu-item-group v-if="authority.plan">
->>>>>>> 2019-07-06日更新
                 <el-menu-item index="/main/crewclock">人员打卡报表</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.plan">
@@ -334,28 +330,13 @@ export default{
         now2: [
           { required: true, validator: affirmPwd, trigger: 'blur' }
         ]
-<<<<<<< HEAD
-      },
-      callNameReport: false
-=======
       }
->>>>>>> 2019-07-06日更新
     }
   },
   created () {
     this.menuActive = this.$route.path
   },
   mounted () {
-<<<<<<< HEAD
-    const firmIds = [1, 2, 23, 24, 25]
-    const state = firmIds.find(item => {
-      return item === this.companyId
-    })
-    if (state) {
-      this.callNameReport = true
-    }
-=======
->>>>>>> 2019-07-06日更新
     // 头像
     let iconUrl = this.userPhoto
     if (iconUrl) {

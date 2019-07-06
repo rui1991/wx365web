@@ -409,14 +409,10 @@ export default{
       }
       .module-content{
         height: 100%;
-<<<<<<< HEAD
-        padding: 10px;
-=======
         padding-top: 10px;
         padding-right: 0;
         padding-bottom: 10px;
         padding-left: 10px;
->>>>>>> 2019-07-06日更新
         margin-left: 20px;
         margin-right: 20px;
         background: #ffffff;
@@ -427,18 +423,11 @@ export default{
           border: 1px solid #cccccc;
         }
         .module-main{
-<<<<<<< HEAD
-          padding-left: 20px;
-          padding-top: 0;
-          padding-right: 0;
-          padding-bottom: 0;
-=======
           padding-top: 0;
           padding-right: 10px;
           padding-bottom: 0;
           padding-left: 20px;
           overflow: scroll;
->>>>>>> 2019-07-06日更新
           .search{
             padding-top: 5px;
             padding-bottom: 5px;
