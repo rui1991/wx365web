@@ -88,15 +88,15 @@
               <el-menu-item-group>
                 <el-menu-item index="/main/position">位置管理</el-menu-item>
               </el-menu-item-group>
+              <el-menu-item-group v-if="authority.site">
+                <el-menu-item index="/main/site">地址管理</el-menu-item>
+              </el-menu-item-group>
               <el-menu-item-group>
                 <el-menu-item index="/main/posmap">地图管理</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="3" class="submenu-item">
               <template slot="title"><i class="iconfont icon-xunjianguanli"></i>巡检管理</template>
-              <el-menu-item-group v-if="authority.site">
-                <el-menu-item index="/main/site">地址管理</el-menu-item>
-              </el-menu-item-group>
               <el-menu-item-group v-if="authority.plan">
                 <el-menu-item index="/main/group">组管理</el-menu-item>
               </el-menu-item-group>

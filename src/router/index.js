@@ -62,12 +62,12 @@ import Approval from '@/components/company/approval'
 /* 基础配置 */
 // 位置管理
 import Position from '@/components/basics/position'
+// 地址管理
+import Site from '@/components/polling/site'
 // 地图管理
 import Posmap from '@/components/basics/posmap'
 
 /* 巡检管理 */
-// 地址管理
-import Site from '@/components/polling/site'
 // 组管理
 import Group from '@/components/polling/group'
 // 巡检计划管理
@@ -425,17 +425,17 @@ export default new Router({
           }
         },
         {
-          path: 'posmap',
-          name: 'posmap',
-          component: Posmap,
+          path: 'site',
+          name: 'site',
+          component: Site,
           meta: {
             keepAlive: false
           }
         },
         {
-          path: 'site',
-          name: 'site',
-          component: Site,
+          path: 'posmap',
+          name: 'posmap',
+          component: Posmap,
           meta: {
             keepAlive: false
           }

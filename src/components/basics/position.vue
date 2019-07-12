@@ -44,6 +44,9 @@
               <el-form-item label="位置名称" prop="name">
                 <el-input :disabled="true" v-model="detForm.name" auto-complete="off"></el-input>
               </el-form-item>
+              <el-form-item label="位置ID">
+                <el-input :disabled="true" v-model="posId" auto-complete="off"></el-input>
+              </el-form-item>
               <el-form-item label="备注" prop="remark">
                 <el-input :disabled="true" type="textarea" v-model="detForm.remark"></el-input>
               </el-form-item>
@@ -226,10 +229,10 @@ export default{
           label: '楼层',
           value: 3
         },
-        {
-          label: '位置',
-          value: 5
-        },
+        // {
+        //   label: '位置',
+        //   value: 5
+        // },
         {
           label: '公共区域',
           value: 6
@@ -377,7 +380,7 @@ export default{
     // 点击位置树
     posCheckChange (data, checked, self) {
       if (checked === true) {
-        if (this.orgId === data.id) {
+        if (this.posId === data.id) {
           return
         }
         this.$refs.posTree.setCheckedKeys([data.id])

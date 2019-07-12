@@ -29,7 +29,7 @@
                 <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
               </div>
               <div class="item">
-                <span>地址编号</span>
+                <span>地址标签</span>
                 <el-input style="width: 160px;" v-model.trim="nowSearch.coding"></el-input>
               </div>
               <div class="operate">
@@ -84,7 +84,7 @@
                 <span v-else-if="scope.row.area_type === 6">固定岗位</span>
               </template>
             </el-table-column>
-            <el-table-column label="上级地址">
+            <el-table-column label="上级位置">
               <template slot-scope="scope">
                 <span v-if="scope.row.parent_address">{{ scope.row.parent_address }}</span>
                 <span v-else>-</span>
@@ -114,7 +114,7 @@
     <!-- 新增 -->
     <el-dialog title="新增地址" :visible.sync="addDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
       <el-form class="entirety-from" :model="addForm" :rules="rules" ref="ruleAddForm" :label-width="formLabelWidth">
-        <el-form-item label="上级地址" prop="parentPath">
+        <el-form-item label="上级位置" prop="parentPath">
           <el-input :disabled="true" v-model="addForm.parentPath"></el-input>
         </el-form-item>
         <el-form-item label="地址名称" prop="name">
@@ -164,7 +164,7 @@
     <!-- 详情 -->
     <el-dialog title="地址详情" :visible.sync="detDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
       <el-form class="entirety-from" :model="detForm" :label-width="formLabelWidth">
-        <el-form-item label="上级地址">
+        <el-form-item label="上级位置">
           <el-input :disabled="true" v-model="detForm.parentPath"></el-input>
         </el-form-item>
         <el-form-item label="地址名称">
@@ -196,7 +196,7 @@
     <!-- 编辑 -->
     <el-dialog title="编辑地址" :visible.sync="comDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
       <el-form class="entirety-from" :model="comForm" :rules="rules" ref="ruleComForm" :label-width="formLabelWidth">
-        <el-form-item label="上级地址" prop="parentPath">
+        <el-form-item label="上级位置" prop="parentPath">
           <el-input :disabled="true" v-model="comForm.parentPath"></el-input>
         </el-form-item>
         <el-form-item label="地址名称" prop="name">
