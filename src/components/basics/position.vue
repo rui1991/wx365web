@@ -346,7 +346,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.locationApi() + '/location/v1.0/selLocationTree',
+        url: this.sysetApi() + '/location/v1.0/selLocationTree',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -446,7 +446,7 @@ export default{
       this.detDisabled = true
       this.$axios({
         method: 'post',
-        url: this.locationApi() + '/location/v1.0/selLocationByID',
+        url: this.sysetApi() + '/location/v1.0/selLocationByID',
         data: params
       }).then((res) => {
         this.detDisabled = false
@@ -552,7 +552,7 @@ export default{
       this.comDisabled = true
       this.$axios({
         method: 'post',
-        url: this.locationApi() + '/location/v1.0/altLocation',
+        url: this.sysetApi() + '/location/v1.0/altLocation',
         data: params
       }).then((res) => {
         this.comDisabled = false
@@ -648,7 +648,7 @@ export default{
       this.addDisabled = true
       this.$axios({
         method: 'post',
-        url: this.locationApi() + '/location/v1.0/addLocation',
+        url: this.sysetApi() + '/location/v1.0/addLocation',
         data: params
       }).then((res) => {
         this.addDisabled = false
@@ -752,7 +752,7 @@ export default{
       this.addDisabled = true
       this.$axios({
         method: 'post',
-        url: this.locationApi() + '/location/v1.0/addBatchLocation',
+        url: this.sysetApi() + '/location/v1.0/addBatchLocation',
         data: params
       }).then((res) => {
         this.addDisabled = false

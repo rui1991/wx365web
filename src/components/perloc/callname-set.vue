@@ -546,12 +546,14 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/selPositionTree',
+        url: this.sysetApi() + '/selPositionTree628',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          const treeData = res.data.data1
-          this.siteTree = treeData
+          const siteData = res.data.data1
+          // 处理地址树
+          const siteTree = this.initDisSiteTree(siteData)
+          this.siteTree = siteTree
           if (b) {
             let ids = this.comForm.siteId
             ids = ids.split(',')
@@ -573,6 +575,30 @@ export default{
           message: '服务器连接失败！',
           type: 'error'
         })
+      })
+    },
+    // 初始化处理地址树
+    initDisSiteTree (siteData) {
+      siteData.forEach(item => {
+        let id = item.id
+        if (id.indexOf('w') !== -1) {
+          item.disabled = true
+        }
+        if (item.children) {
+          this.initRecSiteTree(item.children)
+        }
+      })
+      return siteData
+    },
+    initRecSiteTree (data) {
+      data.forEach(item => {
+        let id = item.id
+        if (id.indexOf('w') !== -1) {
+          item.disabled = true
+        }
+        if (item.children) {
+          this.initRecSiteTree(item.children)
+        }
       })
     },
     // 新增

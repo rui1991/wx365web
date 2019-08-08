@@ -286,7 +286,7 @@ const errorCodeHint = code => {
       hintMes = '此点位已经添加！'
       break
     case 10090:
-      hintMes = '此点位正在使用，禁止删除！'
+      hintMes = '此位置正在使用，禁止禁用！'
       break
     case 10091:
       hintMes = '此线路正在使用，禁止删除、修改！'

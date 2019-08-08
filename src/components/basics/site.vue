@@ -30,12 +30,12 @@
               </div>
               <div class="item">
                 <span>地址标签</span>
-                <el-input style="width: 160px;" v-model.trim="nowSearch.coding"></el-input>
+                <el-input style="width: 160px;" v-model.trim="nowSearch.mac"></el-input>
               </div>
               <div class="operate">
                 <el-button type="danger" v-if="authority.del" :disabled="handleDisabled" @click="delDialog = true">删除</el-button>
                 <el-button type="primary" @click="searchList">搜索</el-button>
-                <el-button type="primary" v-if="authority.add" @click="addClick">新增</el-button>
+                <el-button type="primary" v-if="authority.add" :disabled="addInDisabled" @click="addClick">新增</el-button>
               </div>
             </div>
             <div class="search-input">
@@ -149,9 +149,6 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="全路径" prop="allPath">
-          <el-input :disabled="true" v-model="addForm.allPath"></el-input>
-        </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input type="textarea" maxlength="100" placeholder="文本长度不得超过100个字符" v-model.trim="addForm.remark" auto-complete="off"></el-input>
         </el-form-item>
@@ -181,9 +178,6 @@
         </el-form-item>
         <el-form-item label="关联标准">
           <el-input :disabled="true" v-model="detForm.norm"></el-input>
-        </el-form-item>
-        <el-form-item label="全路径">
-          <el-input :disabled="true" v-model="detForm.allPath"></el-input>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input type="textarea" :disabled="true" v-model="detForm.remark"></el-input>
@@ -230,9 +224,6 @@
               :value="item.template_id">
             </el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item label="全路径" prop="allPath">
-          <el-input :disabled="true" v-model="comForm.allPath"></el-input>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input type="textarea" maxlength="100" placeholder="文本长度不得超过100个字符" v-model.trim="comForm.remark" auto-complete="off"></el-input>
@@ -302,12 +293,12 @@ export default{
       },
       search: {
         name: '',
-        coding: '',
+        mac: '',
         type: ''
       },
       nowSearch: {
         name: '',
-        coding: '',
+        mac: '',
         type: ''
       },
       typeOptions: [
@@ -326,14 +317,15 @@ export default{
         label: 'name'
       },
       siteName: '',
-      siteId: 0,
-      allPath: '',
-      depth: -1,
+      siteId: '',
+      state: false,
+      depth: 0,
       tableData: [],
       multipleSelection: [],
       total: 0,
       nowPage: 1,
       limit: 10,
+      addInDisabled: true,
       addDialog: false,
       addForm: {
         parentPath: '',
@@ -342,7 +334,6 @@ export default{
         type: 0,
         mac: '',
         norm: '',
-        allPath: '',
         remark: ''
       },
       addDisabled: false,
@@ -354,7 +345,6 @@ export default{
         type: '',
         mac: '',
         norm: '',
-        allPath: '',
         remark: ''
       },
       comDialog: false,
@@ -366,7 +356,6 @@ export default{
         type: '',
         mac: '',
         norm: '',
-        allPath: '',
         remark: ''
       },
       comDisabled: false,
@@ -403,8 +392,6 @@ export default{
   created () {
     // 获取地址树
     this.getSiteTree()
-    // 获取列表
-    this.getListData()
     // 获取标准
     this.getNormData()
     // 权限
@@ -438,19 +425,19 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/selPositionTree',
+        url: this.sysetApi() + '/selPositionTree628',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           const treeData = res.data.data1
           this.siteTree = [
             {
-              'id': 0,
-              'name': this.nowProname,
-              'depth': -1,
-              'children': treeData
+              id: '0',
+              name: this.nowProname,
+              children: treeData
             }
           ]
+          // this.siteTree = treeData
           if (b) {
             this.$refs.siteTree.setCheckedKeys([this.siteId])
           }
@@ -477,13 +464,13 @@ export default{
           return
         }
         this.$refs.siteTree.setCheckedKeys([data.id])
-        // 设置当前id和层级
+        // 设置当前id和name
         this.siteId = data.id
-        this.depth = data.depth
+        this.siteName = data.name
         // 清空搜索框
         this.search = {
           name: '',
-          coding: '',
+          mac: '',
           type: ''
         }
         this.nowSearch = {
@@ -493,18 +480,8 @@ export default{
         }
         // 当前页码初始化
         this.nowPage = 1
-        if (data.id === 0) {
-          this.siteName = ''
-          // 路径
-          this.allPath = ''
-          // 获取列表数据
-          this.getListData()
-          return
-        }
-        // 当前name
-        this.siteName = data.name
-        // 获取全路径
-        this.getAllPath(data.id)
+        // 获取列表数据
+        this.getListData()
       } else {
         if (this.siteId === data.id) {
           this.$refs.siteTree.setCheckedKeys([data.id])
@@ -514,13 +491,13 @@ export default{
     siteNodeClick (data, node, self) {
       if (node.checked) return
       this.$refs.siteTree.setCheckedKeys([data.id])
-      // 设置当前id和层级
+      // 设置当前id和name
       this.siteId = data.id
-      this.depth = data.depth
+      this.siteName = data.name
       // 清空搜索框
       this.search = {
         name: '',
-        coding: '',
+        mac: '',
         type: ''
       }
       this.nowSearch = {
@@ -530,66 +507,22 @@ export default{
       }
       // 当前页码初始化
       this.nowPage = 1
-      if (data.id === 0) {
-        this.siteName = ''
-        // 路径
-        this.allPath = ''
-        // 获取列表数据
-        this.getListData()
-        return
-      }
-      // 当前name
-      this.siteName = data.name
-      // 获取全路径
-      this.getAllPath(data.id)
-    },
-    // 获取全路径
-    getAllPath (id) {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        position_id: id
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/apk/selPositionOnly',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          // 路径
-          this.allPath = res.data.data1.all_address
-          // 获取列表数据
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+      // 获取列表数据
+      this.getListData()
     },
     // 搜索
     searchList () {
       this.search = JSON.parse(JSON.stringify(this.nowSearch))
+      // 格式化mac
+      let mac = this.search.mac
+      this.search.mac = this.formatSetMac(mac)
       // 清空选中数据
       // name
       this.siteName = ''
       // id
-      this.siteId = 0
-      // 全路径
-      this.allPath = ''
-      // 层级
-      this.depth = -1
+      this.siteId = '0'
+      // 清空选中项
+      this.$refs.siteTree.setCheckedKeys(['0'])
       // 当前页码初始化
       this.nowPage = 1
       // 获取列表数据
@@ -601,11 +534,10 @@ export default{
         company_id: this.nowClientId,
         user_id: this.userId,
         project_id: this.nowProid,
-        position_id: this.siteId,
-        parent_address: this.allPath,
+        position_id: this.siteId.replace(/w/g, ''),
         position_type: this.search.type,
         s_po_name: this.search.name,
-        s_po_mark: this.search.coding,
+        s_po_mark: this.search.mac,
         page: this.nowPage,
         limit1: this.limit
       }
@@ -650,18 +582,13 @@ export default{
     /* 新增 */
     addClick () {
       this.addDialog = true
-      let allPath = this.allPath
-      if (allPath) {
-        allPath = allPath + '>'
-      }
       this.addForm = {
-        parentPath: this.allPath,
+        parentPath: this.siteName,
         name: '',
         areaType: 2,
         type: 0,
         mac: '',
         norm: '',
-        allPath: allPath,
         remark: ''
       }
     },
@@ -688,16 +615,15 @@ export default{
         company_id: this.nowClientId,
         user_id: this.userId,
         project_id: this.nowProid,
-        parent_po_id: this.siteId,
+        parent_po_id: this.siteId.replace(/w/g, ''),
         parent_address: this.addForm.parentPath,
         position_name: this.addForm.name,
         area_type: this.addForm.areaType,
         position_type: this.addForm.type,
         position_mac: mac,
         template_id: this.addForm.norm || 0,
-        all_address: this.addForm.allPath,
         instructions: this.addForm.remark,
-        depth: this.depth + 1
+        depth: 1
       }
       params = this.$qs.stringify(params)
       this.addDisabled = true
@@ -774,7 +700,6 @@ export default{
             type: type,
             mac: mac,
             norm: itemData.template_name || '',
-            allPath: itemData.all_address,
             remark: itemData.instructions
           }
         } else {
@@ -797,19 +722,14 @@ export default{
     comClick (id) {
       this.itemId = id
       this.comDialog = true
-      let allPath = this.allPath
-      if (allPath) {
-        allPath = allPath + '>'
-      }
       this.comForm = {
-        parentId: this.siteId,
-        parentPath: this.allPath,
+        parentId: '',
+        parentPath: '',
         name: '',
         areaType: '',
         type: '',
         mac: '',
         norm: '',
-        allPath: allPath,
         remark: ''
       }
       this.getComItem()
@@ -840,7 +760,6 @@ export default{
             type: itemData.position_type,
             mac: mac,
             norm: itemData.template_id || '',
-            allPath: itemData.all_address,
             remark: itemData.instructions
           }
         } else {
@@ -889,7 +808,6 @@ export default{
         position_type: this.comForm.type,
         position_mac: mac,
         template_id: this.comForm.norm || 0,
-        all_address: this.comForm.allPath,
         instructions: this.comForm.remark
       }
       params = this.$qs.stringify(params)
@@ -935,6 +853,7 @@ export default{
     },
     // 格式化设置Mac地址
     formatSetMac (str) {
+      if (!str) { return '' }
       const mac = str.replace(/:/g, '')
       let value = mac.toLowerCase()
       return value
@@ -1027,13 +946,10 @@ export default{
     upClick () {
       this.upDialog = true
       let params = {
-        state: 12,
+        state: 17,
         company_id: this.nowClientId,
         user_id: this.userId,
-        project_id: this.nowProid,
-        parent_po_id: this.siteId,
-        parent_address: this.allPath,
-        depth: this.depth + 1
+        project_id: this.nowProid
       }
       params = this.$qs.stringify(params)
       const reqUrl = this.sysetApi() + '/upload?' + params
@@ -1081,14 +997,7 @@ export default{
     /* 下载 */
     // 下载模板
     downTemplate () {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        filename: 'PositionModule.xls'
-      }
-      params = this.$qs.stringify(params)
-      window.location.href = this.sysetApi() + '/download?filepath=/data/wx365/ExcelIn/&' + params
+      window.location.href = this.sysetApi() + '/v3.7.3/poModelEO?project_id=' + this.nowProid
     },
     // 导出文件
     downFile () {
@@ -1096,8 +1005,7 @@ export default{
         company_id: this.nowClientId,
         user_id: this.userId,
         project_id: this.nowProid,
-        parent_address: this.allPath,
-        depth: this.depth + 1
+        depth: 1
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true
@@ -1147,19 +1055,12 @@ export default{
     }
   },
   watch: {
-    'addForm.name' (newVal, oldVal) {
-      let parentPath = this.addForm.parentPath
-      if (parentPath) {
-        parentPath = parentPath + '>'
+    siteId (newVal, oldVal) {
+      if (newVal.indexOf('w') !== -1) {
+        this.addInDisabled = false
+      } else {
+        this.addInDisabled = true
       }
-      this.addForm.allPath = parentPath + newVal
-    },
-    'comForm.name' (newVal, oldVal) {
-      let parentPath = this.comForm.parentPath
-      if (parentPath) {
-        parentPath = parentPath + '>'
-      }
-      this.comForm.allPath = parentPath + newVal
     },
     multipleSelection (newVal, oldVal) {
       if (newVal.length > 0) {

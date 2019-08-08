@@ -2,175 +2,171 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 /* 登录 */
-import Login from '@/components/login'
+const Login = () => import(/* webpackChunkName: "group-login" */ '@/components/login')
 // 密码登录
-import Cipher from '@/components/login/cipher'
+const Cipher = () => import(/* webpackChunkName: "group-login" */ '@/components/login/cipher')
 // 验证码登录
-import Authcode from '@/components/login/authcode'
+const Authcode = () => import(/* webpackChunkName: "group-login" */ '@/components/login/authcode')
 
 /* 找回密码 */
-import Findpwd from '@/components/findpwd'
+const Findpwd = () => import(/* webpackChunkName: "group-findpwd" */ '@/components/findpwd')
 
 /* 主页面 */
-import Main from '@/components/main'
+const Main = () => import(/* webpackChunkName: "group-main" */ '@/components/main')
 
 // 首页
-import Home from '@/components/profile/home'
+const Home = () => import(/* webpackChunkName: "group-main" */ '@/components/profile/home')
 // 消息
-import Message from '@/components/profile/message'
+const Message = () => import(/* webpackChunkName: "group-message" */ '@/components/profile/message')
 // 日志管理
-import Log from '@/components/profile/log'
+const Log = () => import(/* webpackChunkName: "group-log" */ '@/components/profile/log')
 
 /* 系统配置 */
 // 组织机构（黑卡）
-import Oorgan from '@/components/company/oorgan'
+const Oorgan = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/oorgan')
 // 组织机构（客户）
-import Corgan from '@/components/company/corgan'
+const Corgan = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/corgan')
 // 空模块
-import Empty from '@/components/company/org/empty'
+const Empty = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/empty')
 // 新增企业
-import Addclient from '@/components/company/org/addclient'
+const Addclient = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/addclient')
 // 企业配置
-import Conffirm from '@/components/company/org/conffirm'
+const Conffirm = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/conffirm')
 // 编辑企业（黑卡）
-import Comclient from '@/components/company/org/comclient'
+const Comclient = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/comclient')
 // 模块配置
-import Confmod from '@/components/company/org/confmod'
+const Confmod = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/confmod')
 // 角色管理
-import Role from '@/components/company/org/role'
+const Role = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/role')
 // 编辑企业（客户）
-import Comfirm from '@/components/company/org/comfirm'
+const Comfirm = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/comfirm')
 // 新增类型
-import Addtype from '@/components/company/org/addtype'
+const Addtype = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/addtype')
 // 新增机构
-import Addorg from '@/components/company/org/addorg'
+const Addorg = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/addorg')
 // 编辑机构
-import Comorg from '@/components/company/org/comorg'
+const Comorg = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/comorg')
 
 /* 企业管理 */
 // 用户管理（黑卡）
-import Ouser from '@/components/company/ouser'
+const Ouser = () => import(/* webpackChunkName: "group-user" */ '@/components/company/ouser')
 // 用户管理（客户）
-import Cuser from '@/components/company/cuser'
+const Cuser = () => import(/* webpackChunkName: "group-user" */ '@/components/company/cuser')
 // 考勤排班
-import Shift from '@/components/company/shift'
+const Shift = () => import(/* webpackChunkName: "group-Shift" */ '@/components/company/shift')
 // 排班管理
-import Scheduling from '@/components/company/scheduling'
+const Scheduling = () => import(/* webpackChunkName: "group-scheduling" */ '@/components/company/scheduling')
 // 审批列表
-import Approval from '@/components/company/approval'
+const Approval = () => import(/* webpackChunkName: "group-approval" */ '@/components/company/approval')
 
 /* 基础配置 */
 // 位置管理
-import Position from '@/components/basics/position'
+const Position = () => import(/* webpackChunkName: "group-position" */ '@/components/basics/position')
 // 地址管理
-import Site from '@/components/polling/site'
+const Site = () => import(/* webpackChunkName: "group-site" */ '@/components/basics/site')
 // 地图管理
-import Posmap from '@/components/basics/posmap'
+const Posmap = () => import(/* webpackChunkName: "group-posmap" */ '@/components/basics/posmap')
 
 /* 巡检管理 */
 // 组管理
-import Group from '@/components/polling/group'
+const Group = () => import(/* webpackChunkName: "group-group" */ '@/components/polling/group')
 // 巡检计划管理
-import Plan from '@/components/polling/plan'
-import PlanAdd from '@/components/polling/plan-add'
-import PlanCom from '@/components/polling/plan-com'
+const Plan = () => import(/* webpackChunkName: "group-plan" */ '@/components/polling/plan')
+const PlanAdd = () => import(/* webpackChunkName: "group-plan" */ '@/components/polling/plan-add')
+const PlanCom = () => import(/* webpackChunkName: "group-plan" */ '@/components/polling/plan-com')
 // 巡检任务
-import Task from '@/components/polling/task'
-import TaskCom from '@/components/polling/task-com'
+const Task = () => import(/* webpackChunkName: "group-task" */ '@/components/polling/task')
+const TaskCom = () => import(/* webpackChunkName: "group-task" */ '@/components/polling/task-com')
 // 固定岗管理
-import Fixedpost from '@/components/polling/fixedpost'
+const Fixedpost = () => import(/* webpackChunkName: "group-fixedpost" */ '@/components/polling/fixedpost')
 // 固定岗设置
-import FixedpostSet from '@/components/polling/fixedpost-set'
+const FixedpostSet = () => import(/* webpackChunkName: "group-fixedpost" */ '@/components/polling/fixedpost-set')
 // 人员当班记录
-import FixedpostLog from '@/components/polling/fixedpost-log'
+const FixedpostLog = () => import(/* webpackChunkName: "group-fixedpost" */ '@/components/polling/fixedpost-log')
 // 巡检日历
-import Calendar from '@/components/polling/calendar'
+const Calendar = () => import(/* webpackChunkName: "group-calendar" */ '@/components/polling/calendar')
 // 巡检日历详情
-import CalendarItem from '@/components/polling/calendar-item'
+const CalendarItem = () => import(/* webpackChunkName: "group-calendar" */ '@/components/polling/calendar-item')
 // 巡检标准维护
-import Norm from '@/components/polling/norm'
+const Norm = () => import(/* webpackChunkName: "group-norm" */ '@/components/polling/norm')
 // 巡检异常
-import Abnormal from '@/components/polling/abnormal'
+const Abnormal = () => import(/* webpackChunkName: "group-abnormal" */ '@/components/polling/abnormal')
 // 巡检异常历史记录
-import AbnormalHistory from '@/components/polling/abnormal-history'
+const AbnormalHistory = () => import(/* webpackChunkName: "group-abnormal" */ '@/components/polling/abnormal-history')
 
 /* 人员位置管理 */
-// 人员定位管理
-import Locman from '@/components/perloc/locman'
-// 人员位置记录
-import Loclog from '@/components/perloc/loclog'
-// 人员轨迹图
-import Crewtrack from '@/components/perloc/crewtrack'
+// 人员管理汇总
+const Loccollect = () => import(/* webpackChunkName: "group-loccollect" */ '@/components/perloc/loccollect')
 // 点名管理
-import Callname from '@/components/perloc/callname'
+const Callname = () => import(/* webpackChunkName: "group-callname" */ '@/components/perloc/callname')
 // 点名设置
-import CallnameSet from '@/components/perloc/callname-set'
-// 人员打点报表
-import Crewclock from '@/components/perloc/crewclock'
+const CallnameSet = () => import(/* webpackChunkName: "group-callname" */ '@/components/perloc/callname-set')
+// 人员打卡报表
+const Crewclock = () => import(/* webpackChunkName: "group-crewclock" */ '@/components/perloc/crewclock')
 // 位置打卡记录
-import Clocklog from '@/components/perloc/clocklog'
-// 汇总
-import Clockall from '@/components/perloc/clockall'
-// 详情
-import Clockmark from '@/components/perloc/clockmark'
-// 人员管理汇总统计
-import Loccollect from '@/components/perloc/loccollect'
-// 人员管理汇总统计
-import LoccollectDet from '@/components/perloc/loccollect-det'
+const Clocklog = () => import(/* webpackChunkName: "group-clocklog" */ '@/components/perloc/clocklog')
+// 位置打卡记录汇总
+const Clockall = () => import(/* webpackChunkName: "group-clocklog" */ '@/components/perloc/clockall')
+// 人员打卡记录详情
+const Clockmark = () => import(/* webpackChunkName: "group-clocklog" */ '@/components/perloc/clockmark')
+// 轨迹记录总览
+const Locman = () => import(/* webpackChunkName: "group-locman" */ '@/components/perloc/locman')
+// 轨迹记录详情
+const Loclog = () => import(/* webpackChunkName: "group-loclog" */ '@/components/perloc/loclog')
+// 人员轨迹图
+const Crewtrack = () => import(/* webpackChunkName: "group-crewtrack" */ '@/components/perloc/crewtrack')
+// 人员管理汇总详情
+const LoccollectDet = () => import(/* webpackChunkName: "group-loccollect" */ '@/components/perloc/loccollect-det')
 
 /* 工单管理 */
 // 工单列表管理
-import WorkList from '@/components/work/list'
+const WorkList = () => import(/* webpackChunkName: "group-work" */ '@/components/work/list')
 // 我的工单
-import WorkOneself from '@/components/work/oneself'
+const WorkOneself = () => import(/* webpackChunkName: "group-work" */ '@/components/work/oneself')
 // 待处理
-import WorkPending from '@/components/work/pending'
+const WorkPending = () => import(/* webpackChunkName: "group-work" */ '@/components/work/pending')
 // 跟进中
-import WorkFollow from '@/components/work/follow'
+const WorkFollow = () => import(/* webpackChunkName: "group-work" */ '@/components/work/follow')
 // 催单列表
-import WorkReminder from '@/components/work/reminder'
+const WorkReminder = () => import(/* webpackChunkName: "group-work" */ '@/components/work/reminder')
 // 未完成
-import WorkUndone from '@/components/work/undone'
+const WorkUndone = () => import(/* webpackChunkName: "group-work" */ '@/components/work/undone')
 // 超时工单
-import WorkOvertime from '@/components/work/overtime'
+const WorkOvertime = () => import(/* webpackChunkName: "group-work" */ '@/components/work/overtime')
 // 结案关闭
-import WorkFinish from '@/components/work/finish'
+const WorkFinish = () => import(/* webpackChunkName: "group-work" */ '@/components/work/finish')
 // 全部
-import WorkAll from '@/components/work/all'
+const WorkAll = () => import(/* webpackChunkName: "group-work" */ '@/components/work/all')
 // 异常处理规则设置
-import Rule from '@/components/work/rule'
+const Rule = () => import(/* webpackChunkName: "group-rule" */ '@/components/work/rule')
 
 /* 设备管理 */
 // 硬件设备管理
-import Hardfac from '@/components/facility/hardfac'
-// 设备管理导入详情
-import FacupRecord from '@/components/facility/facup-record'
-// 巡检绑卡管理
-import Polcard from '@/components/facility/polcard'
+const Hardfac = () => import(/* webpackChunkName: "group-hardfac" */ '@/components/facility/hardfac')
 
 /* 报表管理 */
 // 巡检任务执行报表
-import ReportTask from '@/components/report/task'
+const ReportTask = () => import(/* webpackChunkName: "group-report" */ '@/components/report/task')
 // 巡检地址信息报表
-import ReportSite from '@/components/report/site'
+const ReportSite = () => import(/* webpackChunkName: "group-report" */ '@/components/report/site')
 // 个人巡检执行报表
-import ReportStaff from '@/components/report/staff'
+const ReportStaff = () => import(/* webpackChunkName: "group-report" */ '@/components/report/staff')
 // 项目工单报表
-import ReportWorkpro from '@/components/report/workpro'
+const ReportWorkpro = () => import(/* webpackChunkName: "group-report" */ '@/components/report/workpro')
 // 员工工单报表
-import ReportWorksta from '@/components/report/worksta'
+const ReportWorksta = () => import(/* webpackChunkName: "group-report" */ '@/components/report/worksta')
 
 /* 视频监控 */
 // 视频监控设置
-import VideoSetting from '@/components/video/setting'
+const VideoSetting = () => import(/* webpackChunkName: "group-video" */ '@/components/video/setting')
 // 视频广场
-import VideoPlaza from '@/components/video/plaza'
+const VideoPlaza = () => import(/* webpackChunkName: "group-video" */ '@/components/video/plaza')
 // 视频直播
-import VideoLiveroom from '@/components/video/liveroom'
+const VideoLiveroom = () => import(/* webpackChunkName: "group-video" */ '@/components/video/liveroom')
 
 /* 事件管理 */
 // 事件列表
-import EventList from '@/components/event/list'
+const EventList = () => import(/* webpackChunkName: "group-event" */ '@/components/event/list')
 
 Vue.use(Router)
 
@@ -553,25 +549,17 @@ export default new Router({
           }
         },
         {
-          path: 'locman',
-          name: 'locman',
-          component: Locman,
+          path: 'loccollect',
+          name: 'loccollect',
+          component: Loccollect,
           meta: {
-            keepAlive: false
+            keepAlive: true
           }
         },
         {
-          path: 'loclog',
-          name: 'loclog',
-          component: Loclog,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
-          path: 'crewtrack',
-          name: 'crewtrack',
-          component: Crewtrack,
+          path: 'loccollect-det',
+          name: 'loccollectDet',
+          component: LoccollectDet,
           meta: {
             keepAlive: false
           }
@@ -627,17 +615,25 @@ export default new Router({
           ]
         },
         {
-          path: 'loccollect',
-          name: 'loccollect',
-          component: Loccollect,
+          path: 'locman',
+          name: 'locman',
+          component: Locman,
           meta: {
-            keepAlive: true
+            keepAlive: false
           }
         },
         {
-          path: 'loccollect-det',
-          name: 'loccollectDet',
-          component: LoccollectDet,
+          path: 'loclog',
+          name: 'loclog',
+          component: Loclog,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'crewtrack',
+          name: 'crewtrack',
+          component: Crewtrack,
           meta: {
             keepAlive: false
           }
@@ -704,22 +700,6 @@ export default new Router({
           path: 'hardfac',
           name: 'hardfac',
           component: Hardfac,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
-          path: 'facup-record',
-          name: 'facupRecord',
-          component: FacupRecord,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
-          path: 'polcard',
-          name: 'polcard',
-          component: Polcard,
           meta: {
             keepAlive: false
           }

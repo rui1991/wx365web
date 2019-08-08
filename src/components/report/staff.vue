@@ -154,7 +154,7 @@ export default{
       total: 0,
       nowPage: 1,
       limit: 10,
-      downDisabled: false,
+      downDisabled: true,
       loading: false
     }
   },
@@ -174,6 +174,7 @@ export default{
     // 获取机构树
     this.getOrganTree()
     if (this.orgId) {
+      this.downDisabled = false
       // 获取列表数据
       this.getListData()
     }
@@ -431,6 +432,15 @@ export default{
         this.downDisabled = false
       }, 5000)
       window.location.href = this.reportApi() + '/v3.4/selUserInspectTaskEO?' + params
+    }
+  },
+  watch: {
+    orgId (val, oldVal) {
+      if (val) {
+        this.downDisabled = false
+      } else {
+        this.downDisabled = true
+      }
     }
   }
 }

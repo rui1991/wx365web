@@ -5,18 +5,18 @@
         <el-input style="width: 350px;" v-model.trim="parentBasics.name" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="执行类型" prop="exetype" v-if="parentBasics.showExetype">
-        <el-radio-group v-model="parentBasics.exetype" @change="exetypeChange">
+        <el-radio-group v-model="parentBasics.exetype">
           <el-radio :label="1">执行人员</el-radio>
           <el-radio :label="2">执行组</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="角色" prop="roles" v-show="parentBasics.exetype === 1">
-        <el-select style="width: 350px;" v-model="parentBasics.roles" @change="whetherChange = true" @visible-change="getRolesCrew" multiple collapse-tags placeholder="请选择用户角色">
+      <el-form-item label="执行部门" prop="sector" v-show="parentBasics.exetype === 1">
+        <el-select v-model="parentBasics.sector" @change="sectorChange" filterable placeholder="请选择执行部门">
           <el-option
-            v-for="item in roleOptions"
-            :key="item.role_id"
-            :label="item.role_name"
-            :value="item.role_id">
+            v-for="item in sectorOptions"
+            :key="item.base_id"
+            :label="item.name"
+            :value="item.base_id">
           </el-option>
         </el-select>
       </el-form-item>
@@ -159,12 +159,12 @@ import { mapState } from 'vuex'
 export default{
   props: ['parentBasics'],
   data () {
-    let checkRole = (rule, value, callback) => {
+    let checkSector = (rule, value, callback) => {
       if (this.parentBasics.exetype === 1) {
-        if (value.length > 0) {
+        if (value) {
           callback()
         } else {
-          callback(new Error('请选择用户角色'))
+          callback(new Error('请选择执行部门'))
         }
       } else {
         callback()
@@ -200,8 +200,7 @@ export default{
     }
     return {
       formLabelWidth: '100px',
-      roleOptions: [],
-      whetherChange: false,
+      sectorOptions: [],
       groupOptions: [],
       crewOptions: [],
       showTimes: false,
@@ -399,8 +398,8 @@ export default{
         exetype: [
           { required: true, message: '请选择执行类型', trigger: 'change' }
         ],
-        roles: [
-          { required: true, validator: checkRole, trigger: 'change' }
+        sector: [
+          { required: true, validator: checkSector, trigger: 'change' }
         ],
         group: [
           { required: true, validator: checkGroup, trigger: 'change' }
@@ -421,16 +420,19 @@ export default{
     }
   },
   created () {
-    // 获取角色
-    this.getRoleOptions()
+    // 获取部门
+    this.getSectorOptions()
     // 判断是否获取人员
-    if (this.parentBasics.roles.length > 0) {
-      this.getCrewOptions()
+    if (this.parentBasics.sector) {
+      this.getSectorCrew()
     }
     // 获取组
     this.getGroupOptions()
     // 判断是否显示时段
     this.whetherShowTimes()
+  },
+  mounted () {
+
   },
   computed: {
     ...mapState(
@@ -484,23 +486,19 @@ export default{
     cancelClick () {
       this.$emit('parentCancelFun')
     },
-    /* 选择角色 */
-    getRoleOptions () {
+    /* 选择部门 */
+    getSectorOptions () {
       let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        s_role_name: '',
-        s_role_mark: ''
+        organize_id: this.nowOrgid
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.2/selRole',
+        url: this.sysetApi() + '/v3.2/selOrganizeTree',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          const roleData = res.data.data1
-          this.roleOptions = roleData
+          this.sectorOptions = res.data.data1[0].children
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -517,11 +515,73 @@ export default{
         })
       })
     },
-    getRolesCrew () {
-      if (!this.whetherChange) {
-        return
+    // 部门人员
+    sectorChange (value) {
+      let params = {
+        project_id: this.nowProid,
+        ogz_id: value
       }
-      this.getCrewOptions()
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.7/selUserByOgz',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          this.crewOptions = res.data.data1
+          // 清空选中人员
+          this.parentBasics.crewId = ''
+          this.parentBasics.crews.forEach(item => {
+            item.user_id = ''
+          })
+          this.parentBasics.times.forEach(item => {
+            item.user_id = ''
+          })
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
+    // 编辑时初始化部门人员
+    getSectorCrew () {
+      let params = {
+        project_id: this.nowProid,
+        ogz_id: this.parentBasics.sector
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.7/selUserByOgz',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          this.crewOptions = res.data.data1
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
     },
     /* 选择组 */
     getGroupOptions () {
@@ -545,62 +605,6 @@ export default{
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           this.groupOptions = res.data.data1.dataList
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    /* 选择执行类型 */
-    exetypeChange () {
-      const exetype = this.parentBasics.exetype
-      if (exetype === 1) {
-
-      }
-    },
-    /* 获取人员 */
-    getCrewOptions () {
-      let roles = this.parentBasics.roles
-      if (roles.length === 0) {
-        this.whetherChange = false
-        this.crewOptions = []
-        return
-      }
-      let params = {
-        organize_id: this.nowOrgid,
-        user_name: '',
-        user_phone: '',
-        role_id: roles.join(','),
-        page: 1,
-        limit1: 10000
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.2/selUser',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          this.whetherChange = false
-          this.crewOptions = res.data.data1.users
-          // 清空选中人员
-          this.parentBasics.crewId = ''
-          this.parentBasics.crews.forEach(item => {
-            item.user_id = ''
-          })
-          this.parentBasics.times.forEach(item => {
-            item.user_id = ''
-          })
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({

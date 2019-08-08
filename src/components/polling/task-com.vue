@@ -64,7 +64,7 @@ export default{
       titleActive: 0,
       basicsForm: {
         name: '',
-        roles: [],
+        sector: '',
         date: []
       },
       siteForm: {
@@ -115,24 +115,17 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/v2.1.02/all/sel/selInsTaskOnly',
+        url: this.sysetApi() + '/inspection/v3.7.3/all/sel/selInsTaskOnly',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           const itemData = res.data.data1
           // 计划名称
           this.basicsForm.name = itemData.plan_name
-          // 操作角色
-          let roles = itemData.role_id
-          if (roles) {
-            roles = roles.split(',')
-            roles = roles.map((item, index, array2) => {
-              return parseInt(item)
-            })
-          } else {
-            roles = []
-          }
-          this.basicsForm.roles = roles
+          // 执行部门
+          let sector = itemData.ogz_id
+          sector ? sector = Number.parseInt(sector) : sector = ''
+          this.basicsForm.sector = sector
           // 时间
           const startDate = this.$common.formatDate(itemData.start_time)
           const endDate = this.$common.formatDate(itemData.end_time)
@@ -191,9 +184,6 @@ export default{
     },
     // 提交
     sendAddRequest () {
-      // 执行角色
-      let roles = this.basicsForm.roles
-      roles = roles.join(',')
       // 顺序
       const order = this.siteForm.order
       // 地址
@@ -207,7 +197,7 @@ export default{
         plan_id: this.planId,
         duty_id: this.dutyId,
         plan_name: this.basicsForm.name,
-        role_id: roles,
+        role_id: this.basicsForm.sector,
         start_time: this.basicsForm.date[0],
         end_time: this.basicsForm.date[1],
         po_desc: order,
@@ -217,7 +207,7 @@ export default{
       this.btnState = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/v2.1.02/all/alter/alterInsTask',
+        url: this.sysetApi() + '/inspection/v3.7.3/all/alter/alterInsTask',
         data: params
       }).then((res) => {
         this.btnState = false

@@ -2,21 +2,21 @@
   <div class="task-basics">
     <el-form :model="parentBasics" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
       <el-form-item label="任务名称" prop="name">
-        <el-input style="width: 250px;" v-model.trim="parentBasics.name" auto-complete="off"></el-input>
+        <el-input style="width: 320px;" v-model.trim="parentBasics.name" auto-complete="off"></el-input>
       </el-form-item>
-      <el-form-item label="角色" prop="roles">
-        <el-select style="width: 250px;" v-model="parentBasics.roles" multiple collapse-tags placeholder="请选择用户角色">
-          <el-option
-            v-for="item in roleOptions"
-            :key="item.role_id"
-            :label="item.role_name"
-            :value="item.role_id">
-          </el-option>
-        </el-select>
-      </el-form-item>
+      <!--<el-form-item label="执行部门" prop="sector">-->
+        <!--<el-select style="width: 320px;" v-model="parentBasics.sector" filterable placeholder="请选择执行部门">-->
+          <!--<el-option-->
+            <!--v-for="item in sectorOptions"-->
+            <!--:key="item.base_id"-->
+            <!--:label="item.name"-->
+            <!--:value="item.base_id">-->
+          <!--</el-option>-->
+        <!--</el-select>-->
+      <!--</el-form-item>-->
       <el-form-item label="选择时间" prop="date">
         <el-date-picker
-          style="width: 250px;"
+          style="width: 320px;"
           v-model="parentBasics.date"
           :clearable="false"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -56,9 +56,8 @@ export default{
     }
     return {
       formLabelWidth: '100px',
-      roleOptions: [],
       whetherChange: false,
-      crewOptions: [],
+      sectorOptions: [],
       showTimes: false,
       pickerOptions: {
         disabledDate (time) {
@@ -69,9 +68,9 @@ export default{
         name: [
           { required: true, message: '请输入计划名称', trigger: 'blur' }
         ],
-        roles: [
-          { required: true, message: '请选择执行角色', trigger: 'change' }
-        ],
+        // sector: [
+        //   { required: true, message: '请选择执行部门', trigger: 'change' }
+        // ],
         date: [
           { required: true, validator: checkData, trigger: 'change' }
         ]
@@ -79,14 +78,13 @@ export default{
     }
   },
   created () {
-    // 获取角色
-    this.getRoleOptions()
+    // 获取部门
+    // this.getSectorOptions()
   },
   computed: {
     ...mapState(
       {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId
+        nowOrgid: state => state.nowOrgid
       }
     )
   },
@@ -108,23 +106,19 @@ export default{
     cancelClick () {
       this.$emit('parentCancelFun')
     },
-    /* 选择角色 */
-    getRoleOptions () {
+    /* 选择部门 */
+    getSectorOptions () {
       let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        s_role_name: '',
-        s_role_mark: ''
+        organize_id: this.nowOrgid
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.2/selRole',
+        url: this.sysetApi() + '/v3.2/selOrganizeTree',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          const roleData = res.data.data1
-          this.roleOptions = roleData
+          this.sectorOptions = res.data.data1[0].children
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -147,7 +141,7 @@ export default{
 
 <style lang="less" scoped>
 .task-basics{
-  width: 350px;
+  width: 420px;
   margin: 0 auto;
   .operate{
     padding-top: 30px;

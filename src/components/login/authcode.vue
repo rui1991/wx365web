@@ -188,6 +188,8 @@ export default{
           let userName = loginData.user.user_name
           // 存储用户角色id
           let roleId = loginData.user.role_id
+          // 存储用户部门id
+          let sectorId = loginData.user.ogz_id
           // 存储用户号码
           let userPhone = loginData.user.user_phone
           // 存储用户头像
@@ -223,6 +225,7 @@ export default{
             userId,
             userName,
             roleId,
+            sectorId,
             userPhone,
             userPhoto,
             allPros,

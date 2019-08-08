@@ -164,7 +164,7 @@ export default{
       total: 0,
       nowPage: 1,
       limit: 10,
-      downDisabled: false,
+      downDisabled: true,
       loading: false
     }
   },
@@ -184,6 +184,7 @@ export default{
     // 获取机构树
     this.getOrganTree()
     if (this.orgId) {
+      this.downDisabled = false
       if (this.orgType === 3) {
         // 获取列表详情数据
         this.getListDetData()
@@ -488,6 +489,15 @@ export default{
         this.downDisabled = false
       }, 5000)
       window.location.href = this.reportApi() + '/v3.4/selInspectTaskProEO?' + params
+    }
+  },
+  watch: {
+    orgId (val, oldVal) {
+      if (val) {
+        this.downDisabled = false
+      } else {
+        this.downDisabled = true
+      }
     }
   }
 }

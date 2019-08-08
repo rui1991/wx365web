@@ -42,13 +42,13 @@
               <el-input style="width: 160px;" v-model.trim="nowSearch.crew"></el-input>
             </div>
             <div class="item">
-              <span>操作角色</span>
-              <el-select v-model="nowSearch.role" style="width: 160px;" clearable filterable placeholder="请选择操作角色">
+              <span>执行部门</span>
+              <el-select v-model="nowSearch.sector" style="width: 160px;" clearable filterable placeholder="请选择执行部门">
                 <el-option
-                  v-for="item in roleOptions"
-                  :key="item.role_id"
-                  :label="item.role_name"
-                  :value="item.role_id">
+                  v-for="item in sectorOptions"
+                  :key="item.base_id"
+                  :label="item.name"
+                  :value="item.base_id">
                 </el-option>
               </el-select>
             </div>
@@ -65,9 +65,9 @@
               <a href="javascript:void(0);" class="details blue" @click="checkDetails(scope.row.plan_id)">{{ scope.row.plan_name }}</a>
             </template>
           </el-table-column>
-          <el-table-column label="执行角色" :show-overflow-tooltip="true">
+          <el-table-column label="执行部门" :show-overflow-tooltip="true">
             <template slot-scope="scope">
-              <span v-if="scope.row.role_id">{{ scope.row.role_name }}</span>
+              <span v-if="scope.row.ogz_id">{{ scope.row.ogz_name }}</span>
               <span v-else>-</span>
             </template>
           </el-table-column>
@@ -117,8 +117,8 @@
           <el-form-item class="item" label="执行组" v-if="detForm.group">
             <el-input :disabled="true" v-model="detForm.group"></el-input>
           </el-form-item>
-          <el-form-item class="item" label="执行角色" v-else>
-            <el-input :disabled="true" v-model="detForm.role"></el-input>
+          <el-form-item class="item" label="执行部门" v-else>
+            <el-input :disabled="true" v-model="detForm.sector"></el-input>
           </el-form-item>
         </div>
         <div class="two-form">
@@ -183,7 +183,7 @@
       </div>
       <el-collapse>
         <div class="item" v-for="(item, index) in detForm.posData" :key="item.position_id">
-          <p class="title" style="width: 580px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">{{item.all_address}}</p>
+          <p class="title" style="width: 580px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">{{item.position_name}}</p>
           <div v-if="item.template_id">
             <el-collapse-item :title="item.template_name" :name="index">
               <el-table class="show-table" :data="item.template.inss" style="width: 100%">
@@ -228,16 +228,16 @@ export default{
         startDate: '',
         endDate: '',
         crew: '',
-        role: ''
+        sector: ''
       },
       nowSearch: {
         name: '',
         startDate: '',
         endDate: '',
         crew: '',
-        role: ''
+        sector: ''
       },
-      roleOptions: [],
+      sectorOptions: [],
       tableData: [],
       groupContent: '',
       total: 0,
@@ -248,7 +248,7 @@ export default{
       detForm: {
         name: '',
         project: '',
-        role: '',
+        sector: '',
         group: '',
         startDate: '',
         endDate: '',
@@ -269,8 +269,8 @@ export default{
   created () {
     // 获取列表数据
     this.getListData()
-    // 获取角色
-    this.getRoleOptions()
+    // 获取部门
+    this.getSectorOptions()
     // 权限
     let autDet = this.autDet
     autDet.indexOf(30) === -1 ? this.authority.add = false : this.authority.add = true
@@ -285,6 +285,7 @@ export default{
         userId: state => state.info.userId,
         nowProid: state => state.nowProid,
         nowProname: state => state.nowProname,
+        nowOrgid: state => state.nowOrgid,
         autDet: state => state.autDet.plan
       }
     )
@@ -304,19 +305,18 @@ export default{
         company_id: this.nowClientId,
         user_id: this.userId,
         projectN_id: this.nowProid,
-        positionN_name: this.search.site,
         plan_name: this.search.name,
         start_date: this.search.startDate,
         end_date: this.search.endDate,
         createN_user: this.search.crew,
-        role_id: this.search.role,
+        ogz_id: this.search.sector,
         page: this.nowPage,
         limit1: this.limit
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/selInsSearch',
+        url: this.sysetApi() + '/inspection/v3.7.3/selInsSearch',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -402,7 +402,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/selInsOnly',
+        url: this.sysetApi() + '/inspection/v3.7.3/selInsOnly',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -412,7 +412,7 @@ export default{
           // 所属项目
           this.detForm.project = this.nowProname
           // 操作角色
-          this.detForm.role = itemData.role_name || ''
+          this.detForm.sector = itemData.ogz_name || ''
           // 操作组
           this.detForm.group = itemData.group_name || ''
           // 开始日期
@@ -587,23 +587,19 @@ export default{
         })
       })
     },
-    /* 角色 */
-    getRoleOptions () {
+    /* 部门 */
+    getSectorOptions () {
       let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        s_role_name: '',
-        s_role_mark: ''
+        organize_id: this.nowOrgid
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.2/selRole',
+        url: this.sysetApi() + '/v3.2/selOrganizeTree',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          const roleOptions = res.data.data1
-          this.roleOptions = roleOptions
+          this.sectorOptions = res.data.data1[0].children
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({

@@ -11,7 +11,7 @@
     <el-table class="strip-table" :data="tableData" row-key="position_id" max-height="520" border style="width: 100%">
       <el-table-column label="地址">
         <template slot-scope="scope">
-          <span style="cursor: pointer;">{{ scope.row.all_address }}</span>
+          <span style="cursor: pointer;">{{ scope.row.position_name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="80">

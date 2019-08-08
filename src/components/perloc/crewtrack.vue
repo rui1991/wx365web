@@ -301,7 +301,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.locationApi() + '/location/v1.0/selHPLocation',
+        url: this.sysetApi() + '/location/v1.0/selHPLocation',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -347,7 +347,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.locationApi() + '/location/v1.0/selLocationByID',
+        url: this.sysetApi() + '/location/v1.0/selLocationByID',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {

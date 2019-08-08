@@ -325,8 +325,8 @@
           <el-form-item class="item" label="任务名称">
             <el-input :disabled="true" v-model="taskForm.name"></el-input>
           </el-form-item>
-          <el-form-item class="item" label="执行角色">
-            <el-input :disabled="true" v-model="taskForm.role"></el-input>
+          <el-form-item class="item" label="执行部门">
+            <el-input :disabled="true" v-model="taskForm.sector"></el-input>
           </el-form-item>
         </div>
         <div class="two-form">
@@ -357,7 +357,7 @@
       <el-collapse>
         <div class="item" v-for="(item, index) in taskForm.posData" :key="item.position_id">
           <p class="clearfix title">
-            <span class="site left">{{item.all_address}}</span>
+            <span class="site left">{{item.position_name}}</span>
             <span class="time right">{{item.check_time | formatDate}}</span>
           </p>
           <div v-if="item.insPo">
@@ -480,7 +480,7 @@ export default{
       taskDialog: false,
       taskForm: {
         name: '',
-        role: '',
+        sector: '',
         startDate: '',
         endDate: '',
         group: '',
@@ -1231,7 +1231,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/v2.1.02/all/sel/selInsTaskOnly',
+        url: this.sysetApi() + '/inspection/v3.7.3/all/sel/selInsTaskOnly',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -1260,7 +1260,7 @@ export default{
           }
           this.taskForm = {
             name: itemData.plan_name,
-            role: itemData.role_name,
+            sector: itemData.ogz_name || '',
             startDate: startDate,
             endDate: endDate,
             group: itemData.group_name || '',

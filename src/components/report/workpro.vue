@@ -122,7 +122,7 @@ export default{
       total: 0,
       nowPage: 1,
       limit: 10,
-      downDisabled: false,
+      downDisabled: true,
       loading: false
     }
   },
@@ -142,6 +142,7 @@ export default{
     // 获取机构树
     this.getOrganTree()
     if (this.orgId) {
+      this.downDisabled = false
       // 获取列表数据
       this.getListData()
     }
@@ -357,6 +358,15 @@ export default{
       if (!mother) { return '0%' }
       let consult = Number.parseFloat(son) / Number.parseFloat(mother)
       return Math.round(consult * 100) + '%'
+    }
+  },
+  watch: {
+    orgId (val, oldVal) {
+      if (val) {
+        this.downDisabled = false
+      } else {
+        this.downDisabled = true
+      }
     }
   }
 }

@@ -357,7 +357,7 @@ export default{
         children: 'children',
         label: 'name'
       },
-      siteId: '',
+      siteName: '',
       reqUrl: '',
       imgLimit: 9,
       fileList: [],
@@ -598,7 +598,7 @@ export default{
     siteClick () {
       this.siteDialog = true
       // 清空选中
-      this.siteId = ''
+      this.siteName = ''
       // 取消高亮
       this.siteHighlight = false
       if (this.siteData.length === 0) {
@@ -617,7 +617,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/selPositionTree',
+        url: this.sysetApi() + '/selPositionTree628',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -640,53 +640,14 @@ export default{
     },
     // 点击地址树
     handleNodeClick (data) {
-      this.siteId = data.id
+      this.siteName = data.name
       // 设置高亮
       this.siteHighlight = true
     },
     // 选择
     selectSite () {
-      if (this.siteId) {
-        this.getAllPath()
-      } else {
-        this.addForm.site = ''
-        this.siteDialog = false
-      }
-    },
-    // 获取全路径
-    getAllPath () {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        position_id: this.siteId
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/apk/selPositionOnly',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          // 路径
-          let allPath = res.data.data1.all_address
-          this.addForm.site = allPath
-          this.siteDialog = false
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+      this.addForm.site = this.siteName
+      this.siteDialog = false
     },
     // 上传图片成功
     handleSuccess (res, file, fileList) {

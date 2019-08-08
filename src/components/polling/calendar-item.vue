@@ -21,7 +21,12 @@
               <a href="javascript:void(0);" class="details blue" @click="checkDetails(scope.row.id_id)">{{ scope.row.plan_name }}</a>
             </template>
           </el-table-column>
-          <el-table-column prop="role_name" label="角色"></el-table-column>
+          <el-table-column label="执行部门">
+            <template slot-scope="scope">
+              <span v-if="scope.row.ogz_id">{{ scope.row.ogz_name }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
           <el-table-column label="开始时间">
             <template slot-scope="scope">
               <span>{{ scope.row.start_time | filterDate }}</span>
@@ -82,8 +87,8 @@
           <el-form-item class="item" label="任务名称">
             <el-input :disabled="true" v-model="detForm.name"></el-input>
           </el-form-item>
-          <el-form-item class="item" label="执行角色">
-            <el-input :disabled="true" v-model="detForm.role"></el-input>
+          <el-form-item class="item" label="执行部门">
+            <el-input :disabled="true" v-model="detForm.sector"></el-input>
           </el-form-item>
         </div>
         <div class="two-form">
@@ -114,7 +119,7 @@
       <el-collapse>
         <div class="item" v-for="(item, index) in detForm.posData" :key="item.position_id">
           <p class="clearfix title">
-            <span class="site left">{{item.all_address}}</span>
+            <span class="site left">{{item.position_name}}</span>
             <span class="time right">{{item.check_time | formatDate}}</span>
           </p>
           <el-collapse-item :title="item.template_name" :name="index" v-if="item.insPo">
@@ -196,7 +201,7 @@ export default{
       detDialog: false,
       detForm: {
         name: '',
-        role: '',
+        sector: '',
         startDate: '',
         endDate: '',
         group: '',
@@ -269,7 +274,7 @@ export default{
           planN_name: '',
           startN_date: this.$route.query.date,
           endN_date: this.$route.query.date,
-          roleN_id: '',
+          ogz_id: '',
           continueN_state: this.$route.query.state,
           userN_id: 0,
           page: this.nowPage,
@@ -284,7 +289,7 @@ export default{
           planN_name: '',
           startN_date: this.$route.query.date,
           endN_date: this.$route.query.date,
-          roleN_id: '',
+          ogz_id: '',
           continueN_state: this.$route.query.state,
           userN_id: this.userId,
           page: this.nowPage,
@@ -294,7 +299,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/v2.1.02/all/sel/selInsTaskSearch',
+        url: this.sysetApi() + '/inspection/v3.7.3/all/sel/selInsTaskSearch',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -372,7 +377,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/v2.1.02/all/sel/selInsTaskOnly',
+        url: this.sysetApi() + '/inspection/v3.7.3/all/sel/selInsTaskOnly',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -403,7 +408,7 @@ export default{
           const exaState = itemData.approval_state || undefined
           this.detForm = {
             name: itemData.plan_name,
-            role: itemData.role_name,
+            sector: itemData.ogz_name || '',
             startDate: startDate,
             endDate: endDate,
             group: itemData.group_name || '',

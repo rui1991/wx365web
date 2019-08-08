@@ -66,7 +66,7 @@ export default{
         name: '',
         showExetype: true,
         exetype: 1,
-        roles: [],
+        sector: '',
         group: '',
         date: [],
         pattern: 1,
@@ -187,21 +187,18 @@ export default{
       // 时间段
       times = times.join('/')
 
-      // 执行角色
-      let roles = ''
+      // 执行部门
+      let sector = ''
       // 执行组
       let group = 0
       // 执行类型
       const exetype = this.basicsForm.exetype
       if (exetype === 1) {
-        // 执行角色
-        roles = this.basicsForm.roles
-        roles = roles.join(',')
+        // 执行部门
+        sector = this.basicsForm.sector
       } else {
         // 执行组
         group = this.basicsForm.group
-        // 人员
-        // uids = ''
       }
       // 顺序
       const order = this.siteForm.order
@@ -213,7 +210,7 @@ export default{
         user_id: this.userId,
         projectN_id: this.nowProid,
         plan_name: this.basicsForm.name,
-        roleN_id: roles,
+        ogz_id: sector,
         group_id: group,
         start_date: startDate,
         end_date: endDate,
@@ -231,7 +228,7 @@ export default{
       this.btnState = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/v2.1.02/all/set/basicSet',
+        url: this.sysetApi() + '/inspection/v3.7.3/all/set/basicSet',
         data: params
       }).then((res) => {
         this.btnState = false

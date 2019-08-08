@@ -66,7 +66,7 @@ export default{
         name: '',
         showExetype: false,
         exetype: 1,
-        roles: [],
+        sector: [],
         group: '',
         date: [],
         pattern: 1,
@@ -122,24 +122,17 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/selInsOnly',
+        url: this.sysetApi() + '/inspection/v3.7.3/selInsOnly',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           const itemData = res.data.data1
           // 计划名称
           this.basicsForm.name = itemData.plan_name
-          // 操作角色
-          let roles = itemData.role_id
-          if (roles) {
-            roles = roles.split(',')
-            roles = roles.map((item, index, array2) => {
-              return parseInt(item)
-            })
-          } else {
-            roles = []
-          }
-          this.basicsForm.roles = roles
+          // 操作部门
+          let sector = itemData.ogz_id
+          sector ? sector = Number.parseInt(sector) : sector = ''
+          this.basicsForm.sector = sector
           // 操作组
           const group = itemData.group_id || ''
           this.basicsForm.group = group
@@ -305,16 +298,15 @@ export default{
       // 时间段
       times = times.join('/')
 
-      // 执行角色
-      let roles = ''
+      // 执行部门
+      let sector = ''
       // 执行组
       let group = 0
       // 执行类型
       const exetype = this.basicsForm.exetype
       if (exetype === 1) {
-        // 执行角色
-        roles = this.basicsForm.roles
-        roles = roles.join(',')
+        // 执行部门
+        sector = this.basicsForm.sector
       } else {
         // 执行组
         group = this.basicsForm.group
@@ -332,7 +324,7 @@ export default{
         projectN_id: this.nowProid,
         plan_id: this.planId,
         plan_name: this.basicsForm.name,
-        roleN_id: roles,
+        ogz_id: sector,
         group_id: group,
         start_date: startDate,
         end_date: endDate,
@@ -350,7 +342,7 @@ export default{
       this.btnState = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/v2.1.02/all/alt/alterPlan',
+        url: this.sysetApi() + '/inspection/v3.7.3/all/alt/alterPlan',
         data: params
       }).then((res) => {
         this.btnState = false

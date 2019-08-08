@@ -132,7 +132,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.locationApi() + '/location/v1.0/selHPLocation',
+        url: this.sysetApi() + '/location/v1.0/selHPLocation',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -166,7 +166,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/selPositionTree',
+        url: this.sysetApi() + '/selPositionTree628',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -212,7 +212,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.locationApi() + '/location/v1.0/selLocationByID',
+        url: this.sysetApi() + '/location/v1.0/selLocationByID',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -358,14 +358,19 @@ export default{
     },
     // 确定
     submitComfirm () {
+      let pointData = JSON.parse(JSON.stringify(this.pointData))
       if (this.comItem.state) {
-        this.pointData.forEach((item, index) => {
+        pointData.forEach((item, index) => {
           if (item.id === this.comItem.id) {
             item.coordX = this.comItem.coordX
             item.coordY = this.comItem.coordY
           }
         })
       }
+      let poins = pointData.filter((item, index, array) => {
+        return item.coordX
+      })
+      this.pointData = poins
       this.sendComRequest()
     },
     // 提交
@@ -380,7 +385,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.locationApi() + '/location/v1.0/altPositionAxis',
+        url: this.sysetApi() + '/location/v1.0/altPositionAxis',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {

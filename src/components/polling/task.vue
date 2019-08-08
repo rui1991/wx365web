@@ -40,13 +40,13 @@
           </div>
           <div class="search-input">
             <div class="item">
-              <span>操作角色</span>
-              <el-select v-model="nowSearch.role" style="width: 160px;" clearable filterable placeholder="请选择操作角色">
+              <span>执行部门</span>
+              <el-select v-model="nowSearch.sector" style="width: 160px;" clearable filterable placeholder="请选择执行部门">
                 <el-option
-                  v-for="item in roleOptions"
-                  :key="item.role_id"
-                  :label="item.role_name"
-                  :value="item.role_id">
+                  v-for="item in sectorOptions"
+                  :key="item.base_id"
+                  :label="item.name"
+                  :value="item.base_id">
                 </el-option>
               </el-select>
             </div>
@@ -80,9 +80,9 @@
               <a href="javascript:void(0);" class="name" @click="checkDetails(scope.row.id_id)">{{ scope.row.plan_name }}</a>
             </template>
           </el-table-column>
-          <el-table-column label="执行角色" :show-overflow-tooltip="true">
+          <el-table-column label="执行部门">
             <template slot-scope="scope">
-              <span v-if="scope.row.role_id">{{ scope.row.role_name }}</span>
+              <span v-if="scope.row.ogz_id">{{ scope.row.ogz_name }}</span>
               <span v-else>-</span>
             </template>
           </el-table-column>
@@ -129,9 +129,9 @@
               <a href="javascript:void(0);" class="operate com" @click="clickDraw(scope.row.id_id)" v-if="scope.row.draw === 1 && authority.draw">领取</a>
               <span class="operate forbid" v-else-if="scope.row.draw === 2 && authority.draw">领取</span>
               <span class="operate forbid" v-else-if="scope.row.draw === 3 && authority.draw">已领取</span>
-              <a href="javascript:void(0);" class="operate com" @click="clickDispatch(scope.row.id_id, scope.row.role_id)" v-if="scope.row.dispatch === 1 && authority.dispatch">派遣</a>
+              <a href="javascript:void(0);" class="operate com" @click="clickDispatch(scope.row.id_id, scope.row.ogz_id)" v-if="scope.row.dispatch === 1 && authority.dispatch">派遣</a>
               <span class="operate forbid" v-else-if="scope.row.dispatch === 2 && authority.dispatch">派遣</span>
-              <a href="javascript:void(0);" class="operate com" @click="clickTrade(scope.row.id_id, scope.row.role_id)" v-if="scope.row.trade === 1 && authority.dispatch">换人</a>
+              <a href="javascript:void(0);" class="operate com" @click="clickTrade(scope.row.id_id, scope.row.ogz_id)" v-if="scope.row.trade === 1 && authority.dispatch">换人</a>
               <span class="operate forbid" v-else-if="scope.row.trade === 2 && authority.dispatch">换人</span>
               <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.id_id)" v-if="scope.row.com === 1 && authority.com">维护</a>
               <span class="operate forbid" v-if="scope.row.com === 2 && authority.com">维护</span>
@@ -160,8 +160,8 @@
           <el-form-item class="item" label="任务名称">
             <el-input :disabled="true" v-model="detForm.name"></el-input>
           </el-form-item>
-          <el-form-item class="item" label="执行角色">
-            <el-input :disabled="true" v-model="detForm.role"></el-input>
+          <el-form-item class="item" label="执行部门">
+            <el-input :disabled="true" v-model="detForm.sector"></el-input>
           </el-form-item>
         </div>
         <div class="two-form">
@@ -192,7 +192,7 @@
       <el-collapse>
         <div class="item" v-for="(item, index) in detForm.posData" :key="item.position_id">
           <p class="clearfix title">
-            <span class="site left">{{item.all_address}}</span>
+            <span class="site left">{{item.position_name}}</span>
             <span class="time right">{{item.check_time | formatDate}}</span>
           </p>
           <el-collapse-item :title="item.template_name" :name="index" v-if="item.insPo">
@@ -259,7 +259,7 @@
     <!-- 人员 -->
     <el-dialog title="选择人员" :visible.sync="crewDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
       <el-input class="search" placeholder="请输入人员姓名" prefix-icon="el-icon-search" v-model.trim="crewFilter"></el-input>
-      <el-table  class="select-table" :data="roleCrewOptions" style="width: 100%" max-height="360">
+      <el-table  class="select-table" :data="sectorCrewOptions" style="width: 100%" max-height="360">
         <el-table-column width="65">
           <template slot-scope="scope">
             <el-radio :label="scope.row.user_id" @change.native="getTemplateRow(scope.row.user_name)" v-model="crewId">&nbsp;</el-radio>
@@ -292,7 +292,7 @@ export default{
         name: '',
         startDate: '',
         endDate: '',
-        role: '',
+        sector: '',
         state: '',
         crews: '0'
       },
@@ -300,11 +300,11 @@ export default{
         name: '',
         startDate: '',
         endDate: '',
-        role: '',
+        sector: '',
         state: '',
         crews: []
       },
-      roleOptions: [],
+      sectorOptions: [],
       stateOptions: [
         {
           label: '已完成',
@@ -355,8 +355,8 @@ export default{
       getWay: 1,
       crewDialog: false,
       crewDisabled: true,
-      roleCrewOptions: [],
-      oroleCrewOptions: [],
+      sectorCrewOptions: [],
+      osectorCrewOptions: [],
       crewName: '',
       crewId: '',
       crewFilter: ''
@@ -374,8 +374,8 @@ export default{
     this.todayStartTime = new Date(todayStartTime).getTime()
     // 获取列表数据
     this.getListData()
-    // 获取角色
-    this.getRoleOptions()
+    // 获取部门
+    this.getSectorOptions()
     // 获取项目人员
     this.getCrewOptions()
     // 权限
@@ -395,7 +395,7 @@ export default{
         companyName: state => state.info.companyName,
         userId: state => state.info.userId,
         userName: state => state.info.userName,
-        roleId: state => state.info.roleId,
+        sectorId: state => state.info.sectorId,
         nowProid: state => state.nowProid,
         nowOrgid: state => state.nowOrgid,
         autDet: state => state.autDet.task
@@ -415,7 +415,7 @@ export default{
         name: this.nowSearch.name,
         startDate: this.nowSearch.startDate,
         endDate: this.nowSearch.endDate,
-        role: this.nowSearch.role,
+        sector: this.nowSearch.sector,
         state: this.nowSearch.state,
         crews: crews
       }
@@ -434,7 +434,7 @@ export default{
         planN_name: this.search.name,
         startN_date: this.search.startDate,
         endN_date: this.search.endDate,
-        roleN_id: this.search.role,
+        ogz_id: this.search.sector,
         continueN_state: this.search.state,
         userN_id: this.search.crews,
         page: this.nowPage,
@@ -443,29 +443,23 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/v2.1.02/all/sel/selInsTaskSearch',
+        url: this.sysetApi() + '/inspection/v3.7.3/all/sel/selInsTaskSearch',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
           let nowTime = new Date().getTime()
-          const nowRole = this.roleId
+          const nowSector = this.sectorId + ''
           let tableData = res.data.data1.insTask
           // 领取draw 1：可领取 2：不可领取 3：已领取
           // 派遣dispatch 1: 可派遣 2：不可派遣
           // 换人trade 1：可换人 2：不可换人
           // 维护com 1：可维护 2：不可维护
           tableData.forEach(item => {
-            let roles = item.role_id
-            if (roles) {
-              roles = roles.split(',')
-            } else {
-              roles = []
-            }
             // 领取、派遣
             if (item.continue_state === 1) {
               if (item.start_time <= nowTime && item.end_time > this.todayStartTime) {
-                if (roles.indexOf(nowRole) !== -1) {
+                if (nowSector === item.ogz_id || item.ogz_id === undefined) {
                   item.draw = 1
                 } else {
                   item.draw = 2
@@ -581,7 +575,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/v2.1.02/all/sel/selInsTaskOnly',
+        url: this.sysetApi() + '/inspection/v3.7.3/all/sel/selInsTaskOnly',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -612,7 +606,7 @@ export default{
           const exaState = itemData.approval_state || undefined
           this.detForm = {
             name: itemData.plan_name,
-            role: itemData.role_name,
+            sector: itemData.ogz_name || '',
             startDate: startDate,
             endDate: endDate,
             group: itemData.group_name || '',
@@ -739,7 +733,7 @@ export default{
       this.submitTaskCrew()
     },
     // 派遣
-    clickDispatch (id, roles) {
+    clickDispatch (id, sector) {
       this.itemId = id
       this.getWay = 2
       this.crewDialog = true
@@ -747,8 +741,8 @@ export default{
       this.crewName = ''
       this.crewId = ''
       this.crewFilter = ''
-      // 获取角色人员
-      this.getRoleCrewOptions(roles)
+      // 获取部门人员
+      this.getSectorCrew(sector)
     },
     getTemplateRow (name) {
       this.crewName = name
@@ -827,7 +821,7 @@ export default{
       })
     },
     /* 换人 */
-    clickTrade (id, roles) {
+    clickTrade (id, sector) {
       this.itemId = id
       this.getWay = 3
       this.crewDialog = true
@@ -835,8 +829,8 @@ export default{
       this.crewName = ''
       this.crewId = ''
       this.crewFilter = ''
-      // 获取角色人员
-      this.getRoleCrewOptions(roles)
+      // 获取部门人员
+      this.getSectorCrew(sector)
     },
     // 提交
     submitTaskTrade () {
@@ -878,23 +872,19 @@ export default{
         })
       })
     },
-    /* 角色 */
-    getRoleOptions () {
+    /* 获取部门 */
+    getSectorOptions () {
       let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        s_role_name: '',
-        s_role_mark: ''
+        organize_id: this.nowOrgid
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.2/selRole',
+        url: this.sysetApi() + '/v3.2/selOrganizeTree',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          const roleOptions = res.data.data1
-          this.roleOptions = roleOptions
+          this.sectorOptions = res.data.data1[0].children
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -947,25 +937,25 @@ export default{
         })
       })
     },
-    /* 角色人员 */
-    getRoleCrewOptions (roles) {
+    /* 部门人员 */
+    getSectorCrew (sector) {
+      let orgId = 0
+      if (sector) {
+        orgId = sector
+      }
       let params = {
-        organize_id: this.nowOrgid,
-        user_name: '',
-        user_phone: '',
-        role_id: roles,
-        page: 1,
-        limit1: 10000
+        project_id: this.nowProid,
+        ogz_id: orgId
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.2/selUser',
+        url: this.sysetApi() + '/v3.7/selUserByOgz',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          this.roleCrewOptions = res.data.data1.users
-          this.oroleCrewOptions = res.data.data1.users
+          this.sectorCrewOptions = res.data.data1
+          this.osectorCrewOptions = res.data.data1
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -992,7 +982,7 @@ export default{
         planN_name: this.search.name,
         startN_date: this.search.startDate,
         endN_date: this.search.endDate,
-        roleN_id: this.search.role,
+        ogz_id: this.search.sector,
         continueN_state: this.search.state,
         userN_id: this.search.crews,
         page: 1,
@@ -1034,7 +1024,7 @@ export default{
   },
   watch: {
     crewFilter (val, oldVal) {
-      this.roleCrewOptions = this.oroleCrewOptions.filter(item => (~item.user_name.indexOf(val)))
+      this.sectorCrewOptions = this.osectorCrewOptions.filter(item => (~item.user_name.indexOf(val)))
     },
     crewId (val, oldVal) {
       if (val) {

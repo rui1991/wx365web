@@ -150,7 +150,7 @@ export default{
       limit: 10,
       detDialog: false,
       detData: [],
-      downDisabled: false,
+      downDisabled: true,
       loading: false
     }
   },
@@ -170,6 +170,7 @@ export default{
     // 获取机构树
     this.getOrganTree()
     if (this.orgId) {
+      this.downDisabled = false
       // 获取列表数据
       this.getListData()
     }
@@ -347,7 +348,6 @@ export default{
           this.total = res.data.data1.total
           this.tableData = res.data.data1.position
         } else {
-          this.loading = false
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
             showClose: true,
@@ -356,6 +356,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.loading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -423,6 +424,15 @@ export default{
         this.downDisabled = false
       }, 5000)
       window.location.href = this.reportApi() + '/v3.4/selInspectPositionEO?' + params
+    }
+  },
+  watch: {
+    orgId (val, oldVal) {
+      if (val) {
+        this.downDisabled = false
+      } else {
+        this.downDisabled = true
+      }
     }
   }
 }

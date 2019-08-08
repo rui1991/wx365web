@@ -28,8 +28,13 @@
         <h3 class="title">已选择地址列表</h3>
         <el-table class="select-table" :data="tableData" @selection-change="handleSelectionChange" max-height="420" stripe style="width: 100%">
           <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column prop="all_address" label="地址名称"></el-table-column>
-          <el-table-column prop="template_name" label="关联标准"></el-table-column>
+          <el-table-column prop="position_name" label="地址名称"></el-table-column>
+          <el-table-column label="关联标准">
+            <template slot-scope="scope">
+              <span v-if="scope.row.template_id">{{ scope.row.template_name }}</span>
+              <span v-else>无</span>
+            </template>
+          </el-table-column>
         </el-table>
         <p class="hint">提示：先勾选地址，后通过左侧操作按钮移除地址！</p>
       </div>
@@ -84,7 +89,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/selPositionTree',
+        url: this.sysetApi() + '/selPositionTree628',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -113,8 +118,12 @@ export default{
       const exetype = this.parentSite.exetype
       if (exetype === 1) {
         siteData.forEach(item => {
-          if (item.mac.length === 8 && item.type === 0) {
-            item.disabled = false
+          if (item.mac) {
+            if (item.mac.length === 8 && item.type == 0) {
+              item.disabled = false
+            } else {
+              item.disabled = true
+            }
           } else {
             item.disabled = true
           }
@@ -124,8 +133,12 @@ export default{
         })
       } else if (exetype === 2) {
         siteData.forEach(item => {
-          if (item.mac.length === 12) {
-            item.disabled = false
+          if (item.mac) {
+            if (item.mac.length === 12) {
+              item.disabled = false
+            } else {
+              item.disabled = true
+            }
           } else {
             item.disabled = true
           }
@@ -143,8 +156,12 @@ export default{
       const exetype = this.parentSite.exetype
       if (exetype === 1) {
         data.forEach(item => {
-          if (item.mac.length === 8 && item.type === 0) {
-            item.disabled = false
+          if (item.mac) {
+            if (item.mac.length === 8 && item.type == 0) {
+              item.disabled = false
+            } else {
+              item.disabled = true
+            }
           } else {
             item.disabled = true
           }
@@ -154,8 +171,12 @@ export default{
         })
       } else if (exetype === 2) {
         data.forEach(item => {
-          if (item.mac.length === 12) {
-            item.disabled = false
+          if (item.mac) {
+            if (item.mac.length === 12) {
+              item.disabled = false
+            } else {
+              item.disabled = true
+            }
           } else {
             item.disabled = true
           }
@@ -249,9 +270,10 @@ export default{
     // 操作处理地址树
     disposeSiteTree () {
       let ids = this.operationIds
-      this.siteTree.forEach(item => {
+      let siteData = JSON.parse(JSON.stringify(this.siteTree))
+      siteData.forEach(item => {
         for (let i = 0; i < ids.length; i++) {
-          if (item.id === ids[i]) {
+          if (item.id == ids[i]) {
             item.disabled = !item.disabled
             break
           }
@@ -260,12 +282,13 @@ export default{
           this.recursionSiteTree(item.children)
         }
       })
+      this.siteTree = siteData
     },
     recursionSiteTree (data) {
       let ids = this.operationIds
       data.forEach(item => {
         for (let i = 0; i < ids.length; i++) {
-          if (item.id === ids[i]) {
+          if (item.id == ids[i]) {
             item.disabled = !item.disabled
             break
           }

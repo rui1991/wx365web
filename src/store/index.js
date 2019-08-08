@@ -10,6 +10,7 @@ const state = {
     userId: '',
     userName: '',
     roleId: '',
+    sectorId: '',
     userPhone: '',
     userPhoto: '',
     allPros: [],

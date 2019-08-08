@@ -1,7 +1,7 @@
 <template>
   <div class="plan-norm">
     <div class="site-item" v-for="item in siteData" :key="item.position_id">
-      <h3 class="site-name">{{item.all_address}}</h3>
+      <h3 class="site-name">{{item.position_name}}</h3>
       <div class="norm" v-if="item.template_id === 0">
         <div class="norm-top">
           <div class="norm-title red">未关联巡检标准</div>
