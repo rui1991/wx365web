@@ -1,5 +1,6 @@
 // 保留小数
 const formatNum = (num, n = '') => {
+  if (!num) return 0
   let value = Number(num)
   if (n) {
     let square = Math.pow(10, n)

@@ -98,7 +98,10 @@
           prev-text="上一页"
           next-text="下一页"
           :current-page="nowPage"
-          layout="prev, pager, next, total"
+          layout="sizes, prev, pager, next, total"
+          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+          :page-size="limit"
+          @size-change="handleSizeChange"
           @current-change="pageChang"
           :total="total">
         </el-pagination>
@@ -342,6 +345,15 @@ export default{
           type: 'error'
         })
       })
+    },
+    // 切换单页大小
+    handleSizeChange (limit) {
+      // 设置大小
+      this.limit = limit
+      // 初始化页码
+      this.nowPage = 1
+      // 获取列表数据
+      this.getListData()
     },
     // 点击分页
     pageChang (page) {

@@ -56,30 +56,25 @@
               <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
             </div>
           </div>
-          <el-table class="list-table" :data="tableData" border style="width: 100%">
+          <el-table class="list-table" :data="tableData" border :summary-method="getSummaries" show-summary style="width: 100%">
             <el-table-column fixed type="index" width="50" label="序号"></el-table-column>
             <el-table-column fixed prop="organize_name" label="机构名称" width="160"></el-table-column>
-            <el-table-column prop="woSize" label="工单总数" width="120"></el-table-column>
-            <el-table-column prop="insSize" label="巡检工单" width="120"></el-table-column>
-            <el-table-column prop="repairSize" label="维修工单" width="120"></el-table-column>
+            <el-table-column prop="woSize" label="工单总数" width="110"></el-table-column>
+            <el-table-column prop="insSize" label="巡检工单" width="110"></el-table-column>
+            <el-table-column prop="repairSize" label="维修工单" width="110"></el-table-column>
             <el-table-column prop="continueSize" label="已结单" width="100"></el-table-column>
             <el-table-column prop="notContinueSize" label="未结单" width="100"></el-table-column>
-            <el-table-column prop="outtimeSize" label="超时工单" width="120"></el-table-column>
+            <el-table-column prop="outtimeSize" label="超时工单" width="110"></el-table-column>
             <el-table-column label="完成率" width="100">
               <template slot-scope="scope">
                 <span>{{ scope.row.continueRate | formatPercent }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="continueOntimeSize" label="完成及时数" width="128"></el-table-column>
-            <el-table-column prop="ingOuttimeSize" label="处理超时数" width="128"></el-table-column>
+            <el-table-column prop="continueOntimeSize" label="完成及时数" width="118"></el-table-column>
+            <el-table-column prop="ingOuttimeSize" label="处理超时数" width="120"></el-table-column>
             <el-table-column label="完成及时率" width="120">
               <template slot-scope="scope">
-                <span>{{ scope.row.continueOntimeSize | filterTimelyRate(scope.row.continueSize) }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="平均评价" width="120">
-              <template slot-scope="scope">
-                <span>{{ scope.row.avEvaluateSize | formatInteger }}</span>
+                <span>{{ scope.row.continueOntimeRate | formatPercent }}</span>
               </template>
             </el-table-column>
           </el-table>
@@ -88,7 +83,10 @@
             prev-text="上一页"
             next-text="下一页"
             :current-page="nowPage"
-            layout="prev, pager, next, total"
+            layout="sizes, prev, pager, next, total"
+            :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+            :page-size="limit"
+            @size-change="handleSizeChange"
             @current-change="pageChang"
             :total="total">
           </el-pagination>
@@ -293,6 +291,7 @@ export default{
     },
     // 获取列表数据
     getListData () {
+      if (!this.orgId) return
       let params = {
         organize_id: this.orgId,
         seltype: this.orgType,
@@ -329,6 +328,104 @@ export default{
           type: 'error'
         })
       })
+    },
+    // 合计表格规则设置
+    getSummaries (param) {
+      const { columns, data } = param
+      const sums = []
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计'
+          return
+        }
+        if (index === 1) {
+          sums[index] = '-'
+          return
+        }
+        if (index === 8) {
+          const values = data.map(item => Number(item.continueRate))
+          if (!values.every(value => isNaN(value))) {
+            let sum = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+            const size = data.length
+            let average = sum / size
+            average = Math.round(average * 100)
+            sums[index] = average + '%'
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        if (index === 11) {
+          const values = data.map(item => Number(item.continueOntimeRate))
+          if (!values.every(value => isNaN(value))) {
+            let sum = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+            const size = data.length
+            let average = sum / size
+            average = Math.round(average * 100)
+            sums[index] = average + '%'
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        if (index === 12) {
+          const values = data.map(item => Number(item.avEvaluateSize))
+          if (!values.every(value => isNaN(value))) {
+            let sum = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+            const size = data.length
+            let average = sum / size
+            average = Math.round(average)
+            sums[index] = average
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        const vals = data.map(item => Number(item[column.property]))
+        if (!vals.every(value => isNaN(value))) {
+          sums[index] = vals.reduce((prev, curr) => {
+            const value = Number(curr)
+            if (!isNaN(value)) {
+              return prev + curr
+            } else {
+              return prev
+            }
+          })
+        } else {
+          sums[index] = ''
+        }
+      })
+      return sums
+    },
+    // 切换单页大小
+    handleSizeChange (limit) {
+      // 设置大小
+      this.limit = limit
+      // 初始化页码
+      this.nowPage = 1
+      // 获取列表数据
+      this.getListData()
     },
     // 点击分页
     pageChang (page) {

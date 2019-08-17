@@ -70,27 +70,25 @@
               </div>
             </div>
           </div>
-          <el-table class="list-table" :data="tableData" border style="width: 100%">
+          <el-table class="list-table" :data="tableData" border :summary-method="getSummaries" show-summary style="width: 100%">
             <el-table-column fixed type="index" width="50" label="序号"></el-table-column>
-            <el-table-column fixed prop="project_name" label="项目名称" width="208"></el-table-column>
-            <el-table-column prop="position_name" label="地址名称" width="200"></el-table-column>
+            <el-table-column fixed prop="project_name" label="项目名称" width="200"></el-table-column>
+            <el-table-column prop="position_name" label="地址名称" width="198"></el-table-column>
             <el-table-column prop="plan_name" label="任务名称" width="200"></el-table-column>
             <el-table-column prop="start_time" label="开始时间" width="190"></el-table-column>
             <el-table-column prop="end_time" label="结束时间" width="190"></el-table-column>
             <el-table-column prop="normalSize" label="正常" width="140"></el-table-column>
             <el-table-column prop="abnormalSize" label="异常" width="140"></el-table-column>
-            <!--<el-table-column label="操作" width="160">-->
-            <!--<template slot-scope="scope">-->
-            <!--<el-button type="primary" @click="detailsClick(scope.row)">详情</el-button>-->
-            <!--</template>-->
-            <!--</el-table-column>-->
           </el-table>
           <el-pagination
             background
             prev-text="上一页"
             next-text="下一页"
             :current-page="nowPage"
-            layout="prev, pager, next, total"
+            layout="sizes, prev, pager, next, total"
+            :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+            :page-size="limit"
+            @size-change="handleSizeChange"
             @current-change="pageChang"
             :total="total">
           </el-pagination>
@@ -326,6 +324,7 @@ export default{
     },
     // 获取列表数据
     getListData () {
+      if (!this.orgId) return
       let params = {
         organize_id: this.orgId,
         project_name: '',
@@ -364,49 +363,49 @@ export default{
         })
       })
     },
+    // 合计表格规则设置
+    getSummaries (param) {
+      const { columns, data } = param
+      const sums = []
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计'
+          return
+        }
+        if (index === 1 || index === 2 || index === 3 || index === 4 || index === 5) {
+          sums[index] = '-'
+          return
+        }
+        const vals = data.map(item => Number(item[column.property]))
+        if (!vals.every(value => isNaN(value))) {
+          sums[index] = vals.reduce((prev, curr) => {
+            const value = Number(curr)
+            if (!isNaN(value)) {
+              return prev + curr
+            } else {
+              return prev
+            }
+          })
+        } else {
+          sums[index] = ''
+        }
+      })
+      return sums
+    },
+    // 切换单页大小
+    handleSizeChange (limit) {
+      // 设置大小
+      this.limit = limit
+      // 初始化页码
+      this.nowPage = 1
+      // 获取列表数据
+      this.getListData()
+    },
     // 点击分页
     pageChang (page) {
       this.nowPage = page
       // 获取列表数据
       this.getListData()
-    },
-    /* 详情 */
-    detailsClick (data) {
-      this.detDialog = true
-      let params = {
-        company_id: this.companyId,
-        user_id: this.userId,
-        project_ids: data.project_id,
-        position_id: data.position_id,
-        plan_id: data.plan_id,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
-        start_time: data.start_time,
-        end_time: data.end_time
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.reportApi() + '/v1.0/selInspectRecordState',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          this.detData = res.data.data1
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
     },
     /* 导出文件 */
     downFile () {

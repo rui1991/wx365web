@@ -12,13 +12,13 @@
           <div class="tree-top">
             <p class="title">组织机构</p>
             <div class="operate">
-              <router-link to="/main/corgan/addtype" class="blue" v-show="addShow">新建机构</router-link>
+              <a href="javascript:;" class="blue" @click="modType = 1" v-show="addShow">新建机构</a>
             </div>
           </div>
           <el-tree
-            style="padding: 5px"
-            :data="orgTree"
-            ref="orgTree"
+            style="padding: 5px;"
+            :data="orgData"
+            ref="tree"
             show-checkbox
             default-expand-all
             check-strictly
@@ -29,7 +29,41 @@
           </el-tree>
         </el-aside>
         <el-main class="module-main">
-          <router-view @parentRefresh="refreshTree"></router-view>
+          <!-- 编辑企业 -->
+          <com-module1
+            v-show="modType === 6"
+            :parentOrgId = "orgId"
+            :parentOrgType = "orgType"
+            :parentBaseId = "baseId"
+            :parentModType = "modType"
+            @parentUpdata="parentRefresh">
+          </com-module1>
+          <!-- 新增类型 -->
+          <type-module
+            v-show="modType === 1"
+            :parentOrgType= "orgType"
+            :parentModType = "modType"
+            @parentUpType="setAddType">
+          </type-module>
+          <!-- 新增组织 -->
+          <add-module
+            v-show="modType === 4"
+            :parentOrgId = "orgId"
+            :parentOrgName = "orgName"
+            :parentAddType = "addType"
+            :parentModType = "modType"
+            @parentUpdata="addUpdata"
+            @parentCancel="addCancel">
+          </add-module>
+          <!-- 编辑组织 -->
+          <com-module2
+            v-show="modType === 5"
+            :parentOrgId = "orgId"
+            :parentOrgType = "orgType"
+            :parentBaseId = "baseId"
+            :parentModType = "modType"
+            @parentUpdata="parentRefresh">
+          </com-module2>
         </el-main>
       </el-container>
     </el-container>
@@ -38,38 +72,64 @@
 
 <script>
 import { mapState } from 'vuex'
+// 引入编辑企业组件
+import comModule1 from '@/components/company/corgan-com'
+// 引入新增类型组件
+import typeModule from '@/components/company/organ-type'
+// 引入新增组织组件
+import addModule from '@/components/company/organ-add'
+// 引入编辑组织组件
+import comModule2 from '@/components/company/organ-com'
 export default{
-  name: 'corgan',
   data () {
     return {
-      orgTree: [],
+      orgData: [],
       defaultProps: {
         children: 'children',
         label: 'name'
       },
+      orgId: 0,
+      orgType: -1,
+      orgName: '',
+      baseId: 0,
+      modType: 0,
+      addType: 0,
       addShow: false
     }
   },
   created () {
-    // 初始化参数
-    this.$store.dispatch('initOrgArgs')
-    // 路由跳转到空白页面
-    this.$router.push({ path: '/main/corgan/empty' })
+
   },
   mounted () {
     // 获取机构树
     this.getOrganTree()
   },
+  components: {
+    comModule1,
+    typeModule,
+    addModule,
+    comModule2
+  },
   computed: {
     ...mapState(
       {
-        companyId: state => state.info.companyId,
-        userId: state => state.info.userId,
-        orgId: state => state.org.orgId
+        userId: state => state.info.userId
       }
     )
   },
   methods: {
+    /*
+    *  parentModType参数说明：
+    *  1: 新增类型
+    *  2：新增企业
+    *  3：设置（企业、分公司、模块配置）
+    *     3-1：设置企业
+    *     3-2：设置分公司
+    *     3-3：模块配置
+    *  4：新增组织（分公司、项目、部门）
+    *  5：编辑组织（项目、部门）
+    *  6:编辑企业
+    * */
     // 获取机构树
     getOrganTree (b = false) {
       let params = {
@@ -82,9 +142,10 @@ export default{
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          this.orgTree = res.data.data1
+          let orgData = res.data.data1
+          this.orgData = orgData
           if (b) {
-            this.$refs.orgTree.setCheckedKeys([this.orgId])
+            this.$refs.tree.setCheckedKeys([this.orgId])
           }
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
@@ -108,60 +169,83 @@ export default{
         if (this.orgId === data.id) {
           return
         }
-        this.$refs.orgTree.setCheckedKeys([data.id])
+        this.$refs.tree.setCheckedKeys([data.id])
         // 机构类型
-        const type = data.organize_type
-        // 机构参数
-        const org = {
-          orgId: data.id,
-          orgName: data.name,
-          orgType: type,
-          baseId: data.base_id
-        }
-        this.$store.commit('setOrgArgs', org)
-        if (type === 1) {
-          this.addShow = true
-          this.$router.push({ path: '/main/corgan/comfirm' })
-        } else if (type === 4) {
-          this.addShow = false
-          this.$router.push({ path: '/main/corgan/comorg' })
-        } else {
-          this.addShow = true
-          this.$router.push({ path: '/main/corgan/comorg' })
-        }
+        this.orgType = data.organize_type
+        // id
+        this.orgId = data.id
+        // name
+        this.orgName = data.name
+        // baseId
+        this.baseId = data.base_id
       } else {
         if (this.orgId === data.id) {
-          this.$refs.orgTree.setCheckedKeys([data.id])
+          this.$refs.tree.setCheckedKeys([data.id])
         }
       }
     },
     orgNodeClick (data, node, self) {
       if (node.checked) return
-      this.$refs.orgTree.setCheckedKeys([data.id])
+      this.$refs.tree.setCheckedKeys([data.id])
       // 机构类型
-      const type = data.organize_type
-      // 机构参数
-      const org = {
-        orgId: data.id,
-        orgName: data.name,
-        orgType: type,
-        baseId: data.base_id
-      }
-      this.$store.commit('setOrgArgs', org)
+      this.orgType = data.organize_type
+      // id
+      this.orgId = data.id
+      // name
+      this.orgName = data.name
+      // baseId
+      this.baseId = data.base_id
+    },
+    /* 新增类型 */
+    setAddType (type) {
+      this.addType = type
       if (type === 1) {
-        this.addShow = true
-        this.$router.push({ path: '/main/corgan/comfirm' })
-      } else if (type === 4) {
-        this.addShow = false
-        this.$router.push({ path: '/main/corgan/comorg' })
+        this.modType = 2
       } else {
-        this.addShow = true
-        this.$router.push({ path: '/main/corgan/comorg' })
+        this.modType = 4
+      }
+    },
+    /* 新增组织 */
+    addUpdata () {
+      // 刷新树
+      this.getOrganTree(true)
+      // 设置显示模块
+      const type = this.orgType
+      if (type === 1) {
+        this.modType = 6
+      } else {
+        this.modType = 5
+      }
+    },
+    addCancel () {
+      // 设置显示模块
+      const type = this.orgType
+      if (type === 1) {
+        this.modType = 6
+      } else {
+        this.modType = 5
       }
     },
     // 刷新树
-    refreshTree () {
+    parentRefresh () {
       this.getOrganTree(true)
+    }
+  },
+  watch: {
+    orgId (val, oldVal) {
+      const type = this.orgType
+      if (type === 1) {
+        this.modType = 6
+      } else {
+        this.modType = 5
+      }
+    },
+    orgType (val, oldVal) {
+      if (val === 4) {
+        this.addShow = false
+      } else {
+        this.addShow = true
+      }
     }
   }
 }

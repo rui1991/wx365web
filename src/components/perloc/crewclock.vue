@@ -45,7 +45,7 @@
             <div class="operate"></div>
           </div>
         </div>
-        <el-table class="list-table" :data="tableData" border style="width: 100%">
+        <el-table class="list-table" :data="tableData" border :summary-method="getSummaries" show-summary style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
           <el-table-column prop="user_name" label="姓名"></el-table-column>
           <el-table-column width="200" :show-overflow-tooltip="true" prop="positions" label="点名地址"></el-table-column>
@@ -64,26 +64,25 @@
           </el-table-column>
           <el-table-column label="未打卡点位数">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="red" v-if="scope.row.position_size < scope.row.po_size" @click="detClick(scope.row.user_id, scope.row.positions)">{{ scope.row.po_size - scope.row.position_size }}</a>
+              <a href="javascript:;" class="red" v-if="scope.row.notRecordSize > 0" @click="detClick(scope.row.user_id, scope.row.positions)">{{ scope.row.notRecordSize  }}</a>
               <span v-else>0</span>
             </template>
           </el-table-column>
           <el-table-column label="打卡率">
             <template slot-scope="scope">
-              <span>{{ scope.row.po_size | countRate(scope.row.position_size) }}</span>
+              <!--<span>{{ scope.row.po_size | countRate(scope.row.position_size) }}</span>-->
+              <span>{{ scope.row.recordRate | formatPercent }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="in_out_size" label="进入次数"></el-table-column>
           <el-table-column label="点位平均停留时长（分）">
             <template slot-scope="scope">
-              <span v-if="scope.row.avwaittime">{{ scope.row.avwaittime | formatNum }}</span>
-              <span v-else>-</span>
+              <span>{{ scope.row.avwaittime | formatNum }}</span>
             </template>
           </el-table-column>
           <el-table-column label="点位之间间隔时长（分）">
             <template slot-scope="scope">
-              <span v-if="scope.row.avrecord">{{ scope.row.avrecord | formatNum }}</span>
-              <span v-else>-</span>
+              <span>{{ scope.row.avrecord | formatNum }}</span>
             </template>
           </el-table-column>
         </el-table>
@@ -92,7 +91,10 @@
           prev-text="上一页"
           next-text="下一页"
           :current-page="nowPage"
-          layout="prev, pager, next, total"
+          layout="sizes, prev, pager, next, total"
+          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+          :page-size="limit"
+          @size-change="handleSizeChange"
           @current-change="pageChang"
           :total="total">
         </el-pagination>
@@ -225,6 +227,136 @@ export default{
           type: 'error'
         })
       })
+    },
+    // 合计表格规则设置
+    getSummaries (param) {
+      const { columns, data } = param
+      const sums = []
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计'
+          return
+        }
+        if (index === 1 || index === 2 || index === 3) {
+          sums[index] = '-'
+          return
+        }
+        if (index === 5) {
+          const values = data.map(item => Number(item.position_size))
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        if (index === 6) {
+          const values = data.map(item => Number(item.notRecordSize))
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        if (index === 7) {
+          const values = data.map(item => Number(item.recordRate))
+          if (!values.every(value => isNaN(value))) {
+            let sum = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+            const size = data.length
+            let average = sum / size
+            average = Math.round(average * 100)
+            sums[index] = average + '%'
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        if (index === 9) {
+          const values = data.map(item => Number(item.avwaittime))
+          if (!values.every(value => isNaN(value))) {
+            let sum = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+            const size = data.length
+            let average = sum / size
+            average = Math.round(average * 100) / 100
+            sums[index] = average + '分'
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        if (index === 10) {
+          const values = data.map(item => Number(item.avrecord))
+          if (!values.every(value => isNaN(value))) {
+            let sum = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+            const size = data.length
+            let average = sum / size
+            average = Math.round(average * 100) / 100
+            sums[index] = average + '分'
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        const vals = data.map(item => Number(item[column.property]))
+        if (!vals.every(value => isNaN(value))) {
+          sums[index] = vals.reduce((prev, curr) => {
+            const value = Number(curr)
+            if (!isNaN(value)) {
+              return prev + curr
+            } else {
+              return prev
+            }
+          })
+        } else {
+          sums[index] = ''
+        }
+      })
+      return sums
+    },
+    // 切换单页大小
+    handleSizeChange (limit) {
+      // 设置大小
+      this.limit = limit
+      // 初始化页码
+      this.nowPage = 1
+      // 获取列表数据
+      this.getListData()
     },
     // 点击分页
     pageChang (page) {

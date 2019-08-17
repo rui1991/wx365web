@@ -1,14 +1,14 @@
 <template>
-  <div class="confmod">
+  <div class="config">
     <el-tree
-      :data="autTree"
+      :data="treeData"
       show-checkbox
       node-key="id"
-      ref="autTree"
+      ref="tree"
       :props="defaultProps">
     </el-tree>
-    <div class="operate">
-      <el-button type="primary" :disabled="modDisabled" @click="submitModule">确 定</el-button>
+    <div class="config-operate">
+      <el-button type="primary" :disabled="disabled" @click="submitClick">确 定</el-button>
     </div>
   </div>
 </template>
@@ -16,39 +16,32 @@
 <script>
 import { mapState } from 'vuex'
 export default{
-  name: 'confmod',
+  props: ['parentOrgId', 'parentBaseId', 'parentModType'],
   data () {
     return {
-      autTree: [],
+      treeData: [],
       defaultProps: {
         children: 'children',
         label: 'name'
       },
-      modDisabled: false
+      disabled: false
     }
   },
   created () {
 
   },
-  mounted () {
-    // 获取权限树
-    this.getAutTree()
-  },
   computed: {
     ...mapState(
       {
-        userId: state => state.info.userId,
-        orgId: state => state.org.orgId,
-        orgName: state => state.org.orgName,
-        baseId: state => state.org.baseId
+        userId: state => state.info.userId
       }
     )
   },
   methods: {
     // 获取权限树
-    getAutTree () {
+    getTreeData () {
       let params = {
-        company_id: this.baseId,
+        company_id: this.parentBaseId,
         user_id: this.userId,
         project_id: 0
       }
@@ -59,10 +52,10 @@ export default{
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          const data = res.data.data1
-          this.autTree = data
+          const treeData = res.data.data1
+          this.treeData = treeData
           // 获取企业权限
-          this.getClientAut()
+          this.getAuthority()
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -80,9 +73,9 @@ export default{
       })
     },
     // 获取企业权限
-    getClientAut () {
+    getAuthority () {
       let params = {
-        base_id: this.baseId
+        base_id: this.parentBaseId
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -96,7 +89,7 @@ export default{
           autData.forEach(item => {
             autIds.push(item.function_id)
           })
-          this.$refs.autTree.setCheckedKeys(autIds)
+          this.$refs.tree.setCheckedKeys(autIds)
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -114,11 +107,11 @@ export default{
       })
     },
     // 确定
-    submitModule () {
-      let autIds = this.$refs.autTree.getCheckedKeys()
+    submitClick () {
+      let autIds = this.$refs.tree.getCheckedKeys()
       autIds = autIds.join(',')
       let params = {
-        base_id: this.baseId,
+        base_id: this.parentBaseId,
         user_id: this.userId,
         funs: autIds
       }
@@ -150,15 +143,27 @@ export default{
         })
       })
     }
+  },
+  watch: {
+    parentModType (val, old) {
+      if (val === 3) {
+        if (this.treeData.length === 0) {
+          // 获取权限树
+          this.getTreeData()
+        }
+        // 获取企业权限
+        this.getAuthority()
+      }
+    }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.confmod{
-  .operate{
-    padding-top: 20px;
-    text-align: center;
+  .config{
+    .config-operate{
+      padding-top: 20px;
+      text-align: center;
+    }
   }
-}
 </style>

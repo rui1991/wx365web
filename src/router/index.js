@@ -26,26 +26,6 @@ const Log = () => import(/* webpackChunkName: "group-log" */ '@/components/profi
 const Oorgan = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/oorgan')
 // 组织机构（客户）
 const Corgan = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/corgan')
-// 空模块
-const Empty = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/empty')
-// 新增企业
-const Addclient = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/addclient')
-// 企业配置
-const Conffirm = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/conffirm')
-// 编辑企业（黑卡）
-const Comclient = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/comclient')
-// 模块配置
-const Confmod = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/confmod')
-// 角色管理
-const Role = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/role')
-// 编辑企业（客户）
-const Comfirm = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/comfirm')
-// 新增类型
-const Addtype = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/addtype')
-// 新增机构
-const Addorg = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/addorg')
-// 编辑机构
-const Comorg = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/org/comorg')
 
 /* 企业管理 */
 // 用户管理（黑卡）
@@ -228,91 +208,7 @@ export default new Router({
           component: Oorgan,
           meta: {
             keepAlive: false
-          },
-          children: [
-            {
-              path: 'empty',
-              name: 'oempty',
-              component: Empty,
-              meta: {
-                keepAlive: false
-              }
-            },
-            {
-              path: 'addclient',
-              name: 'addclient',
-              component: Addclient,
-              meta: {
-                keepAlive: false
-              }
-            },
-            {
-              path: 'conffirm',
-              name: 'conffirm',
-              component: Conffirm,
-              meta: {
-                keepAlive: false
-              },
-              children: [
-                {
-                  path: 'comclient',
-                  name: 'comclient',
-                  component: Comclient,
-                  meta: {
-                    keepAlive: false
-                  }
-                },
-                {
-                  path: 'comorg',
-                  name: 'comfiliale',
-                  component: Comorg,
-                  meta: {
-                    keepAlive: false
-                  }
-                },
-                {
-                  path: 'confmod',
-                  name: 'confmod',
-                  component: Confmod,
-                  meta: {
-                    keepAlive: false
-                  }
-                },
-                {
-                  path: 'role',
-                  name: 'role',
-                  component: Role,
-                  meta: {
-                    keepAlive: false
-                  }
-                }
-              ]
-            },
-            {
-              path: 'addtype',
-              name: 'oaddtype',
-              component: Addtype,
-              meta: {
-                keepAlive: false
-              }
-            },
-            {
-              path: 'addorg',
-              name: 'oaddorg',
-              component: Addorg,
-              meta: {
-                keepAlive: false
-              }
-            },
-            {
-              path: 'comorg',
-              name: 'ocomorg',
-              component: Comorg,
-              meta: {
-                keepAlive: false
-              }
-            }
-          ]
+          }
         },
         {
           path: 'corgan',
@@ -320,49 +216,7 @@ export default new Router({
           component: Corgan,
           meta: {
             keepAlive: false
-          },
-          children: [
-            {
-              path: 'empty',
-              name: 'cempty',
-              component: Empty,
-              meta: {
-                keepAlive: false
-              }
-            },
-            {
-              path: 'comfirm',
-              name: 'comfirm',
-              component: Comfirm,
-              meta: {
-                keepAlive: false
-              }
-            },
-            {
-              path: 'addtype',
-              name: 'caddtype',
-              component: Addtype,
-              meta: {
-                keepAlive: false
-              }
-            },
-            {
-              path: 'addorg',
-              name: 'caddorg',
-              component: Addorg,
-              meta: {
-                keepAlive: false
-              }
-            },
-            {
-              path: 'comorg',
-              name: 'ccomorg',
-              component: Comorg,
-              meta: {
-                keepAlive: false
-              }
-            }
-          ]
+          }
         },
         {
           path: 'log',

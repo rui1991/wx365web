@@ -1,17 +1,17 @@
 <template>
-  <div class="org-item">
-    <el-form :model="comForm" :rules="rules" ref="ruleComForm" :label-width="formLabelWidth">
+  <div class="orange-module">
+    <el-form :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
       <el-form-item label="企业名称" prop="name">
-        <el-input v-model.trim="comForm.name" auto-complete="off"></el-input>
+        <el-input v-model.trim="formData.name" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="联系人" prop="linkman">
-        <el-input v-model.trim="comForm.linkman" auto-complete="off"></el-input>
+        <el-input v-model.trim="formData.linkman" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="联系电话" prop="phone">
-        <el-input v-model.trim="comForm.phone" auto-complete="off"></el-input>
+        <el-input v-model.trim="formData.phone" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="企业性质" prop="nature">
-        <el-select style="width: 100%;" v-model="comForm.nature" clearable placeholder="请选择企业性质">
+        <el-select style="width: 100%;" v-model="formData.nature" clearable placeholder="请选择企业性质">
           <el-option
             v-for="item in natureOptions"
             :key="item.value"
@@ -21,10 +21,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="行政区域" prop="area">
-        <el-input v-model.trim="comForm.area" auto-complete="off"></el-input>
+        <el-input v-model.trim="formData.area" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="所属行业" prop="trade">
-        <el-select style="width: 100%;" v-model="comForm.trade" clearable placeholder="请选择所属行业">
+        <el-select style="width: 100%;" v-model="formData.trade" clearable placeholder="请选择所属行业">
           <el-option
             v-for="item in tradeOptions"
             :key="item.value"
@@ -34,7 +34,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="企业规模" prop="scale">
-        <el-select style="width: 100%;" v-model="comForm.scale" clearable placeholder="请选择企业规模">
+        <el-select style="width: 100%;" v-model="formData.scale" clearable placeholder="请选择企业规模">
           <el-option
             v-for="item in scaleOptions"
             :key="item.value"
@@ -43,25 +43,51 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="坐标" prop="coord">
+        <el-input :disabled="true" v-model="formData.coord" style="width: 360px; margin-right: 20px;"></el-input>
+        <el-button type="primary" @click="mapDialog = true">选择坐标</el-button>
+      </el-form-item>
       <el-form-item label="状态" prop="state">
-        <el-radio-group v-model="comForm.state">
+        <el-radio-group v-model="formData.state">
           <el-radio :label="0">正常</el-radio>
           <el-radio :label="1">冻结</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
-    <div class="operate">
-      <el-button type="primary" :disabled="comDisabled" @click="submitComForm('ruleComForm')">确 定</el-button>
+    <div class="module-operate">
+      <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
     </div>
+    <!-- 地图坐标 -->
+    <map-module
+      :parentDialog="mapDialog"
+      :parentCoord="formData.coord"
+      @parentUpdata="mapUpdata"
+      @parentCancel="mapCancel">
+    </map-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入地图组件
+import mapModule from '@/components/company/organ-map'
 export default{
-  name: 'comclient',
+  props: ['parentOrgId', 'parentOrgType', 'parentBaseId', 'parentModType'],
   data () {
+    let checkPhone = (rule, value, callback) => {
+      let regex = /^1[3|4|5|6|7|8|9][0-9]{9}$/
+      if (value) {
+        if (value.match(regex)) {
+          callback()
+        } else {
+          callback(new Error('手机号码格式错误'))
+        }
+      } else {
+        callback(new Error('请输入手机号码'))
+      }
+    }
     return {
+      formLabelWidth: '100px',
       natureOptions: [
         {
           value: '民营企业',
@@ -144,119 +170,80 @@ export default{
           label: '1000以上'
         }
       ],
-      formLabelWidth: '100px',
       rules: {
         name: [
           {required: true, message: '请输入企业名称', trigger: 'blur'}
         ],
         linkman: [
-          { required: true, message: '请选择联系人', trigger: 'blur' }
+          { required: true, message: '请输入联系人', trigger: 'blur' }
         ],
         phone: [
-          { required: true, message: '请选择联系电话', trigger: 'blur' }
+          { required: true, validator: checkPhone, trigger: 'blur' }
         ],
         area: [
-          { required: true, message: '请输入行政区域', trigger: 'blur' }
+          { required: true, message: '请输入行政区域', trigger: 'change' }
+        ],
+        state: [
+          { required: true, message: '请选择状态', trigger: 'change' }
         ]
       },
-      comForm: {
-        type: '',
-        name: '',
+      formData: {
         parentId: 1,
+        name: '',
         linkman: '',
         phone: '',
         nature: '',
         area: '',
         trade: '',
         scale: '',
+        coord: '',
         state: 0
       },
-      comDisabled: false,
-      crewOptions: []
+      disabled: false,
+      mapDialog: false
     }
   },
   created () {
 
   },
   mounted () {
-    // 获取企业人员
-    // this.getCrewOptions()
-    // 获取详情
-    this.getClientDet()
+
+  },
+  components: {
+    mapModule
   },
   computed: {
     ...mapState(
       {
-        companyId: state => state.info.companyId,
-        userId: state => state.info.userId,
-        orgId: state => state.org.orgId,
-        baseId: state => state.org.baseId,
-        orgType: state => state.org.orgType
+        userId: state => state.info.userId
       }
     )
   },
   methods: {
-    // 获取人员
-    getCrewOptions () {
+    getDetails () {
       let params = {
-        organize_id: this.orgId,
-        user_name: '',
-        user_phone: '',
-        role_id: '',
-        page: 1,
-        limit1: 100000
+        organize_id: this.parentOrgId,
+        organize_type: this.parentOrgType,
+        base_id: this.parentBaseId
       }
       params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.2/selUser',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          this.crewOptions = res.data.data1.users
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 获取详情
-    getClientDet () {
-      let params = {
-        base_id: this.baseId,
-        organize_id: this.orgId,
-        organize_type: this.orgType
-      }
-      params = this.$qs.stringify(params)
-      this.detDisabled = true
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/v3.2/selOrganizeTreeType',
         data: params
       }).then((res) => {
-        this.detDisabled = false
         if (res.data.result === 'Sucess') {
           const itemData = res.data.data1
-          this.comForm = {
-            type: this.orgType,
-            name: itemData.ogz_name,
+          this.formData = {
             parentId: 1,
+            name: itemData.ogz_name,
             linkman: itemData.user_name,
             phone: itemData.ogz_phone,
             nature: itemData.nature || '',
             area: itemData.area || '',
             trade: itemData.industry || '',
             scale: itemData.size || '',
+            coord: itemData.coordinate || '',
             state: 0
           }
         } else {
@@ -268,7 +255,6 @@ export default{
           })
         }
       }).catch(() => {
-        this.detDisabled = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -277,55 +263,55 @@ export default{
       })
     },
     // 验证表单
-    submitComForm (formName) {
+    submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.sendComRequest()
+          this.sendRequest()
         } else {
           return false
         }
       })
     },
+    // 重置表单
+    resetForm (formName) {
+      this.$refs[formName].resetFields()
+    },
     // 提交
-    sendComRequest () {
-      // const phone = this.comForm.linkman
-      // const crewItem = this.crewOptions.find(item => {
-      //   return item.user_phone === phone
-      // })
-      // const uname = crewItem.user_name
+    sendRequest () {
       let params = {
         user_id: this.userId,
-        base_id: this.baseId,
-        organize_id: this.orgId,
-        organize_type: this.comForm.type,
-        ogz_name: this.comForm.name,
-        parent_up_id: this.comForm.parentId,
-        user_name: this.comForm.linkman,
-        ogz_phone: this.comForm.phone,
-        nature: this.comForm.nature,
-        area: this.comForm.area,
-        industry: this.comForm.trade,
-        size: this.comForm.scale,
-        ogz_state: this.comForm.state,
+        base_id: this.parentBaseId,
+        organize_id: this.parentOrgId,
+        organize_type: this.parentOrgType,
+        ogz_name: this.formData.name,
+        parent_up_id: this.formData.parentId,
+        user_name: this.formData.linkman,
+        ogz_phone: this.formData.phone,
+        nature: this.formData.nature,
+        area: this.formData.area,
+        industry: this.formData.trade,
+        size: this.formData.scale,
+        coordinate: this.formData.coord,
+        ogz_state: this.formData.state,
         address: '',
         remarks: ''
       }
       params = this.$qs.stringify(params)
-      this.addDisabled = true
+      this.disabled = true
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/v3.2/altOrganizeTree',
         data: params
       }).then((res) => {
-        this.addDisabled = false
+        this.disabled = false
         if (res.data.result === 'Sucess') {
           this.$message({
             showClose: true,
             message: '企业编辑成功！',
             type: 'success'
           })
-          // 传递刷新指令
-          this.$emit('parentChange')
+          // 刷新树
+          this.$emit('parentUpdata')
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -335,40 +321,42 @@ export default{
           })
         }
       }).catch(() => {
-        this.addDisabled = false
+        this.disabled = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
           type: 'error'
         })
       })
+    },
+    /* 地图坐标 */
+    mapUpdata (data) {
+      this.formData.coord = data
+      this.mapDialog = false
+    },
+    mapCancel () {
+      this.mapDialog = false
     }
   },
   watch: {
-    orgId (newVal, oldVal) {
-      // 重置表单
-      this.$refs['ruleComForm'].resetFields()
-      // 获取企业人员
-      this.getCrewOptions()
-      // 获取详情
-      this.getClientDet()
+    parentOrgId (val, old) {
+      const modType = this.parentModType
+      if (modType === 1) {
+        // 重置表单
+        this.resetForm('ruleForm')
+        // 获取详情
+        this.getDetails()
+      }
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-  .org-item{
+  .orange-module{
     width: 600px;
     margin: 0 auto;
-    .title {
-      height: 60px;
-      text-align: center;
-      line-height: 60px;
-      font-size: 16px;
-      font-weight: 600;
-    }
-    .operate {
+    .module-operate {
       margin-top: 50px;
       text-align: center;
     }

@@ -392,6 +392,9 @@ input:-webkit-autofill {
 }
 
 /* 去除百度地图图标 */
+.BMap_cpyCtrl {
+  display: none;
+}
 .anchorBL{
-  display:none
+  display: none;
 }

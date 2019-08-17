@@ -34,8 +34,8 @@
                   <img :src="iconUrl" alt="" />
                 </div>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item><a href="javascript:void(0);" @click="clickDatum">个人资料</a></el-dropdown-item>
-                  <el-dropdown-item><a href="javascript:void(0);" @click="comPwdClick">修改密码</a></el-dropdown-item>
+                  <el-dropdown-item><a href="javascript:void(0);" @click="introDialog = true">个人资料</a></el-dropdown-item>
+                  <el-dropdown-item><a href="javascript:void(0);" @click="pwdDialog = true">修改密码</a></el-dropdown-item>
                   <el-dropdown-item><a href="javascript:void(0);" @click="quitLogin">退出登录</a></el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -62,10 +62,10 @@
             <el-submenu index="1" class="submenu-item" v-if="authority.organ || authority.user || authority.shift || authority.approval">
               <template slot="title"><i class="iconfont icon-qiye"></i>企业管理</template>
               <el-menu-item-group v-if="authority.organ && companyId === 1">
-                <el-menu-item index="/main/oorgan/empty">组织机构</el-menu-item>
+                <el-menu-item index="/main/oorgan">组织机构</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.organ && companyId !== 1">
-                <el-menu-item index="/main/corgan/empty">组织机构</el-menu-item>
+                <el-menu-item index="/main/corgan">组织机构</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.user && companyId === 1">
                 <el-menu-item index="/main/ouser">用户列表</el-menu-item>
@@ -91,9 +91,9 @@
               <el-menu-item-group v-if="authority.site">
                 <el-menu-item index="/main/site">地址管理</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group>
-                <el-menu-item index="/main/posmap">地图管理</el-menu-item>
-              </el-menu-item-group>
+              <!--<el-menu-item-group>-->
+                <!--<el-menu-item index="/main/posmap">地图管理</el-menu-item>-->
+              <!--</el-menu-item-group>-->
             </el-submenu>
             <el-submenu index="3" class="submenu-item">
               <template slot="title"><i class="iconfont icon-xunjianguanli"></i>巡检管理</template>
@@ -142,9 +142,9 @@
               <el-menu-item-group v-if="authority.plan">
                 <el-menu-item index="/main/loclog">轨迹记录详情</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.plan">
-                <el-menu-item index="/main/crewtrack">人员轨迹图</el-menu-item>
-              </el-menu-item-group>
+              <!--<el-menu-item-group v-if="authority.plan">-->
+                <!--<el-menu-item index="/main/crewtrack">人员轨迹图</el-menu-item>-->
+              <!--</el-menu-item-group>-->
             </el-submenu>
             <el-submenu index="5" class="submenu-item">
               <template slot="title"><i class="iconfont icon-ccgl-fahuodanguanli-5"></i>工单管理</template>
@@ -209,128 +209,33 @@
       </el-container>
     </el-container>
     <!-- 个人资料 -->
-    <el-dialog title="个人资料" :visible.sync="datumDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-form class="entirety-from" :model="datumForm" :rules="rules" ref="ruleDatumForm" :label-width="formLabelWidth">
-        <el-form-item label="用户姓名" prop="name">
-          <el-input :disabled="true" v-model="datumForm.name"></el-input>
-        </el-form-item>
-        <el-form-item label="手机号码" prop="phone">
-          <el-input :disabled="true" v-model="datumForm.phone" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="角色" prop="role">
-          <el-input :disabled="true" v-model="datumForm.roleName"></el-input>
-        </el-form-item>
-        <el-form-item label="所属组织" prop="organize">
-          <el-input :disabled="true" v-model="datumForm.orgName"></el-input>
-        </el-form-item>
-        <el-form-item label="授权范围" prop="projects">
-          <el-input type="textarea" :rows="2" :disabled="true" v-model="datumForm.proNames"></el-input>
-        </el-form-item>
-        <el-form-item label="技能" prop="skills">
-          <el-input type="textarea" :rows="2" :disabled="true" v-model="datumForm.skillNames"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="datumDialog = false">关 闭</el-button>
-      </div>
-    </el-dialog>
+    <intro-module
+      :parentDialog="introDialog"
+      @parentClose="introClose">
+    </intro-module>
     <!-- 修改密码 -->
-    <el-dialog title="修改密码" :visible.sync="pwdDialog" :show-close="false" :close-on-click-modal="false" custom-class="small-dialog">
-      <div v-if="showVerify">
-        <el-form :model="pwdForm" :rules="pwdRules" ref="ruleOldForm" :label-width="formOldWidth">
-          <el-form-item label="原密码" prop="old">
-            <el-input type="password" v-model="pwdForm.old" auto-complete="off"></el-input>
-          </el-form-item>
-        </el-form>
-        <div class="operate">
-          <el-button type="primary" class="operate-btn" @click="verifyOldPwd('ruleOldForm')">验证密码</el-button>
-          <el-button class="operate-btn" @click="resetPwdForm('ruleOldForm')">取&nbsp;&nbsp;&nbsp;&nbsp;消</el-button>
-        </div>
-      </div>
-      <div v-else>
-        <el-form :model="pwdForm" :rules="pwdRules" ref="ruleNowForm" :label-width="formNowWidth">
-          <el-form-item label="新密码" prop="now1">
-            <el-input type="password" v-model="pwdForm.now1" auto-complete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="再次输入新密码" prop="now2">
-            <el-input type="password" v-model="pwdForm.now2" auto-complete="off"></el-input>
-          </el-form-item>
-        </el-form>
-        <div class="operate">
-          <el-button type="primary" class="operate-btn" @click="verifyNowPwd('ruleNowForm')">修改密码</el-button>
-          <el-button class="operate-btn" @click="resetPwdForm('ruleNowForm')">取&nbsp;&nbsp;&nbsp;&nbsp;消</el-button>
-        </div>
-      </div>
-    </el-dialog>
+    <pwd-module
+      :parentDialog="pwdDialog"
+      @parentClose="pwdClose">
+    </pwd-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import initIcon from '../assets/images/head.png'
+// 引入个人资料组件
+import introModule from '@/components/profile/main-intro'
+// 引入修改密码组件
+import pwdModule from '@/components/profile/main-pwd'
 export default{
   name: 'App',
   data () {
-    let checkPwd = (rule, value, callback) => {
-      let regex = /^[0-9a-zA-Z]\w{5,17}$/
-      if (value) {
-        if (value.match(regex)) {
-          callback()
-        } else {
-          callback(new Error('密码必须为6-18位字母或数字'))
-        }
-      } else {
-        callback(new Error('请输入新密码'))
-      }
-    }
-    let affirmPwd = (rule, value, callback) => {
-      if (value) {
-        const nowPwd = this.pwdForm.now1
-        if (value === nowPwd) {
-          callback()
-        } else {
-          callback(new Error('两次输入不同，请核对后再输入'))
-        }
-      } else {
-        callback(new Error('请再次输入新密码'))
-      }
-    }
     return {
       menuActive: '',
       iconUrl: '',
-      datumDialog: false,
-      formLabelWidth: '100px',
-      datumForm: {
-        name: '',
-        phone: '',
-        roleName: '',
-        orgName: '',
-        proNames: '',
-        skillNames: ''
-      },
-      rules: {
-
-      },
-      pwdDialog: false,
-      formOldWidth: '100px',
-      formNowWidth: '130px',
-      showVerify: true,
-      pwdForm: {
-        old: '',
-        now1: '',
-        now2: ''
-      },
-      pwdRules: {
-        old: [
-          { required: true, message: '请输入原密码', trigger: 'blur' }
-        ],
-        now1: [
-          { required: true, validator: checkPwd, trigger: 'blur' }
-        ],
-        now2: [
-          { required: true, validator: affirmPwd, trigger: 'blur' }
-        ]
-      }
+      introDialog: false,
+      pwdDialog: false
     }
   },
   created () {
@@ -348,6 +253,10 @@ export default{
     // 未读消息数
     this.getMesUnread()
   },
+  components: {
+    introModule,
+    pwdModule
+  },
   computed: {
     ...mapState(
       {
@@ -355,7 +264,6 @@ export default{
         companyId: state => state.info.companyId,
         userId: state => state.info.userId,
         userName: state => state.info.userName,
-        userPhone: state => state.info.userPhone,
         userPhoto: state => state.info.userPhoto,
         allPros: state => state.info.allPros,
         authority: state => state.authority,
@@ -395,233 +303,12 @@ export default{
       })
     },
     /* 个人资料 */
-    clickDatum () {
-      this.datumDialog = true
-      this.datumForm = {
-        name: '',
-        phone: '',
-        roleName: '',
-        orgName: '',
-        proNames: '',
-        skillNames: ''
-      }
-      this.getPersonDatum()
-    },
-    // 获取个人资料
-    getPersonDatum () {
-      let params = {
-        userN_id: this.userId
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.2/selUserOnly',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const itemData = res.data.data1
-          // 授权范围
-          const accredits = itemData.userOgzs
-          let accreditName = []
-          accredits.forEach(item => {
-            accreditName.push(item.organize_name)
-          })
-          accreditName = accreditName.join('、')
-          // 技能
-          const skills = itemData.userSkls
-          let parSkillName = []
-          skills.forEach(item => {
-            parSkillName.push(item.parent_name)
-          })
-          parSkillName = parSkillName.join('、')
-          this.datumForm = {
-            name: itemData.user_name,
-            phone: itemData.user_phone,
-            roleName: itemData.role_name,
-            orgName: itemData.organize_name,
-            proNames: accreditName,
-            skillNames: parSkillName
-          }
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 重置表单
-    resetDatumForm (formName) {
-      this.$refs[formName].resetFields()
-      this.datumDialog = false
-    },
-    // 验证表单
-    submitDatumForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.sendDatumRequest()
-        } else {
-          return false
-        }
-      })
-    },
-    // 提交
-    sendDatumRequest () {
-      let params = {
-        company_id: this.companyId,
-        user_id: this.userId,
-        project_id: 0,
-        userN_id: this.userId,
-        user_name: this.datumForm.name,
-        user_phone: this.datumForm.phone,
-        user_sex: this.datumForm.sex,
-        birthday: this.datumForm.birthday,
-        native_place: this.datumForm.native,
-        id_card: this.datumForm.identity,
-        role_id: this.datumForm.roleId,
-        ogz_id: this.datumForm.orgId,
-        project_ids: this.datumForm.proIds,
-        skills_id: this.datumForm.skillIds
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/alterUser',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          // 重置表单
-          this.resetDatumForm('ruleDatumForm')
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    introClose () {
+      this.introDialog = false
     },
     /* 修改密码 */
-    comPwdClick () {
-      this.pwdDialog = true
-      this.showVerify = true
-      this.pwdForm = {
-        old: '',
-        now1: '',
-        now2: ''
-      }
-    },
-    // 重置表单
-    resetPwdForm (formName) {
-      this.$refs[formName].resetFields()
+    pwdClose () {
       this.pwdDialog = false
-    },
-    // 验证表单
-    verifyOldPwd (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.sendOldVerify()
-        } else {
-          return false
-        }
-      })
-    },
-    // 提交旧密码验证
-    sendOldVerify () {
-      let params = {
-        company_id: this.companyId,
-        user_id: this.userId,
-        project_id: 0,
-        login_pass: this.pwdForm.old
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/judgePWD',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          // 重置表单
-          this.showVerify = false
-        } else {
-          this.$message({
-            showClose: true,
-            message: '您输入的原密码有误，请重新输入',
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 验证表单
-    verifyNowPwd (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.sendComPwd()
-        } else {
-          return false
-        }
-      })
-    },
-    // 提交密码修改
-    sendComPwd () {
-      let params = {
-        company_id: this.companyId,
-        user_id: this.userId,
-        project_id: 0,
-        user_phone: this.userPhone,
-        login_pass: this.pwdForm.now1
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/apk/updateUserPass',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          // 成功提示
-          this.$message({
-            showClose: true,
-            message: '密码修改成功',
-            type: 'success'
-          })
-          // 重置表单
-          this.pwdDialog = false
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
     },
     /* 消息 */
     getMesUnread () {
@@ -810,11 +497,6 @@ export default{
         padding-right: 0;
         padding-bottom: 20px;
         background: #f0f3f4;
-      }
-    }
-    .small-dialog{
-      .operate{
-        text-align: center;
       }
     }
   }

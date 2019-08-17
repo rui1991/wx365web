@@ -12,13 +12,13 @@
           <div class="tree-top">
             <p class="title">组织机构</p>
             <div class="operate">
-              <router-link to="/main/oorgan/addtype" class="blue" v-show="addShow">新建机构</router-link>
+              <a href="javascript:;" class="blue" @click="modType = 1" v-show="addShow">新建机构</a>
             </div>
           </div>
           <el-tree
             style="padding: 5px;"
-            :data="orgTree"
-            ref="orgTree"
+            :data="orgData"
+            ref="tree"
             show-checkbox
             check-strictly
             node-key="id"
@@ -29,7 +29,50 @@
           </el-tree>
         </el-aside>
         <el-main class="module-main">
-          <router-view @parentRefresh="refreshTree"></router-view>
+          <!-- 新增类型 -->
+          <type-module
+            v-show="modType === 1"
+            :parentOrgType= "orgType"
+            :parentModType = "modType"
+            @parentUpType="setAddType">
+          </type-module>
+          <!-- 新增企业 -->
+          <add-module1
+            v-show="modType === 2"
+            :parentOrgId = "orgId"
+            :parentAddType = "addType"
+            :parentModType = "modType"
+            @parentUpdata="addUpdata1"
+            @parentCancel="addCancel1">
+          </add-module1>
+          <!-- 设置企业 -->
+          <set-module
+            v-show="modType === 3"
+            :parentOrgId = "orgId"
+            :parentOrgType = "orgType"
+            :parentBaseId = "baseId"
+            :parentModType = "modType"
+            @parentUpdata="parentRefresh">
+          </set-module>
+          <!-- 新增组织 -->
+          <add-module2
+            v-show="modType === 4"
+            :parentOrgId = "orgId"
+            :parentOrgName = "orgName"
+            :parentAddType = "addType"
+            :parentModType = "modType"
+            @parentUpdata="addUpdata2"
+            @parentCancel="addCancel2">
+          </add-module2>
+          <!-- 编辑组织 -->
+          <com-module
+            v-show="modType === 5"
+            :parentOrgId = "orgId"
+            :parentOrgType = "orgType"
+            :parentBaseId = "baseId"
+            :parentModType = "modType"
+            @parentUpdata="parentRefresh">
+          </com-module>
         </el-main>
       </el-container>
     </el-container>
@@ -38,37 +81,66 @@
 
 <script>
 import { mapState } from 'vuex'
+// 引入新增类型组件
+import typeModule from '@/components/company/organ-type'
+// 引入新增企业组件
+import addModule1 from '@/components/company/oorgan-add'
+// 引入设置企业组件
+import setModule from '@/components/company/oorgan-set'
+// 引入新增组织组件
+import addModule2 from '@/components/company/organ-add'
+// 引入编辑组织组件
+import comModule from '@/components/company/organ-com'
 export default{
   data () {
     return {
-      orgTree: [],
+      orgData: [],
       defaultProps: {
         children: 'children',
         label: 'name'
       },
+      orgId: 0,
+      orgType: -1,
+      orgName: '',
+      baseId: 0,
+      modType: 0,
+      addType: 0,
       addShow: false
     }
   },
   created () {
-    // 初始化参数
-    this.$store.dispatch('initOrgArgs')
-    // 路由跳转到空白页面
-    this.$router.push({ path: '/main/oorgan/empty' })
+
   },
   mounted () {
     // 获取机构树
     this.getOrganTree()
   },
+  components: {
+    typeModule,
+    addModule1,
+    setModule,
+    addModule2,
+    comModule
+  },
   computed: {
     ...mapState(
       {
-        companyId: state => state.info.companyId,
-        userId: state => state.info.userId,
-        orgId: state => state.org.orgId
+        userId: state => state.info.userId
       }
     )
   },
   methods: {
+    /*
+    *  parentModType参数说明：
+    *  1: 新增类型
+    *  2：新增企业
+    *  3：设置（企业、分公司、模块配置）
+    *  4：新增组织（分公司、项目、部门）
+    *  5：编辑组织（项目、部门）
+    *  3-1：设置企业
+    *  3-2：设置分公司
+    *  3-3：模块配置
+    * */
     // 获取机构树
     getOrganTree (b = false) {
       let params = {
@@ -82,9 +154,9 @@ export default{
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           let orgData = res.data.data1
-          this.orgTree = orgData
+          this.orgData = orgData
           if (b) {
-            this.$refs.orgTree.setCheckedKeys([this.orgId])
+            this.$refs.tree.setCheckedKeys([this.orgId])
           }
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
@@ -108,76 +180,96 @@ export default{
         if (this.orgId === data.id) {
           return
         }
-        this.$refs.orgTree.setCheckedKeys([data.id])
+        this.$refs.tree.setCheckedKeys([data.id])
         // 机构类型
-        const type = data.organize_type
-        // 机构参数
-        const org = {
-          orgId: data.id,
-          orgName: data.name,
-          orgType: type,
-          baseId: data.base_id
-        }
-        this.$store.commit('setOrgArgs', org)
-        if (type === 0) {
-          this.addShow = true
-          this.$router.push({ path: '/main/oorgan/empty' })
-        } else if (type === 1) {
-          this.addShow = true
-          this.$store.commit('setOrgConfName', 'comclient')
-          this.$router.push({ path: '/main/oorgan/conffirm/comclient' })
-        } else if (type === 2) {
-          this.addShow = true
-          this.$store.commit('setOrgConfName', 'comclient')
-          this.$router.push({ path: '/main/oorgan/conffirm/comorg' })
-        } else if (type === 4) {
-          this.addShow = false
-          this.$router.push({ path: '/main/oorgan/comorg' })
-        } else {
-          this.addShow = true
-          this.$router.push({ path: '/main/oorgan/comorg' })
-        }
+        this.orgType = data.organize_type
+        // id
+        this.orgId = data.id
+        // name
+        this.orgName = data.name
+        // baseId
+        this.baseId = data.base_id
       } else {
         if (this.orgId === data.id) {
-          this.$refs.orgTree.setCheckedKeys([data.id])
+          this.$refs.tree.setCheckedKeys([data.id])
         }
       }
     },
     orgNodeClick (data, node, self) {
       if (node.checked) return
-      this.$refs.orgTree.setCheckedKeys([data.id])
+      this.$refs.tree.setCheckedKeys([data.id])
       // 机构类型
-      const type = data.organize_type
-      // 机构参数
-      const org = {
-        orgId: data.id,
-        orgName: data.name,
-        orgType: type,
-        baseId: data.base_id
-      }
-      this.$store.commit('setOrgArgs', org)
-      if (type === 0) {
-        this.addShow = true
-        this.$router.push({ path: '/main/oorgan/empty' })
-      } else if (type === 1) {
-        this.addShow = true
-        this.$store.commit('setOrgConfName', 'comclient')
-        this.$router.push({ path: '/main/oorgan/conffirm/comclient' })
-      } else if (type === 2) {
-        this.addShow = true
-        this.$store.commit('setOrgConfName', 'comclient')
-        this.$router.push({ path: '/main/oorgan/conffirm/comorg' })
-      } else if (type === 4) {
-        this.addShow = false
-        this.$router.push({ path: '/main/oorgan/comorg' })
+      this.orgType = data.organize_type
+      // id
+      this.orgId = data.id
+      // name
+      this.orgName = data.name
+      // baseId
+      this.baseId = data.base_id
+    },
+    /* 新增类型 */
+    setAddType (type) {
+      this.addType = type
+      if (type === 1) {
+        this.modType = 2
       } else {
-        this.addShow = true
-        this.$router.push({ path: '/main/oorgan/comorg' })
+        this.modType = 4
+      }
+    },
+    /* 新增企业 */
+    addUpdata1 () {
+      // 刷新树
+      this.getOrganTree(true)
+      // 设置显示模块
+      this.modType = 0
+    },
+    addCancel1 () {
+      // 设置显示模块
+      this.modType = 0
+    },
+    /* 新增组织 */
+    addUpdata2 () {
+      // 刷新树
+      this.getOrganTree(true)
+      // 设置显示模块
+      const type = this.orgType
+      if (type === 1 || type === 2) {
+        this.modType = 3
+      } else {
+        this.modType = 5
+      }
+    },
+    addCancel2 () {
+      // 设置显示模块
+      const type = this.orgType
+      if (type === 1 || type === 2) {
+        this.modType = 3
+      } else {
+        this.modType = 5
       }
     },
     // 刷新树
-    refreshTree () {
+    parentRefresh () {
       this.getOrganTree(true)
+    }
+  },
+  watch: {
+    orgId (val, oldVal) {
+      const type = this.orgType
+      if (type === 0) {
+        this.modType = 0
+      } else if (type === 1 || type === 2) {
+        this.modType = 3
+      } else {
+        this.modType = 5
+      }
+    },
+    orgType (val, oldVal) {
+      if (val === 4) {
+        this.addShow = false
+      } else {
+        this.addShow = true
+      }
     }
   }
 }

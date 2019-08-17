@@ -1,12 +1,12 @@
 <template>
-  <div class="org-item">
-    <h3 class="title">编辑企业</h3>
-    <el-form :model="comForm" :rules="rules" ref="ruleComForm" :label-width="formLabelWidth">
+  <div class="orange-module">
+    <h3 class="module-title">编辑企业</h3>
+    <el-form :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
       <el-form-item label="企业名称" prop="name">
-        <el-input v-model.trim="comForm.name" auto-complete="off"></el-input>
+        <el-input v-model.trim="formData.name" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="联系人" prop="linkman">
-        <el-select style="width: 100%;" v-model="comForm.linkman" filterable placeholder="请选择联系人">
+        <el-select style="width: 100%;" v-model="formData.linkman" filterable placeholder="请选择联系人">
           <el-option
             v-for="item in crewOptions"
             :key="item.user_id"
@@ -17,17 +17,30 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="坐标" prop="coord">
+        <el-input :disabled="true" v-model="formData.coord" style="width: 360px; margin-right: 20px;"></el-input>
+        <el-button type="primary" @click="mapDialog = true">选择坐标</el-button>
+      </el-form-item>
     </el-form>
-    <div class="operate">
-      <el-button type="primary" :disabled="comDisabled" @click="submitComForm('ruleComForm')">保 存</el-button>
+    <div class="module-operate">
+      <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
     </div>
+    <!-- 地图坐标 -->
+    <map-module
+      :parentDialog="mapDialog"
+      :parentCoord="formData.coord"
+      @parentUpdata="mapUpdata"
+      @parentCancel="mapCancel">
+    </map-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入地图组件
+import mapModule from '@/components/company/organ-map'
 export default{
-  name: 'comfirm',
+  props: ['parentOrgId', 'parentOrgType', 'parentBaseId', 'parentModType'],
   data () {
     return {
       formLabelWidth: '100px',
@@ -36,39 +49,38 @@ export default{
           {required: true, message: '请输入企业名称', trigger: 'blur'}
         ],
         linkman: [
-          {required: true, message: '请选择联系人', trigger: 'change'}
+          { required: true, message: '请选择联系人', trigger: 'change' }
         ]
       },
-      comForm: {
+      formData: {
+        parentId: 1,
         name: '',
         linkman: '',
         nature: '',
         area: '',
         trade: '',
         scale: '',
+        coord: '',
         state: 0
       },
-      comDisabled: false,
-      crewOptions: []
+      crewOptions: [],
+      disabled: false,
+      mapDialog: false
     }
   },
   created () {
 
   },
   mounted () {
-    // 获取企业人员
-    this.getCrewOptions()
-    // 获取详情
-    this.getFirmDet()
+
+  },
+  components: {
+    mapModule
   },
   computed: {
     ...mapState(
       {
-        companyId: state => state.info.companyId,
-        userId: state => state.info.userId,
-        orgId: state => state.org.orgId,
-        baseId: state => state.org.baseId,
-        orgType: state => state.org.orgType
+        userId: state => state.info.userId
       }
     )
   },
@@ -76,7 +88,7 @@ export default{
     // 获取人员
     getCrewOptions () {
       let params = {
-        organize_id: this.orgId,
+        organize_id: this.parentOrgId,
         user_name: '',
         user_phone: '',
         role_id: '',
@@ -108,11 +120,11 @@ export default{
       })
     },
     // 获取详情
-    getFirmDet () {
+    getDetails () {
       let params = {
-        base_id: this.baseId,
-        organize_id: this.orgId,
-        organize_type: this.orgType
+        organize_id: this.parentOrgId,
+        organize_type: this.parentOrgType,
+        base_id: this.parentBaseId
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -120,16 +132,17 @@ export default{
         url: this.sysetApi() + '/v3.2/selOrganizeTreeType',
         data: params
       }).then((res) => {
-        this.detDisabled = false
         if (res.data.result === 'Sucess') {
           const itemData = res.data.data1
-          this.comForm = {
+          this.formData = {
+            parentId: 1,
             name: itemData.ogz_name,
             linkman: itemData.ogz_phone,
             nature: itemData.nature,
             area: itemData.area,
             trade: itemData.industry,
             scale: itemData.size,
+            coord: itemData.coordinate || '',
             state: 0
           }
         } else {
@@ -141,7 +154,6 @@ export default{
           })
         }
       }).catch(() => {
-        this.detDisabled = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -150,51 +162,52 @@ export default{
       })
     },
     // 验证表单
-    submitComForm (formName) {
+    submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.sendComRequest()
+          this.sendRequest()
         } else {
           return false
         }
       })
     },
     // 重置表单
-    resetComForm (formName) {
+    resetForm (formName) {
       this.$refs[formName].resetFields()
     },
     // 提交
-    sendComRequest () {
-      const phone = this.comForm.linkman
+    sendRequest () {
+      const phone = this.formData.linkman
       const crewItem = this.crewOptions.find(item => {
         return item.user_phone === phone
       })
       const uname = crewItem.user_name
       let params = {
         user_id: this.userId,
-        base_id: this.baseId,
-        organize_id: this.orgId,
-        organize_type: this.orgType,
-        ogz_name: this.comForm.name,
-        parent_up_id: 1,
+        base_id: this.parentBaseId,
+        organize_id: this.parentOrgId,
+        organize_type: this.parentOrgType,
+        ogz_name: this.formData.name,
+        parent_up_id: this.formData.parentId,
         user_name: uname,
         ogz_phone: phone,
-        nature: this.comForm.nature,
-        area: this.comForm.area,
-        industry: this.comForm.trade,
-        size: this.comForm.scale,
-        ogz_state: this.comForm.state,
+        nature: this.formData.nature,
+        area: this.formData.area,
+        industry: this.formData.trade,
+        size: this.formData.scale,
+        coordinate: this.formData.coord,
+        ogz_state: this.formData.state,
         address: '',
         remarks: ''
       }
       params = this.$qs.stringify(params)
-      this.comDisabled = true
+      this.disabled = true
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/v3.2/altOrganizeTree',
         data: params
       }).then((res) => {
-        this.comDisabled = false
+        this.disabled = false
         if (res.data.result === 'Sucess') {
           this.$message({
             showClose: true,
@@ -202,7 +215,7 @@ export default{
             type: 'success'
           })
           // 刷新树
-          this.$emit('parentChange')
+          this.$emit('parentUpdata')
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -212,38 +225,53 @@ export default{
           })
         }
       }).catch(() => {
-        this.comDisabled = false
+        this.disabled = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
           type: 'error'
         })
       })
+    },
+    /* 地图坐标 */
+    mapUpdata (data) {
+      this.formData.coord = data
+      this.mapDialog = false
+    },
+    mapCancel () {
+      this.mapDialog = false
     }
   },
   watch: {
-    orgId (newVal, oldVal) {
-      // 重置表单
-      this.$refs['ruleComForm'].resetFields()
-      // 获取详情
-      this.getOrganDet()
+    parentOrgId (val, old) {
+      const modType = this.parentModType
+      if (modType === 6) {
+        // 重置表单
+        this.resetForm('ruleForm')
+        // 获取详情
+        this.getDetails()
+        // 获取人员
+        if (this.crewOptions.length === 0) {
+          this.getCrewOptions()
+        }
+      }
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-  .org-item{
+  .orange-module{
     width: 600px;
     margin: 0 auto;
-    .title {
+    .module-title{
       height: 60px;
       text-align: center;
       line-height: 60px;
       font-size: 16px;
       font-weight: 600;
     }
-    .operate {
+    .module-operate {
       margin-top: 50px;
       text-align: center;
     }

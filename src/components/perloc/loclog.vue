@@ -58,7 +58,10 @@
           prev-text="上一页"
           next-text="下一页"
           :current-page="nowPage"
-          layout="prev, pager, next, total"
+          layout="sizes, prev, pager, next, total"
+          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+          :page-size="limit"
+          @size-change="handleSizeChange"
           @current-change="pageChang"
           :total="total">
         </el-pagination>
@@ -195,6 +198,18 @@ export default{
           type: 'error'
         })
       })
+    },
+    // 切换单页大小
+    handleSizeChange (limit) {
+      // 设置大小
+      this.limit = limit
+      // 初始化页码
+      this.nowPage = 1
+      // 更新列表数据
+      const start = this.nowPage * this.limit - this.limit
+      const end = this.nowPage * this.limit
+      const tableData = this.logData.slice(start, end)
+      this.tableData = tableData
     },
     // 点击分页
     pageChang (page) {

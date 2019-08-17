@@ -66,39 +66,11 @@
               </div>
             </div>
           </div>
-          <el-table class="list-table" :data="tableAllData" border style="width: 100%" v-show="orgType !== 3">
+          <el-table class="list-table" :data="tableData" border :summary-method="getSummaries" show-summary style="width: 100%">
             <el-table-column fixed type="index" width="50" label="序号"></el-table-column>
-            <el-table-column fixed prop="organize_name" label="机构名称" :show-overflow-tooltip="true" width="150"></el-table-column>
+            <el-table-column fixed :prop="tablePropName" :label="tableLabelName" :show-overflow-tooltip="true" width="150"></el-table-column>
             <el-table-column prop="positionSize" label="地址数" width="120"></el-table-column>
-            <el-table-column prop="insSize" label="关联任务数" width="120"></el-table-column>
-            <el-table-column prop="continueSize" label="完成次数" width="120"></el-table-column>
-            <el-table-column prop="notContinueSize" label="未完成次数" width="120"></el-table-column>
-            <el-table-column label="完成率" width="100">
-              <template slot-scope="scope">
-                <span>{{ scope.row.continueRate | formatPercent }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="ontimeSize" label="完成及时数" width="120"></el-table-column>
-            <el-table-column prop="outtimeSize" label="完成超时数" width="120"></el-table-column>
-            <el-table-column label="完成及时率" width="120">
-              <template slot-scope="scope">
-                <span>{{ scope.row.ontimeRate | formatPercent }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="approvalSize" label="审批数" width="100"></el-table-column>
-            <el-table-column prop="approvalPassSize" label="审批通过数" width="120"></el-table-column>
-            <el-table-column label="审批通过率" width="120">
-              <template slot-scope="scope">
-                <span>{{ scope.row.passRate | formatPercent }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="putwoSize" label="提单数" width="100"></el-table-column>
-          </el-table>
-          <el-table class="list-table" :data="tableDetData" border style="width: 100%" v-show="orgType === 3">
-            <el-table-column fixed type="index" width="50" label="序号"></el-table-column>
-            <el-table-column prop="plan_name" label="任务名称" :show-overflow-tooltip="true" width="120"></el-table-column>
-            <el-table-column prop="positionSize" label="地址数" width="120"></el-table-column>
-            <el-table-column prop="dutySize" label="关联任务数" width="120"></el-table-column>
+            <el-table-column :prop="tablePropRel" label="关联任务数" width="120"></el-table-column>
             <el-table-column prop="continueSize" label="完成次数" width="120"></el-table-column>
             <el-table-column prop="notContinueSize" label="未完成次数" width="120"></el-table-column>
             <el-table-column label="完成率" width="100">
@@ -127,7 +99,10 @@
             prev-text="上一页"
             next-text="下一页"
             :current-page="nowPage"
-            layout="prev, pager, next, total"
+            layout="sizes, prev, pager, next, total"
+            :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+            :page-size="limit"
+            @size-change="handleSizeChange"
             @current-change="pageChang"
             :total="total">
           </el-pagination>
@@ -158,9 +133,13 @@ export default{
         children: 'children',
         label: 'name'
       },
-      allData: [],
       tableAllData: [],
-      tableDetData: [],
+      tableData: [],
+      // tableAllData: [],
+      // tableDetData: [],
+      tableLabelName: '机构名称',
+      tablePropName: 'organize_name',
+      tablePropRel: 'insSize',
       total: 0,
       nowPage: 1,
       limit: 10,
@@ -186,9 +165,15 @@ export default{
     if (this.orgId) {
       this.downDisabled = false
       if (this.orgType === 3) {
+        this.tableLabelName = '任务名称'
+        this.tablePropName = 'plan_name'
+        this.tablePropRel = 'dutySize'
         // 获取列表详情数据
         this.getListDetData()
       } else {
+        this.tableLabelName = '机构名称'
+        this.tablePropName = 'organize_name'
+        this.tablePropRel = 'insSize'
         // 获取列表汇总数据
         this.getListAllData()
       }
@@ -361,6 +346,7 @@ export default{
     },
     // 获取列表数据
     getListAllData () {
+      if (!this.orgId) return
       let params = {
         organize_id: this.orgId,
         seltype: this.orgType,
@@ -380,11 +366,11 @@ export default{
         this.loading = false
         if (res.data.result === 'Sucess') {
           // this.total = res.data.data1.total
-          const allData = res.data.data1.message
-          this.total = allData.length
-          this.allData = allData
-          const tableData = allData.slice(0, this.limit)
-          this.tableAllData = tableData
+          const tableAllData = res.data.data1.message
+          this.total = tableAllData.length
+          this.tableAllData = tableAllData
+          const tableData = tableAllData.slice(0, this.limit)
+          this.tableData = tableData
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -403,6 +389,7 @@ export default{
       })
     },
     getListDetData () {
+      if (!this.orgId) return
       let params = {
         project_id: this.proId,
         plan_name: this.search.name,
@@ -421,7 +408,7 @@ export default{
         this.loading = false
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
-          this.tableDetData = res.data.data1.insTasks
+          this.tableData = res.data.data1.insTasks
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -439,6 +426,112 @@ export default{
         })
       })
     },
+    // 合计表格规则设置
+    getSummaries (param) {
+      const { columns, data } = param
+      const sums = []
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计'
+          return
+        }
+        if (index === 1) {
+          sums[index] = '-'
+          return
+        }
+        if (index === 6) {
+          const values = data.map(item => Number(item.continueRate))
+          if (!values.every(value => isNaN(value))) {
+            let sum = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+            const size = data.length
+            let average = sum / size
+            average = Math.round(average * 100)
+            sums[index] = average + '%'
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        if (index === 9) {
+          const values = data.map(item => Number(item.ontimeRate))
+          if (!values.every(value => isNaN(value))) {
+            let sum = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+            const size = data.length
+            let average = sum / size
+            average = Math.round(average * 100)
+            sums[index] = average + '%'
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        if (index === 12) {
+          const values = data.map(item => Number(item.passRate))
+          if (!values.every(value => isNaN(value))) {
+            let sum = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+            const size = data.length
+            let average = sum / size
+            average = Math.round(average * 100)
+            sums[index] = average + '%'
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        const vals = data.map(item => Number(item[column.property]))
+        if (!vals.every(value => isNaN(value))) {
+          sums[index] = vals.reduce((prev, curr) => {
+            const value = Number(curr)
+            if (!isNaN(value)) {
+              return prev + curr
+            } else {
+              return prev
+            }
+          })
+        } else {
+          sums[index] = ''
+        }
+      })
+      return sums
+    },
+    // 切换单页大小
+    handleSizeChange (limit) {
+      // 设置大小
+      this.limit = limit
+      // 初始化页码
+      this.nowPage = 1
+      if (this.orgType === 3) {
+        // 获取列表详情数据
+        this.getListDetData()
+      } else {
+        // 获取列表
+        const start = this.nowPage * limit - limit
+        const end = this.nowPage * limit
+        const tableData = this.tableAllData.slice(start, end)
+        this.tableData = tableData
+      }
+    },
     // 点击分页
     pageChang (page) {
       this.nowPage = page
@@ -449,8 +542,8 @@ export default{
         // 获取列表
         const start = page * this.limit - this.limit
         const end = page * this.limit
-        const tableData = this.allData.slice(start, end)
-        this.tableAllData = tableData
+        const tableData = this.tableAllData.slice(start, end)
+        this.tableData = tableData
       }
     },
     /* 导出文件 */
@@ -497,6 +590,17 @@ export default{
         this.downDisabled = false
       } else {
         this.downDisabled = true
+      }
+    },
+    orgType (val, oldVal) {
+      if (val === 3) {
+        this.tableLabelName = '任务名称'
+        this.tablePropName = 'plan_name'
+        this.tablePropRel = 'dutySize'
+      } else {
+        this.tableLabelName = '机构名称'
+        this.tablePropName = 'organize_name'
+        this.tablePropRel = 'insSize'
       }
     }
   }

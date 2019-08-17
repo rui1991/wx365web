@@ -20,7 +20,6 @@
       <el-checkbox v-model="checked" class="left save">记住密码</el-checkbox>
       <router-link :to="{ name: 'authcode'}" class="right switch">切换至验证码登录<i class="el-icon-d-arrow-right"></i></router-link>
     </div>
-
     <div class="login-btn">
       <el-button @click="verifyLogin">登  录</el-button>
     </div>

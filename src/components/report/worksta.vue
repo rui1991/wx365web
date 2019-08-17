@@ -66,7 +66,7 @@
               </div>
             </div>
           </div>
-          <el-table class="list-table" :data="tableData" border style="width: 100%">
+          <el-table class="list-table" :data="tableData" border :summary-method="getSummaries" show-summary style="width: 100%">
             <el-table-column fixed type="index" width="50" label="序号"></el-table-column>
             <el-table-column fixed prop="project_name" label="机构名称" width="150"></el-table-column>
             <el-table-column prop="user_name" label="员工名称" width="120"></el-table-column>
@@ -105,18 +105,16 @@
                 <span>{{ scope.row.sumWorkingHours | formatInteger }}</span>
               </template>
             </el-table-column>
-            <!--<el-table-column label="平均评价" width="120">-->
-            <!--<template slot-scope="scope">-->
-            <!--<span>{{ scope.row.avgComments | formatInteger }}</span>-->
-            <!--</template>-->
-            <!--</el-table-column>-->
           </el-table>
           <el-pagination
             background
             prev-text="上一页"
             next-text="下一页"
             :current-page="nowPage"
-            layout="prev, pager, next, total"
+            layout="sizes, prev, pager, next, total"
+            :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+            :page-size="limit"
+            @size-change="handleSizeChange"
             @current-change="pageChang"
             :total="total">
           </el-pagination>
@@ -328,6 +326,7 @@ export default{
     },
     // 获取列表数据
     getListData () {
+      if (!this.orgId) return
       let params = {
         organize_id: this.orgId,
         project_name: '',
@@ -364,6 +363,160 @@ export default{
           type: 'error'
         })
       })
+    },
+    // 合计表格规则设置
+    getSummaries (param) {
+      const { columns, data } = param
+      const sums = []
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计'
+          return
+        }
+        if (index === 1 || index === 2) {
+          sums[index] = '-'
+          return
+        }
+        if (index === 8) {
+          const values = data.map(item => Number(item.continueRate))
+          if (!values.every(value => isNaN(value))) {
+            let sum = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+            const size = data.length
+            let average = sum / size
+            average = Math.round(average * 100)
+            sums[index] = average + '%'
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        if (index === 9) {
+          const values = data.map(item => Number(item.outtimeRate))
+          if (!values.every(value => isNaN(value))) {
+            let sum = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+            const size = data.length
+            let average = sum / size
+            average = Math.round(average * 100)
+            sums[index] = average + '%'
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        if (index === 10) {
+          const values = data.map(item => Number(item.backRate))
+          if (!values.every(value => isNaN(value))) {
+            let sum = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+            const size = data.length
+            let average = sum / size
+            average = Math.round(average * 100)
+            sums[index] = average + '%'
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        if (index === 11) {
+          const values = data.map(item => Number(item.avgResponseTime))
+          if (!values.every(value => isNaN(value))) {
+            let sum = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+            const size = data.length
+            let average = sum / size
+            average = Math.round(average)
+            sums[index] = average
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        if (index === 12) {
+          const values = data.map(item => Number(item.avgProcessingTime))
+          if (!values.every(value => isNaN(value))) {
+            let sum = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+            const size = data.length
+            let average = sum / size
+            average = Math.round(average)
+            sums[index] = average
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        if (index === 13) {
+          const values = data.map(item => Number(item.sumWorkingHours))
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            })
+          } else {
+            sums[index] = ''
+          }
+          return
+        }
+        const vals = data.map(item => Number(item[column.property]))
+        if (!vals.every(value => isNaN(value))) {
+          sums[index] = vals.reduce((prev, curr) => {
+            const value = Number(curr)
+            if (!isNaN(value)) {
+              return prev + curr
+            } else {
+              return prev
+            }
+          })
+        } else {
+          sums[index] = ''
+        }
+      })
+      return sums
+    },
+    // 切换单页大小
+    handleSizeChange (limit) {
+      // 设置大小
+      this.limit = limit
+      // 初始化页码
+      this.nowPage = 1
+      // 获取列表数据
+      this.getListData()
     },
     // 点击分页
     pageChang (page) {
