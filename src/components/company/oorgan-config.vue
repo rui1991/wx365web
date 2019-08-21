@@ -16,7 +16,7 @@
 <script>
 import { mapState } from 'vuex'
 export default{
-  props: ['parentOrgId', 'parentBaseId', 'parentModType'],
+  props: ['parentOrgId', 'parentBaseId'],
   data () {
     return {
       treeData: [],
@@ -29,6 +29,10 @@ export default{
   },
   created () {
 
+  },
+  mounted () {
+    // 获取权限树
+    this.getTreeData()
   },
   computed: {
     ...mapState(
@@ -145,15 +149,9 @@ export default{
     }
   },
   watch: {
-    parentModType (val, old) {
-      if (val === 3) {
-        if (this.treeData.length === 0) {
-          // 获取权限树
-          this.getTreeData()
-        }
-        // 获取企业权限
-        this.getAuthority()
-      }
+    parentOrgId (val, old) {
+      // 获取企业权限
+      this.getAuthority()
     }
   }
 }

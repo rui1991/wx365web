@@ -393,7 +393,7 @@ export default{
     addUpdata () {
       this.addDialog = false
       // 更新列表
-      this.searchList()
+      this.getListData()
     },
     addCancel () {
       this.addDialog = false
@@ -414,7 +414,7 @@ export default{
     comUpdata () {
       this.comDialog = false
       // 更新列表
-      this.searchList()
+      this.getListData()
     },
     comCancel () {
       this.comDialog = false
@@ -428,7 +428,7 @@ export default{
     bindUpdata () {
       this.bindDialog = false
       // 更新列表
-      this.searchList()
+      this.getListData()
     },
     bindCancel () {
       this.bindDialog = false
@@ -443,7 +443,7 @@ export default{
     untieUpdata () {
       this.untieDialog = false
       // 更新列表
-      this.searchList()
+      this.getListData()
     },
     untieCancel () {
       this.untieDialog = false
@@ -456,7 +456,7 @@ export default{
     delUpdata () {
       this.delDialog = false
       // 更新列表
-      this.searchList()
+      this.getListData()
     },
     delCancel () {
       this.delDialog = false
@@ -468,7 +468,7 @@ export default{
     upUpdata () {
       this.upDialog = false
       // 更新列表
-      this.searchList()
+      this.getListData()
     },
     upClose () {
       this.upDialog = false

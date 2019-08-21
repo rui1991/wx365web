@@ -713,7 +713,7 @@ export default{
     checkHistory (data) {
     // :to="{ name: 'abnormalHistory', params:{pos: scope.row.position_id, tem: scope.row.ins_id}}
       this.$router.push({
-        name: 'abnormalHistory',
+        path: '/main/abnormal-history',
         query: {
           pos: data.position_id,
           tem: data.ins_id

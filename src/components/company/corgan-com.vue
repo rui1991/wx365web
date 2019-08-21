@@ -40,7 +40,7 @@ import { mapState } from 'vuex'
 // 引入地图组件
 import mapModule from '@/components/company/organ-map'
 export default{
-  props: ['parentOrgId', 'parentOrgType', 'parentBaseId', 'parentModType'],
+  props: ['parentOrgId', 'parentOrgType', 'parentBaseId'],
   data () {
     return {
       formLabelWidth: '100px',
@@ -72,7 +72,10 @@ export default{
 
   },
   mounted () {
-
+    // 获取详情
+    this.getDetails()
+    // 获取人员
+    this.getCrewOptions()
   },
   components: {
     mapModule
@@ -171,10 +174,6 @@ export default{
         }
       })
     },
-    // 重置表单
-    resetForm (formName) {
-      this.$refs[formName].resetFields()
-    },
     // 提交
     sendRequest () {
       const phone = this.formData.linkman
@@ -240,21 +239,6 @@ export default{
     },
     mapCancel () {
       this.mapDialog = false
-    }
-  },
-  watch: {
-    parentOrgId (val, old) {
-      const modType = this.parentModType
-      if (modType === 6) {
-        // 重置表单
-        this.resetForm('ruleForm')
-        // 获取详情
-        this.getDetails()
-        // 获取人员
-        if (this.crewOptions.length === 0) {
-          this.getCrewOptions()
-        }
-      }
     }
   }
 }

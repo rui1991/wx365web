@@ -62,7 +62,7 @@
           <el-table-column type="index" width="50" label="序号"></el-table-column>
           <el-table-column label="计划名称">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="details blue" @click="checkDetails(scope.row.plan_id)">{{ scope.row.plan_name }}</a>
+              <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row.plan_id)">{{ scope.row.plan_name }}</a>
             </template>
           </el-table-column>
           <el-table-column label="执行部门" :show-overflow-tooltip="true">
@@ -88,7 +88,7 @@
           <el-table-column prop="end_date" label="结束时间"></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <router-link class="operate com" :to="{ name: 'planCom', query:{id: scope.row.plan_id}}" v-if="authority.com">编辑</router-link>
+              <router-link class="operate com" :to="{ path: '/main/plan-com', query:{id: scope.row.plan_id}}" v-if="authority.com">编辑</router-link>
               <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.plan_id)">删除</a>
             </template>
           </el-table-column>
@@ -108,102 +108,12 @@
       </el-main>
     </el-container>
     <!-- 详情 -->
-    <el-dialog title="计划详情" :visible.sync="detDialog" :show-close="false" :close-on-click-modal="false" custom-class="large-dialog">
-      <el-form :model="detForm" :label-width="formLabelWidth">
-        <el-form-item class="one-form" label="计划名称">
-          <el-input :disabled="true" v-model="detForm.name"></el-input>
-        </el-form-item>
-        <div class="two-form">
-          <el-form-item class="item" label="所属项目">
-            <el-input :disabled="true" v-model="detForm.project"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="执行组" v-if="detForm.group">
-            <el-input :disabled="true" v-model="detForm.group"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="执行部门" v-else>
-            <el-input :disabled="true" v-model="detForm.sector"></el-input>
-          </el-form-item>
-        </div>
-        <div class="two-form">
-          <el-form-item class="item" label="开始日期">
-            <el-input :disabled="true" v-model="detForm.startDate"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="结束日期">
-            <el-input :disabled="true" v-model="detForm.endDate"></el-input>
-          </el-form-item>
-        </div>
-        <div class="two-form">
-          <el-form-item class="item" label="审批状态">
-            <el-input :disabled="true" v-model="detForm.disState"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="审批时间">
-            <el-input :disabled="true" v-model="detForm.disTime"></el-input>
-          </el-form-item>
-        </div>
-      </el-form>
-      <div class="content">
-        <div class="item">
-          <span class="item-title">任务模式</span>
-          <p>{{detForm.pattern}}</p>
-        </div>
-        <div class="item" v-if="!detForm.group">
-          <span class="item-title">执行频次</span>
-          <p>{{detForm.frequency}}</p>
-        </div>
-        <div class="task" v-if="!detForm.whetherMore && !detForm.group">
-          <div class="task-item" v-for="(item, index) in detForm.crews" :key="index">
-            <span class="item-title">任务{{index+1}}</span>
-            <el-input style="width: 200px;" :disabled="true" :value="item"></el-input>
-          </div>
-        </div>
-        <div class="item" v-if="detForm.whetherMore">
-          <span class="item-title">周期</span>
-          <p>{{detForm.period}}</p>
-        </div>
-        <div class="frame" v-if="detForm.whetherMore">
-          <p class="item-title">执行时段</p>
-          <div class="times">
-            <div class="time" v-for="(item, index) in detForm.timeFrame" :key="index">
-              <div class="nape">
-                <span class="nape-title">开始时间</span>
-                <el-input style="width: 120px;" :disabled="true" :value="item.startTime"></el-input>
-              </div>
-              <div class="nape">
-                <span class="nape-title">结束时间</span>
-                <el-input style="width: 120px;" :disabled="true" v-model="item.endTime"></el-input>
-              </div>
-              <div class="nape" v-if="!detForm.group">
-                <span class="nape-title">执行人员</span>
-                <el-input style="width: 120px;" :disabled="true" v-model="item.crew"></el-input>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="item" v-if="detForm.whetherMore">
-          <span class="item-title">巡检顺序</span>
-          <p>{{detForm.order}}</p>
-        </div>
-      </div>
-      <el-collapse>
-        <div class="item" v-for="(item, index) in detForm.posData" :key="item.position_id">
-          <p class="title" style="width: 580px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">{{item.position_name}}</p>
-          <div v-if="item.template_id">
-            <el-collapse-item :title="item.template_name" :name="index">
-              <el-table class="show-table" :data="item.template.inss" style="width: 100%">
-                <el-table-column prop="ins_name" label="检查项" width="80"></el-table-column>
-                <el-table-column prop="ins_method" label="检查方法" class-name="multi-row"></el-table-column>
-                <el-table-column prop="check_content" label="检查内容及要求" class-name="multi-row"></el-table-column>
-                <el-table-column prop="alarm_level" label="报警等级" width="80"></el-table-column>
-              </el-table>
-            </el-collapse-item>
-          </div>
-          <p class="norm-hint" v-else>无关联标准模板</p>
-        </div>
-      </el-collapse>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="detDialog = false">关 闭</el-button>
-      </div>
-    </el-dialog>
+    <det-module
+      :parentDialog="detDialog"
+      :parentPro="nowProid"
+      :parentId="itemId"
+      @parentClose="detClose">
+    </det-module>
     <!-- 删除 -->
     <el-dialog title="提示" :visible.sync="delDialog" :show-close="false" :close-on-click-modal="false" custom-class="hint-dialog">
       <p class="hint-text"><i class="el-icon-warning"></i>是否要删除该计划？</p>
@@ -217,6 +127,8 @@
 
 <script>
 import { mapState } from 'vuex'
+// 引入详情组件
+import detModule from '@/components/polling/plan-det'
 export default{
   name: 'plan',
   data () {
@@ -279,6 +191,9 @@ export default{
     autDet.indexOf(30) === -1 ? this.authority.add = false : this.authority.add = true
     autDet.indexOf(31) === -1 ? this.authority.com = false : this.authority.com = true
     autDet.indexOf(34) === -1 ? this.authority.del = false : this.authority.del = true
+  },
+  components: {
+    detModule
   },
   computed: {
     ...mapState(
@@ -403,159 +318,12 @@ export default{
       this.$router.push({ path: '/main/plan-add' })
     },
     /* 详情 */
-    checkDetails (id) {
+    detClick (id) {
+      this.itemId = id
       this.detDialog = true
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        plan_id: id
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/inspection/v3.7.3/selInsOnly',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const itemData = res.data.data1
-          // 计划名称
-          this.detForm.name = itemData.plan_name
-          // 所属项目
-          this.detForm.project = this.nowProname
-          // 操作角色
-          this.detForm.sector = itemData.ogz_name || ''
-          // 操作组
-          this.detForm.group = itemData.group_name || ''
-          // 开始日期
-          this.detForm.startDate = itemData.start_date
-          // 结束日期
-          this.detForm.endDate = itemData.end_date
-          // 任务模式
-          const patternNum = itemData.plan_model
-          let pattern = ''
-          // 频次
-          let frequency = ''
-          // 是否一天多次
-          let whetherMore = false
-          if (patternNum === 0) {
-            pattern = '循环任务'
-            // 频率
-            const freNum = itemData.frequency
-            // 单位
-            const unit = itemData.unit
-            // 次数
-            const degree = itemData.frequency1
-            frequency = freNum + unit + degree + '次'
-            // 是否一天多次
-            if (freNum === 1 && unit === '天') {
-              whetherMore = true
-            }
-          } else if (patternNum === 1) {
-            pattern = '单次任务'
-          }
-          this.detForm.pattern = pattern
-          // 频次
-          this.detForm.frequency = frequency
-          // 是否一天多次
-          this.detForm.whetherMore = whetherMore
-          // 人员
-          const crewData = itemData.users
-          let crews = []
-          crewData.forEach(item => {
-            crews.push(item.user_name)
-          })
-          this.detForm.crews = crews
-          // 周期
-          let periodNum = itemData.cycle
-          if (periodNum) {
-            periodNum = periodNum.split('/')
-          } else {
-            periodNum = []
-          }
-          const periodAry = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
-          let period = []
-          periodNum.forEach(item => {
-            let num = parseInt(item)
-            period.push(periodAry[num])
-          })
-          period = period.join(' ')
-          this.detForm.period = period
-          // 时段
-          let timeFrame = []
-          let times = itemData.times
-          times = times.split('/')
-          times.forEach((item, index) => {
-            const timeItem = item.split('-')
-            const timeFrameItem = {
-              startTime: timeItem[0],
-              endTime: timeItem[1],
-              crew: crews[index]
-            }
-            timeFrame.push(timeFrameItem)
-          })
-          this.detForm.timeFrame = timeFrame
-          // 点位顺序
-          const orderNum = itemData.po_desc
-          let order = ''
-          if (orderNum === 0) {
-            order = '随机顺序'
-          } else if (orderNum === 1) {
-            order = '固定顺序'
-          }
-          this.detForm.order = order
-          // 点位
-          let position = itemData.positions
-          position = position.join(',')
-          this.detForm.posData = []
-          this.getPosData(position)
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
     },
-    // 地址
-    getPosData (ids) {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        position_ids: ids
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/inspection/selInsSetPositionsTemplate',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          this.detForm.posData = res.data.data1
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    detClose () {
+      this.detDialog = false
     },
     /* 删除 */
     delClick (id) {

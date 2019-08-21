@@ -50,7 +50,7 @@ import { mapState } from 'vuex'
 // 引入地图组件
 import mapModule from '@/components/company/organ-map'
 export default{
-  props: ['parentOrgId', 'parentOrgName', 'parentAddType', 'parentModType'],
+  props: ['parentOrgId', 'parentOrgName', 'parentAddType'],
   data () {
     return {
       titleName: '新增机构',
@@ -82,6 +82,26 @@ export default{
   created () {
 
   },
+  mounted () {
+    // 判断组织类型
+    const addType = this.parentAddType
+    if (addType === 2) {
+      this.titleName = '新增分公司'
+      this.name = '分公司名称'
+      this.mesHint = '分公司新增成功！'
+      this.filiale = true
+    } else if (addType === 3) {
+      this.titleName = '新增项目'
+      this.name = '项目名称'
+      this.mesHint = '项目新增成功！'
+      this.filiale = false
+    } else if (addType === 4) {
+      this.titleName = '新增部门'
+      this.name = '部门名称'
+      this.mesHint = '部门新增成功！'
+      this.filiale = false
+    }
+  },
   components: {
     mapModule
   },
@@ -93,29 +113,6 @@ export default{
     )
   },
   methods: {
-    // 初始化数据
-    addInit () {
-      // 重置表单
-      this.resetForm('ruleForm')
-      // 判断组织类型
-      const type = this.parentAddType
-      if (type === 2) {
-        this.titleName = '新增分公司'
-        this.name = '分公司名称'
-        this.mesHint = '分公司新增成功！'
-        this.filiale = true
-      } else if (type === 3) {
-        this.titleName = '新增项目'
-        this.name = '项目名称'
-        this.mesHint = '项目新增成功！'
-        this.filiale = false
-      } else if (type === 4) {
-        this.titleName = '新增部门'
-        this.name = '部门名称'
-        this.mesHint = '部门新增成功！'
-        this.filiale = false
-      }
-    },
     // 验证表单
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
@@ -125,10 +122,6 @@ export default{
           return false
         }
       })
-    },
-    // 重置表单
-    resetForm (formName) {
-      this.$refs[formName].resetFields()
     },
     // 提交
     sendRequest () {
@@ -188,14 +181,6 @@ export default{
     },
     mapCancel () {
       this.mapDialog = false
-    }
-  },
-  watch: {
-    parentModType (val, old) {
-      if (val === 4) {
-        // 初始化数据
-        this.addInit()
-      }
     }
   }
 }

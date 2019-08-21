@@ -7,26 +7,25 @@
     </el-tabs>
     <div class="content">
       <com-module1
+        v-if="parentOrgType === 1"
         v-show="modType === 1"
         :parentOrgId= "parentOrgId"
         :parentOrgType= "parentOrgType"
         :parentBaseId= "parentBaseId"
-        :parentModType= "modType"
         @parentUpdata="upData">
       </com-module1>
       <com-module2
+        v-if="parentOrgType === 2"
         v-show="modType === 2"
         :parentOrgId= "parentOrgId"
         :parentOrgType= "parentOrgType"
         :parentBaseId= "parentBaseId"
-        :parentModType= "modType"
         @parentUpdata="upData">
       </com-module2>
       <config-module
         v-show="modType === 3"
         :parentOrgId= "parentOrgId"
-        :parentBaseId= "parentBaseId"
-        :parentModType= "modType">
+        :parentBaseId= "parentBaseId">
       </config-module>
     </div>
   </div>
@@ -40,7 +39,7 @@ import comModule2 from '@/components/company/oorgan-com2'
 // 引入新增类型组件
 import configModule from '@/components/company/oorgan-config'
 export default{
-  props: ['parentOrgId', 'parentOrgType', 'parentBaseId', 'parentModType'],
+  props: ['parentOrgId', 'parentOrgType', 'parentBaseId'],
   data () {
     return {
       activeName: 'company',
@@ -49,6 +48,14 @@ export default{
   },
   created () {
 
+  },
+  mounted () {
+    const orgType = this.parentOrgType
+    if (orgType === 1) {
+      this.modType = 1
+    } else if (orgType === 2) {
+      this.modType = 2
+    }
   },
   components: {
     comModule1,
@@ -61,10 +68,10 @@ export default{
       if (tab.name === 'config') {
         this.modType = 3
       } else {
-        const type = this.parentOrgType
-        if (type === 1) {
+        const orgType = this.parentOrgType
+        if (orgType === 1) {
           this.modType = 1
-        } else if (type === 2) {
+        } else if (orgType === 2) {
           this.modType = 2
         }
       }
@@ -75,27 +82,11 @@ export default{
   },
   watch: {
     parentOrgId (val, old) {
-      if (this.parentModType === 3) {
-        this.activeName = 'company'
-        const type = this.parentOrgType
-        if (type === 1) {
-          this.modType = 1
-        } else if (type === 2) {
-          this.modType = 2
-        }
-      }
-    },
-    parentModType (val, old) {
-      if (val !== 3) {
-        this.modType = 0
-      } else {
-        this.activeName = 'company'
-        const type = this.parentOrgType
-        if (type === 1) {
-          this.modType = 1
-        } else if (type === 2) {
-          this.modType = 2
-        }
+      const orgType = this.parentOrgType
+      if (orgType === 1) {
+        this.modType = 1
+      } else if (orgType === 2) {
+        this.modType = 2
       }
     }
   }

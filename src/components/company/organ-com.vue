@@ -1,6 +1,6 @@
 <template>
   <div class="orange-module">
-    <h3 class="module-title" v-show="titleShow">{{ titleName }}</h3>
+    <h3 class="module-title">{{ titleName }}</h3>
     <el-form :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
       <el-form-item :label="name" prop="name">
         <el-input v-model.trim="formData.name" auto-complete="off"></el-input>
@@ -58,10 +58,9 @@ import mapModule from '@/components/company/organ-map'
 // 引入上级机构选择组件
 import parentModule from '@/components/company/organ-parent'
 export default{
-  props: ['parentOrgId', 'parentOrgType', 'parentBaseId', 'parentModType'],
+  props: ['parentOrgId', 'parentOrgType', 'parentBaseId'],
   data () {
     return {
-      titleShow: false,
       titleName: '编辑机构',
       name: '机构名称',
       mesHint: '机构编辑成功！',
@@ -95,6 +94,30 @@ export default{
   created () {
 
   },
+  mounted () {
+    // 获取详情
+    this.getDetails()
+    const orgType = this.parentOrgType
+    if (orgType === 2) {
+      this.titleName = '编辑分公司'
+      this.name = '分公司名称'
+      this.mesHint = '分公司编辑成功！'
+      this.filiale = true
+      this.parentDisabled = true
+    } else if (orgType === 3) {
+      this.titleName = '编辑项目'
+      this.name = '项目名称'
+      this.mesHint = '项目编辑成功！'
+      this.filiale = false
+      this.parentDisabled = false
+    } else if (orgType === 4) {
+      this.titleName = '编辑部门'
+      this.name = '部门名称'
+      this.mesHint = '部门编辑成功！'
+      this.filiale = false
+      this.parentDisabled = false
+    }
+  },
   components: {
     mapModule,
     parentModule
@@ -102,46 +125,11 @@ export default{
   computed: {
     ...mapState(
       {
-        companyId: state => state.info.companyId,
         userId: state => state.info.userId
       }
     )
   },
   methods: {
-    // 初始化数据
-    comInit () {
-      // 重置表单
-      this.resetForm('ruleForm')
-      // 获取详情
-      this.getDetails()
-      // 判断组织类型
-      const type = this.parentOrgType
-      if (type === 2) {
-        this.titleName = '编辑分公司'
-        this.name = '分公司名称'
-        this.mesHint = '分公司编辑成功！'
-        this.filiale = true
-        this.parentDisabled = true
-      } else if (type === 3) {
-        this.titleName = '编辑项目'
-        this.name = '项目名称'
-        this.mesHint = '项目编辑成功！'
-        this.filiale = false
-        this.parentDisabled = false
-      } else if (type === 4) {
-        this.titleName = '编辑部门'
-        this.name = '部门名称'
-        this.mesHint = '部门编辑成功！'
-        this.filiale = false
-        this.parentDisabled = false
-      }
-      // 判断企业
-      if (this.companyId === 1 && type === 2) {
-        this.titleShow = false
-      } else {
-        this.titleShow = true
-      }
-    },
     // 获取详情
     getDetails () {
       let params = {
@@ -271,11 +259,10 @@ export default{
   },
   watch: {
     parentOrgId (val, old) {
-      const modType = this.parentModType
-      if (modType === 5) {
-        // 初始化数据
-        this.comInit()
-      }
+      // 重置表单
+      this.resetForm('ruleForm')
+      // 获取详情
+      this.getDetails()
     }
   }
 }

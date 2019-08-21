@@ -66,14 +66,12 @@ Vue.prototype.$common = common
 Vue.prototype.baseUrl = () => 'http://szydak.eicp.net:82'
 Vue.prototype.sysetApi = () => 'http://szydak.eicp.net:82/ezx_syset'
 Vue.prototype.reportApi = () => 'http://szydak.eicp.net:8089'
-// Vue.prototype.locationApi = () => 'http://szydak.eicp.net:82/ezx_location'
 
 // Vue.prototype.locationApi = () => '/apiUrl/ezx_location'
 
 // Vue.prototype.baseUrl = () => 'http://www.allsps.com'
 // Vue.prototype.sysetApi = () => 'http://www.allsps.com/ezx_syset'
 // Vue.prototype.reportApi = () => 'http://www.allsps.com:8089'
-// Vue.prototype.locationApi = () => 'http://www.allsps.com/ezx_location'
 Vue.prototype.videoApi = () => 'http://www.allsps.com:8083'
 
 Vue.config.productionTip = false

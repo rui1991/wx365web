@@ -24,7 +24,7 @@
 
 <script>
 export default{
-  props: ['parentOrgType', 'parentModType'],
+  props: ['parentOrgType'],
   data () {
     return {
       client: false,
@@ -35,6 +35,35 @@ export default{
   },
   created () {
 
+  },
+  mounted () {
+    const type = this.parentOrgType
+    if (type === 0) {
+      this.client = true
+      this.firm = false
+      this.project = false
+      this.sector = true
+    } else if (type === 1) {
+      this.client = false
+      this.firm = true
+      this.project = true
+      this.sector = true
+    } else if (type === 2) {
+      this.client = false
+      this.firm = false
+      this.project = true
+      this.sector = true
+    } else if (type === 3) {
+      this.client = false
+      this.firm = false
+      this.project = false
+      this.sector = true
+    } else {
+      this.client = false
+      this.firm = false
+      this.project = false
+      this.sector = false
+    }
   },
   methods: {
     typeClick (type) {

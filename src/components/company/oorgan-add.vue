@@ -74,7 +74,7 @@ import { mapState } from 'vuex'
 // 引入地图组件
 import mapModule from '@/components/company/organ-map'
 export default{
-  props: ['parentOrgId', 'parentAddType', 'parentModType'],
+  props: ['parentOrgId', 'parentAddType'],
   data () {
     let checkPhone = (rule, value, callback) => {
       let regex = /^1[3|4|5|6|7|8|9][0-9]{9}$/
@@ -296,14 +296,6 @@ export default{
     },
     mapCancel () {
       this.mapDialog = false
-    }
-  },
-  watch: {
-    parentModType (val, old) {
-      if (val === 2) {
-        // 重置表单
-        this.resetForm('ruleForm')
-      }
     }
   }
 }

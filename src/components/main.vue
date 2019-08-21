@@ -77,7 +77,10 @@
                 <el-menu-item index="/main/shift">编制排班</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.shift">
-                <el-menu-item index="/main/scheduling">排班管理</el-menu-item>
+                <el-menu-item index="/main/schedul">排班管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="authority.shift">
+                <el-menu-item index="/main/salary">考勤报表</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.approval">
                 <el-menu-item index="/main/approval">审批列表</el-menu-item>

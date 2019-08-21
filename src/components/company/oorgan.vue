@@ -31,46 +31,41 @@
         <el-main class="module-main">
           <!-- 新增类型 -->
           <type-module
-            v-show="modType === 1"
+            v-if="modType === 1"
             :parentOrgType= "orgType"
-            :parentModType = "modType"
             @parentUpType="setAddType">
           </type-module>
           <!-- 新增企业 -->
           <add-module1
-            v-show="modType === 2"
+            v-else-if="modType === 2"
             :parentOrgId = "orgId"
             :parentAddType = "addType"
-            :parentModType = "modType"
             @parentUpdata="addUpdata1"
             @parentCancel="addCancel1">
           </add-module1>
           <!-- 设置企业 -->
           <set-module
-            v-show="modType === 3"
+            v-else-if="modType === 3"
             :parentOrgId = "orgId"
             :parentOrgType = "orgType"
             :parentBaseId = "baseId"
-            :parentModType = "modType"
             @parentUpdata="parentRefresh">
           </set-module>
           <!-- 新增组织 -->
           <add-module2
-            v-show="modType === 4"
+            v-else-if="modType === 4"
             :parentOrgId = "orgId"
             :parentOrgName = "orgName"
             :parentAddType = "addType"
-            :parentModType = "modType"
             @parentUpdata="addUpdata2"
             @parentCancel="addCancel2">
           </add-module2>
           <!-- 编辑组织 -->
           <com-module
-            v-show="modType === 5"
+            v-else-if="modType === 5"
             :parentOrgId = "orgId"
             :parentOrgType = "orgType"
             :parentBaseId = "baseId"
-            :parentModType = "modType"
             @parentUpdata="parentRefresh">
           </com-module>
         </el-main>
@@ -233,7 +228,9 @@ export default{
       this.getOrganTree(true)
       // 设置显示模块
       const type = this.orgType
-      if (type === 1 || type === 2) {
+      if (type === 0) {
+        this.modType = 0
+      } else if (type === 1 || type === 2) {
         this.modType = 3
       } else {
         this.modType = 5
@@ -242,7 +239,9 @@ export default{
     addCancel2 () {
       // 设置显示模块
       const type = this.orgType
-      if (type === 1 || type === 2) {
+      if (type === 0) {
+        this.modType = 0
+      } else if (type === 1 || type === 2) {
         this.modType = 3
       } else {
         this.modType = 5

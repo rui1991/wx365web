@@ -31,37 +31,33 @@
         <el-main class="module-main">
           <!-- 编辑企业 -->
           <com-module1
-            v-show="modType === 6"
+            v-if="modType === 6"
             :parentOrgId = "orgId"
             :parentOrgType = "orgType"
             :parentBaseId = "baseId"
-            :parentModType = "modType"
             @parentUpdata="parentRefresh">
           </com-module1>
           <!-- 新增类型 -->
           <type-module
-            v-show="modType === 1"
+            v-else-if="modType === 1"
             :parentOrgType= "orgType"
-            :parentModType = "modType"
             @parentUpType="setAddType">
           </type-module>
           <!-- 新增组织 -->
           <add-module
-            v-show="modType === 4"
+            v-else-if="modType === 4"
             :parentOrgId = "orgId"
             :parentOrgName = "orgName"
             :parentAddType = "addType"
-            :parentModType = "modType"
             @parentUpdata="addUpdata"
             @parentCancel="addCancel">
           </add-module>
           <!-- 编辑组织 -->
           <com-module2
-            v-show="modType === 5"
+            v-else-if="modType === 5"
             :parentOrgId = "orgId"
             :parentOrgType = "orgType"
             :parentBaseId = "baseId"
-            :parentModType = "modType"
             @parentUpdata="parentRefresh">
           </com-module2>
         </el-main>

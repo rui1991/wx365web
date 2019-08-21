@@ -42,9 +42,9 @@
             </div>
             <div class="rl-table-td rl-table-item nowMonth" :class="item.date === nowData ? 'active' : ''" v-for="(item, index) in calendarData" :key="item.date">
               <span class="sun">{{index+1}}</span>
-              <router-link :to="{ name: 'calendarItem', query:{date: item.date, state: 0}}" class="accomplish" v-if="item.continueSize !== 0">完成：{{item.continueSize}}</router-link>
-              <router-link :to="{ name: 'calendarItem', query:{date: item.date, state: 3}}" class="proceed" v-if="item.notContinueSize !== 0">未完成：{{item.notContinueSize}}</router-link>
-              <router-link :to="{ name: 'calendarItem', query:{date: item.date, state: 4}}" class="await" v-if="item.abnormalSize !== 0">异常：{{item.abnormalSize}}</router-link>
+              <router-link :to="{ path: '/main/calendar-item', query:{date: item.date, state: 0}}" class="accomplish" v-if="item.continueSize !== 0">完成：{{item.continueSize}}</router-link>
+              <router-link :to="{ path: '/main/calendar-item', query:{date: item.date, state: 3}}" class="proceed" v-if="item.notContinueSize !== 0">未完成：{{item.notContinueSize}}</router-link>
+              <router-link :to="{ path: '/main/calendar-item', query:{date: item.date, state: 4}}" class="await" v-if="item.abnormalSize !== 0">异常：{{item.abnormalSize}}</router-link>
             </div>
             <div class="rl-table-td rl-table-item minor" v-for="item in nextData" :key="item">
               <span class="sun">{{item}}</span>

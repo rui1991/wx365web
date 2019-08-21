@@ -48,7 +48,7 @@ import { mapState } from 'vuex'
 // 引入地图组件
 import mapModule from '@/components/company/organ-map'
 export default{
-  props: ['parentOrgId', 'parentOrgType', 'parentBaseId', 'parentModType'],
+  props: ['parentOrgId', 'parentOrgType', 'parentBaseId'],
   data () {
     return {
       formLabelWidth: '100px',
@@ -78,25 +78,21 @@ export default{
   created () {
 
   },
+  mounted () {
+    // 获取详情
+    this.getDetails()
+  },
   components: {
     mapModule
   },
   computed: {
     ...mapState(
       {
-        companyId: state => state.info.companyId,
         userId: state => state.info.userId
       }
     )
   },
   methods: {
-    // 初始化数据
-    comInit () {
-      // 重置表单
-      this.resetForm('ruleForm')
-      // 获取详情
-      this.getDetails()
-    },
     // 获取详情
     getDetails () {
       let params = {
@@ -217,11 +213,10 @@ export default{
   },
   watch: {
     parentOrgId (val, old) {
-      const modType = this.parentModType
-      if (modType === 2) {
-        // 初始化数据
-        this.comInit()
-      }
+      // 重置表单
+      this.resetForm('ruleForm')
+      // 获取详情
+      this.getDetails()
     }
   }
 }

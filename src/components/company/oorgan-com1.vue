@@ -72,7 +72,7 @@ import { mapState } from 'vuex'
 // 引入地图组件
 import mapModule from '@/components/company/organ-map'
 export default{
-  props: ['parentOrgId', 'parentOrgType', 'parentBaseId', 'parentModType'],
+  props: ['parentOrgId', 'parentOrgType', 'parentBaseId'],
   data () {
     let checkPhone = (rule, value, callback) => {
       let regex = /^1[3|4|5|6|7|8|9][0-9]{9}$/
@@ -207,7 +207,9 @@ export default{
 
   },
   mounted () {
-
+    console.log('111')
+    // 获取详情
+    this.getDetails()
   },
   components: {
     mapModule
@@ -221,6 +223,7 @@ export default{
   },
   methods: {
     getDetails () {
+      console.log('详情')
       let params = {
         organize_id: this.parentOrgId,
         organize_type: this.parentOrgType,
@@ -340,13 +343,11 @@ export default{
   },
   watch: {
     parentOrgId (val, old) {
-      const modType = this.parentModType
-      if (modType === 1) {
-        // 重置表单
-        this.resetForm('ruleForm')
-        // 获取详情
-        this.getDetails()
-      }
+      console.log('变化')
+      // 重置表单
+      this.resetForm('ruleForm')
+      // 获取详情
+      this.getDetails()
     }
   }
 }

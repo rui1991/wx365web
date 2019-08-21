@@ -35,20 +35,24 @@
               <el-button type="primary" @click="upClick">导入排班</el-button>
             </div>
           </div>
-          <all-sche
+          <all-module
             :parentTime="showDate"
-            v-if="type === 1"></all-sche>
-          <shift-sche
+            v-if="type === 1">
+          </all-module>
+          <shift-module
             :parentTime="showDate"
             :parentTabActive="tabActive"
-            v-else-if="type === 2"></shift-sche>
-          <rest-sche
+            v-else-if="type === 2">
+          </shift-module>
+          <rest-module
             :parentTime="showDate"
-            v-else-if="type === 3"></rest-sche>
-          <crew-sche
+            v-else-if="type === 3">
+          </rest-module>
+          <crew-module
             :parentTime="showDate"
             :parentUserActive="userActive"
-            v-else-if="type === 4"></crew-sche>
+            v-else-if="type === 4">
+          </crew-module>
         </el-main>
       </el-container>
     </el-container>
@@ -91,13 +95,13 @@
 <script>
 import { mapState } from 'vuex'
 // 引入排班概况
-import allSche from '@/components/company/all-sche'
+import allModule from '@/components/company/schedul-all'
 // 引入班次排班
-import shiftSche from '@/components/company/shift-sche'
+import shiftModule from '@/components/company/schedul-shift'
 // 引入休息概况
-import restSche from '@/components/company/rest-sche'
+import restModule from '@/components/company/schedul-rest'
 // 引入人员排班
-import crewSche from '@/components/company/crew-sche'
+import crewModule from '@/components/company/schedul-crew'
 export default{
   name: 'scheduling',
   data () {
@@ -148,10 +152,10 @@ export default{
     this.getCrewList()
   },
   components: {
-    allSche,
-    shiftSche,
-    restSche,
-    crewSche
+    allModule,
+    shiftModule,
+    restModule,
+    crewModule
   },
   computed: {
     ...mapState(

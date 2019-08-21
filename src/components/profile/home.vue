@@ -11,6 +11,9 @@
           <span>组织机构</span>
           <el-input style="width: 240px; margin-left: 10px; margin-right: 20px;" :disabled="true" v-model="orgName"></el-input>
           <el-button type="primary" @click="clickOrgan">选择组织</el-button>
+          <div class="track">
+            <el-button type="primary" @click="clickTrack" v-if="roleId === 500">人员轨迹</el-button>
+          </div>
         </div>
         <div class="dices">
           <el-row :gutter="60">
@@ -216,16 +219,6 @@ export default{
         abnormalSize: 0
       },
       taskOption: {
-        // title: {
-        //   text: '',
-        //   left: 'center',
-        //   bottom: '5px',
-        //   textStyle: {
-        //     color: '#272727',
-        //     fontWeight: 'normal',
-        //     fontSize: 16
-        //   }
-        // },
         tooltip: {
           trigger: 'item',
           formatter: '{a} <br/>{b} : {c} ({d}%)'
@@ -286,16 +279,6 @@ export default{
         abnormalSize: 0
       },
       workOption: {
-        // title: {
-        //   text: '',
-        //   left: 'center',
-        //   bottom: '5px',
-        //   textStyle: {
-        //     color: '#272727',
-        //     fontWeight: 'normal',
-        //     fontSize: 16
-        //   }
-        // },
         tooltip: {
           trigger: 'item',
           formatter: '{a} <br/>{b} : {c} ({d}%)'
@@ -549,7 +532,9 @@ export default{
         companyId: state => state.info.companyId,
         userId: state => state.info.userId,
         nowOrgid: state => state.nowOrgid,
-        nowProname: state => state.nowProname
+        nowProname: state => state.nowProname,
+        roleId: state => state.info.roleId,
+        userPhone: state => state.info.userPhone
       }
     )
   },
@@ -767,6 +752,11 @@ export default{
         //   type: 'error'
         // })
       })
+    },
+    // 人员轨迹
+    clickTrack () {
+      const openUrl = this.baseUrl() + '/trackmap/#/login?phone=' + this.userPhone
+      window.open(openUrl)
     }
   },
   watch: {
@@ -808,8 +798,12 @@ export default{
         align-items: center;
         height: 70px;
         padding-left: 20px;
+        padding-right: 20px;
         background: #ffffff;
-
+        .track{
+          flex-grow: 1;
+          text-align: right;
+        }
       }
       .dices{
         background: #ffffff;

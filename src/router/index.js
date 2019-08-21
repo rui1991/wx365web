@@ -34,8 +34,10 @@ const Ouser = () => import(/* webpackChunkName: "group-user" */ '@/components/co
 const Cuser = () => import(/* webpackChunkName: "group-user" */ '@/components/company/cuser')
 // 考勤排班
 const Shift = () => import(/* webpackChunkName: "group-Shift" */ '@/components/company/shift')
-// 排班管理
-const Scheduling = () => import(/* webpackChunkName: "group-scheduling" */ '@/components/company/scheduling')
+// 排班管理 arrange
+const Schedul = () => import(/* webpackChunkName: "group-scheduling" */ '@/components/company/schedul')
+// 审批列表
+const Salary = () => import(/* webpackChunkName: "group-approval" */ '@/components/company/salary')
 // 审批列表
 const Approval = () => import(/* webpackChunkName: "group-approval" */ '@/components/company/approval')
 
@@ -251,9 +253,17 @@ export default new Router({
           }
         },
         {
-          path: 'scheduling',
-          name: 'scheduling',
-          component: Scheduling,
+          path: 'schedul',
+          name: 'schedul',
+          component: Schedul,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'salary',
+          name: 'salary',
+          component: Salary,
           meta: {
             keepAlive: false
           }
