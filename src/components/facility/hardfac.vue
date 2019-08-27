@@ -108,21 +108,38 @@
       </el-main>
     </el-container>
     <!-- 新增 -->
-    <add-module :parentDialog="addDialog" @parentUpdata="addUpdata" @parentCancel="addCancel"></add-module>
+    <add-module
+      :parentDialog="addDialog"
+      @parentUpdata="addUpdata"
+      @parentCancel="addCancel">
+    </add-module>
     <!-- 编辑 -->
-    <com-module :parentDialog="comDialog" :parentForm="itemData" @parentUpdata="comUpdata" @parentCancel="comCancel"></com-module>
+    <com-module
+      :parentDialog="comDialog"
+      :parentForm="itemData"
+      @parentUpdata="comUpdata"
+      @parentCancel="comCancel">
+    </com-module>
     <!-- 详情 -->
-    <det-module :parentDialog="detDialog" :parentForm="itemData" @parentClose="detClose"></det-module>
-    <!-- 告警推送人 -->
-    <warn-module :parentDialog="warnDialog" :parentForm="itemData" @parentClose="warnClose"></warn-module>
+    <det-module
+      :parentDialog="detDialog"
+      :parentForm="itemData"
+      @parentClose="detClose">
+    </det-module>
     <!-- 删除 -->
-    <el-dialog title="提示" :visible.sync="delDialog" :show-close="false" :close-on-click-modal="false" custom-class="hint-dialog">
-      <p class="hint-text"><i class="el-icon-warning"></i>是否要删除该设备？</p>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="delDialog = false">取 消</el-button>
-        <el-button type="primary" :disabled="delDisabled" @click="submitDelForm">确 定</el-button>
-      </div>
-    </el-dialog>
+    <del-module
+      :parentDialog="delDialog"
+      :parentId="itemId"
+      :parentType="itemType"
+      @parentUpdata="delUpdata"
+      @parentCancel="delCancel">
+    </del-module>
+    <!-- 告警推送人 -->
+    <warn-module
+      :parentDialog="warnDialog"
+      :parentForm="itemData"
+      @parentClose="warnClose">
+    </warn-module>
   </div>
 </template>
 
@@ -134,6 +151,8 @@ import addModule from '@/components/facility/hardfac-add'
 import comModule from '@/components/facility/hardfac-com'
 // 引入详情组件
 import detModule from '@/components/facility/hardfac-det'
+// 引入删除组件
+import delModule from '@/components/facility/hardfac-del'
 // 引入告警推送人组件
 import warnModule from '@/components/facility/hardfac-warn'
 export default{
@@ -195,7 +214,6 @@ export default{
       itemId: 0,
       itemType: '',
       delDialog: false,
-      delDisabled: false,
       warnDialog: false
     }
   },
@@ -207,6 +225,7 @@ export default{
     addModule,
     comModule,
     detModule,
+    delModule,
     warnModule
   },
   computed: {
@@ -328,43 +347,13 @@ export default{
       this.itemType = type
       this.delDialog = true
     },
-    submitDelForm () {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        device_id: this.itemId,
-        dtype: this.itemType
-      }
-      params = this.$qs.stringify(params)
-      this.delDisabled = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/hardware/v1.0/altHardwareState',
-        data: params
-      }).then((res) => {
-        this.delDisabled = false
-        if (res.data.result === 'Sucess') {
-          // 隐藏提示框
-          this.delDialog = false
-          // 刷新列表
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.delDisabled = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    delCancel () {
+      this.delDialog = false
+    },
+    delUpdata () {
+      this.delDialog = false
+      // 获取列表数据
+      this.getListData()
     },
     /* 告警人 */
     warnClose () {

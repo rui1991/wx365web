@@ -41,7 +41,7 @@
        </el-form-item>
      </el-form>
      <div slot="footer" class="dialog-footer">
-       <el-button @click="resetForm('ruleForm')">取 消</el-button>
+       <el-button @click="cancelClick">取 消</el-button>
        <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
      </div>
    </el-dialog>
@@ -181,7 +181,6 @@ export default{
     // 重置表单
     resetForm (formName) {
       this.$refs[formName].resetFields()
-      this.$emit('parentCancel')
     },
     // 提交
     sendRequest () {
@@ -231,6 +230,12 @@ export default{
           type: 'error'
         })
       })
+    },
+    // 取消
+    cancelClick () {
+      // 重置表单
+      this.resetForm('ruleForm')
+      this.$emit('parentCancel')
     },
     /* 部门 */
     sectorUpdata (data) {

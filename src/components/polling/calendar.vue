@@ -1,5 +1,10 @@
 <template>
-  <div class="calendar">
+  <div
+    class="calendar"
+    v-loading="loading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -7,12 +12,7 @@
           <el-breadcrumb-item>巡检日历</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
-      <el-main
-        class="module-main"
-        v-loading="loading"
-        element-loading-text="拼命加载中"
-        element-loading-spinner="el-icon-loading"
-        element-loading-background="rgba(0, 0, 0, 0.8)">
+      <el-main class="module-main">
         <div class="search">
           <div class="date">
             <el-date-picker

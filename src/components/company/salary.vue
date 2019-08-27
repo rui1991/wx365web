@@ -1,5 +1,10 @@
 <template>
-  <div class="salary">
+  <div
+    class="salary"
+    v-loading="loading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -53,12 +58,22 @@
               <el-table-column width="100" label="考勤打卡">
                 <template slot-scope="scope">
                   <span class="blue" v-if="scope.row.dates[i].rc">{{ scope.row.dates[i].rc | filterDate }}</span>
-                  <span v-else>无</span>
+                  <span v-else-if="item.state">无</span>
+                  <span v-else>-</span>
                 </template>
               </el-table-column>
               <el-table-column width="100" label="点名次数">
                 <template slot-scope="scope">
-                  <span class="blue">{{ scope.row.dates[i].sf }}</span>
+                  <el-popover
+                    placement="top"
+                    :title="scope.row.user_name"
+                    trigger="click"
+                    :content="callnameContent"
+                    v-if="scope.row.dates[i].sf">
+                    <a href="javascript:void(0);" slot="reference" class="blue" @click="getCallname(scope.row.user_id, scope.row.dates[i].date)">{{ scope.row.dates[i].sf }}</a>
+                  </el-popover>
+                  <span v-else-if="item.state">0</span>
+                  <span v-else>-</span>
                 </template>
               </el-table-column>
             </el-table-column>
@@ -86,6 +101,8 @@ import { mapState } from 'vuex'
 export default{
   data () {
     return {
+      nowMonth: this.$common.getNowDate('yyyy-mm'),
+      nowDay: 0,
       searchDate: this.$common.getNowDate('yyyy-mm'),
       search: {
         name: '',
@@ -104,9 +121,11 @@ export default{
       tableTitle: '',
       days: [],
       tableData: [],
+      callnameContent: '',
       total: 0,
       nowPage: 1,
       limit: 10,
+      loading: false,
       downDisabled: false
     }
   },
@@ -114,20 +133,26 @@ export default{
 
   },
   mounted () {
-    // 获取当前月份
-    let mydata = new Date()
-    let year = mydata.getFullYear()
-    let month = mydata.getMonth() + 1 + ''
+    const myDate = new Date()
+    const year = myDate.getFullYear()
+    const month = myDate.getMonth() + 1
+    const nowDay = myDate.getDate()
+    this.nowDay = nowDay
     // 设置表格标题
     this.tableTitle = month + '月份考勤打卡报表'
     // 本月天数
     let daysCount = new Date(year, month, 0).getDate()
     let days = []
     for (let i = 0; i < daysCount; i++) {
+      let state = true
+      if (nowDay < i + 1) {
+        state = false
+      }
       days.push(
         {
           date: i + 1 + '',
-          value: 'rc'
+          value: 'rc',
+          state: state
         }
       )
     }
@@ -158,11 +183,13 @@ export default{
         limit1: this.limit
       }
       params = this.$qs.stringify(params)
+      this.loading = true
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/attendance/attendanceMessage',
         data: params
       }).then((res) => {
+        this.loading = false
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
           this.tableData = res.data.data1.users
@@ -175,6 +202,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.loading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -199,6 +227,10 @@ export default{
     },
     // 切换日期
     dateChange (date) {
+      let whether = false
+      if (this.nowMonth === date) {
+        whether = true
+      }
       const dateArr = date.split('-')
       const year = dateArr[0]
       const month = dateArr[1]
@@ -206,10 +238,17 @@ export default{
       let daysCount = new Date(year, month, 0).getDate()
       let days = []
       for (let i = 0; i < daysCount; i++) {
+        let state = true
+        if (whether) {
+          if (this.nowDay < i + 1) {
+            state = false
+          }
+        }
         days.push(
           {
             date: i + 1 + '',
-            value: 'rc'
+            value: 'rc',
+            state: state
           }
         )
       }
@@ -226,6 +265,50 @@ export default{
       this.nowPage = 1
       // 获取列表数据
       this.getListData()
+    },
+    // 获取点名详情
+    getCallname (uid, date) {
+      // 清空详情
+      this.callnameContent = ''
+      let params = {
+        company_id: this.nowClientId,
+        user_id: this.userId,
+        project_id: this.nowProid,
+        userN_id: uid,
+        this_date: date
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/inspection/selRollCallOnly',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          const listData = res.data.data1
+          let usefulData = listData.filter(item => {
+            return item.sf === 1
+          })
+          let content = []
+          usefulData.forEach(item => {
+            content.push(item.atime)
+          })
+          content = content.join('、')
+          this.callnameContent = content
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
     },
     /* 获取部门 */
     getSectorOptions () {

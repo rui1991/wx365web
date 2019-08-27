@@ -1,10 +1,10 @@
 <template>
-  <div class="work-undone">
+  <div class="work-item">
     <el-table class="list-table" :data="tableData" border style="width: 100%">
       <el-table-column type="index" width="50" label="序号"></el-table-column>
       <el-table-column label="工单名称">
         <template slot-scope="scope">
-          <a href="javascript:void(0);" class="name" @click="checkDetails(scope.row.wo_id)">{{ scope.row.wo_name }}</a>
+          <a href="javascript:void(0);" class="name" @click="detClick(scope.row.wo_id)">{{ scope.row.wo_name }}</a>
         </template>
       </el-table-column>
       <el-table-column prop="wo_from" label="工单来源"></el-table-column>
@@ -48,7 +48,7 @@
 <script>
 import { mapState } from 'vuex'
 export default{
-  name: 'workUndone',
+  name: 'workClose',
   props: ['parentSearch'],
   data () {
     return {
@@ -87,8 +87,8 @@ export default{
         woN_from: this.parentSearch.source,
         businessN_type: this.parentSearch.sort,
         userN_id: this.parentSearch.crews,
-        // woN_state: 4,
-        type: 4,
+        // woN_state: 8,
+        type: 8,
         page: this.nowPage,
         limit1: this.limit
       }
@@ -133,7 +133,7 @@ export default{
       this.getListData()
     },
     // 查看详情
-    checkDetails (id) {
+    detClick (id) {
       this.$emit('parentDetails', id)
     }
   },
@@ -147,7 +147,7 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.work-undone{
+.work-item{
   .paging{
     margin-top: 20px;
   }

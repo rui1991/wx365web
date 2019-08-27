@@ -77,7 +77,7 @@
           <el-table-column type="index" width="50" label="序号"></el-table-column>
           <el-table-column label="任务名称" :show-overflow-tooltip="true">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="name" @click="checkDetails(scope.row.id_id)">{{ scope.row.plan_name }}</a>
+              <a href="javascript:void(0);" class="name" @click="detClick(scope.row.id_id)">{{ scope.row.plan_name }}</a>
             </template>
           </el-table-column>
           <el-table-column label="执行部门">
@@ -126,12 +126,12 @@
           </el-table-column>
           <el-table-column width="260" label="操作">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="clickDraw(scope.row.id_id)" v-if="scope.row.draw === 1 && authority.draw">领取</a>
+              <a href="javascript:void(0);" class="operate com" @click="drawClick(scope.row.id_id)" v-if="scope.row.draw === 1 && authority.draw">领取</a>
               <span class="operate forbid" v-else-if="scope.row.draw === 2 && authority.draw">领取</span>
               <span class="operate forbid" v-else-if="scope.row.draw === 3 && authority.draw">已领取</span>
-              <a href="javascript:void(0);" class="operate com" @click="clickDispatch(scope.row.id_id, scope.row.ogz_id)" v-if="scope.row.dispatch === 1 && authority.dispatch">派遣</a>
+              <a href="javascript:void(0);" class="operate com" @click="dispatchClick(scope.row.id_id, scope.row.ogz_id)" v-if="scope.row.dispatch === 1 && authority.dispatch">派遣</a>
               <span class="operate forbid" v-else-if="scope.row.dispatch === 2 && authority.dispatch">派遣</span>
-              <a href="javascript:void(0);" class="operate com" @click="clickTrade(scope.row.id_id, scope.row.ogz_id)" v-if="scope.row.trade === 1 && authority.dispatch">换人</a>
+              <a href="javascript:void(0);" class="operate com" @click="tradeClick(scope.row.id_id, scope.row.ogz_id)" v-if="scope.row.trade === 1 && authority.dispatch">换人</a>
               <span class="operate forbid" v-else-if="scope.row.trade === 2 && authority.dispatch">换人</span>
               <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.id_id)" v-if="scope.row.com === 1 && authority.com">维护</a>
               <span class="operate forbid" v-if="scope.row.com === 2 && authority.com">维护</span>
@@ -153,134 +153,30 @@
       </el-main>
     </el-container>
     <!-- 详情 -->
-    <el-dialog title="任务详情" :visible.sync="detDialog" :show-close="false" :close-on-click-modal="false" custom-class="large-dialog">
-      <div class="det-operate">
-        <el-button type="primary" :disabled="downOneDisa" @click="downTask">导出巡检任务</el-button>
-        <el-button type="primary" v-if="detForm.exaState !== undefined" @click="checkExaDet">查看审批详情</el-button>
-      </div>
-      <el-form :model="detForm" :label-width="formLabelWidth">
-        <div class="two-form">
-          <el-form-item class="item" label="任务名称">
-            <el-input :disabled="true" v-model="detForm.name"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="执行部门">
-            <el-input :disabled="true" v-model="detForm.sector"></el-input>
-          </el-form-item>
-        </div>
-        <div class="two-form">
-          <el-form-item :disabled="true" class="item" label="执行时段">
-            <el-input :disabled="true" v-model="detForm.startDate"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="————">
-            <el-input :disabled="true" v-model="detForm.endDate"></el-input>
-          </el-form-item>
-        </div>
-        <div class="two-form">
-          <el-form-item class="item" label="执行组" v-if="detForm.group">
-            <el-input :disabled="true" v-model="detForm.group"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="执行人" v-else>
-            <el-input :disabled="true" v-model="detForm.person"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="任务进度">
-            <el-input :disabled="true" v-model="detForm.taskDegree"></el-input>
-          </el-form-item>
-        </div>
-        <div class="two-form">
-          <el-form-item class="item" label="巡查顺序">
-            <el-input :disabled="true" v-model="detForm.desc"></el-input>
-          </el-form-item>
-        </div>
-      </el-form>
-      <el-collapse>
-        <div class="item" v-for="(item, index) in detForm.posData" :key="item.position_id">
-          <p class="clearfix title">
-            <span class="site left">{{item.position_name}}</span>
-            <span class="time right">{{item.check_time | formatDate}}</span>
-          </p>
-          <el-collapse-item :title="item.template_name" :name="index" v-if="item.insPo">
-            <el-table class="show-table" :data="item.insPo" style="width: 100%">
-              <el-table-column prop="ins_name" label="检查项" width="80"></el-table-column>
-              <el-table-column prop="method" label="检查方法" class-name="multi-row"></el-table-column>
-              <el-table-column prop="check_content" label="检查内容及要求" class-name="multi-row"></el-table-column>
-              <el-table-column prop="alarm_level" label="报警等级" width="80"></el-table-column>
-              <el-table-column label="检查结果" width="80">
-                <template slot-scope="scope">
-                  <span v-if="scope.row.task_state === 0">未巡查</span>
-                  <span v-else-if="scope.row.task_state === 1">正常</span>
-                  <span v-else-if="scope.row.task_state === 2">异常</span>
-                  <span v-else></span>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-collapse-item>
-          <p class="norm-hint" v-else>无关联标准模板</p>
-        </div>
-      </el-collapse>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="detDialog = false">关 闭</el-button>
-      </div>
-    </el-dialog>
-    <!-- 审批详情 -->
-    <el-dialog title="审批详情" :visible.sync="exaDetDialog" :show-close="false" :close-on-click-modal="false" custom-class="large-dialog">
-      <el-form :model="exaDetForm" :label-width="formLabelWidth">
-        <div class="two-form">
-          <el-form-item class="item" label="申请人">
-            <el-input :disabled="true" v-model="exaDetForm.appPerson"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="申请时间">
-            <el-input :disabled="true" v-model="exaDetForm.appDate"></el-input>
-          </el-form-item>
-        </div>
-        <div class="two-form">
-          <el-form-item class="item" label="审批人">
-            <el-input :disabled="true" v-model="exaDetForm.exaPerson"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="审批状态">
-            <el-input :disabled="true" v-model="exaDetForm.exaState"></el-input>
-          </el-form-item>
-        </div>
-        <div class="two-form">
-          <el-form-item class="item" label="审批时间">
-            <el-input :disabled="true" v-model="exaDetForm.exaDate"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="创建类型">
-            <el-input :disabled="true" v-model="exaDetForm.creType"></el-input>
-          </el-form-item>
-        </div>
-        <el-form-item label="申请原因" class="one-form">
-          <el-input type="textarea" :disabled="true" v-model="exaDetForm.appCause"></el-input>
-        </el-form-item>
-        <el-form-item label="审批意见" class="one-form">
-          <el-input type="textarea" :disabled="true" v-model="exaDetForm.exaOpinion"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="exaDetDialog = false">关 闭</el-button>
-      </div>
-    </el-dialog>
+    <det-module
+      :parentDialog="detDialog"
+      :parentPro="nowProid"
+      :parentId="itemId"
+      @parentClose="detClose">
+    </det-module>
     <!-- 人员 -->
-    <el-dialog title="选择人员" :visible.sync="crewDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-input class="search" placeholder="请输入人员姓名" prefix-icon="el-icon-search" v-model.trim="crewFilter"></el-input>
-      <el-table  class="select-table" :data="sectorCrewOptions" style="width: 100%" max-height="360">
-        <el-table-column width="65">
-          <template slot-scope="scope">
-            <el-radio :label="scope.row.user_id" @change.native="getTemplateRow(scope.row.user_name)" v-model="crewId">&nbsp;</el-radio>
-          </template>
-        </el-table-column>
-        <el-table-column prop="user_name" label="姓名"></el-table-column>
-        <el-table-column prop="user_phone" label="联系方式"></el-table-column>
-      </el-table>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="crewDialog = false">取 消</el-button>
-        <el-button type="primary" :disabled="crewDisabled" @click="selectCrew">确 定</el-button>
-      </div>
-    </el-dialog>
+    <crew-module
+      :parentDialog="crewDialog"
+      :parentId="itemId"
+      :parentSector="itemSector"
+      :parentType="disType"
+      @parentUpdata="crewUpdata"
+      @parentCancel="crewCancel">
+    </crew-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入详情组件
+import detModule from '@/components/polling/task-det'
+// 引入人员组件
+import crewModule from '@/components/polling/task-crew'
 export default{
   name: 'task',
   data () {
@@ -319,50 +215,18 @@ export default{
         }
       ],
       crewOptions: [],
-      ocrewOptions: [],
       tableData: [],
       groupContent: '',
       total: 0,
       nowPage: 1,
       limit: 10,
-      nowTime: 0,
       todayStartTime: 0,
-      detDialog: false,
-      detForm: {
-        name: '',
-        role: '',
-        startDate: '',
-        endDate: '',
-        group: '',
-        person: '',
-        taskDegree: '',
-        desc: '',
-        posData: [],
-        exaState: undefined
-      },
-      formLabelWidth: '80px',
-      exaDetDialog: false,
       itemId: '',
-      downDisabled: false,
-      downOneDisa: false,
-      exaDetForm: {
-        appPerson: '',
-        appDate: '',
-        exaPerson: '',
-        exaState: '',
-        exaDate: '',
-        creType: '',
-        appCause: '',
-        exaOpinion: ''
-      },
-      getWay: 1,
+      detDialog: false,
+      itemSector: '',
+      disType: 1,
       crewDialog: false,
-      crewDisabled: true,
-      sectorCrewOptions: [],
-      osectorCrewOptions: [],
-      crewName: '',
-      crewId: '',
-      crewFilter: ''
+      downDisabled: false
     }
   },
   created () {
@@ -391,11 +255,14 @@ export default{
   mounted () {
 
   },
+  components: {
+    detModule,
+    crewModule
+  },
   computed: {
     ...mapState(
       {
         nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
         userId: state => state.info.userId,
         userName: state => state.info.userName,
         sectorId: state => state.info.sectorId,
@@ -537,353 +404,6 @@ export default{
       // 获取列表数据
       this.getListData()
     },
-    /* 获取组人员 */
-    getGrouoCrew (id) {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        group_id: id
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v2.6/selUserByGroupId',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const resData = res.data.data1
-          let crewData = []
-          resData.forEach(item => {
-            crewData.push(item.user_name)
-          })
-          const groupContent = crewData.join('、')
-          this.groupContent = groupContent
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    /* 详情 */
-    checkDetails (id) {
-      this.itemId = id
-      this.detDialog = true
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        id_id: id
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/inspection/v3.7.3/all/sel/selInsTaskOnly',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const itemData = res.data.data1
-          // 开始时间
-          const startDate = this.$common.formatDate(itemData.start_time)
-          // 结束时间
-          const endDate = this.$common.formatDate(itemData.end_time)
-          // 任务进度
-          const state = itemData.continue_state
-          let taskDegree = ''
-          if (state === 1) {
-            taskDegree = '未领取'
-          } else {
-            // 完成度
-            const degree = this.$common.formatNum(itemData.continue_process) * 1000 / 10 + '%'
-            taskDegree = '已完成' + degree
-          }
-          // 巡查顺序
-          const descNum = itemData.po_desc
-          let desc = ''
-          if (descNum === 0) {
-            desc = '随机顺序'
-          } else if (descNum === 1) {
-            desc = '固定顺序'
-          }
-          // 审批状态
-          const exaState = itemData.approval_state || undefined
-          this.detForm = {
-            name: itemData.plan_name,
-            sector: itemData.ogz_name || '',
-            startDate: startDate,
-            endDate: endDate,
-            group: itemData.group_name || '',
-            person: itemData.user_name || '',
-            taskDegree: taskDegree,
-            desc: desc,
-            posData: itemData.pt_position,
-            exaState: exaState
-          }
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 审批详情
-    checkExaDet () {
-      this.exaDetDialog = true
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        apply_type: 0,
-        from_id: this.itemId
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/audit/selAuditByFromID',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const itemData = res.data.data1
-          // 申请人
-          const appPerson = itemData.apply_user_name
-          // 申请时间
-          const appDate = this.$common.formatDate(itemData.apply_time)
-          // 审批人
-          const exaPerson = itemData.audit_user_name || ''
-          // 审批状态
-          const stateNum = itemData.audit_state
-          let exaState = ''
-          if (stateNum === 0) {
-            exaState = '未审批'
-          } else if (stateNum === 1) {
-            exaState = '通过'
-          } else if (stateNum === 2) {
-            exaState = '不通过'
-          }
-          // 审批时间
-          const exaDate = this.$common.formatDate(itemData.audit_time)
-          // 创建类型
-          const creNum = itemData.apply_type
-          let creType = ''
-          if (creNum === 0) {
-            creType = '巡检补卡'
-          } else if (creNum === 1) {
-            creType = '工单超时'
-          } else if (creNum === 2) {
-            creType = '考勤补卡'
-          } else if (creNum === 3) {
-            creType = '请假'
-          }
-          // 申请原因
-          const appCause = itemData.apply_reason || ''
-          // 审批意见
-          const exaOpinion = itemData.audit_opinion || ''
-          this.exaDetForm = {
-            appPerson,
-            appDate,
-            exaPerson,
-            exaState,
-            exaDate,
-            creType,
-            appCause,
-            exaOpinion
-          }
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 下载单个任务
-    downTask () {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        id_id: this.itemId
-      }
-      params = this.$qs.stringify(params)
-      this.downOneDisa = true
-      setTimeout(() => {
-        this.downOneDisa = false
-      }, 5000)
-      window.location.href = this.sysetApi() + '/inspection/iDEximport?' + params
-    },
-    /* 领取和派遣 */
-    // 领取
-    clickDraw (id) {
-      this.itemId = id
-      this.getWay = 1
-      this.submitTaskCrew()
-    },
-    // 派遣
-    clickDispatch (id, sector) {
-      this.itemId = id
-      this.getWay = 2
-      this.crewDialog = true
-      // 清空选中数据
-      this.crewName = ''
-      this.crewId = ''
-      this.crewFilter = ''
-      // 获取部门人员
-      this.getSectorCrew(sector)
-    },
-    getTemplateRow (name) {
-      this.crewName = name
-    },
-    selectCrew () {
-      const getWay = this.getWay
-      if (getWay === 2) {
-        this.submitTaskCrew()
-      } else if (getWay === 3) {
-        this.submitTaskTrade()
-      }
-    },
-    // 提交
-    submitTaskCrew () {
-      let params = {}
-      const getWay = this.getWay
-      if (getWay === 1) {
-        params = {
-          company_id: this.nowClientId,
-          user_id: this.userId,
-          project_id: this.nowProid,
-          id_id: this.itemId,
-          type: 0,
-          user_name: this.userName
-        }
-      } else if (getWay === 2) {
-        params = {
-          company_id: this.nowClientId,
-          user_id: this.userId,
-          project_id: this.nowProid,
-          id_id: this.itemId,
-          type: 1,
-          user_name: this.userName,
-          userN_name: this.crewName,
-          userN_id: this.crewId
-        }
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/inspection/reqInsTask',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const getWay = this.getWay
-          if (getWay === 1) {
-            this.$message({
-              showClose: true,
-              message: '领取成功',
-              type: 'success'
-            })
-          } else if (getWay === 2) {
-            this.$message({
-              showClose: true,
-              message: '派遣成功',
-              type: 'success'
-            })
-            this.crewDialog = false
-          }
-          // 刷新列表数据
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    /* 换人 */
-    clickTrade (id, sector) {
-      this.itemId = id
-      this.getWay = 3
-      this.crewDialog = true
-      // 清空选中数据
-      this.crewName = ''
-      this.crewId = ''
-      this.crewFilter = ''
-      // 获取部门人员
-      this.getSectorCrew(sector)
-    },
-    // 提交
-    submitTaskTrade () {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        id_id: this.itemId,
-        userN_id: this.crewId
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/inspection/v2.1.02/all/alter/alterInsTaskUser',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          this.$message({
-            showClose: true,
-            message: '换人成功',
-            type: 'success'
-          })
-          this.crewDialog = false
-          // 刷新列表数据
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
     /* 获取部门 */
     getSectorOptions () {
       let params = {
@@ -949,25 +469,27 @@ export default{
         })
       })
     },
-    /* 部门人员 */
-    getSectorCrew (sector) {
-      let orgId = 0
-      if (sector) {
-        orgId = sector
-      }
+    /* 获取组人员 */
+    getGrouoCrew (id) {
       let params = {
-        project_id: this.nowProid,
-        ogz_id: orgId
+        company_id: this.nowClientId,
+        user_id: this.userId,
+        group_id: id
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.7/selUserByOgz',
+        url: this.sysetApi() + '/v2.6/selUserByGroupId',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          this.sectorCrewOptions = res.data.data1
-          this.osectorCrewOptions = res.data.data1
+          const resData = res.data.data1
+          let crewData = []
+          resData.forEach(item => {
+            crewData.push(item.user_name)
+          })
+          const groupContent = crewData.join('、')
+          this.groupContent = groupContent
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -983,6 +505,86 @@ export default{
           type: 'error'
         })
       })
+    },
+    /* 详情 */
+    detClick (id) {
+      this.itemId = id
+      this.detDialog = true
+    },
+    detClose () {
+      this.detDialog = false
+    },
+    /* 领取 */
+    drawClick (id) {
+      let params = {
+        company_id: this.nowClientId,
+        user_id: this.userId,
+        project_id: this.nowProid,
+        id_id: id,
+        type: 0,
+        user_name: this.userName
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/inspection/reqInsTask',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          this.$message({
+            showClose: true,
+            message: '领取成功',
+            type: 'success'
+          })
+          // 刷新列表数据
+          this.getListData()
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
+    /* 人员 */
+    // disType   1：派遣   2：换人
+    // 派遣
+    dispatchClick (id, sector) {
+      // 类型
+      this.disType = 1
+      // id
+      this.itemId = id
+      // 部门
+      this.itemSector = sector
+      this.crewDialog = true
+    },
+    // 换人
+    tradeClick (id, sector) {
+      // 类型
+      this.disType = 2
+      // id
+      this.itemId = id
+      // 部门
+      this.itemSector = sector
+      this.crewDialog = true
+    },
+    // 更新
+    crewUpdata () {
+      this.crewDialog = false
+      // 获取列表
+      this.getListData()
+    },
+    // 取消
+    crewCancel () {
+      this.crewDialog = false
     },
     /* 导出 */
     downFile () {
@@ -1033,18 +635,6 @@ export default{
       minutes = minutes.padStart(2, '0')
       return `${month}-${day} ${hour}:${minutes}`
     }
-  },
-  watch: {
-    crewFilter (val, oldVal) {
-      this.sectorCrewOptions = this.osectorCrewOptions.filter(item => (~item.user_name.indexOf(val)))
-    },
-    crewId (val, oldVal) {
-      if (val) {
-        this.crewDisabled = false
-      } else {
-        this.crewDisabled = true
-      }
-    }
   }
 }
 </script>
@@ -1093,33 +683,6 @@ export default{
             vertical-align: middle;
             text-align: right;
           }
-        }
-      }
-    }
-  }
-  .large-dialog{
-    .det-operate {
-      padding-right: 20px;
-      height: 60px;
-      text-align: right;
-    }
-    .el-collapse{
-      border: 1px solid #cecece;
-      padding: 10px;
-      border-radius: 4px;
-      .item{
-        border-bottom: 1px solid #cecece;
-        &:last-of-type{
-          border-bottom: none;
-        }
-        .title{
-          height: 30px;
-          line-height: 30px;
-          color: #272727;
-        }
-        .norm-hint{
-          height: 35px;
-          line-height: 34px;
         }
       }
     }

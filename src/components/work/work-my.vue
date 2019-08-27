@@ -1,10 +1,10 @@
 <template>
-  <div class="work-reminder">
+  <div class="work-item">
     <el-table class="list-table" :data="tableData" border style="width: 100%">
       <el-table-column type="index" width="50" label="序号"></el-table-column>
       <el-table-column label="工单名称">
         <template slot-scope="scope">
-          <a href="javascript:void(0);" class="name" @click="checkDetails(scope.row.wo_id)">{{ scope.row.wo_name }}</a>
+          <a href="javascript:void(0);" class="name" @click="detClick(scope.row.wo_id)">{{ scope.row.wo_name }}</a>
         </template>
       </el-table-column>
       <el-table-column prop="wo_from" label="工单来源"></el-table-column>
@@ -26,9 +26,13 @@
           <span v-else-if="scope.row.wo_state === 2">结单</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
-        <template slot-scope="scope" width="80">
-          <a href="javascript:void(0);" class="com" @click="clickReminder(scope.row.wo_id)" v-if="authority.reminder">催单</a>
+      <el-table-column label="操作" width="300">
+        <template slot-scope="scope">
+          <a href="javascript:void(0);" class="operate com" @click="addLogClick(scope.row.wo_id)">追加日志</a>
+          <a href="javascript:void(0);" class="operate com" @click="closeClick(scope.row.wo_id)" v-if="scope.row.wo_state === 1">结单</a>
+          <span class="operate forbid" v-else-if="scope.row.wo_state === 2">已结单</span>
+          <a href="javascript:void(0);" class="operate com" @click="returnClick(scope.row.wo_id)" v-if="scope.row.wo_state === 1">退单</a>
+          <span class="operate forbid" v-else-if="scope.row.wo_state === 2">退单</span>
         </template>
       </el-table-column>
     </el-table>
@@ -44,23 +48,41 @@
       @current-change="pageChang"
       :total="total">
     </el-pagination>
+    <!-- 追加日志 -->
+    <log-module
+      :parentDialog="logDialog"
+      :parentId="itemId"
+      @parentUpdata="logUpdata"
+      @parentCancel="logCancel">
+    </log-module>
+    <!-- 退单 -->
+    <return-module
+      :parentDialog="returnDialog"
+      :parentId="itemId"
+      @parentUpdata="returnUpdata"
+      @parentCancel="returnCancel">
+    </return-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 追加日志
+import logModule from '@/components/work/work-log'
+// 退单
+import returnModule from '@/components/work/work-return'
 export default{
-  name: 'workReminder',
+  name: 'workMy',
   props: ['parentSearch'],
   data () {
     return {
-      authority: {
-        reminder: true
-      },
       tableData: [],
       total: 0,
       nowPage: 1,
-      limit: 10
+      limit: 10,
+      logDialog: false,
+      returnDialog: false,
+      itemId: ''
     }
   },
   created () {
@@ -69,17 +91,17 @@ export default{
   mounted () {
     // 获取列表数据
     this.getListData()
-    // 权限
-    let autDet = this.autDet
-    autDet.indexOf(53) === -1 ? this.authority.reminder = false : this.authority.reminder = true
+  },
+  components: {
+    logModule,
+    returnModule
   },
   computed: {
     ...mapState(
       {
         nowClientId: state => state.nowClientId,
         userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        autDet: state => state.autDet.work
+        nowProid: state => state.nowProid
       }
     )
   },
@@ -96,8 +118,8 @@ export default{
         woN_from: this.parentSearch.source,
         businessN_type: this.parentSearch.sort,
         userN_id: this.parentSearch.crews,
-        // woN_state: 6,
-        type: 6,
+        // woN_state: 5,
+        type: 5,
         page: this.nowPage,
         limit1: this.limit
       }
@@ -147,11 +169,35 @@ export default{
       this.getListData()
     },
     // 查看详情
-    checkDetails (id) {
+    detClick (id) {
       this.$emit('parentDetails', id)
     },
-    // 催单
-    clickReminder (id) {
+    /* 追加日志 */
+    addLogClick (id) {
+      this.itemId = id
+      this.logDialog = true
+    },
+    logUpdata () {
+      this.logDialog = false
+    },
+    logCancel () {
+      this.logDialog = false
+    },
+    /* 退单 */
+    returnClick (id) {
+      this.itemId = id
+      this.returnDialog = true
+    },
+    returnUpdata () {
+      this.returnDialog = false
+      // 刷新列表
+      this.getListData()
+    },
+    returnCancel () {
+      this.returnDialog = false
+    },
+    /* 结单 */
+    closeClick (id) {
       let params = {
         company_id: this.nowClientId,
         user_id: this.userId,
@@ -161,13 +207,13 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/wo/urgeWO',
+        url: this.sysetApi() + '/wo/updateWoClose',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           this.$message({
             showClose: true,
-            message: '催单成功',
+            message: '结单成功',
             type: 'success'
           })
           // 刷新列表
@@ -199,7 +245,7 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.work-reminder{
+.work-item{
   .paging{
     margin-top: 20px;
   }

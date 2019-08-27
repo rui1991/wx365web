@@ -102,23 +102,23 @@ const LoccollectDet = () => import(/* webpackChunkName: "group-loccollect" */ '@
 
 /* 工单管理 */
 // 工单列表管理
-const WorkList = () => import(/* webpackChunkName: "group-work" */ '@/components/work/list')
+const Work = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work')
 // 我的工单
-const WorkOneself = () => import(/* webpackChunkName: "group-work" */ '@/components/work/oneself')
+const WorkMy = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-my')
 // 待处理
-const WorkPending = () => import(/* webpackChunkName: "group-work" */ '@/components/work/pending')
+const WorkWait = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-wait')
 // 跟进中
-const WorkFollow = () => import(/* webpackChunkName: "group-work" */ '@/components/work/follow')
+const WorkFollow = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-follow')
 // 催单列表
-const WorkReminder = () => import(/* webpackChunkName: "group-work" */ '@/components/work/reminder')
+const WorkUrge = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-urge')
 // 未完成
-const WorkUndone = () => import(/* webpackChunkName: "group-work" */ '@/components/work/undone')
+const WorkUndone = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-undone')
 // 超时工单
-const WorkOvertime = () => import(/* webpackChunkName: "group-work" */ '@/components/work/overtime')
+const WorkOver = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-over')
 // 结案关闭
-const WorkFinish = () => import(/* webpackChunkName: "group-work" */ '@/components/work/finish')
+const WorkClose = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-close')
 // 全部
-const WorkAll = () => import(/* webpackChunkName: "group-work" */ '@/components/work/all')
+const WorkAll = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-all')
 // 异常处理规则设置
 const Rule = () => import(/* webpackChunkName: "group-rule" */ '@/components/work/rule')
 
@@ -505,48 +505,48 @@ export default new Router({
         {
           path: 'work',
           name: 'work',
-          component: WorkList,
+          component: Work,
           meta: {
             keepAlive: false
           },
           children: [
             {
-              path: 'oneself',
-              name: 'workOneself',
-              component: WorkOneself
+              path: 'work-my',
+              name: 'workMy',
+              component: WorkMy
             },
             {
-              path: 'pending',
-              name: 'workPending',
-              component: WorkPending
+              path: 'work-wait',
+              name: 'workWait',
+              component: WorkWait
             },
             {
-              path: 'follow',
+              path: 'work-follow',
               name: 'workFollow',
               component: WorkFollow
             },
             {
-              path: 'reminder',
-              name: 'workReminder',
-              component: WorkReminder
+              path: 'work-urge',
+              name: 'workUrge',
+              component: WorkUrge
             },
             {
-              path: 'undone',
+              path: 'work-undone',
               name: 'workUndone',
               component: WorkUndone
             },
             {
-              path: 'overtime',
-              name: 'workOvertime',
-              component: WorkOvertime
+              path: 'work-over',
+              name: 'workOver',
+              component: WorkOver
             },
             {
-              path: 'finish',
-              name: 'workFinish',
-              component: WorkFinish
+              path: 'work-close',
+              name: 'workClose',
+              component: WorkClose
             },
             {
-              path: 'all',
+              path: 'work-all',
               name: 'workAll',
               component: WorkAll
             }

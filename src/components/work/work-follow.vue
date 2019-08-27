@@ -1,10 +1,10 @@
 <template>
-  <div class="work-finish">
+  <div class="work-item">
     <el-table class="list-table" :data="tableData" border style="width: 100%">
       <el-table-column type="index" width="50" label="序号"></el-table-column>
       <el-table-column label="工单名称">
         <template slot-scope="scope">
-          <a href="javascript:void(0);" class="name" @click="checkDetails(scope.row.wo_id)">{{ scope.row.wo_name }}</a>
+          <a href="javascript:void(0);" class="name" @click="detClick(scope.row.wo_id)">{{ scope.row.wo_name }}</a>
         </template>
       </el-table-column>
       <el-table-column prop="wo_from" label="工单来源"></el-table-column>
@@ -26,8 +26,10 @@
           <span v-else-if="scope.row.wo_state === 2">结单</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="80">
-        <template slot-scope="scope"></template>
+      <el-table-column label="操作">
+        <template slot-scope="scope" width="80">
+          <a href="javascript:void(0);" class="com" @click="clickReminder(scope.row.wo_id)" v-if="authority.reminder">催单</a>
+        </template>
       </el-table-column>
     </el-table>
     <el-pagination
@@ -48,10 +50,13 @@
 <script>
 import { mapState } from 'vuex'
 export default{
-  name: 'workFinish',
+  name: 'workFollow',
   props: ['parentSearch'],
   data () {
     return {
+      authority: {
+        reminder: true
+      },
       tableData: [],
       total: 0,
       nowPage: 1,
@@ -64,13 +69,18 @@ export default{
   mounted () {
     // 获取列表数据
     this.getListData()
+    // 权限
+    let autDet = this.autDet
+    autDet.indexOf(53) === -1 ? this.authority.reminder = false : this.authority.reminder = true
   },
   computed: {
     ...mapState(
       {
         nowClientId: state => state.nowClientId,
+        companyName: state => state.info.companyName,
         userId: state => state.info.userId,
-        nowProid: state => state.nowProid
+        nowProid: state => state.nowProid,
+        autDet: state => state.autDet.work
       }
     )
   },
@@ -87,8 +97,8 @@ export default{
         woN_from: this.parentSearch.source,
         businessN_type: this.parentSearch.sort,
         userN_id: this.parentSearch.crews,
-        // woN_state: 8,
-        type: 8,
+        // woN_state: 1,
+        type: 1,
         page: this.nowPage,
         limit1: this.limit
       }
@@ -101,6 +111,11 @@ export default{
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
           this.tableData = res.data.data1.woos
+          // 检验是否列表为空
+          if (this.tableData.length === 0 && this.nowPage > 1) {
+            this.nowPage--
+            this.getListData()
+          }
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -133,8 +148,46 @@ export default{
       this.getListData()
     },
     // 查看详情
-    checkDetails (id) {
+    detClick (id) {
       this.$emit('parentDetails', id)
+    },
+    // 催单
+    clickReminder (id) {
+      let params = {
+        company_id: this.nowClientId,
+        user_id: this.userId,
+        project_id: this.nowProid,
+        wo_id: id
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/wo/urgeWO',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          this.$message({
+            showClose: true,
+            message: '催单成功',
+            type: 'success'
+          })
+          // 刷新列表
+          this.getListData()
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
     }
   },
   watch: {
@@ -147,7 +200,7 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.work-finish{
+.work-item{
   .paging{
     margin-top: 20px;
   }

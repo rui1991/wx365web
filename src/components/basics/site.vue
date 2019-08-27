@@ -33,9 +33,9 @@
                 <el-input style="width: 160px;" v-model.trim="nowSearch.mac"></el-input>
               </div>
               <div class="operate">
-                <el-button type="danger" v-if="authority.del" :disabled="handleDisabled" @click="delDialog = true">删除</el-button>
+                <el-button type="danger" :disabled="handleDisabled" @click="delDialog = true">删除</el-button>
                 <el-button type="primary" @click="searchList">搜索</el-button>
-                <el-button type="primary" v-if="authority.add" :disabled="addInDisabled" @click="addClick">新增</el-button>
+                <el-button type="primary" :disabled="addDisabled" @click="addDialog = true">新增</el-button>
               </div>
             </div>
             <div class="search-input">
@@ -51,9 +51,9 @@
                 </el-select>
               </div>
               <div class="operate">
-                <el-button type="primary" :disabled="qrDisabled" @click="qrcodeClick">生成二维码</el-button>
-                <el-button type="primary" v-if="authority.add" @click="upClick">导入</el-button>
-                <el-button type="primary" v-if="authority.add" :disabled="downDisabled" @click="downFile">导出</el-button>
+                <el-button type="primary" :disabled="qrDisabled" @click="qrDialog = true">生成二维码</el-button>
+                <el-button type="primary" @click="upClick">导入</el-button>
+                <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
               </div>
             </div>
           </div>
@@ -63,7 +63,7 @@
             <el-table-column prop="position_id" label="地址编号"></el-table-column>
             <el-table-column :show-overflow-tooltip="true" label="地址名称">
               <template slot-scope="scope">
-                <a href="javascript:void(0);" class="name" @click="checkDetails(scope.row.position_id)">{{ scope.row.position_name }}</a>
+                <a href="javascript:void(0);" class="name" @click="detClick(scope.row.position_id)">{{ scope.row.position_name }}</a>
               </template>
             </el-table-column>
             <el-table-column label="地址标签">
@@ -92,7 +92,7 @@
             </el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
-                <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.position_id)"  v-if="authority.com">编辑</a>
+                <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.position_id)">编辑</a>
               </template>
             </el-table-column>
           </el-table>
@@ -111,189 +111,68 @@
         </el-main>
       </el-container>
     </el-container>
-    <div id="qrcode" v-show="false">
-      <vue-qr :text="item.value" :size="200" :margin="0" :logoMargin="2" v-for="item in qrValues" :key="item.id"></vue-qr>
-    </div>
     <!-- 新增 -->
-    <el-dialog title="新增地址" :visible.sync="addDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-form class="entirety-from" :model="addForm" :rules="rules" ref="ruleAddForm" :label-width="formLabelWidth">
-        <el-form-item label="上级位置" prop="parentPath">
-          <el-input :disabled="true" v-model="addForm.parentPath"></el-input>
-        </el-form-item>
-        <el-form-item label="地址名称" prop="name">
-          <el-input v-model.trim="addForm.name" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="区域类型" prop="areaType">
-          <el-radio-group v-model="addForm.areaType">
-            <el-radio :label="1">办公室区域</el-radio>
-            <el-radio :label="2">工作区域</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="地址类型" prop="type">
-          <el-select style="width: 100%;" v-model="addForm.type" placeholder="请选择地址类型">
-            <el-option
-              v-for="item in typeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="地址标签" prop="mac">
-          <el-input v-model.trim="addForm.mac" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="关联标准" prop="norm">
-          <el-select style="width: 100%;" v-model="addForm.norm"  clearable filterable placeholder="请选择标准">
-            <el-option
-              v-for="item in normData"
-              :key="item.template_id"
-              :label="item.template_name"
-              :value="item.template_id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input type="textarea" maxlength="100" placeholder="文本长度不得超过100个字符" v-model.trim="addForm.remark" auto-complete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="resetAddForm('ruleAddForm')">取 消</el-button>
-        <el-button type="primary" :disabled="addDisabled" @click="submitAddForm('ruleAddForm')">确 定</el-button>
-      </div>
-    </el-dialog>
+    <add-module
+      :parentDialog="addDialog"
+      :parentId="siteId"
+      :parentName="siteName"
+      @parentUpdata="addUpdata"
+      @parentCancel="addCancel">
+    </add-module>
     <!-- 详情 -->
-    <el-dialog title="地址详情" :visible.sync="detDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-form class="entirety-from" :model="detForm" :label-width="formLabelWidth">
-        <el-form-item label="上级位置">
-          <el-input :disabled="true" v-model="detForm.parentPath"></el-input>
-        </el-form-item>
-        <el-form-item label="地址名称">
-          <el-input :disabled="true" v-model="detForm.name"></el-input>
-        </el-form-item>
-        <el-form-item label="区域类型">
-          <el-input :disabled="true" v-model="detForm.areaType"></el-input>
-        </el-form-item>
-        <el-form-item label="地址类型">
-          <el-input :disabled="true" v-model="detForm.type"></el-input>
-        </el-form-item>
-        <el-form-item label="地址标签">
-          <el-input :disabled="true" v-model="detForm.mac"></el-input>
-        </el-form-item>
-        <el-form-item label="关联标准">
-          <el-input :disabled="true" v-model="detForm.norm"></el-input>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input type="textarea" :disabled="true" v-model="detForm.remark"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="detDialog = false">关 闭</el-button>
-      </div>
-    </el-dialog>
+    <det-module
+      :parentDialog="detDialog"
+      :parentId="itemId"
+      @parentClose="detClose">
+    </det-module>
     <!-- 编辑 -->
-    <el-dialog title="编辑地址" :visible.sync="comDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-form class="entirety-from" :model="comForm" :rules="rules" ref="ruleComForm" :label-width="formLabelWidth">
-        <el-form-item label="上级位置" prop="parentPath">
-          <el-input :disabled="true" v-model="comForm.parentPath"></el-input>
-        </el-form-item>
-        <el-form-item label="地址名称" prop="name">
-          <el-input v-model.trim="comForm.name" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="区域类型" prop="areaType">
-          <el-radio-group v-model="comForm.areaType">
-            <el-radio :label="1">办公室区域</el-radio>
-            <el-radio :label="2">工作区域</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="地址类型" prop="type">
-          <el-select style="width: 100%;" v-model="comForm.type" placeholder="请选择地址类型">
-            <el-option
-              v-for="item in typeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="地址标签" prop="mac">
-          <el-input v-model.trim="comForm.mac" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="关联标准" prop="norm">
-          <el-select style="width: 100%;" v-model="comForm.norm" clearable filterable placeholder="请选择标准">
-            <el-option
-              v-for="item in normData"
-              :key="item.template_id"
-              :label="item.template_name"
-              :value="item.template_id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input type="textarea" maxlength="100" placeholder="文本长度不得超过100个字符" v-model.trim="comForm.remark" auto-complete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="resetComForm('ruleComForm')">取 消</el-button>
-        <el-button type="primary" :disabled="comDisabled" @click="submitComForm('ruleComForm')">确 定</el-button>
-      </div>
-    </el-dialog>
+    <com-module
+      :parentDialog="comDialog"
+      :parentId="itemId"
+      @parentUpdata="comUpdata"
+      @parentCancel="comCancel">
+    </com-module>
     <!-- 删除 -->
-    <el-dialog title="提示" :visible.sync="delDialog" :show-close="false" :close-on-click-modal="false" custom-class="hint-dialog">
-      <p class="hint-text"><i class="el-icon-warning"></i>是否要删除选中的地址？</p>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="delDialog = false">取 消</el-button>
-        <el-button type="primary" :disabled="delDisabled" @click="submitDelForm">确 定</el-button>
-      </div>
-    </el-dialog>
+    <del-module
+      :parentDialog="delDialog"
+      :parentData="multipleSelection"
+      @parentUpdata="delUpdata"
+      @parentCancel="delCancel">
+    </del-module>
     <!-- 导入 -->
-    <el-dialog title="导入地址" :visible.sync="upDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <div class="up-file">
-        <span class="txt">导入文件</span>
-        <el-upload
-          class="upload-demo"
-          :action="reqUrl"
-          :headers="reqHead"
-          :on-success="upFileSuccess"
-          :on-error="upFileError"
-          :multiple="false"
-          :file-list="fileList">
-          <el-button size="small" type="primary">点击导入</el-button>
-        </el-upload>
-        <p class="up-hint">注：请提前按照模板文件<a href="javascript:;" class="blue" @click="downTemplate">excel示例</a>的格式编辑地址信息</p>
-        <!--<p class="up-hint">&nbsp;&nbsp;&nbsp;&nbsp;2.导入的用户文件仅支持excel文件</p>-->
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="upDialog = false">关闭</el-button>
-      </div>
-    </el-dialog>
+    <up-module
+      :parentDialog="upDialog"
+      @parentUpdata="upUpdata"
+      @parentClose="upClose">
+    </up-module>
+    <!-- 二维码 -->
+    <qr-module
+      v-show="false"
+      :parentDialog="qrDialog"
+      :parentData="multipleSelection"
+      @parentFinish="qrFinish">
+    </qr-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import VueQr from 'vue-qr'
+// 引入新增组件
+import addModule from '@/components/basics/site-add'
+// 引入详情组件
+import detModule from '@/components/basics/site-det'
+// 引入编辑组件
+import comModule from '@/components/basics/site-com'
+// 引入删除组件
+import delModule from '@/components/basics/site-del'
+// 引入上传组件
+import upModule from '@/components/basics/site-up'
+// 引入二维码组件
+import qrModule from '@/components/basics/site-qr'
 export default{
   name: 'site',
   data () {
-    let checkMac = (rule, value, callback) => {
-      let regex = /^[a-zA-Z0-9]{8,12}$/
-      const formValue = value.replace(/:/g, '')
-      if (formValue) {
-        if (formValue.match(regex)) {
-          callback()
-        } else {
-          callback(new Error('你输入的mac格式有误，请认真核对'))
-        }
-      } else {
-        callback()
-      }
-    }
     return {
-      authority: {
-        add: true,
-        com: true,
-        del: true
-      },
       search: {
         name: '',
         mac: '',
@@ -328,83 +207,30 @@ export default{
       total: 0,
       nowPage: 1,
       limit: 10,
-      addInDisabled: true,
+      addDisabled: true,
       addDialog: false,
-      addForm: {
-        parentPath: '',
-        name: '',
-        areaType: 2,
-        type: 0,
-        mac: '',
-        norm: '',
-        remark: ''
-      },
-      addDisabled: false,
       detDialog: false,
-      detForm: {
-        parentPath: '',
-        name: '',
-        areaType: '',
-        type: '',
-        mac: '',
-        norm: '',
-        remark: ''
-      },
       comDialog: false,
-      comForm: {
-        parentId: '',
-        parentPath: '',
-        name: '',
-        areaType: '',
-        type: '',
-        mac: '',
-        norm: '',
-        remark: ''
-      },
-      comDisabled: false,
-      rules: {
-        name: [
-          { required: true, message: '请输入地址名称', trigger: 'blur' }
-        ],
-        areaType: [
-          { required: true, message: '请选择区域类型', trigger: 'change' }
-        ],
-        mac: [
-          { validator: checkMac, trigger: 'blur' }
-        ]
-      },
-      formLabelWidth: '100px',
-      normData: [],
       delDialog: false,
       handleDisabled: true,
-      delDisabled: false,
       itemId: '',
       upDialog: false,
       downDisabled: false,
-      reqUrl: '',
-      reqHead: {
-        token: sessionStorage.getItem('wxWebToken'),
-        user_id: sessionStorage.getItem('wxWebUserId')
-      },
-      fileList: [],
-      qrDisabled: true,
-      qrUrl: this.baseUrl() + '/posdet/#/details',
-      qrValues: []
+      qrDialog: false,
+      qrDisabled: true
     }
   },
   created () {
     // 获取地址树
     this.getSiteTree()
-    // 获取标准
-    this.getNormData()
-    // 权限
-    let autDet = this.autDet
-    autDet.indexOf(26) === -1 ? this.authority.add = false : this.authority.add = true
-    autDet.indexOf(27) === -1 ? this.authority.com = false : this.authority.com = true
-    autDet.indexOf(28) === -1 ? this.authority.del = false : this.authority.del = true
   },
   components: {
-    VueQr
+    addModule,
+    detModule,
+    comModule,
+    delModule,
+    upModule,
+    qrModule
   },
   computed: {
     ...mapState(
@@ -412,8 +238,7 @@ export default{
         nowClientId: state => state.nowClientId,
         userId: state => state.info.userId,
         nowProid: state => state.nowProid,
-        nowProname: state => state.nowProname,
-        autDet: state => state.autDet.site
+        nowProname: state => state.nowProname
       }
     )
   },
@@ -592,425 +417,68 @@ export default{
       // 获取列表数据
       this.getListData()
     },
+    // 获取列表选中项
+    handleSelectionChange (data) {
+      this.multipleSelection = data
+    },
     /* 新增 */
-    addClick () {
-      this.addDialog = true
-      this.addForm = {
-        parentPath: this.siteName,
-        name: '',
-        areaType: 2,
-        type: 0,
-        mac: '',
-        norm: '',
-        remark: ''
-      }
+    addUpdata () {
+      this.addDialog = false
+      // 刷新地址树
+      this.getSiteTree(true)
+      // 更新列表
+      this.getListData()
     },
-    // 验证表单
-    submitAddForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.sendAddRequest()
-        } else {
-          return false
-        }
-      })
-    },
-    // 重置表单
-    resetAddForm (formName) {
-      this.$refs[formName].resetFields()
+    addCancel () {
       this.addDialog = false
     },
-    // 提交
-    sendAddRequest () {
-      let mac = this.addForm.mac
-      mac = this.formatSetMac(mac)
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        parent_po_id: this.siteId.replace(/w/g, ''),
-        parent_address: this.addForm.parentPath,
-        position_name: this.addForm.name,
-        area_type: this.addForm.areaType,
-        position_type: this.addForm.type,
-        position_mac: mac,
-        template_id: this.addForm.norm || 0,
-        instructions: this.addForm.remark,
-        depth: 1
-      }
-      params = this.$qs.stringify(params)
-      this.addDisabled = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/addPosition',
-        data: params
-      }).then((res) => {
-        this.addDisabled = false
-        if (res.data.result === 'Sucess') {
-          // 重置表单
-          this.resetAddForm('ruleAddForm')
-          // 刷新树
-          this.getSiteTree()
-          // 刷新列表
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.addDisabled = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
     /* 详情 */
-    checkDetails (id) {
+    detClick (id) {
+      this.itemId = id
       this.detDialog = true
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        position_id: id
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/apk/selPositionOnly',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const itemData = res.data.data1
-          // 区域类型
-          const areaNum = itemData.area_type || ''
-          let areaType = ''
-          if (areaNum === 1) {
-            areaType = '办公室区域'
-          } else if (areaNum === 2) {
-            areaType = '工作区域'
-          }
-          // 地址类型
-          const typeNum = itemData.position_type
-          let type = ''
-          if (typeNum === 0) {
-            type = '巡检地址'
-          } else if (typeNum === 6) {
-            type = '固定岗位'
-          }
-          // Mac地址
-          let mac = itemData.position_mac
-          mac = this.formatGetMac(mac)
-          this.detForm = {
-            parentPath: itemData.parent_address,
-            name: itemData.position_name,
-            areaType: areaType,
-            type: type,
-            mac: mac,
-            norm: itemData.template_name || '',
-            remark: itemData.instructions
-          }
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    },
+    detClose () {
+      this.detDialog = false
     },
     /* 编辑 */
     comClick (id) {
       this.itemId = id
       this.comDialog = true
-      this.comForm = {
-        parentId: '',
-        parentPath: '',
-        name: '',
-        areaType: '',
-        type: '',
-        mac: '',
-        norm: '',
-        remark: ''
-      }
-      this.getComItem()
     },
-    getComItem () {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        position_id: this.itemId
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/apk/selPositionOnly',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const itemData = res.data.data1
-          // Mac地址
-          let mac = itemData.position_mac
-          mac = this.formatGetMac(mac)
-          this.comForm = {
-            parentId: itemData.parent_po_id,
-            parentPath: itemData.parent_address,
-            name: itemData.position_name,
-            areaType: itemData.area_type || '',
-            type: itemData.position_type,
-            mac: mac,
-            norm: itemData.template_id || '',
-            remark: itemData.instructions
-          }
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    comUpdata () {
+      this.comDialog = false
+      // 刷新地址树
+      this.getSiteTree(true)
+      // 更新列表
+      this.getListData()
     },
-    // 验证表单
-    submitComForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.sendComRequest()
-        } else {
-          return false
-        }
-      })
-    },
-    // 重置表单
-    resetComForm (formName) {
-      this.$refs[formName].resetFields()
+    comCancel () {
       this.comDialog = false
     },
-    // 提交
-    sendComRequest () {
-      let mac = this.comForm.mac
-      mac = this.formatSetMac(mac)
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        position_id: this.itemId,
-        parent_po_id: this.comForm.parentId,
-        position_name: this.comForm.name,
-        area_type: this.comForm.areaType,
-        position_type: this.comForm.type,
-        position_mac: mac,
-        template_id: this.comForm.norm || 0,
-        instructions: this.comForm.remark
-      }
-      params = this.$qs.stringify(params)
-      this.comDisabled = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/alterPosition',
-        data: params
-      }).then((res) => {
-        this.comDisabled = false
-        if (res.data.result === 'Sucess') {
-          // 重置表单
-          this.resetComForm('ruleComForm')
-          // 刷新树
-          this.getSiteTree()
-          // 刷新列表
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.comDisabled = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 格式化获取Mac地址
-    formatGetMac (str) {
-      if (!str) { return '' }
-      let value = str.toUpperCase()
-      value = value.replace(/:/g, '')
-      value = value.replace(/(.{2})/g, '$1:')
-      const lastStr = value.charAt(value.length - 1)
-      return lastStr === ':' ? value.substr(0, value.length - 1) : value
-    },
-    // 格式化设置Mac地址
-    formatSetMac (str) {
-      if (!str) { return '' }
-      const mac = str.replace(/:/g, '')
-      let value = mac.toLowerCase()
-      return value
-    },
     /* 删除 */
-    // 获取选中项
-    handleSelectionChange (data) {
-      this.multipleSelection = data
+    delUpdata () {
+      this.delDialog = false
+      // 刷新地址树
+      this.getSiteTree(true)
+      // 更新列表
+      this.getListData()
     },
-    submitDelForm () {
-      let ids = []
-      this.multipleSelection.map((item) => {
-        ids.push(item.position_id)
-      })
-      ids = ids.join(',')
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        position_id: ids
-      }
-      params = this.$qs.stringify(params)
-      this.delDisabled = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/delPosition',
-        data: params
-      }).then((res) => {
-        this.delDisabled = false
-        if (res.data.result === 'Sucess') {
-          // 隐藏弹框
-          this.delDialog = false
-          // 刷新树
-          this.getSiteTree()
-          // 刷新列表
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.delDisabled = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    /* 获取标准 */
-    getNormData () {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        projectN_id: this.nowProid,
-        page: 1,
-        limit1: 1000
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/inspection/selTemplateBySearch',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          let normData = res.data.data1.templates || []
-          this.normData = normData
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    delCancel () {
+      this.delDialog = false
     },
     /* 导入 */
     upClick () {
       this.upDialog = true
-      let params = {
-        state: 17,
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid
-      }
-      params = this.$qs.stringify(params)
-      const reqUrl = this.sysetApi() + '/upload?' + params
-      this.reqUrl = reqUrl
-      // 清空导入文件提示
-      this.fileList = []
     },
-    upFileSuccess (data) {
-      if (data[0].msg === '0') {
-        // [{"msg":"0","filename":"20190114111721866.xls","errorMsg":""}]
-        this.$message({
-          showClose: true,
-          message: '文件导入成功',
-          type: 'success'
-        })
-        // 关闭导入框
-        this.upDialog = false
-        // 清空导入文件提示
-        this.fileList = []
-        // 刷新树
-        this.getSiteTree()
-        // 刷新列表
-        this.getListData()
-      } else if (data[0].msg === '1') {
-        this.$message({
-          showClose: true,
-          message: '请检查文档填写是否符合规范且名称和MAC地址是否重复！',
-          type: 'error'
-        })
-      } else {
-        this.$message({
-          showClose: true,
-          message: '文件导入失败！',
-          type: 'error'
-        })
-      }
+    upUpdata () {
+      this.upDialog = false
+      // 刷新地址树
+      this.getSiteTree(true)
+      // 更新列表
+      this.getListData()
     },
-    upFileError () {
-      this.$message({
-        showClose: true,
-        message: '文件导入失败！',
-        type: 'error'
-      })
-    },
-    /* 下载 */
-    // 下载模板
-    downTemplate () {
-      window.location.href = this.sysetApi() + '/v3.7.3/poModelEO?project_id=' + this.nowProid
+    upClose () {
+      this.upDialog = false
     },
     // 导出文件
     downFile () {
@@ -1028,33 +496,8 @@ export default{
       window.location.href = this.sysetApi() + '/positionEO?' + params
     },
     /* 生成二维码 */
-    qrcodeClick () {
-      let qrValues = []
-      this.multipleSelection.forEach((item) => {
-        qrValues.push(
-          {
-            id: item.position_id,
-            name: item.position_name,
-            value: this.qrUrl + '?proid=' + this.nowProid + '&posid=' + item.position_id
-          }
-        )
-      })
-      this.qrValues = qrValues
-      setTimeout(() => {
-        this.downQrcode()
-      }, 500)
-    },
-    downQrcode () {
-      const qrValues = this.qrValues
-      const eles = document.querySelectorAll('#qrcode img')
-      for (let i = 0; i < qrValues.length; i++) {
-        const iconUrl = eles[i].src
-        let a = document.createElement('a')
-        let event = new MouseEvent('click')
-        a.download = qrValues[i].name
-        a.href = iconUrl
-        a.dispatchEvent(event)
-      }
+    qrFinish () {
+      this.qrDialog = false
     }
   },
   filters: {
@@ -1070,9 +513,9 @@ export default{
   watch: {
     siteId (newVal, oldVal) {
       if (newVal.indexOf('w') !== -1) {
-        this.addInDisabled = false
+        this.addDisabled = false
       } else {
-        this.addInDisabled = true
+        this.addDisabled = true
       }
     },
     multipleSelection (newVal, oldVal) {

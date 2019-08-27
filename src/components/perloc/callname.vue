@@ -1,5 +1,10 @@
 <template>
-  <div class="callname">
+  <div
+    class="callname"
+    v-loading="loading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -143,8 +148,8 @@ export default{
           value: 0
         }
       ],
-      logData: [],
       tableData: [],
+      loading: false,
       total: 0,
       nowPage: 1,
       limit: 10,
@@ -205,11 +210,13 @@ export default{
         limit1: this.limit
       }
       params = this.$qs.stringify(params)
+      this.loading = true
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/v2.0/selRollCallResult',
         data: params
       }).then((res) => {
+        this.loading = false
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
           this.tableData = res.data.data1.rcs
@@ -227,6 +234,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.loading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',

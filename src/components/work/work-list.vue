@@ -1,10 +1,10 @@
 <template>
-  <div class="work-pending">
+  <div class="work-list">
     <el-table class="list-table" :data="tableData" border style="width: 100%">
       <el-table-column type="index" width="50" label="序号"></el-table-column>
       <el-table-column label="工单名称">
         <template slot-scope="scope">
-          <a href="javascript:void(0);" class="name" @click="checkDetails(scope.row.wo_id)">{{ scope.row.wo_name }}</a>
+          <a href="javascript:void(0);" class="name" @click="detClick(scope.row.wo_id)">{{ scope.row.wo_name }}</a>
         </template>
       </el-table-column>
       <el-table-column prop="wo_from" label="工单来源"></el-table-column>
@@ -26,10 +26,17 @@
           <span v-else-if="scope.row.wo_state === 2">结单</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="180">
+      <el-table-column label="操作" width="300">
         <template slot-scope="scope">
-          <a href="javascript:void(0);" class="operate com" @click="clickDispatch(scope.row.wo_id)" v-if="authority.dispatch">派单</a>
-          <a href="javascript:void(0);" class="operate com" @click="clickOrder(scope.row.wo_id)" v-if="authority.order">接单</a>
+          <a href="javascript:void(0);" class="operate com" @click="addLogClick(scope.row.wo_id)" v-if="parentType === '5'">追加日志</a>
+          <a href="javascript:void(0);" class="operate com" @click="closeClick(scope.row.wo_id)" v-if="scope.row.wo_state === 1 && parentType === '5'">结单</a>
+          <span class="operate forbid" v-else-if="scope.row.wo_state === 2 && parentType === '5'">已结单</span>
+          <a href="javascript:void(0);" class="operate com" @click="returnClick(scope.row.wo_id)" v-if="scope.row.wo_state === 1 && parentType === '5'">退单</a>
+          <span class="operate forbid" v-else-if="scope.row.wo_state === 2 && parentType === '5'">退单</span>
+          <a href="javascript:void(0);" class="operate com" @click="crewClick(scope.row.wo_id)" v-if="authority.dispatch && parentType === '0'">派单</a>
+          <a href="javascript:void(0);" class="operate com" @click="orderClick(scope.row.wo_id)" v-if="authority.order && parentType === '0'">接单</a>
+          <a href="javascript:void(0);" class="com" @click="reminderClick(scope.row.wo_id)" v-if="authority.reminder && parentType === '1'">催单</a>
+          <a href="javascript:void(0);" class="com" @click="reminderClick(scope.row.wo_id)" v-if="authority.reminder && parentType === '6'">催单</a>
         </template>
       </el-table-column>
     </el-table>
@@ -45,52 +52,66 @@
       @current-change="pageChang"
       :total="total">
     </el-pagination>
-    <!-- 人员 -->
-    <el-dialog title="选择人员" :visible.sync="crewDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-input placeholder="请输入人员姓名" prefix-icon="el-icon-search" v-model="crewfilter" style="width: 40%; margin-bottom: 10px;"></el-input>
-      <el-table class="select-table" :data="crewOptions" style="width: 100%" max-height="360">
-        <el-table-column label="" width="65">
-          <template slot-scope="scope">
-            <el-radio v-model="radioCrewId" :label="scope.row.user_id">&nbsp;&nbsp;</el-radio>
-          </template>
-        </el-table-column>
-        <el-table-column prop="user_name" label="姓名"></el-table-column>
-        <el-table-column prop="user_phone" label="联系方式"></el-table-column>
-      </el-table>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="crewDialog = false">取 消</el-button>
-        <el-button type="primary" :disabled="crewDisabled" @click="sendOrders(radioCrewId)">确 定</el-button>
-      </div>
-    </el-dialog>
+    <!-- 详情 -->
+    <det-module
+      :parentDialog="detDialog"
+      :parentId="itemId"
+      @parentClose="detClose">
+    </det-module>
+    <!-- 追加日志 -->
+    <log-module
+      :parentDialog="logDialog"
+      :parentId="itemId"
+      @parentUpdata="logUpdata"
+      @parentCancel="logCancel">
+    </log-module>
+    <!-- 退单 -->
+    <return-module
+      :parentDialog="returnDialog"
+      :parentId="itemId"
+      @parentUpdata="returnUpdata"
+      @parentCancel="returnCancel">
+    </return-module>
+    <!-- 派单 -->
+    <crew-module
+      :parentDialog="crewDialog"
+      :parentId="itemId"
+      @parentUpdata="crewUpdata"
+      @parentCancel="crewCancel">
+    </crew-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入详情组件
+import detModule from '@/components/work/work-det'
+// 追加日志
+import logModule from '@/components/work/work-log'
+// 退单
+import returnModule from '@/components/work/work-return'
+// 引入派单组件
+import crewModule from '@/components/work/work-crew'
 export default{
-  name: 'workPending',
-  props: ['parentSearch'],
+  name: 'workMy',
+  props: ['parentSearch', 'parentType'],
   data () {
     return {
       authority: {
         dispatch: true,
-        order: true
+        order: true,
+        reminder: true
       },
       tableData: [],
       total: 0,
       nowPage: 1,
       limit: 10,
       itemId: '',
-      crewDialog: false,
-      crewDisabled: true,
-      crewOptions: [],
-      ocrewOptions: [],
-      crewfilter: '',
-      radioCrewId: ''
+      detDialog: false,
+      logDialog: false,
+      returnDialog: false,
+      crewDialog: false
     }
-  },
-  created () {
-
   },
   mounted () {
     // 获取列表数据
@@ -99,6 +120,13 @@ export default{
     let autDet = this.autDet
     autDet.indexOf(51) === -1 ? this.authority.dispatch = false : this.authority.dispatch = true
     autDet.indexOf(52) === -1 ? this.authority.order = false : this.authority.order = true
+    autDet.indexOf(53) === -1 ? this.authority.reminder = false : this.authority.reminder = true
+  },
+  components: {
+    detModule,
+    logModule,
+    returnModule,
+    crewModule
   },
   computed: {
     ...mapState(
@@ -106,7 +134,6 @@ export default{
         nowClientId: state => state.nowClientId,
         userId: state => state.info.userId,
         nowProid: state => state.nowProid,
-        nowOrgid: state => state.nowOrgid,
         autDet: state => state.autDet.work
       }
     )
@@ -124,8 +151,8 @@ export default{
         woN_from: this.parentSearch.source,
         businessN_type: this.parentSearch.sort,
         userN_id: this.parentSearch.crews,
-        // woN_state: 0,
-        type: 0,
+        // woN_state: 5,
+        type: this.parentType,
         page: this.nowPage,
         limit1: this.limit
       }
@@ -175,40 +202,59 @@ export default{
       this.getListData()
     },
     // 查看详情
-    checkDetails (id) {
-      this.$emit('parentDetails', id)
-    },
-    // 派单
-    clickDispatch (id) {
+    detClick (id) {
       this.itemId = id
-      this.crewDialog = true
-      if (this.crewOptions.length === 0) {
-        this.getCrewOptions()
-      } else {
-        this.crewfilter = ''
-        this.radioCrewId = ''
-      }
+      this.detDialog = true
     },
-    // 获取项目人员
-    getCrewOptions () {
+    detClose () {
+      this.detDialog = false
+    },
+    /* 追加日志 */
+    addLogClick (id) {
+      this.itemId = id
+      this.logDialog = true
+    },
+    logUpdata () {
+      this.logDialog = false
+    },
+    logCancel () {
+      this.logDialog = false
+    },
+    /* 退单 */
+    returnClick (id) {
+      this.itemId = id
+      this.returnDialog = true
+    },
+    returnUpdata () {
+      this.returnDialog = false
+      // 刷新列表
+      this.getListData()
+    },
+    returnCancel () {
+      this.returnDialog = false
+    },
+    /* 结单 */
+    closeClick (id) {
       let params = {
-        organize_id: this.nowOrgid,
-        user_name: '',
-        user_phone: '',
-        role_id: '',
-        page: 1,
-        limit1: 10000
+        company_id: this.nowClientId,
+        user_id: this.userId,
+        project_id: this.nowProid,
+        wo_id: id
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.2/selUser',
+        url: this.sysetApi() + '/wo/updateWoClose',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          let crewData = res.data.data1.users
-          this.crewOptions = crewData
-          this.ocrewOptions = crewData
+          this.$message({
+            showClose: true,
+            message: '结单成功',
+            type: 'success'
+          })
+          // 刷新列表
+          this.getListData()
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -225,19 +271,28 @@ export default{
         })
       })
     },
-    // 接单
-    clickOrder (id) {
+    /* 派单 */
+    crewClick (id) {
       this.itemId = id
-      this.sendOrders(this.userId)
+      this.crewDialog = true
     },
-    sendOrders (id) {
+    crewUpdata () {
+      this.crewDialog = false
+      // 刷新列表
+      this.getListData()
+    },
+    crewCancel () {
+      this.crewDialog = false
+    },
+    /* 接单 */
+    orderClick (id) {
       let params = {
         company_id: this.nowClientId,
         user_id: this.userId,
         project_id: this.nowProid,
         projectN_id: this.nowProid,
-        userN_id: id,
-        wo_id: this.itemId
+        userN_id: this.userId,
+        wo_id: id
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -246,20 +301,49 @@ export default{
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          if (this.crewDialog) {
-            this.crewDialog = false
-            this.$message({
-              showClose: true,
-              message: '派单成功',
-              type: 'success'
-            })
-          } else {
-            this.$message({
-              showClose: true,
-              message: '接单成功',
-              type: 'success'
-            })
-          }
+          this.$message({
+            showClose: true,
+            message: '接单成功',
+            type: 'success'
+          })
+          // 刷新列表
+          this.getListData()
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
+    // 催单
+    reminderClick (id) {
+      let params = {
+        company_id: this.nowClientId,
+        user_id: this.userId,
+        project_id: this.nowProid,
+        wo_id: id
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/wo/urgeWO',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          this.$message({
+            showClose: true,
+            message: '催单成功',
+            type: 'success'
+          })
           // 刷新列表
           this.getListData()
         } else {
@@ -284,22 +368,16 @@ export default{
       this.nowPage = 1
       this.getListData()
     },
-    crewfilter (val, oldVal) {
-      this.crewOptions = this.ocrewOptions.filter(item => (~item.user_name.indexOf(val)))
-    },
-    radioCrewId (val, oldVal) {
-      if (val) {
-        this.crewDisabled = false
-      } else {
-        this.crewDisabled = true
-      }
+    parentType (val, oldVal) {
+      this.nowPage = 1
+      this.getListData()
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.work-pending{
+.work-list{
   .paging{
     margin-top: 20px;
   }

@@ -1,8 +1,8 @@
 <template>
-  <el-dialog title="用户绑卡" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+  <el-dialog title="退单" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
     <el-form class="entirety-from" :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
-      <el-form-item label="卡片MAC" prop="mac">
-        <el-input v-model.trim="formData.mac" auto-complete="off"></el-input>
+      <el-form-item label="退单原因" prop="content">
+        <el-input type="textarea" v-model.trim="formData.content"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -15,49 +15,35 @@
 <script>
 import { mapState } from 'vuex'
 export default{
-  props: ['parentDialog', 'parentId', 'parentComId', 'parentPro'],
+  props: ['parentDialog', 'parentId'],
   data () {
-    let checkMac = (rule, value, callback) => {
-      const formValue = value.replace(/:/g, '')
-      let regex = /^[a-zA-Z0-9]{12}$/
-      if (formValue) {
-        if (formValue.match(regex)) {
-          callback()
-        } else {
-          callback(new Error('你输入的mac地址格式有误，请认真核对'))
-        }
-      } else {
-        callback(new Error('请输入mac地址'))
-      }
-    }
     return {
       formLabelWidth: '100px',
-      formData: {
-        mac: ''
-      },
       rules: {
-        mac: [
-          { required: true, validator: checkMac, trigger: 'blur' }
+        content: [
+          { required: true, message: '请输入退单原因', trigger: 'blur' }
         ]
+      },
+      formData: {
+        content: ''
       },
       disabled: false
     }
   },
-  created () {
-
-  },
   computed: {
     ...mapState(
       {
-        userId: state => state.info.userId
+        nowClientId: state => state.nowClientId,
+        userId: state => state.info.userId,
+        userName: state => state.info.userName,
+        nowProid: state => state.nowProid
       }
     )
   },
   methods: {
-    // 初始化数据
-    bindInit () {
+    returnInit () {
       this.formData = {
-        mac: ''
+        content: ''
       }
     },
     // 验证表单
@@ -76,24 +62,27 @@ export default{
     },
     // 提交
     sendRequest () {
-      let mac = this.formatCardMac(this.formData.mac)
       let params = {
-        company_id: this.parentComId,
-        project_id: this.parentPro,
+        company_id: this.nowClientId,
         user_id: this.userId,
-        bind_user: this.parentId,
-        card_mac: mac,
-        type: '1'
+        project_id: this.nowProid,
+        wo_id: this.parentId,
+        reason: this.formData.content
       }
       params = this.$qs.stringify(params)
       this.disabled = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.5/setCardBind',
+        url: this.sysetApi() + '/wo/backWO',
         data: params
       }).then((res) => {
         this.disabled = false
         if (res.data.result === 'Sucess') {
+          this.$message({
+            showClose: true,
+            message: '退单成功',
+            type: 'success'
+          })
           // 重置表单
           this.resetForm('ruleForm')
           // 刷新列表
@@ -120,19 +109,12 @@ export default{
       // 重置表单
       this.resetForm('ruleForm')
       this.$emit('parentCancel')
-    },
-    // 格式化卡片mac
-    formatCardMac (str) {
-      if (!str) { return '' }
-      let value = str.toUpperCase()
-      value = value.replace(/:/g, '')
-      return value
     }
   },
   watch: {
     parentDialog (val, oldVal) {
       if (val) {
-        this.bindInit()
+        this.returnInit()
       }
     }
   }
@@ -140,5 +122,9 @@ export default{
 </script>
 
 <style lang="less" scoped>
-
+.work-item{
+  .paging{
+    margin-top: 20px;
+  }
+}
 </style>

@@ -13,7 +13,7 @@
           <el-table-column type="index" width="50" label="序号"></el-table-column>
           <el-table-column label="岗位地址" width="160">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="name" @click="checkDetails(scope.row.message)">{{ scope.row.position_name }}</a>
+              <a href="javascript:void(0);" class="name" @click="detClick(scope.row.message)">{{ scope.row.position_name }}</a>
             </template>
           </el-table-column>
           <el-table-column label="时间段" class-name="multi-row">
@@ -33,81 +33,49 @@
           prev-text="上一页"
           next-text="下一页"
           :current-page="nowPage"
-          layout="prev, pager, next, total"
+          layout="sizes, prev, pager, next, total"
+          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+          :page-size="limit"
+          @size-change="handleSizeChange"
           @current-change="pageChang"
           :total="total">
         </el-pagination>
       </el-main>
     </el-container>
-    <!-- 编辑 -->
-    <el-dialog title="编辑打卡规则" :visible.sync="comDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <div style="margin-bottom: 10px; text-align: right;">
-        <el-button type="primary" @click="addTime">添加时段</el-button>
-      </div>
-      <el-form :model="comForm" :rules="rules" ref="ruleComForm" :label-width="formLabelWidth">
-        <el-form-item label="时间段" required v-for="(item, index) in comForm.times" :key="index">
-          <el-col :span="14">
-            <el-form-item prop="time" style="width: 240px;">
-              <el-time-picker
-                style="width: 240px;"
-                is-range
-                arrow-control
-                v-model="item.time"
-                :clearable="false"
-                value-format="HH:mm"
-                format="HH:mm"
-                :time-arrow-control="true"
-                range-separator="至"
-                start-placeholder="开始时间"
-                end-placeholder="结束时间"
-                placeholder="选择时间范围">
-              </el-time-picker>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item prop="frequency">
-              <el-input v-model.number="item.frequency" auto-complete="off" type="number">
-                <template slot="append">次</template>
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="4" style="text-align: right; font-size: 20px;"><i class="el-icon-delete red" style="cursor: pointer;" @click="delTime(index)"></i></el-col>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="resetComForm('ruleComForm')">取 消</el-button>
-        <el-button type="primary" :disabled="comDisabled" @click="submitComForm('ruleComForm')">确 定</el-button>
-      </div>
-    </el-dialog>
     <!-- 详情 -->
-    <el-dialog title="规则详情" :visible.sync="detDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-table class="select-table" :data="detData" stripe style="width: 100%" max-height="420">
-        <el-table-column type="index" width="50" label="序号"></el-table-column>
-        <el-table-column prop="start_time" label="开始时间"></el-table-column>
-        <el-table-column prop="end_time" label="结束时间"></el-table-column>
-        <el-table-column label="打卡次数">
-          <template slot-scope="scope">
-            <span>1</span>
-          </template>
-        </el-table-column>
-      </el-table>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="detDialog = false">关 闭</el-button>
-      </div>
-    </el-dialog>
+    <det-module
+      :parentDialog="detDialog"
+      :parentTimes="times"
+      @parentClose="detClose">
+    </det-module>
+    <!-- 编辑 -->
+    <com-module
+      :parentDialog="comDialog"
+      :parentId="itemId"
+      :parentTimes="times"
+      @parentUpdata="comUpdata"
+      @parentCancel="comCancel">
+    </com-module>
     <!-- 删除 -->
-    <el-dialog title="提示" :visible.sync="delDialog" :show-close="false" :close-on-click-modal="false" custom-class="hint-dialog">
-      <p class="hint-text"><i class="el-icon-warning"></i>是否要删除固定岗位设置？</p>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="delDialog = false">取 消</el-button>
-        <el-button type="primary" :disabled="delDisabled" @click="submitDelForm">确 定</el-button>
-      </span>
-    </el-dialog>
+    <del-module
+      :parentDialog="delDialog"
+      :parentId="itemId"
+      :parentTimes="times"
+      @parentUpdata="delUpdata"
+      @parentCancel="delCancel">
+    </del-module>
+
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入详情组件
+import detModule from '@/components/polling/fixedpost-det2'
+// 引入编辑组件
+import comModule from '@/components/polling/fixedpost-com'
+// 引入删除组件
+import delModule from '@/components/polling/fixedpost-del'
 export default{
   name: 'fixedpostSet',
   data () {
@@ -117,23 +85,10 @@ export default{
       nowPage: 1,
       limit: 10,
       itemId: '',
-      formLabelWidth: '100px',
-      rules: {
-        // time: [
-        // ]
-        // frequency: [
-        //   { required: true, validator: checkFrequency, trigger: 'blur' }
-        // ]
-      },
-      comForm: {
-        times: []
-      },
-      comDialog: false,
-      comDisabled: false,
+      times: '',
       detDialog: false,
-      detData: [],
-      delDialog: false,
-      delDisabled: false
+      comDialog: false,
+      delDialog: false
     }
   },
   created () {
@@ -142,11 +97,15 @@ export default{
     // 查询列表数据
     this.getListData()
   },
+  components: {
+    detModule,
+    comModule,
+    delModule
+  },
   computed: {
     ...mapState(
       {
         nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
         userId: state => state.info.userId,
         nowProid: state => state.nowProid
       }
@@ -192,244 +151,63 @@ export default{
         })
       })
     },
+    // 切换单页大小
+    handleSizeChange (limit) {
+      // 设置大小
+      this.limit = limit
+      // 初始化页码
+      this.nowPage = 1
+      // 获取列表数据
+      this.getListData()
+    },
     // 点击分页
     pageChang (page) {
       this.nowPage = page
       // 获取列表数据
       this.getListData()
     },
-    /* 岗位详情 */
-    checkDetails (timeStr) {
-      this.detDialog = true
-      const times = JSON.parse(timeStr)
-      let detData = []
-      times.forEach(item => {
-        const time = item.time.split('-')
-        const detItem = this.proTimeDet(time[0], time[1], item.frequency)
-        detData = detData.concat(detItem)
-      })
-      this.detData = detData
-    },
-    /* 处理时间段 */
-    proTimeDet (time1, time2, count) {
-      // 开始时间
-      const startTime = this.proTimeSecond(time1)
-      // 结束时间
-      const endTime = this.proTimeSecond(time2)
-      // 单位时间
-      const unitTime = Math.round((endTime - startTime) / count)
-      // 时间段
-      let timeNodes = []
-      for (let i = 0; i < count; i++) {
-        let startNode = startTime + unitTime * i
-        startNode = this.formatTimeNode(startNode)
-        let endNode = startTime + unitTime * (i + 1)
-        endNode = this.formatTimeNode(endNode)
-        timeNodes.push(
-          {
-            start_time: startNode,
-            end_time: endNode
-          }
-        )
+    /* 详情 */
+    detClick (timeStr) {
+      let times = []
+      if (timeStr) {
+        times = JSON.parse(timeStr)
       }
-      return timeNodes
+      this.times = times
+      this.detDialog = true
     },
-    /* 编辑时间段 */
+    detClose () {
+      this.detDialog = false
+    },
+    /* 编辑 */
     comClick (id, timeStr) {
       this.itemId = id
-      this.comDialog = true
-      const times = this.formatTimes(timeStr)
-      this.comForm.times = times
-    },
-    formatTimes (str) {
-      if (!str) { return [] }
-      const timeData = JSON.parse(str)
       let times = []
-      timeData.forEach(item => {
-        times.push(
-          {
-            time: item.time.split('-'),
-            frequency: item.frequency
-          }
-        )
-      })
-      return times
+      if (timeStr) {
+        times = JSON.parse(timeStr)
+      }
+      this.times = times
+      this.comDialog = true
     },
-    // 添加时段
-    addTime () {
-      this.comForm.times.push(
-        {
-          time: ['00:00', '23:59'],
-          frequency: 1
-        }
-      )
-    },
-    // 删除时段
-    delTime (index) {
-      this.comForm.times.splice(index, 1)
-    },
-    // 验证表单
-    submitComForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.sendComRequest()
-        } else {
-          return false
-        }
-      })
-    },
-    // 重置表单
-    resetComForm (formName) {
-      this.$refs[formName].resetFields()
+    comUpdata () {
       this.comDialog = false
+      // 更新列表
+      this.getListData()
     },
-    // 提交
-    sendComRequest () {
-      // 全部时段
-      const allData = this.comForm.times
-      if (allData.length === 0) {
-        this.$message({
-          showClose: true,
-          message: '请添加时段！',
-          type: 'warning'
-        })
-        return
-      }
-      let allTime = []
-      let detData = []
-      allData.forEach(item => {
-        let frequency = Number.parseInt(item.frequency)
-        if (frequency <= 0) {
-          frequency = 1
-        }
-        const detItem = this.proTimeNode(item.time[0], item.time[1], frequency)
-        detData = detData.concat(detItem)
-        allTime.push(
-          {
-            time: item.time[0] + '-' + item.time[1],
-            frequency: frequency
-          }
-        )
-      })
-      allTime = JSON.stringify(allTime)
-      const detTime = detData.join('/')
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        position_id: this.itemId,
-        all: allTime,
-        det: detTime
-      }
-      params = this.$qs.stringify(params)
-      this.comDisabled = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v1.0/setPermanentPosition',
-        data: params
-      }).then((res) => {
-        this.comDisabled = false
-        if (res.data.result === 'Sucess') {
-          // 重置表单
-          this.resetComForm('ruleComForm')
-          // 刷新列表
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.comDisabled = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    /* 处理时间段 */
-    proTimeNode (time1, time2, count) {
-      // 开始时间
-      const startTime = this.proTimeSecond(time1)
-      // 结束时间
-      const endTime = this.proTimeSecond(time2)
-      // 单位时间
-      const unitTime = Math.round((endTime - startTime) / count)
-      // 时间段
-      let timeNodes = []
-      for (let i = 0; i < count; i++) {
-        let startNode = startTime + unitTime * i
-        startNode = this.formatTimeNode(startNode)
-        let endNode = startTime + unitTime * (i + 1)
-        endNode = this.formatTimeNode(endNode)
-        let nodeItem = startNode + '-' + endNode
-        timeNodes.push(nodeItem)
-      }
-      return timeNodes
-    },
-    /* 格式化秒数 */
-    proTimeSecond (time) {
-      const timeArr = time.split(':')
-      const minute = Number.parseInt(timeArr[0])
-      const second = Number.parseInt(timeArr[1])
-      return minute * 60 + second
-    },
-    /* 格式化时间 */
-    formatTimeNode (time) {
-      let minute = Number.parseInt(time / 60) + ''
-      if (minute === '24') {
-        return '23:59'
-      }
-      minute = minute.padStart(2, '0')
-      let second = time % 60 + ''
-      second = second.padStart(2, '0')
-      return minute + ':' + second
+    comCancel () {
+      this.comDialog = false
     },
     /* 删除 */
     delClick (id) {
-      this.delDialog = true
       this.itemId = id
+      this.delDialog = true
     },
-    submitDelForm () {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        position_id: this.itemId
-      }
-      params = this.$qs.stringify(params)
-      this.delDisabled = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v1.0/delPermanentPosition',
-        data: params
-      }).then((res) => {
-        this.delDisabled = false
-        if (res.data.result === 'Sucess') {
-          // 隐藏提示框
-          this.delDialog = false
-          // 刷新列表
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.delDisabled = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    delUpdata () {
+      this.delDialog = false
+      // 更新列表
+      this.getListData()
+    },
+    delCancel () {
+      this.delDialog = false
     }
   },
   filters: {

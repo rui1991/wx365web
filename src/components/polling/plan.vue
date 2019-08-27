@@ -54,7 +54,7 @@
             </div>
             <div class="operate">
               <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" v-if="authority.add" @click="addClick">新增</el-button>
+              <el-button type="primary" @click="addClick">新增</el-button>
             </div>
           </div>
         </div>
@@ -88,7 +88,7 @@
           <el-table-column prop="end_date" label="结束时间"></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <router-link class="operate com" :to="{ path: '/main/plan-com', query:{id: scope.row.plan_id}}" v-if="authority.com">编辑</router-link>
+              <router-link class="operate com" :to="{ path: '/main/plan-com', query:{id: scope.row.plan_id}}">编辑</router-link>
               <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.plan_id)">删除</a>
             </template>
           </el-table-column>
@@ -115,13 +115,12 @@
       @parentClose="detClose">
     </det-module>
     <!-- 删除 -->
-    <el-dialog title="提示" :visible.sync="delDialog" :show-close="false" :close-on-click-modal="false" custom-class="hint-dialog">
-      <p class="hint-text"><i class="el-icon-warning"></i>是否要删除该计划？</p>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="delDialog = false">取 消</el-button>
-        <el-button type="primary" :disabled="delDisabled" @click="submitDelForm">确 定</el-button>
-      </div>
-    </el-dialog>
+    <del-module
+      :parentDialog="delDialog"
+      :parentId="itemId"
+      @parentUpdata="delUpdata"
+      @parentCancel="delCancel">
+    </del-module>
   </div>
 </template>
 
@@ -129,15 +128,12 @@
 import { mapState } from 'vuex'
 // 引入详情组件
 import detModule from '@/components/polling/plan-det'
+// 引入删除组件
+import delModule from '@/components/polling/plan-del'
 export default{
   name: 'plan',
   data () {
     return {
-      authority: {
-        add: true,
-        com: true,
-        del: true
-      },
       search: {
         name: '',
         startDate: '',
@@ -158,26 +154,8 @@ export default{
       total: 0,
       nowPage: 1,
       limit: 10,
-      formLabelWidth: '100px',
       detDialog: false,
-      detForm: {
-        name: '',
-        project: '',
-        sector: '',
-        group: '',
-        startDate: '',
-        endDate: '',
-        pattern: '',
-        frequency: '',
-        whetherMore: false,
-        crews: [],
-        period: '',
-        timeFrame: [],
-        order: '',
-        posData: []
-      },
       delDialog: false,
-      delDisabled: false,
       itemId: ''
     }
   },
@@ -186,14 +164,10 @@ export default{
     this.getListData()
     // 获取部门
     this.getSectorOptions()
-    // 权限
-    let autDet = this.autDet
-    autDet.indexOf(30) === -1 ? this.authority.add = false : this.authority.add = true
-    autDet.indexOf(31) === -1 ? this.authority.com = false : this.authority.com = true
-    autDet.indexOf(34) === -1 ? this.authority.del = false : this.authority.del = true
   },
   components: {
-    detModule
+    detModule,
+    delModule
   },
   computed: {
     ...mapState(
@@ -330,42 +304,13 @@ export default{
       this.itemId = id
       this.delDialog = true
     },
-    submitDelForm () {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        plan_id: this.itemId
-      }
-      params = this.$qs.stringify(params)
-      this.delDisabled = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/inspection/delIns',
-        data: params
-      }).then((res) => {
-        this.delDisabled = false
-        if (res.data.result === 'Sucess') {
-          // 隐藏提示框
-          this.delDialog = false
-          // 刷新列表
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.delDisabled = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    delUpdata () {
+      this.delDialog = false
+      // 更新列表
+      this.getListData()
+    },
+    delCancel () {
+      this.delDialog = false
     },
     /* 部门 */
     getSectorOptions () {

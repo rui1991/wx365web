@@ -29,7 +29,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="resetForm('ruleForm')">取 消</el-button>
+        <el-button @click="cancelClick">取 消</el-button>
         <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
@@ -128,17 +128,6 @@ export default{
     )
   },
   methods: {
-    /* 新增 */
-    addInit () {
-      this.formData = {
-        name: '',
-        type: 'sjwg',
-        mac: '',
-        serial: '',
-        posName: '',
-        posId: ''
-      }
-    },
     // 验证表单
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
@@ -152,7 +141,6 @@ export default{
     // 重置表单
     resetForm (formName) {
       this.$refs[formName].resetFields()
-      this.$emit('parentCancel')
     },
     // 提交
     sendRequest () {
@@ -215,6 +203,12 @@ export default{
         })
       })
     },
+    // 取消
+    cancelClick () {
+      // 重置表单
+      this.resetForm('ruleForm')
+      this.$emit('parentCancel')
+    },
     /* 位置选择 */
     posSelect (data) {
       this.formData.posName = data.name
@@ -240,11 +234,6 @@ export default{
     }
   },
   watch: {
-    parentDialog (val, oldVal) {
-      if (val) {
-        this.addInit()
-      }
-    },
     'formData.type' (nowVal, oldVal) {
       if (nowVal === 'sjwg') {
         this.serialShow = false

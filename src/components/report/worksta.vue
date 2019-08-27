@@ -1,5 +1,10 @@
 <template>
-  <div class="report-worksta">
+  <div
+    class="report-worksta"
+    v-loading="loading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -7,12 +12,7 @@
           <el-breadcrumb-item>员工工单报表</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
-      <el-container
-        class="module-content"
-        v-loading="loading"
-        element-loading-text="拼命加载中"
-        element-loading-spinner="el-icon-loading"
-        element-loading-background="rgba(0, 0, 0, 0.8)">
+      <el-container class="module-content">
         <el-aside width="280px" class="module-aside">
           <el-tree
             style="padding: 5px"

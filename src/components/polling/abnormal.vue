@@ -56,7 +56,7 @@
           <el-table-column type="index" width="50" label="序号"></el-table-column>
           <el-table-column label="巡检地址">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="details blue" @click="checkDetails(scope.row.isd_id)">{{ scope.row.position_name }}</a>
+              <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row.isd_id)">{{ scope.row.position_name }}</a>
             </template>
           </el-table-column>
           <el-table-column prop="ins_name" label="检查项"></el-table-column>
@@ -100,9 +100,9 @@
           </el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="addWork(scope.row)" v-if="scope.row.wo_state === undefined && authority.add">提单</a>
-              <span class="operate forbid" v-else-if="scope.row.wo_state !== undefined && authority.add">提单</span>
-              <a href="javascript:void(0);" class="operate com" @click="checkHistory(scope.row)" v-if="authority.history">历史记录</a>
+              <a href="javascript:void(0);" class="operate com" @click="addClick(scope.row.isd_id, scope.row.position_name)" v-if="scope.row.wo_state === undefined">提单</a>
+              <span class="operate forbid" v-else-if="scope.row.wo_state !== undefined">提单</span>
+              <a href="javascript:void(0);" class="operate com" @click="historyClick(scope.row)">历史记录</a>
             </template>
           </el-table-column>
         </el-table>
@@ -121,151 +121,32 @@
       </el-main>
     </el-container>
     <!-- 新增 -->
-    <el-dialog title="新增工单" :visible.sync="addDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-form class="entirety-from" :model="addForm" :rules="rules" ref="ruleAddForm" :label-width="formLabelWidth">
-        <el-form-item label="工单名称" prop="name">
-          <el-input v-model.trim="addForm.name" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="发生地址" prop="site">
-          <el-input v-model.trim="addForm.site" :disabled="true"></el-input>
-        </el-form-item>
-        <el-form-item label="业务类别" prop="sort">
-          <el-select v-model="addForm.sort" style="width: 100%;" clearable placeholder="请选择业务类别">
-            <el-option
-              v-for="item in sortOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input type="textarea" maxlength="100" placeholder="文本长度不得超过100个字符" v-model.trim="addForm.remark"></el-input>
-        </el-form-item>
-      </el-form>
-      <el-upload
-        class="upload-demo"
-        :action="reqUrl"
-        :on-success="handleSuccess"
-        :on-error="handleError"
-        :on-remove="handleRemove"
-        :file-list="fileList"
-        multiple
-        :limit="imgLimit"
-        list-type="picture">
-        <span style="display: inline-block; width: 100px; text-align: right; padding-right: 12px;">图片</span>
-        <el-button size="small" type="primary">点击上传</el-button>
-        <div slot="tip" class="el-upload__tip" style="padding-left: 100px; color: red;">只能上传jpg/png文件，大小不超过2048kb，且最多只能上传9张！</div>
-      </el-upload>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="resetAddForm('ruleAddForm')">取 消</el-button>
-        <el-button type="primary" :disabled="addDisabled" @click="submitAddForm('ruleAddForm')">确 定</el-button>
-      </div>
-    </el-dialog>
+    <add-module
+      :parentDialog="addDialog"
+      :parentId="itemId"
+      :parentPos="posName"
+      @parentUpdata="addUpdata"
+      @parentCancel="addCancel">
+    </add-module>
     <!-- 详情 -->
-    <el-dialog title="详情" :visible.sync="detDialog" :show-close="false" :close-on-click-modal="false" custom-class="large-dialog">
-      <h5 class="form-title">异常详情</h5>
-      <el-form :model="detForm" :label-width="formDetWidth" style="border-bottom: 1px solid #cecece;">
-        <div class="two-form">
-          <el-form-item class="item" label="项目名称">
-            <el-input :disabled="true" v-model="detForm.proName"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="执行时间">
-            <el-input :disabled="true" v-model="detForm.exeTime"></el-input>
-          </el-form-item>
-        </div>
-        <div class="two-form">
-          <el-form-item class="item" label="巡检地址">
-            <el-input :disabled="true" v-model="detForm.site"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="执行人">
-            <el-input :disabled="true" v-model="detForm.executor"></el-input>
-          </el-form-item>
-        </div>
-        <div class="two-form">
-          <el-form-item class="item" label="检查项">
-            <el-input :disabled="true" v-model="detForm.checkItem"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="执行结果">
-            <el-input :disabled="true" v-model="detForm.exeResult"></el-input>
-          </el-form-item>
-        </div>
-        <el-form-item class="one-form" label="检查要求">
-          <el-input type="textarea" :disabled="true" v-model="detForm.exaContent"></el-input>
-        </el-form-item>
-        <el-form-item class="one-form" label="备注">
-          <el-input type="textarea" :disabled="true" v-model="detForm.remark"></el-input>
-        </el-form-item>
-      </el-form>
-      <h5 class="form-title">工单详情</h5>
-      <el-form :model="detForm" :label-width="formDetWidth" style="border-bottom: 1px solid #cecece; margin-bottom: 20px;">
-        <div class="two-form">
-          <el-form-item class="item" label="标题">
-            <el-input :disabled="true" v-model="detForm.workTitle"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="创建人">
-            <el-input :disabled="true" v-model="detForm.crePerson"></el-input>
-          </el-form-item>
-        </div>
-        <div class="two-form">
-          <el-form-item class="item" label="创建时间">
-            <el-input :disabled="true" v-model="detForm.creTime"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="当前处理人">
-            <el-input :disabled="true" v-model="detForm.nowPerson"></el-input>
-          </el-form-item>
-        </div>
-        <div class="two-form">
-          <el-form-item class="item" label="最后处理时间">
-            <el-input :disabled="true" v-model="detForm.lastTime"></el-input>
-          </el-form-item>
-          <el-form-item class="item" label="完成状态">
-            <el-input :disabled="true" v-model="detForm.finishState"></el-input>
-          </el-form-item>
-        </div>
-      </el-form>
-      <el-table class="select-table" :data="detForm.logData" style="width: 100%;">
-        <el-table-column type="index" width="50" label="序号"></el-table-column>
-        <el-table-column prop="type" width="100" label="操作类型"></el-table-column>
-        <el-table-column prop="perform_user_name" width="80" label="执行人"></el-table-column>
-        <el-table-column label="执行时间">
-          <template slot-scope="scope">
-            <span>{{ scope.row.perform_time | formatDate }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="content" label="说明"></el-table-column>
-        <el-table-column width="100" label="图片">
-          <template slot-scope="scope">
-            <a href="javascript:void(0);" class="com" v-if="scope.row.photo" @click="checkImg(scope.row.photo)">查看</a>
-          </template>
-        </el-table-column>
-      </el-table>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="detDialog = false">关 闭</el-button>
-      </div>
-    </el-dialog>
-    <!-- 查看图片 -->
-    <el-dialog title="日志图片" :visible.sync="imgDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <div style="text-align: center; overflow-x: hidden;">
-        <img :src="logImg" height="380" alt="">
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="imgDialog = false">关 闭</el-button>
-      </div>
-    </el-dialog>
+    <det-module
+      :parentDialog="detDialog"
+      :parentId="itemId"
+      @parentClose="detClose">
+    </det-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入新增组件
+import addModule from '@/components/polling/abnormal-add'
+// 引入详情组件
+import detModule from '@/components/polling/abnormal-det'
 export default{
   name: 'abnormal',
   data () {
     return {
-      authority: {
-        add: true,
-        history: true
-      },
       search: {
         site: '',
         startDate: '',
@@ -302,63 +183,26 @@ export default{
       total: 0,
       nowPage: 1,
       limit: 10,
-      formLabelWidth: '100px',
       addDialog: false,
-      addForm: {
-        name: '',
-        site: '',
-        sort: '',
-        remark: '',
-        imgs: ''
-      },
-      addDisabled: false,
-      sortOptions: [],
-      rules: {
-        name: [
-          { required: true, message: '请输入工单名称', trigger: 'blur' }
-        ]
-      },
-      itemId: '',
-      reqUrl: '',
-      imgLimit: 9,
-      fileList: [],
-      formDetWidth: '100px',
-      detDialog: false,
-      detForm: {
-        proName: '',
-        exeTime: '',
-        site: '',
-        executor: '',
-        checkItem: '',
-        exeResult: '',
-        exaContent: '',
-        remark: '',
-        workTitle: '',
-        crePerson: '',
-        creTime: '',
-        nowPerson: '',
-        lastTime: '',
-        finishState: '',
-        logData: []
-      },
-      imgDialog: false,
-      logImg: ''
+      posName: '',
+      itemId: 0,
+      detDialog: false
     }
   },
   created () {
-    // 设置上传地址
-    this.reqUrl = this.sysetApi() + '/upload?state=10&user_id' + this.userId
     // 获取列表数据
     this.getListData()
+  },
+  components: {
+    addModule,
+    detModule
   },
   computed: {
     ...mapState(
       {
         nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
         userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        autDet: state => state.autDet.abnormal
+        nowProid: state => state.nowProid
       }
     )
   },
@@ -370,10 +214,6 @@ export default{
       this.nowPage = 1
       // 获取列表数据
       this.getListData()
-      // 权限
-      let autDet = this.autDet
-      autDet.indexOf(47) === -1 ? this.authority.add = false : this.authority.add = true
-      autDet.indexOf(181) === -1 ? this.authority.history = false : this.authority.history = true
     },
     // 获取列表数据
     getListData () {
@@ -434,284 +274,30 @@ export default{
       // 获取列表数据
       this.getListData()
     },
-    /* 查看详情 */
-    checkDetails (id) {
-      this.detDialog = true
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        isd_id: id
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/inspection/selInsAbnormalOnly',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const itemData = res.data.data1
-          // 项目名称
-          const proName = itemData.abMap.project_name
-          // 执行时间
-          const exeTime = this.$common.formatDate(itemData.abMap.modification_time)
-          // 巡检地址
-          const site = itemData.abMap.position_name
-          // 执行人
-          const executor = itemData.abMap.user_name || ''
-          // 检查项
-          const checkItem = itemData.abMap.ins_name || ''
-          // 执行结果
-          const resultState = itemData.abMap.task_state
-          let exeResult = ''
-          if (resultState === 0) {
-            exeResult = '未巡查'
-          } else if (resultState === 1) {
-            exeResult = '正常'
-          } else if (resultState === 2) {
-            exeResult = '异常'
-          }
-          // 检查内容及要求
-          const exaContent = itemData.abMap.check_content || ''
-          // 备注
-          const remark = itemData.abMap.note || ''
-          // 标题
-          const workTitle = itemData.woMap.wo_name || ''
-          // 创建人
-          const crePerson = itemData.woMap.create_user_name || ''
-          // 创建时间
-          const creTime = this.$common.formatDate(itemData.woMap.create_time)
-          // 处理人
-          const nowPerson = itemData.woMap.accept_user_name || ''
-          // 最后处理时间
-          const lastTime = itemData.woMap.last_time
-          // 完成状态
-          const finishNum = itemData.woMap.wo_state || ''
-          let finishState = ''
-          if (finishNum === 0) {
-            finishState = '待处理'
-          } else if (finishNum === 1) {
-            finishState = '处理中'
-          } else if (finishNum === 2) {
-            finishState = '已完成'
-          }
-          // 日志
-          let logData = itemData.woMap.wo_log || []
-          this.detForm = {
-            proName: proName,
-            exeTime: exeTime,
-            site: site,
-            executor: executor,
-            checkItem: checkItem,
-            exeResult: exeResult,
-            exaContent: exaContent,
-            remark: remark,
-            workTitle: workTitle,
-            crePerson: crePerson,
-            creTime: creTime,
-            nowPerson: nowPerson,
-            lastTime: lastTime,
-            finishState: finishState,
-            logData: logData
-          }
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 查看日志图片
-    checkImg (url) {
-      this.imgDialog = true
-      this.logImg = this.sysetApi() + '/showImage?state=10&filename=' + url
-    },
-    /* 提单 */
-    addWork (data) {
-      let siteId = data.position_id
-      this.itemId = data.isd_id
+    /* 新增 */
+    addClick (id, pos) {
+      this.itemId = id
+      this.posName = pos
       this.addDialog = true
-      this.addForm = {
-        name: '',
-        site: '',
-        sort: '',
-        remark: ''
-      }
-      this.fileList = []
-      if (this.sortOptions.length === 0) {
-        // 获取业务类别
-        this.getSortOptions()
-      }
-      // 获取全路径
-      this.getAllPath(siteId)
     },
-    // 验证表单
-    submitAddForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.sendAddRequest()
-        } else {
-          return false
-        }
-      })
+    addUpdata () {
+      this.addDialog = false
+      // 更新列表
+      this.getListData()
     },
-    // 重置表单
-    resetAddForm (formName) {
-      this.$refs[formName].resetFields()
+    addCancel () {
       this.addDialog = false
     },
-    // 提交
-    sendAddRequest () {
-      const fileList = this.fileList
-      let fileName = []
-      fileList.forEach(item => {
-        fileName.push(item.response)
-      })
-      const imgUrls = fileName.join('/')
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        projectN_id: this.nowProid,
-        wo_name: this.addForm.name,
-        address: this.addForm.site,
-        business_type: this.addForm.sort,
-        content: this.addForm.remark,
-        wo_from: '巡检',
-        accept_user: '',
-        isd_id: this.itemId,
-        attachment: imgUrls
-      }
-      params = this.$qs.stringify(params)
-      this.addDisabled = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/wo/addWo',
-        data: params
-      }).then((res) => {
-        this.addDisabled = false
-        if (res.data.result === 'Sucess') {
-          // 重置表单
-          this.resetAddForm('ruleAddForm')
-          // 刷新列表
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.addDisabled = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    /* 详情 */
+    detClick (id) {
+      this.itemId = id
+      this.detDialog = true
     },
-    // 获取业务类别
-    getSortOptions () {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: 0
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/selSkillTree',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          let sortData = res.data.data1
-          let sortOptions = []
-          sortData.forEach(item => {
-            sortOptions.push({
-              name: item.name,
-              id: item.id
-            })
-          })
-          this.sortOptions = sortOptions
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    detClose () {
+      this.detDialog = false
     },
-    // 获取全路径
-    getAllPath (id) {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        position_id: id
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/apk/selPositionOnly',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          // 路径
-          let allPath = res.data.data1.all_address
-          this.addForm.site = allPath
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 上传图片成功
-    handleSuccess (res, file, fileList) {
-      this.fileList = fileList
-    },
-    // 上传图片失败
-    handleError () {
-      this.$message({
-        showClose: true,
-        message: '上传图片失败，请稍后再试！',
-        type: 'error'
-      })
-    },
-    // 删除图片
-    handleRemove (file, fileList) {
-      this.fileList = fileList
-    },
-    // 查看历史记录
-    checkHistory (data) {
-    // :to="{ name: 'abnormalHistory', params:{pos: scope.row.position_id, tem: scope.row.ins_id}}
+    /* 历史记录 */
+    historyClick (data) {
       this.$router.push({
         path: '/main/abnormal-history',
         query: {

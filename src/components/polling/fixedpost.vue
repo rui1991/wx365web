@@ -41,7 +41,12 @@
             <div class="item">
               <span>岗位名称</span>
               <el-select v-model="nowSearch.station" clearable filterable style="width: 160px;" placeholder="请选择岗位名称">
-                <el-option v-for="item in stationOptions" :key="item.position_id" :label="item.position_name" :value="item.position_id"></el-option>
+                <el-option
+                  v-for="item in stationOptions"
+                  :key="item.position_id"
+                  :label="item.position_name"
+                  :value="item.position_id">
+                </el-option>
               </el-select>
             </div>
             <div class="operate">
@@ -56,17 +61,17 @@
           <el-table-column prop="record_size" label="打卡数"></el-table-column>
           <el-table-column label="打卡成功数">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="details blue" @click="getSucessDet(scope.row)">{{ scope.row.sucess_size }}</a>
+              <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row, 1)">{{ scope.row.sucess_size }}</a>
             </template>
           </el-table-column>
           <el-table-column label="未打卡数">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="details red" @click="getFailedDet(scope.row)">{{ scope.row.failed_size }}</a>
+              <a href="javascript:void(0);" class="details red" @click="detClick(scope.row, 2)">{{ scope.row.failed_size }}</a>
             </template>
           </el-table-column>
           <el-table-column label="打卡异常数">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="details red" @click="getAbnormalDet(scope.row)">{{ scope.row.ab_size }}</a>
+              <a href="javascript:void(0);" class="details red" @click="detClick(scope.row, 3)">{{ scope.row.ab_size }}</a>
             </template>
           </el-table-column>
         </el-table>
@@ -84,29 +89,21 @@
         </el-pagination>
       </el-main>
     </el-container>
-    <!-- 打卡详情 -->
-    <el-dialog title="打卡详情" :visible.sync="detDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-table class="select-table" :data="detData" style="width: 100%" max-height="450">
-        <el-table-column type="index" width="50" label="序号"></el-table-column>
-        <el-table-column prop="times" label="时间"></el-table-column>
-        <el-table-column label="打卡结果">
-          <template slot-scope="scope">
-            <span v-if="detType === 0">{{ scope.row.sucess_record }}</span>
-            <span v-else-if="detType === 1">{{ scope.row.failed_record }}</span>
-            <span v-else-if="detType === 2">{{ scope.row.abnormal_record }}</span>
-          </template>
-        </el-table-column>
-      </el-table>
-      <p style="font-size: 12px; color: red; line-height: 30px;" v-show="detType === 2">*规定时间段内打卡次数超过10次为异常</p>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="detDialog = false">关 闭</el-button>
-      </div>
-    </el-dialog>
+    <!-- 详情 -->
+    <det-module
+      :parentDialog="detDialog"
+      :parentDate="detDate"
+      :parentPos="detPos"
+      :parentType="detType"
+      @parentClose="detClose">
+    </det-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入详情组件
+import detModule from '@/components/polling/fixedpost-det'
 export default{
   name: 'fixedpost',
   data () {
@@ -127,8 +124,9 @@ export default{
       nowPage: 1,
       limit: 10,
       detDialog: false,
+      detDate: '',
+      detPos: 0,
       detType: 0,
-      detData: [],
       downDisabled: false
     }
   },
@@ -144,11 +142,13 @@ export default{
     // 获取固定岗列表
     this.getStationOptions()
   },
+  components: {
+    detModule
+  },
   computed: {
     ...mapState(
       {
         nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
         userId: state => state.info.userId,
         nowProid: state => state.nowProid,
         setAut: state => state.authority.plan
@@ -252,113 +252,15 @@ export default{
         })
       })
     },
-    /* 成功详情 */
-    getSucessDet (data) {
-      this.detData = []
+    /* 详情 */
+    detClick (data, type) {
+      this.detDate = data.date
+      this.detPos = data.position_id
+      this.detType = type
       this.detDialog = true
-      this.detType = 0
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        position_id: data.position_id,
-        this_date: data.date
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v1.0/selSucessPermanent',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          this.detData = res.data.data1
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
     },
-    /* 失败详情 */
-    getFailedDet (data) {
-      this.detData = []
-      this.detDialog = true
-      this.detType = 1
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        position_id: data.position_id,
-        this_date: data.date
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v1.0/selFailedPermanent',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          this.detData = res.data.data1
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    /* 异常详情 */
-    getAbnormalDet (data) {
-      this.detData = []
-      this.detDialog = true
-      this.detType = 2
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        position_id: data.position_id,
-        this_date: data.date
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v1.0/selAbnormalPermanent',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          this.detData = res.data.data1
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    detClose () {
+      this.detDialog = false
     },
     /* 导出 */
     downFile () {
@@ -368,9 +270,7 @@ export default{
         project_id: this.nowProid,
         start_date: this.search.startDate,
         end_date: this.search.endDate,
-        position_id: this.search.station,
-        page: 1,
-        limit1: 1000
+        position_id: this.search.station
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true
