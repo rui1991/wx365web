@@ -1,5 +1,10 @@
 <template>
-  <div class="locman">
+  <div
+    class="trackall"
+    v-loading="loading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -88,7 +93,7 @@
 <script>
 import { mapState } from 'vuex'
 export default{
-  name: 'locman',
+  name: 'trackall',
   data () {
     return {
       search: {
@@ -118,10 +123,11 @@ export default{
       total: 0,
       nowPage: 1,
       limit: 10,
-      downDisabled: false
+      downDisabled: false,
+      loading: false
     }
   },
-  created () {
+  mounted () {
     // 获取列表数据
     this.getListData()
   },
@@ -155,11 +161,13 @@ export default{
         end_date: this.search.endDate
       }
       params = this.$qs.stringify(params)
+      this.loading = true
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/inspection/locationTimeStatistics',
         data: params
       }).then((res) => {
+        this.loading = false
         if (res.data.result === 'Sucess') {
           // 全部数据
           const logData = res.data.data1
@@ -179,6 +187,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.loading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -229,7 +238,7 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.locman{
+.trackall{
   height: 100%;
   .module-container{
     height: 100%;

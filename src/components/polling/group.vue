@@ -35,7 +35,7 @@
           </div>
           <div class="operate">
             <el-button type="primary" @click="searchList">搜索</el-button>
-            <el-button type="primary" @click="addClick">新增</el-button>
+            <el-button type="primary" @click="addDialog = true">新增</el-button>
           </div>
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
@@ -69,67 +69,37 @@
       </el-main>
     </el-container>
     <!-- 新增 -->
-    <el-dialog title="新增组" :visible.sync="addDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-form class="divide-from" :model="addForm" :rules="rules" ref="ruleAddForm" :label-width="formLabelWidth">
-        <el-form-item label="组名称" prop="name">
-          <el-input v-model.trim="addForm.name" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="人员" prop="crewName">
-          <el-input :disabled="true" type="textarea" v-model="addForm.crewName"></el-input>
-          <el-button type="primary" style="vertical-align: top;" @click="addCrewClick">选择人员</el-button>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="resetAddForm('ruleAddForm')">取 消</el-button>
-        <el-button type="primary" :disabled="addDisabled" @click="submitAddForm('ruleAddForm')">确 定</el-button>
-      </div>
-    </el-dialog>
+    <add-module
+      :parentDialog="addDialog"
+      @parentUpdata="addUpdata"
+      @parentCancel="addCancel">
+    </add-module>
     <!-- 编辑 -->
-    <el-dialog title="编辑组" :visible.sync="comDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-form class="divide-from" :model="comForm" :rules="rules" ref="ruleComForm" :label-width="formLabelWidth">
-        <el-form-item label="组名称" prop="name">
-          <el-input v-model.trim="comForm.name" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="人员" prop="crewName">
-          <el-input :disabled="true" type="textarea" v-model="comForm.crewName"></el-input>
-          <el-button type="primary" @click="comCrewClick">选择人员</el-button>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="resetComForm('ruleComForm')">取 消</el-button>
-        <el-button type="primary" :disabled="comDisabled" @click="submitComForm('ruleComForm')">确 定</el-button>
-      </div>
-    </el-dialog>
+    <com-module
+      :parentDialog="comDialog"
+      :parentId="itemId"
+      :parentForm="comForm"
+      @parentUpdata="comUpdata"
+      @parentCancel="comCancel">
+    </com-module>
     <!-- 删除 -->
-    <el-dialog title="提示" :visible.sync="delDialog" :show-close="false" :close-on-click-modal="false" custom-class="hint-dialog">
-      <p class="hint-text"><i class="el-icon-warning"></i>是否要删除该组？</p>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="delDialog = false">取 消</el-button>
-        <el-button type="primary" :disabled="delDisabled" @click="submitDelForm">确 定</el-button>
-      </div>
-    </el-dialog>
-    <!-- 人员 -->
-    <el-dialog title="选择人员" :visible.sync="crewDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-transfer
-        filterable
-        ref="myTransfer"
-        :filter-method="filterMethod"
-        filter-placeholder="请输入人员姓名"
-        v-model="checkCrew"
-        :props="props"
-        :titles="['人员列表', '已选择']"
-        :data="crewData">
-      </el-transfer>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="crewDialog = false">取 消</el-button>
-        <el-button type="primary" :disabled="crewDisabled" @click="selectCrew">确 定</el-button>
-      </div>
-    </el-dialog>
+    <del-module
+      :parentDialog="delDialog"
+      :parentId="itemId"
+      @parentUpdata="delUpdata"
+      @parentCancel="delCancel">
+    </del-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入新增组件
+import addModule from '@/components/polling/group-add'
+// 引入编辑组件
+import comModule from '@/components/polling/group-com'
+// 引入删除组件
+import delModule from '@/components/polling/group-del'
 export default{
   name: 'group',
   data () {
@@ -149,42 +119,14 @@ export default{
       nowPage: 1,
       limit: 10,
       addDialog: false,
-      addForm: {
-        name: '',
-        crewName: '',
-        crewId: []
-      },
-      addDisabled: false,
       comDialog: false,
       comForm: {
         name: '',
         crewName: '',
         crewId: []
       },
-      comDisabled: false,
-      rules: {
-        name: [
-          { required: true, message: '请输入组名称', trigger: 'blur' }
-        ],
-        crewName: [
-          { required: true, message: '请选择组人员', trigger: 'change' }
-        ]
-      },
-      formLabelWidth: '100px',
       delDialog: false,
-      delDisabled: false,
-      itemId: '',
-      crewDialog: false,
-      crewDisabled: true,
-      crewData: [],
-      props: {
-        label: 'user_name',
-        key: 'user_id'
-      },
-      checkCrew: [],
-      filterMethod (query, item) {
-        return item.user_name.indexOf(query) > -1
-      }
+      itemId: ''
     }
   },
   created () {
@@ -193,18 +135,18 @@ export default{
   mounted () {
     // 获取列表数据
     this.getListData()
-    // 获取项目人员
-    this.getCrewOptions()
+  },
+  components: {
+    addModule,
+    comModule,
+    delModule
   },
   computed: {
     ...mapState(
       {
         nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
         userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        nowOrgid: state => state.nowOrgid,
-        autDet: state => state.autDet.shift
+        nowProid: state => state.nowProid
       }
     )
   },
@@ -277,80 +219,21 @@ export default{
       this.getListData()
     },
     /* 新增 */
-    addClick () {
-      this.addDialog = true
-      this.addForm = {
-        name: '',
-        crewName: '',
-        crewId: []
-      }
-    },
-    // 验证表单
-    submitAddForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.sendAddRequest()
-        } else {
-          return false
-        }
-      })
-    },
-    // 重置表单
-    resetAddForm (formName) {
-      this.$refs[formName].resetFields()
+    addUpdata () {
       this.addDialog = false
+      // 更新列表
+      this.getListData()
     },
-    // 提交
-    sendAddRequest () {
-      let crewId = this.addForm.crewId
-      crewId = crewId.join(',')
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        group_name: this.addForm.name,
-        userN_ids: crewId
-      }
-      params = this.$qs.stringify(params)
-      this.addDisabled = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v2.6/addDutyGroup',
-        data: params
-      }).then((res) => {
-        this.addDisabled = false
-        if (res.data.result === 'Sucess') {
-          // 重置表单
-          this.resetAddForm('ruleAddForm')
-          // 刷新列表
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.addDisabled = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    addCancel () {
+      this.addDialog = false
     },
     /* 编辑 */
     comClick (data) {
-      this.comDialog = true
       this.itemId = data.group_id
       let uids = data.user_ids
       let userArr = []
       if (uids) {
         userArr = uids.split(',')
-      } else {
-        userArr = []
       }
       let crewId = userArr.map((value) => {
         return Number.parseInt(value)
@@ -360,204 +243,28 @@ export default{
         crewName: data.user_names,
         crewId: crewId
       }
+      this.comDialog = true
     },
-    // 验证表单
-    submitComForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.sendComRequest()
-        } else {
-          return false
-        }
-      })
-    },
-    // 重置表单
-    resetComForm (formName) {
-      this.$refs[formName].resetFields()
+    comUpdata () {
       this.comDialog = false
+      // 更新列表
+      this.getListData()
     },
-    // 提交
-    sendComRequest () {
-      let crewId = this.comForm.crewId
-      crewId = crewId.join(',')
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        group_id: this.itemId,
-        group_name: this.comForm.name,
-        userN_ids: crewId
-      }
-      params = this.$qs.stringify(params)
-      this.comDisabled = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v2.6/altDutyGroup',
-        data: params
-      }).then((res) => {
-        this.comDisabled = false
-        if (res.data.result === 'Sucess') {
-          // 重置表单
-          this.resetComForm('ruleComForm')
-          // 刷新列表
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.comDisabled = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    comCancel () {
+      this.comDialog = false
     },
     /* 删除 */
     delClick (id) {
-      this.delDialog = true
       this.itemId = id
+      this.delDialog = true
     },
-    submitDelForm () {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        userN_ids: '',
-        group_id: this.itemId
-      }
-      params = this.$qs.stringify(params)
-      this.delDisabled = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v2.6/delDutyGroup',
-        data: params
-      }).then((res) => {
-        this.delDisabled = false
-        if (res.data.result === 'Sucess') {
-          // 隐藏提示框
-          this.delDialog = false
-          // 刷新列表
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.delDisabled = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    delUpdata () {
+      this.delDialog = false
+      // 更新列表
+      this.getListData()
     },
-    /* 人员 */
-    // 获取项目人员
-    getCrewOptions () {
-      let params = {
-        organize_id: this.nowOrgid,
-        user_name: '',
-        user_phone: '',
-        role_id: '',
-        page: 1,
-        limit1: 10000
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.2/selUser',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          let crewData = res.data.data1.users
-          this.crewData = crewData
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 新增
-    addCrewClick () {
-      this.crewDialog = true
-      let crewId = this.addForm.crewId
-      this.checkCrew = crewId
-      if (this.$refs.myTransfer) {
-        // 清空左边搜索
-        this.$refs.myTransfer.$children['0']._data.query = ''
-        // 清空右边搜索
-        this.$refs.myTransfer.$children['3']._data.query = ''
-      }
-    },
-    // 编辑
-    comCrewClick () {
-      this.crewDialog = true
-      let crewId = this.comForm.crewId
-      this.checkCrew = crewId
-      if (this.$refs.myTransfer) {
-        // 清空左边搜索
-        this.$refs.myTransfer.$children['0']._data.query = ''
-        // 清空右边搜索
-        this.$refs.myTransfer.$children['3']._data.query = ''
-      }
-    },
-    // 确定
-    selectCrew () {
-      const crewData = this.crewData
-      const checkCrew = this.checkCrew
-      let crewArr = []
-      checkCrew.forEach(itemValue => {
-        let temp = crewData.find((item, index, array) => {
-          return itemValue === item.user_id
-        })
-        if (temp) {
-          crewArr.push(temp)
-        }
-      })
-      let crewName = []
-      let crewId = []
-      crewArr.forEach(item => {
-        crewName.push(item.user_name)
-        crewId.push(item.user_id)
-      })
-      crewName = crewName.join('、')
-      if (this.addDialog) {
-        this.addForm.crewName = crewName
-        this.addForm.crewId = crewId
-      } else if (this.comDialog) {
-        this.comForm.crewName = crewName
-        this.comForm.crewId = crewId
-      }
-      this.crewDialog = false
-    }
-  },
-  watch: {
-    checkCrew (val, oldVal) {
-      if (val.length === 0) {
-        this.crewDisabled = true
-      } else {
-        this.crewDisabled = false
-      }
+    delCancel () {
+      this.delDialog = false
     }
   }
 }

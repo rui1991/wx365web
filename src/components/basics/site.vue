@@ -1,5 +1,10 @@
 <template>
-  <div class="site">
+  <div
+    class="site"
+    v-loading="loading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -217,7 +222,8 @@ export default{
       upDialog: false,
       downDisabled: false,
       qrDialog: false,
-      qrDisabled: true
+      qrDisabled: true,
+      loading: false
     }
   },
   created () {
@@ -371,11 +377,13 @@ export default{
         limit1: this.limit
       }
       params = this.$qs.stringify(params)
+      this.loading = true
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/selPositionChild',
         data: params
       }).then((res) => {
+        this.loading = false
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
           this.tableData = res.data.data1.ogz
@@ -395,6 +403,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.loading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',

@@ -10,8 +10,8 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        // target: 'http://www.allsps.com',
-        target: 'http://szydak.eicp.net:82',
+        target: 'http://www.allsps.com',
+        // target: 'http://szydak.eicp.net:82',
         changeOrigin: true,
         pathRewrite: {  // 需要rewrite重写的, 如果在服务器端做了处理则可以不要这段
           '^/apiUrl': ''

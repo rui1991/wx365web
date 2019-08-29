@@ -64,11 +64,11 @@
               </el-select>
             </div>
             <div class="operate">
-              <el-button type="primary" :disabled="downDisabled" @click="downWork">导出</el-button>
+              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
             </div>
           </div>
         </div>
-        <el-tabs v-model="navActive" style="margin-top: 10px;" @tab-click="tabClick">
+        <el-tabs v-model="navActive" style="margin-top: 10px;">
           <el-tab-pane label="我的工单" name="5"></el-tab-pane>
           <el-tab-pane label="待处理" name="0"></el-tab-pane>
           <el-tab-pane label="跟进中" name="1"></el-tab-pane>
@@ -78,16 +78,11 @@
           <el-tab-pane label="结案关闭" name="8"></el-tab-pane>
           <el-tab-pane label="全部" name="9"></el-tab-pane>
         </el-tabs>
-        <!--<list-module-->
-          <!--:parentSearch="search"-->
-          <!--:parentType="navActive"-->
-          <!--@parentDetails="checkDetails">-->
-        <!--</list-module>-->
-        <router-view
+        <!-- 工单列表 -->
+        <list-module
           :parentSearch="search"
-          :parentType="navActive"
-          @parentDetails="checkDetails">
-        </router-view>
+          :parentType="navActive">
+        </list-module>
       </el-main>
     </el-container>
     <!-- 新增 -->
@@ -98,12 +93,6 @@
       @parentUpdata="addUpdata"
       @parentCancel="addCancel">
     </add-module>
-    <!-- 详情 -->
-    <det-module
-      :parentDialog="detDialog"
-      :parentId="itemId"
-      @parentClose="detClose">
-    </det-module>
   </div>
 </template>
 
@@ -113,8 +102,6 @@ import { mapState } from 'vuex'
 import listModule from '@/components/work/work-list'
 // 引入新增组件
 import addModule from '@/components/work/work-add'
-// 引入详情组件
-import detModule from '@/components/work/work-det'
 export default{
   name: 'work',
   data () {
@@ -151,9 +138,9 @@ export default{
       ],
       sortOptions: [],
       crewOptions: [],
+      navActive: '5',
       addDialog: false,
       detDialog: false,
-      itemId: 0,
       downDisabled: false
     }
   },
@@ -165,13 +152,10 @@ export default{
     this.getSortOptions()
     // 获取项目人员
     this.getCrewOptions()
-    // 跳转路由
-    this.skipChildRouter()
   },
   components: {
     listModule,
-    addModule,
-    detModule
+    addModule
   },
   computed: {
     ...mapState(
@@ -181,15 +165,7 @@ export default{
         nowProid: state => state.nowProid,
         nowOrgid: state => state.nowOrgid
       }
-    ),
-    navActive: {
-      get () {
-        return this.$store.state.workNavActive
-      },
-      set (value) {
-        this.$store.commit('setWorkNav', value)
-      }
-    }
+    )
   },
   methods: {
     // 获取业务类别
@@ -266,82 +242,6 @@ export default{
         })
       })
     },
-    // 初始化跳转
-    skipChildRouter () {
-      // const type = this.navActive
-      // switch (type) {
-      //   case '5':
-      //     // 我的工单
-      //     this.$router.push({ path: '/main/work/work-my' })
-      //     break
-      //   case '0':
-      //     // 待处理
-      //     this.$router.push({ path: '/main/work/work-wait' })
-      //     break
-      //   case '1':
-      //     // 跟进中
-      //     this.$router.push({ path: '/main/work/work-follow' })
-      //     break
-      //   case '6':
-      //     // 催单列表
-      //     this.$router.push({ path: '/main/work/work-urge' })
-      //     break
-      //   case '4':
-      //     // 未完成
-      //     this.$router.push({ path: '/main/work/work-undone' })
-      //     break
-      //   case '7':
-      //     // 超时工单
-      //     this.$router.push({ path: '/main/work/work-over' })
-      //     break
-      //   case '8':
-      //     // 结案关闭
-      //     this.$router.push({ path: '/main/work/work-close' })
-      //     break
-      //   case '9':
-      //     // 全部
-      //     this.$router.push({ path: '/main/work/work-all' })
-      //     break
-      // }
-    },
-    // 切换类型
-    tabClick (data) {
-      // const type = data.name
-      // switch (type) {
-      //   case '5':
-      //     // 我的工单
-      //     this.$router.push({ path: '/main/work/work-my' })
-      //     break
-      //   case '0':
-      //     // 待处理
-      //     this.$router.push({ path: '/main/work/work-wait' })
-      //     break
-      //   case '1':
-      //     // 跟进中
-      //     this.$router.push({ path: '/main/work/work-follow' })
-      //     break
-      //   case '6':
-      //     // 催单列表
-      //     this.$router.push({ path: '/main/work/work-urge' })
-      //     break
-      //   case '4':
-      //     // 未完成
-      //     this.$router.push({ path: '/main/work/work-undone' })
-      //     break
-      //   case '7':
-      //     // 超时工单
-      //     this.$router.push({ path: '/main/work/work-over' })
-      //     break
-      //   case '8':
-      //     // 结案关闭
-      //     this.$router.push({ path: '/main/work/work-close' })
-      //     break
-      //   case '9':
-      //     // 全部
-      //     this.$router.push({ path: '/main/work/work-all' })
-      //     break
-      // }
-    },
     // 搜索
     searchList () {
       let crews = this.nowSearch.crews
@@ -366,20 +266,8 @@ export default{
     addCancel () {
       this.addDialog = false
     },
-    /* 详情 */
-    checkDetails (id) {
-      this.itemId = id
-      this.detDialog = true
-    },
-    detClick (id) {
-      this.itemId = id
-      this.detDialog = true
-    },
-    detClose () {
-      this.detDialog = false
-    },
     /* 导出 */
-    downWork () {
+    downFile () {
       let params = {
         company_id: this.nowClientId,
         user_id: this.userId,

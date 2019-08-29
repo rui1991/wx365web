@@ -39,7 +39,7 @@
           </el-form-item>
         </div>
       </el-form>
-      <el-collapse>
+      <el-collapse v-show="formData.posData.length > 0">
         <div class="item" v-for="(item, index) in formData.posData" :key="item.position_id">
           <p class="clearfix title">
             <span class="site left">{{item.position_name}}</span>

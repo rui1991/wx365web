@@ -46,8 +46,6 @@ const Approval = () => import(/* webpackChunkName: "group-approval" */ '@/compon
 const Position = () => import(/* webpackChunkName: "group-position" */ '@/components/basics/position')
 // 地址管理
 const Site = () => import(/* webpackChunkName: "group-site" */ '@/components/basics/site')
-// 地图管理
-const Posmap = () => import(/* webpackChunkName: "group-posmap" */ '@/components/basics/posmap')
 
 /* 巡检管理 */
 // 组管理
@@ -78,7 +76,9 @@ const AbnormalHistory = () => import(/* webpackChunkName: "group-abnormal" */ '@
 
 /* 人员位置管理 */
 // 人员管理汇总
-const Loccollect = () => import(/* webpackChunkName: "group-loccollect" */ '@/components/perloc/loccollect')
+const Crewcollect = () => import(/* webpackChunkName: "group-loccollect" */ '@/components/perloc/crewcollect')
+// 人员管理汇总详情
+const CrewcollectDet = () => import(/* webpackChunkName: "group-loccollect" */ '@/components/perloc/crewcollect-det')
 // 点名管理
 const Callname = () => import(/* webpackChunkName: "group-callname" */ '@/components/perloc/callname')
 // 点名设置
@@ -86,39 +86,21 @@ const CallnameSet = () => import(/* webpackChunkName: "group-callname" */ '@/com
 // 人员打卡报表
 const Crewclock = () => import(/* webpackChunkName: "group-crewclock" */ '@/components/perloc/crewclock')
 // 位置打卡记录
-const Clocklog = () => import(/* webpackChunkName: "group-clocklog" */ '@/components/perloc/clocklog')
+const Posclock = () => import(/* webpackChunkName: "group-clocklog" */ '@/components/perloc/posclock')
 // 位置打卡记录汇总
-const Clockall = () => import(/* webpackChunkName: "group-clocklog" */ '@/components/perloc/clockall')
+const Posclockall = () => import(/* webpackChunkName: "group-clocklog" */ '@/components/perloc/posclockall')
 // 人员打卡记录详情
-const Clockmark = () => import(/* webpackChunkName: "group-clocklog" */ '@/components/perloc/clockmark')
+const Posclockdet = () => import(/* webpackChunkName: "group-clocklog" */ '@/components/perloc/posclockdet')
 // 轨迹记录总览
-const Locman = () => import(/* webpackChunkName: "group-locman" */ '@/components/perloc/locman')
+const Trackall = () => import(/* webpackChunkName: "group-locman" */ '@/components/perloc/trackall')
 // 轨迹记录详情
-const Loclog = () => import(/* webpackChunkName: "group-loclog" */ '@/components/perloc/loclog')
+const Trackdet = () => import(/* webpackChunkName: "group-loclog" */ '@/components/perloc/trackdet')
 // 人员轨迹图
 const Crewtrack = () => import(/* webpackChunkName: "group-crewtrack" */ '@/components/perloc/crewtrack')
-// 人员管理汇总详情
-const LoccollectDet = () => import(/* webpackChunkName: "group-loccollect" */ '@/components/perloc/loccollect-det')
 
 /* 工单管理 */
 // 工单列表管理
 const Work = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work')
-// 我的工单
-const WorkMy = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-my')
-// 待处理
-const WorkWait = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-wait')
-// 跟进中
-const WorkFollow = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-follow')
-// 催单列表
-const WorkUrge = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-urge')
-// 未完成
-const WorkUndone = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-undone')
-// 超时工单
-const WorkOver = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-over')
-// 结案关闭
-const WorkClose = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-close')
-// 全部
-const WorkAll = () => import(/* webpackChunkName: "group-work" */ '@/components/work/work-all')
 // 异常处理规则设置
 const Rule = () => import(/* webpackChunkName: "group-rule" */ '@/components/work/rule')
 
@@ -148,7 +130,7 @@ const VideoLiveroom = () => import(/* webpackChunkName: "group-video" */ '@/comp
 
 /* 事件管理 */
 // 事件列表
-const EventList = () => import(/* webpackChunkName: "group-event" */ '@/components/event/list')
+const Event = () => import(/* webpackChunkName: "group-event" */ '@/components/event/event')
 
 Vue.use(Router)
 
@@ -293,14 +275,6 @@ export default new Router({
           }
         },
         {
-          path: 'posmap',
-          name: 'posmap',
-          component: Posmap,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
           path: 'group',
           name: 'group',
           component: Group,
@@ -413,17 +387,17 @@ export default new Router({
           }
         },
         {
-          path: 'loccollect',
-          name: 'loccollect',
-          component: Loccollect,
+          path: 'crewcollect',
+          name: 'crewcollect',
+          component: Crewcollect,
           meta: {
             keepAlive: true
           }
         },
         {
-          path: 'loccollect-det',
-          name: 'loccollectDet',
-          component: LoccollectDet,
+          path: 'crewcollect-det',
+          name: 'crewcollectDet',
+          component: CrewcollectDet,
           meta: {
             keepAlive: false
           }
@@ -453,25 +427,26 @@ export default new Router({
           }
         },
         {
-          path: 'clocklog',
-          name: 'clocklog',
-          component: Clocklog,
+          path: 'posclock',
+          name: 'posclock',
+          component: Posclock,
+          redirect: '/main/posclock/posclockall',
           meta: {
             keepAlive: false
           },
           children: [
             {
-              path: 'clockall',
-              name: 'clockall',
-              component: Clockall,
+              path: 'posclockall',
+              name: 'posclockall',
+              component: Posclockall,
               meta: {
                 keepAlive: true
               }
             },
             {
-              path: 'clockmark',
-              name: 'clockmark',
-              component: Clockmark,
+              path: 'posclockdet',
+              name: 'posclockdet',
+              component: Posclockdet,
               meta: {
                 keepAlive: true
               }
@@ -479,17 +454,17 @@ export default new Router({
           ]
         },
         {
-          path: 'locman',
-          name: 'locman',
-          component: Locman,
+          path: 'trackall',
+          name: 'trackall',
+          component: Trackall,
           meta: {
             keepAlive: false
           }
         },
         {
-          path: 'loclog',
-          name: 'loclog',
-          component: Loclog,
+          path: 'trackdet',
+          name: 'trackdet',
+          component: Trackdet,
           meta: {
             keepAlive: false
           }
@@ -508,49 +483,7 @@ export default new Router({
           component: Work,
           meta: {
             keepAlive: false
-          },
-          children: [
-            {
-              path: 'work-my',
-              name: 'workMy',
-              component: WorkMy
-            },
-            {
-              path: 'work-wait',
-              name: 'workWait',
-              component: WorkWait
-            },
-            {
-              path: 'work-follow',
-              name: 'workFollow',
-              component: WorkFollow
-            },
-            {
-              path: 'work-urge',
-              name: 'workUrge',
-              component: WorkUrge
-            },
-            {
-              path: 'work-undone',
-              name: 'workUndone',
-              component: WorkUndone
-            },
-            {
-              path: 'work-over',
-              name: 'workOver',
-              component: WorkOver
-            },
-            {
-              path: 'work-close',
-              name: 'workClose',
-              component: WorkClose
-            },
-            {
-              path: 'work-all',
-              name: 'workAll',
-              component: WorkAll
-            }
-          ]
+          }
         },
         {
           path: 'rule',
@@ -635,7 +568,7 @@ export default new Router({
         {
           path: 'event',
           name: 'event',
-          component: EventList,
+          component: Event,
           meta: {
             keepAlive: true
           }

@@ -61,14 +61,6 @@ const state = {
   nowOrgid: '',
   nowClientId: '',
   proDisabled: false,
-  org: {
-    orgId: '',
-    orgName: '',
-    orgType: '',
-    baseId: ''
-  },
-  orgConfName: 'comclient',
-  workNavActive: '5',
   unreadMesCount: '',
   reportArg: {
     orgId: '',
@@ -76,8 +68,7 @@ const state = {
     orgType: '',
     startDate: '',
     endDate: ''
-  },
-  clockNavActive: 1
+  }
 }
 
 const getters = {
@@ -123,21 +114,6 @@ const mutations = {
   setUnreadMesCount (state, count) {
     state.unreadMesCount = count || ''
   },
-  // 保存机构参数
-  setOrgArgs (state, count) {
-    state.org.orgId = count.orgId
-    state.org.orgName = count.orgName
-    state.org.orgType = count.orgType
-    state.org.baseId = count.baseId
-  },
-  // 保存企业配置导航
-  setOrgConfName (state, name) {
-    state.orgConfName = name
-  },
-  // 保存工单导航
-  setWorkNav (state, name) {
-    state.workNavActive = name
-  },
   // 保存报表组织
   setReportOrg (state, data) {
     state.reportArg.orgId = data.id
@@ -148,25 +124,11 @@ const mutations = {
   setReportDate (state, data) {
     state.reportArg.startDate = data.startDate
     state.reportArg.endDate = data.endDate
-  },
-  // 位置打卡记录
-  setClockNav (state, name) {
-    state.clockNavActive = name
   }
 }
 
 const actions = {
-  // 初始化组织机构参数
-  initOrgArgs (context, str) {
-    context.commit('setOrgArgs', {
-      org: {
-        orgId: '',
-        orgName: '',
-        orgType: '',
-        baseId: ''
-      }
-    })
-  }
+
 }
 
 const store = new Vuex.Store({

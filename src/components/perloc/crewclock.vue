@@ -101,21 +101,21 @@
       </el-main>
     </el-container>
     <!-- 详情 -->
-    <el-dialog title="点名详情" :visible.sync="detDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-table class="select-table" :data="detTable" style="width: 100%" max-height="420">
-        <el-table-column type="index" width="50" label="序号"></el-table-column>
-        <el-table-column prop="atdate" label="日期"></el-table-column>
-        <el-table-column prop="position_name" :show-overflow-tooltip="true" label="地址名称"></el-table-column>
-      </el-table>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="detDialog = false">关 闭</el-button>
-      </div>
-    </el-dialog>
+    <det-module
+      :parentDialog="detDialog"
+      :parentUid="detUid"
+      :parentState="detState"
+      :parentStart="search.startDate"
+      :parentEnd="search.endDate"
+      @parentClose="detClose">
+    </det-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入详情组件
+import detModule from '@/components/perloc/crewclock-det'
 export default{
   name: 'crewclock',
   data () {
@@ -137,7 +137,8 @@ export default{
       nowPage: 1,
       limit: 10,
       detDialog: false,
-      detTable: [],
+      detUid: 0,
+      detState: 1,
       downDisabled: false
     }
   },
@@ -147,6 +148,9 @@ export default{
   mounted () {
     // 获取列表
     this.getListData()
+  },
+  components: {
+    detModule
   },
   computed: {
     ...mapState(
@@ -376,45 +380,18 @@ export default{
         return false
       }
     },
-    /* 未打卡详情 */
+    /* 详情 */
     detClick (uid, positions) {
-      this.detDialog = true
-      let state = 1
+      this.detUid = uid
+      let detState = 1
       if (positions === '全部') {
-        state = 0
+        detState = 0
       }
-      let params = {
-        project_id: this.nowProid,
-        user_id: uid,
-        pos: state,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
-        page: 1,
-        limit1: 10000
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v2.0/selRollCallReportNotPosition',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          this.detTable = res.data.data1.message
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+      this.detState = detState
+      this.detDialog = true
+    },
+    detClose () {
+      this.detDialog = false
     },
     /* 导出 */
     downFile () {

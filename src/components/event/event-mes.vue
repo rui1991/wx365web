@@ -1,7 +1,7 @@
 <template>
-  <el-dialog title="退单" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+  <el-dialog title="追加消息" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
     <el-form class="entirety-from" :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
-      <el-form-item label="退单原因" prop="content">
+      <el-form-item label="消息" prop="content">
         <el-input type="textarea" v-model.trim="formData.content"></el-input>
       </el-form-item>
     </el-form>
@@ -15,13 +15,13 @@
 <script>
 import { mapState } from 'vuex'
 export default{
-  props: ['parentDialog', 'parentId'],
+  props: ['parentDialog', 'parentId', 'parentUId'],
   data () {
     return {
       formLabelWidth: '100px',
       rules: {
         content: [
-          { required: true, message: '请输入退单原因', trigger: 'blur' }
+          { required: true, message: '请输入消息内容', trigger: 'blur' }
         ]
       },
       formData: {
@@ -40,7 +40,7 @@ export default{
     )
   },
   methods: {
-    returnInit () {
+    mesInit () {
       this.formData = {
         content: ''
       }
@@ -65,23 +65,20 @@ export default{
         company_id: this.nowClientId,
         user_id: this.userId,
         project_id: this.nowProid,
-        wo_id: this.parentId,
-        reason: this.formData.content
+        te_id: this.parentId,
+        replay: this.formData.content,
+        touser_id: this.parentUId,
+        toreplayId: ''
       }
       params = this.$qs.stringify(params)
       this.disabled = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/wo/backWO',
+        url: this.sysetApi() + '/apk/addDiscuss',
         data: params
       }).then((res) => {
         this.disabled = false
         if (res.data.result === 'Sucess') {
-          this.$message({
-            showClose: true,
-            message: '退单成功',
-            type: 'success'
-          })
           // 重置表单
           this.resetForm('ruleForm')
           // 刷新列表
@@ -113,7 +110,7 @@ export default{
   watch: {
     parentDialog (val, oldVal) {
       if (val) {
-        this.returnInit()
+        this.mesInit()
       }
     }
   }
@@ -121,9 +118,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.work-item{
-  .paging{
-    margin-top: 20px;
-  }
-}
+
 </style>

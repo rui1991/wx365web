@@ -1,5 +1,5 @@
 <template>
-  <div class="clocklog">
+  <div class="posclock">
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -25,41 +25,18 @@
 
 <script>
 export default{
-  name: 'clocklog',
+  name: 'posclock',
   data () {
     return {
-
+      navActive: '1'
     }
-  },
-  created () {
-
-  },
-  mounted () {
-    if (this.navActive === 1) {
-      this.$router.push({ path: '/main/clocklog/clockall' })
-    } else if (this.navActive === 2) {
-      this.$router.push({ path: '/main/clocklog/clockmark' })
-    }
-  },
-  computed: {
-    navActive: {
-      get () {
-        return this.$store.state.clockNavActive
-      },
-      set (value) {
-        this.$store.commit('setClockNav', value)
-      }
-    }
-  },
-  methods: {
-
   },
   watch: {
     navActive (val, oldVal) {
       if (val === 1) {
-        this.$router.push({ path: '/main/clocklog/clockall' })
+        this.$router.push({ path: '/main/posclock/posclockall' })
       } else if (val === 2) {
-        this.$router.push({ path: '/main/clocklog/clockmark' })
+        this.$router.push({ path: '/main/posclock/posclockdet' })
       }
     }
   }
@@ -67,7 +44,7 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.clocklog{
+.posclock{
   height: 100%;
   .module-container{
     height: 100%;

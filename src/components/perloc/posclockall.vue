@@ -1,5 +1,5 @@
 <template>
-  <div class="clockall">
+  <div class="posclockall">
     <div class="search">
       <div class="item">
         <el-date-picker
@@ -22,7 +22,7 @@
       <el-table-column label="日期">
         <el-table-column width="80" v-for="item in days" :label="item.date" :key="item.date">
           <template slot-scope="scope">
-            <a href="javascript:void(0);" class="name" @click="checkDetails(scope.row.position_id, scope.row.position_name, item.value)" v-if="scope.row[item.value]">{{ scope.row[item.value] }}次</a>
+            <a href="javascript:void(0);" class="name" @click="detClick(scope.row.position_id, item.value)" v-if="scope.row[item.value]">{{ scope.row[item.value] }}次</a>
             <span class="red" v-else-if="item.state">未打卡</span>
             <span v-else>-</span>
           </template>
@@ -42,25 +42,21 @@
       :total="total">
     </el-pagination>
     <!-- 详情 -->
-    <el-dialog title="位置打卡详情" :visible.sync="detDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-table class="select-table" :data="detData" style="width: 100%" max-height="360">
-        <el-table-column type="index" fixed width="50" label="序号"></el-table-column>
-        <el-table-column prop="user_name" width="80" label="人员"></el-table-column>
-        <el-table-column prop="in_time" width="180" label="进入时间"></el-table-column>
-        <el-table-column prop="out_time" width="180" label="离开时间"></el-table-column>
-        <el-table-column prop="wait_time" label="停留时长(分)"></el-table-column>
-      </el-table>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="detDialog = false">关 闭</el-button>
-      </div>
-    </el-dialog>
+    <det-module
+      :parentDialog="detDialog"
+      :parentId="itemId"
+      :parentDate="itemDate"
+      @parentClose="detClose">
+    </det-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入详情组件
+import detModule from '@/components/perloc/posclockall-det'
 export default{
-  name: 'clockall',
+  name: 'posclockall',
   data () {
     return {
       nowMonth: this.$common.getNowDate('yyyy-mm'),
@@ -77,8 +73,8 @@ export default{
       nowPage: 1,
       limit: 10,
       detDialog: false,
-      positionName: '',
-      detData: [],
+      itemId: 0,
+      itemDate: '',
       downDisabled: false
     }
   },
@@ -112,6 +108,9 @@ export default{
     this.days = days
     // 获取列表
     this.getListData()
+  },
+  components: {
+    detModule
   },
   computed: {
     ...mapState(
@@ -199,46 +198,21 @@ export default{
         days.push(item)
       }
       this.days = days
-      // 获取列表
+      // 初始化页码
+      this.nowPage = 1
+      // 获取列表数据
       this.getListData()
     },
     /* 详情 */
-    checkDetails (id, name, value) {
-      this.positionName = name
-      this.detDialog = true
+    detClick (id, value) {
+      this.itemId = id
       let day = value.replace(/size/g, '')
       day = day.padStart(2, '0')
-      const date = this.searchDate + '-' + day
-      let params = {
-        project_id: this.nowProid,
-        now_date: date,
-        position_id: id,
-        page: 1,
-        limit1: 1000
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.8/selUserRecordPositionMs',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          this.detData = res.data.data1.message || []
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+      this.itemDate = this.searchDate + '-' + day
+      this.detDialog = true
+    },
+    detClose () {
+      this.detDialog = false
     },
     /* 导出 */
     downFile () {
@@ -271,7 +245,7 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.clockall{
+.posclockall{
   .search{
     display: table;
     width: 100%;

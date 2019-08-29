@@ -1,5 +1,10 @@
 <template>
-  <div class="loccollect">
+  <div
+    class="crewcollect"
+    v-loading="loading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -53,32 +58,32 @@
           <el-table-column prop="project_name" label="项目名称"></el-table-column>
           <el-table-column label="点名成功人数">
             <template slot-scope="scope">
-              <router-link :to="{ name: 'loccollectDet', query:{proId: scope.row.project_id, date: scope.row.date, type: 1}}" class="com">{{ scope.row.rcTrueSize }}人</router-link>
+              <router-link :to="{ path: '/main/crewcollect-det', query:{proId: scope.row.project_id, date: scope.row.date, type: 1}}" class="com">{{ scope.row.rcTrueSize }}人</router-link>
             </template>
           </el-table-column>
           <el-table-column label="点名失败人数">
             <template slot-scope="scope">
-              <router-link :to="{ name: 'loccollectDet', query:{proId: scope.row.project_id, date: scope.row.date, type: 2}}" class="del">{{ scope.row.rcFalseSize }}人</router-link>
+              <router-link :to="{ path: '/main/crewcollect-det', query:{proId: scope.row.project_id, date: scope.row.date, type: 2}}" class="del">{{ scope.row.rcFalseSize }}人</router-link>
             </template>
           </el-table-column>
           <el-table-column label="位置打卡有记录数">
             <template slot-scope="scope">
-              <router-link :to="{ name: 'loccollectDet', query:{proId: scope.row.project_id, date: scope.row.date, type: 3}}" class="com">{{ scope.row.recordTrueSize }}个</router-link>
+              <router-link :to="{ path: '/main/crewcollect-det', query:{proId: scope.row.project_id, date: scope.row.date, type: 3}}" class="com">{{ scope.row.recordTrueSize }}个</router-link>
             </template>
           </el-table-column>
           <el-table-column label="位置打卡无记录数">
             <template slot-scope="scope">
-              <router-link :to="{ name: 'loccollectDet', query:{proId: scope.row.project_id, date: scope.row.date, type: 4}}" class="del">{{ scope.row.recordFalseSize }}个</router-link>
+              <router-link :to="{ path: '/main/crewcollect-det', query:{proId: scope.row.project_id, date: scope.row.date, type: 4}}" class="del">{{ scope.row.recordFalseSize }}个</router-link>
             </template>
           </el-table-column>
           <el-table-column label="固定岗打卡成功数">
             <template slot-scope="scope">
-              <router-link :to="{ name: 'loccollectDet', query:{proId: scope.row.project_id, date: scope.row.date, type: 5}}" class="com">{{ scope.row.permanentTrueSize }}次</router-link>
+              <router-link :to="{ path: '/main/crewcollect-det', query:{proId: scope.row.project_id, date: scope.row.date, type: 5}}" class="com">{{ scope.row.permanentTrueSize }}次</router-link>
             </template>
           </el-table-column>
           <el-table-column label="固定岗未打卡数">
             <template slot-scope="scope">
-              <router-link :to="{ name: 'loccollectDet', query:{proId: scope.row.project_id, date: scope.row.date, type: 6}}" class="del">{{ scope.row.permanentFalseSize }}次</router-link>
+              <router-link :to="{ path: '/main/crewcollect-det', query:{proId: scope.row.project_id, date: scope.row.date, type: 6}}" class="del">{{ scope.row.permanentFalseSize }}次</router-link>
             </template>
           </el-table-column>
         </el-table>
@@ -102,7 +107,7 @@
 <script>
 import { mapState } from 'vuex'
 export default{
-  name: 'loccollect',
+  name: 'crewcollect',
   data () {
     return {
       search: {
@@ -119,7 +124,8 @@ export default{
       total: 0,
       nowPage: 1,
       limit: 10,
-      downDisabled: false
+      downDisabled: false,
+      loading: false
     }
   },
   created () {
@@ -165,11 +171,13 @@ export default{
         limit1: this.limit
       }
       params = this.$qs.stringify(params)
+      this.loading = true
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/v3.5/selUserManageAllReport',
         data: params
       }).then((res) => {
+        this.loading = false
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
           this.tableData = res.data.data1.message
@@ -182,6 +190,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.loading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -231,7 +240,7 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.loccollect{
+.crewcollect{
   height: 100%;
   .module-container{
     height: 100%;

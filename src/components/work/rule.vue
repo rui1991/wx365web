@@ -14,7 +14,7 @@
               <div class="warning-title">
                 <h3 class="title-text"><i class="iconfont icon-gaojing"></i>通知与告警</h3>
                 <div class="operate">
-                  <el-button type="primary" @click="addWarning" v-if="authority.linkman">添加</el-button>
+                  <el-button type="primary" @click="addWarning">添加</el-button>
                 </div>
               </div>
               <p class="warning-hint">最多可添加5个指定联系人</p>
@@ -25,7 +25,7 @@
                 <el-table-column prop="role_name" label="角色"></el-table-column>
                 <el-table-column label="操作">
                   <template slot-scope="scope">
-                    <i class="el-icon-delete" style="font-size: 18px; color: #fe4c51; cursor: pointer;" @click="delClick(scope.row.wp_id)" v-if="authority.linkman"></i>
+                    <i class="el-icon-delete" style="font-size: 18px; color: #fe4c51; cursor: pointer;" @click="delClick(scope.row.wp_id)"></i>
                   </template>
                 </el-table-column>
               </el-table>
@@ -160,11 +160,6 @@ export default{
   name: 'rule',
   data () {
     return {
-      authority: {
-        linkman: true,
-        send: true,
-        overtime: true
-      },
       linkmanData: [],
       crewDialog: false,
       crewData: [],
@@ -208,11 +203,6 @@ export default{
     this.getResponseRule()
     // 获取处理超时设置
     this.getDisposeRule()
-    // 权限
-    let autDet = this.autDet
-    autDet.indexOf(182) === -1 ? this.authority.linkman = false : this.authority.linkman = true
-    autDet.indexOf(183) === -1 ? this.authority.send = false : this.authority.send = true
-    autDet.indexOf(184) === -1 ? this.authority.overtime = false : this.authority.overtime = true
   },
   computed: {
     ...mapState(
@@ -221,14 +211,12 @@ export default{
         companyName: state => state.info.companyName,
         userId: state => state.info.userId,
         nowProid: state => state.nowProid,
-        nowOrgid: state => state.nowOrgid,
-        autDet: state => state.autDet.rule
+        nowOrgid: state => state.nowOrgid
       }
     )
   },
   methods: {
     /* 设置告警人 */
-    // 获取告警人
     getWarning () {
       let params = {
         company_id: this.nowClientId,

@@ -150,7 +150,6 @@ export default{
     },
     // 查看详情
     getDetails () {
-      this.detDialog = true
       let params = {
         // company_id: this.nowClientId,
         user_id: this.userId,

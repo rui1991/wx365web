@@ -94,9 +94,6 @@
               <el-menu-item-group v-if="authority.site">
                 <el-menu-item index="/main/site">地址管理</el-menu-item>
               </el-menu-item-group>
-              <!--<el-menu-item-group>-->
-                <!--<el-menu-item index="/main/posmap">地图管理</el-menu-item>-->
-              <!--</el-menu-item-group>-->
             </el-submenu>
             <el-submenu index="3" class="submenu-item">
               <template slot="title"><i class="iconfont icon-xunjianguanli"></i>巡检管理</template>
@@ -128,7 +125,7 @@
             <el-submenu index="4" class="submenu-item">
               <template slot="title"><i class="iconfont icon-renyuanweizhi"></i>人员位置管理</template>
               <el-menu-item-group v-if="authority.plan">
-                <el-menu-item index="/main/loccollect">人员管理汇总</el-menu-item>
+                <el-menu-item index="/main/crewcollect">人员管理汇总</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.plan">
                 <el-menu-item index="/main/callname">点名管理</el-menu-item>
@@ -137,17 +134,14 @@
                 <el-menu-item index="/main/crewclock">人员打卡报表</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.plan">
-                <el-menu-item index="/main/clocklog">位置打卡记录</el-menu-item>
+                <el-menu-item index="/main/posclock">位置打卡记录</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.plan">
-                <el-menu-item index="/main/locman">轨迹记录总览</el-menu-item>
+                <el-menu-item index="/main/trackall">轨迹记录总览</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.plan">
-                <el-menu-item index="/main/loclog">轨迹记录详情</el-menu-item>
+                <el-menu-item index="/main/trackdet">轨迹记录详情</el-menu-item>
               </el-menu-item-group>
-              <!--<el-menu-item-group v-if="authority.plan">-->
-                <!--<el-menu-item index="/main/crewtrack">人员轨迹图</el-menu-item>-->
-              <!--</el-menu-item-group>-->
             </el-submenu>
             <el-submenu index="5" class="submenu-item">
               <template slot="title"><i class="iconfont icon-ccgl-fahuodanguanli-5"></i>工单管理</template>
@@ -163,9 +157,6 @@
               <el-menu-item-group>
                 <el-menu-item index="/main/hardfac">硬件设备管理</el-menu-item>
               </el-menu-item-group>
-              <!--<el-menu-item-group>-->
-                <!--<el-menu-item index="/main/polcard">巡检绑卡管理</el-menu-item>-->
-              <!--</el-menu-item-group>-->
             </el-submenu>
             <el-submenu index="7" class="submenu-item" v-if="authority.polReport || authority.workReport">
               <template slot="title"><i class="iconfont icon-baobiaoguanli"></i>报表管理</template>

@@ -88,7 +88,7 @@ import { mapState } from 'vuex'
 // 引入显示图片组件
 import imgModule from '@/components/public/show-img'
 export default{
-  props: ['parentDialog', 'parentId'],
+  props: ['parentDialog', 'parentPro', 'parentId'],
   data () {
     return {
       formLabelWidth: '100px',
@@ -117,9 +117,7 @@ export default{
   computed: {
     ...mapState(
       {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
+        userId: state => state.info.userId
       }
     )
   },
@@ -145,9 +143,8 @@ export default{
     // 获取详情
     getDetails () {
       let params = {
-        company_id: this.nowClientId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.parentPro,
         wo_id: this.parentId
       }
       params = this.$qs.stringify(params)

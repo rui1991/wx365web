@@ -11,7 +11,7 @@
       <el-main class="module-main">
         <div class="search">
           <div class="operate">
-            <el-button type="primary" @click="addClick">新增</el-button>
+            <el-button type="primary" @click="addDialog = true">新增</el-button>
           </div>
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
@@ -34,118 +34,44 @@
       </el-main>
     </el-container>
     <!-- 新增 -->
-    <el-dialog title="新增点名规则" :visible.sync="addDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-form class="divide-from" :model="addForm" :rules="rules" ref="ruleAddForm" :label-width="formLabelWidth">
-        <el-form-item label="点名人员" prop="crewName">
-          <el-input :disabled="true" type="textarea" v-model="addForm.crewName"></el-input>
-          <el-button type="primary" style="vertical-align: top;" @click="addCrewClick">选择人员</el-button>
-        </el-form-item>
-        <el-form-item label="点名地址" prop="siteName">
-          <el-input :disabled="true" type="textarea" v-model="addForm.siteName"></el-input>
-          <el-button type="primary" style="vertical-align: top;" @click="addSiteClick">选择地址</el-button>
-        </el-form-item>
-        <el-form-item label="点名次数" prop="count">
-          <el-input style="width: 140px;" v-model.trim="addForm.count" auto-complete="off">
-            <template slot="append">次</template>
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="resetAddForm('ruleAddForm')">取 消</el-button>
-        <el-button type="primary" :disabled="addDisabled" @click="submitAddForm('ruleAddForm')">确 定</el-button>
-      </div>
-    </el-dialog>
+    <add-module
+      :parentDialog="addDialog"
+      @parentUpdata="addUpdata"
+      @parentCancel="addCancel">
+    </add-module>
     <!-- 编辑 -->
-    <el-dialog title="编辑点名规则" :visible.sync="comDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-form class="divide-from" :model="comForm" :rules="rules" ref="ruleComForm" :label-width="formLabelWidth">
-        <el-form-item label="点名人员" prop="crewName">
-          <el-input :disabled="true" type="textarea" v-model="comForm.crewName"></el-input>
-          <el-button type="primary" style="vertical-align: top;" @click="comCrewClick">选择人员</el-button>
-        </el-form-item>
-        <el-form-item label="点名地址" prop="siteName">
-          <el-input :disabled="true" type="textarea" v-model="comForm.siteName"></el-input>
-          <el-button type="primary" style="vertical-align: top;" @click="comSiteClick">选择地址</el-button>
-        </el-form-item>
-        <el-form-item label="点名次数" prop="count">
-          <el-input style="width: 140px;" v-model.trim="comForm.count" auto-complete="off">
-            <template slot="append">次</template>
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="resetComForm('ruleComForm')">取 消</el-button>
-        <el-button type="primary" :disabled="comDisabled" @click="submitComForm('ruleComForm')">确 定</el-button>
-      </div>
-    </el-dialog>
+    <com-module
+      :parentDialog="comDialog"
+      :parentId="itemId"
+      :parentForm="comForm"
+      @parentUpdata="comUpdata"
+      @parentCancel="comCancel">
+    </com-module>
     <!-- 删除 -->
-    <el-dialog title="提示" :visible.sync="delDialog" width="26%" :show-close="false" :close-on-click-modal="false" custom-class="hint-dialog">
-      <p class="hint-text"><i class="el-icon-warning"></i>是否要删除该点名规则？</p>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="delDialog = false">取 消</el-button>
-        <el-button type="primary" :disabled="delDisabled" @click="submitDelForm">确 定</el-button>
-      </span>
-    </el-dialog>
-    <!-- 人员 -->
-    <el-dialog title="选择人员" :visible.sync="crewDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-transfer
-        filterable
-        ref="myTransfer"
-        :filter-method="filterMethod"
-        filter-placeholder="请输入人员姓名"
-        v-model="checkCrew"
-        :props="props"
-        :titles="['人员列表', '已选择']"
-        :data="crewData">
-      </el-transfer>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="crewDialog = false">取 消</el-button>
-        <el-button type="primary" :disabled="crewDisabled" @click="selectCrew">确 定</el-button>
-      </div>
-    </el-dialog>
-    <!-- 地址 -->
-    <el-dialog title="选择地址" :visible.sync="siteDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-tree
-        :data="siteTree"
-        ref="siteTree"
-        show-checkbox
-        default-expand-all
-        check-strictly
-        node-key="id"
-        :props="defaultProps">
-      </el-tree>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="siteDialog = false">取 消</el-button>
-        <el-button type="primary" @click="selectSite">确 定</el-button>
-      </div>
-    </el-dialog>
+    <del-module
+      :parentDialog="delDialog"
+      :parentId="itemId"
+      @parentUpdata="delUpdata"
+      @parentCancel="delCancel">
+    </del-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入新增组件
+import addModule from '@/components/perloc/callname-add'
+// 引入编辑组件
+import comModule from '@/components/perloc/callname-com'
+// 引入删除组件
+import delModule from '@/components/perloc/callname-del'
 export default{
   name: 'callnameSet',
   data () {
     return {
       tableData: [],
-      formLabelWidth: '100px',
-      rules: {
-        crewName: [
-          { required: true, message: '请选择人员', trigger: 'change' }
-        ],
-        count: [
-          { required: true, message: '请输入点名次数', trigger: 'blur' }
-        ]
-      },
+      itemId: '',
       addDialog: false,
-      addForm: {
-        crewName: '',
-        crewId: [],
-        siteName: '',
-        siteId: '',
-        count: ''
-      },
-      addDisabled: false,
       comDialog: false,
       comForm: {
         crewName: '',
@@ -154,27 +80,7 @@ export default{
         siteId: '',
         count: ''
       },
-      comDisabled: false,
-      delDialog: false,
-      delDisabled: false,
-      itemId: '',
-      crewDialog: false,
-      crewDisabled: true,
-      crewData: [],
-      props: {
-        label: 'user_name',
-        key: 'user_id'
-      },
-      checkCrew: [],
-      filterMethod (query, item) {
-        return item.user_name.indexOf(query) > -1
-      },
-      siteDialog: false,
-      siteTree: [],
-      defaultProps: {
-        children: 'children',
-        label: 'name'
-      }
+      delDialog: false
     }
   },
   created () {
@@ -182,17 +88,18 @@ export default{
     this.$store.commit('setProDisabled', true)
     // 获取列表数据
     this.getListData()
-    // 获取项目人员
-    this.getCrewOptions()
+  },
+  components: {
+    addModule,
+    comModule,
+    delModule
   },
   computed: {
     ...mapState(
       {
         nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
         userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        nowOrgid: state => state.nowOrgid
+        nowProid: state => state.nowProid
       }
     )
   },
@@ -230,431 +137,61 @@ export default{
       })
     },
     /* 新增 */
-    addClick () {
-      this.addDialog = true
-      this.addForm = {
-        crewName: '',
-        crewId: [],
-        siteName: '',
-        siteId: '',
-        count: ''
-      }
-    },
-    // 验证表单
-    submitAddForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.sendAddRequest()
-        } else {
-          return false
-        }
-      })
-    },
-    // 重置表单
-    resetAddForm (formName) {
-      this.$refs[formName].resetFields()
+    addUpdata () {
       this.addDialog = false
+      // 更新列表
+      this.getListData()
     },
-    // 提交
-    sendAddRequest () {
-      let count = this.addForm.count + ''
-      count = this.verifyNum(count)
-      if (count > 24) {
-        this.$message({
-          showClose: true,
-          message: '点名次数不能超过24次！',
-          type: 'warning'
-        })
-        return
-      }
-      let crewId = this.addForm.crewId
-      crewId = crewId.join(',')
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        users: crewId,
-        // user_names: this.addForm.crewName,
-        positions: this.addForm.siteId,
-        // position_names: this.addForm.siteName,
-        urc_size: count
-      }
-      params = this.$qs.stringify(params)
-      this.addDisabled = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v2.0/setRollCallMessage',
-        data: params
-      }).then((res) => {
-        this.addDisabled = false
-        if (res.data.result === 'Sucess') {
-          // 重置表单
-          this.resetAddForm('ruleAddForm')
-          // 刷新列表
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.addDisabled = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    addCancel () {
+      this.addDialog = false
     },
     /* 编辑 */
     comClick (data) {
-      this.comDialog = true
       this.itemId = data.rcs_id
+      // 人员id
       let users = data.users
       let userArr = []
       if (users) {
         userArr = users.split(',')
-      } else {
-        userArr = []
       }
       let crewId = userArr.map((value) => {
         return Number.parseInt(value)
       })
+      // 地址id
+      let sites = data.positions
+      let siteId = []
+      if (sites) {
+        siteId = sites.split(',')
+      }
       this.comForm = {
         crewName: data.user_names,
         crewId: crewId,
-        siteName: data.position_names || '',
-        siteId: data.positions || '',
+        siteName: data.position_names,
+        siteId: siteId,
         count: data.urc_size
       }
+      this.comDialog = true
     },
-    // 验证表单
-    submitComForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.sendComRequest()
-        } else {
-          return false
-        }
-      })
-    },
-    // 重置表单
-    resetComForm (formName) {
-      this.$refs[formName].resetFields()
+    comUpdata () {
       this.comDialog = false
+      // 更新列表
+      this.getListData()
     },
-    // 提交
-    sendComRequest () {
-      let count = this.comForm.count + ''
-      count = this.verifyNum(count)
-      if (count > 24) {
-        this.$message({
-          showClose: true,
-          message: '点名次数不能超过24次！',
-          type: 'warning'
-        })
-        return
-      }
-      let crewId = this.comForm.crewId
-      crewId = crewId.join(',')
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        rcs_id: this.itemId,
-        project_id: this.nowProid,
-        users: crewId,
-        positions: this.comForm.siteId,
-        urc_size: count
-      }
-      params = this.$qs.stringify(params)
-      this.comDisabled = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v2.0/altRollCallMessage',
-        data: params
-      }).then((res) => {
-        this.comDisabled = false
-        if (res.data.result === 'Sucess') {
-          // 重置表单
-          this.resetComForm('ruleComForm')
-          // 刷新列表
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.comDisabled = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 处理次数
-    verifyNum (value) {
-      let str = /^\+?[1-9][0-9]*$/
-      return value.match(str) ? Number.parseInt(value) : 1
+    comCancel () {
+      this.comDialog = false
     },
     /* 删除 */
     delClick (id) {
-      this.delDialog = true
       this.itemId = id
+      this.delDialog = true
     },
-    submitDelForm () {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid,
-        rcs_id: this.itemId
-      }
-      params = this.$qs.stringify(params)
-      this.delDisabled = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v2.0/delRollCallMessage',
-        data: params
-      }).then((res) => {
-        this.delDisabled = false
-        if (res.data.result === 'Sucess') {
-          // 隐藏提示框
-          this.delDialog = false
-          // 刷新列表
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.delDisabled = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    delUpdata () {
+      this.delDialog = false
+      // 更新列表
+      this.getListData()
     },
-    /* 人员 */
-    // 获取项目人员
-    getCrewOptions () {
-      let params = {
-        organize_id: this.nowOrgid,
-        user_name: '',
-        user_phone: '',
-        role_id: '',
-        page: 1,
-        limit1: 10000
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.2/selUser',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          let crewData = res.data.data1.users
-          this.crewData = crewData
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 新增
-    addCrewClick () {
-      this.crewDialog = true
-      let crewId = this.addForm.crewId
-      this.checkCrew = crewId
-      if (this.$refs.myTransfer) {
-        // 清空左边搜索
-        this.$refs.myTransfer.$children['0']._data.query = ''
-        // 清空右边搜索
-        this.$refs.myTransfer.$children['3']._data.query = ''
-      }
-    },
-    // 编辑
-    comCrewClick () {
-      this.crewDialog = true
-      let crewId = this.comForm.crewId
-      this.checkCrew = crewId
-      if (this.$refs.myTransfer) {
-        // 清空左边搜索
-        this.$refs.myTransfer.$children['0']._data.query = ''
-        // 清空右边搜索
-        this.$refs.myTransfer.$children['3']._data.query = ''
-      }
-    },
-    // 确定
-    selectCrew () {
-      const crewData = this.crewData
-      const checkCrew = this.checkCrew
-      let crewArr = []
-      checkCrew.forEach(itemValue => {
-        let temp = crewData.find((item, index, array) => {
-          return itemValue === item.user_id
-        })
-        if (temp) {
-          crewArr.push(temp)
-        }
-      })
-      let crewName = []
-      let crewId = []
-      crewArr.forEach(item => {
-        crewName.push(item.user_name)
-        crewId.push(item.user_id)
-      })
-      crewName = crewName.join('，')
-      if (this.addDialog) {
-        this.addForm.crewName = crewName
-        this.addForm.crewId = crewId
-      } else if (this.comDialog) {
-        this.comForm.crewName = crewName
-        this.comForm.crewId = crewId
-      }
-      this.crewDialog = false
-    },
-    /* 地址 */
-    // 获取地址树
-    getSiteTree (b = false) {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/selPositionTree628',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const siteData = res.data.data1
-          // 处理地址树
-          const siteTree = this.initDisSiteTree(siteData)
-          this.siteTree = siteTree
-          if (b) {
-            let ids = this.comForm.siteId
-            ids = ids.split(',')
-            setTimeout(() => {
-              this.$refs.siteTree.setCheckedKeys(ids)
-            }, 100)
-          }
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 初始化处理地址树
-    initDisSiteTree (siteData) {
-      siteData.forEach(item => {
-        let id = item.id
-        if (id.indexOf('w') !== -1) {
-          item.disabled = true
-        }
-        if (item.children) {
-          this.initRecSiteTree(item.children)
-        }
-      })
-      return siteData
-    },
-    initRecSiteTree (data) {
-      data.forEach(item => {
-        let id = item.id
-        if (id.indexOf('w') !== -1) {
-          item.disabled = true
-        }
-        if (item.children) {
-          this.initRecSiteTree(item.children)
-        }
-      })
-    },
-    // 新增
-    addSiteClick () {
-      this.siteDialog = true
-      if (this.siteTree.length === 0) {
-        this.getSiteTree()
-      } else {
-        let ids = this.addForm.siteId
-        ids = ids.split(',')
-        setTimeout(() => {
-          this.$refs.siteTree.setCheckedKeys(ids)
-        }, 100)
-      }
-    },
-    // 编辑
-    comSiteClick () {
-      this.siteDialog = true
-      if (this.siteTree.length === 0) {
-        this.getSiteTree(true)
-      } else {
-        let ids = this.comForm.siteId
-        ids = ids.split(',')
-        setTimeout(() => {
-          this.$refs.siteTree.setCheckedKeys(ids)
-        }, 100)
-      }
-    },
-    // 确定
-    selectSite () {
-      const nodesData = this.$refs.siteTree.getCheckedNodes()
-      let siteName = []
-      let siteId = []
-      nodesData.forEach(item => {
-        siteName.push(item.name)
-        siteId.push(item.id)
-      })
-      siteName = siteName.join('，')
-      siteId = siteId.join(',')
-      if (this.addDialog) {
-        this.addForm.siteName = siteName
-        this.addForm.siteId = siteId
-      } else if (this.comDialog) {
-        this.comForm.siteName = siteName
-        this.comForm.siteId = siteId
-      }
-      this.siteDialog = false
-    }
-  },
-  watch: {
-    checkCrew (val, oldVal) {
-      if (val.length === 0) {
-        this.crewDisabled = true
-      } else {
-        this.crewDisabled = false
-      }
+    delCancel () {
+      this.delDialog = false
     }
   },
   beforeDestroy () {

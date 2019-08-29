@@ -28,13 +28,16 @@
       </el-table-column>
       <el-table-column label="操作" width="300">
         <template slot-scope="scope">
+          <!-- 我的工单 -->
           <a href="javascript:void(0);" class="operate com" @click="addLogClick(scope.row.wo_id)" v-if="parentType === '5'">追加日志</a>
           <a href="javascript:void(0);" class="operate com" @click="closeClick(scope.row.wo_id)" v-if="scope.row.wo_state === 1 && parentType === '5'">结单</a>
           <span class="operate forbid" v-else-if="scope.row.wo_state === 2 && parentType === '5'">已结单</span>
           <a href="javascript:void(0);" class="operate com" @click="returnClick(scope.row.wo_id)" v-if="scope.row.wo_state === 1 && parentType === '5'">退单</a>
           <span class="operate forbid" v-else-if="scope.row.wo_state === 2 && parentType === '5'">退单</span>
+          <!-- 待处理 -->
           <a href="javascript:void(0);" class="operate com" @click="crewClick(scope.row.wo_id)" v-if="authority.dispatch && parentType === '0'">派单</a>
           <a href="javascript:void(0);" class="operate com" @click="orderClick(scope.row.wo_id)" v-if="authority.order && parentType === '0'">接单</a>
+          <!-- 催单 -->
           <a href="javascript:void(0);" class="com" @click="reminderClick(scope.row.wo_id)" v-if="authority.reminder && parentType === '1'">催单</a>
           <a href="javascript:void(0);" class="com" @click="reminderClick(scope.row.wo_id)" v-if="authority.reminder && parentType === '6'">催单</a>
         </template>
@@ -55,6 +58,7 @@
     <!-- 详情 -->
     <det-module
       :parentDialog="detDialog"
+      :parentPro="nowProid"
       :parentId="itemId"
       @parentClose="detClose">
     </det-module>
@@ -94,7 +98,7 @@ import returnModule from '@/components/work/work-return'
 import crewModule from '@/components/work/work-crew'
 export default{
   name: 'workMy',
-  props: ['parentSearch', 'parentType'],
+  props: ['parentType', 'parentSearch'],
   data () {
     return {
       authority: {
@@ -151,7 +155,6 @@ export default{
         woN_from: this.parentSearch.source,
         businessN_type: this.parentSearch.sort,
         userN_id: this.parentSearch.crews,
-        // woN_state: 5,
         type: this.parentType,
         page: this.nowPage,
         limit1: this.limit
@@ -364,11 +367,11 @@ export default{
     }
   },
   watch: {
-    parentSearch (val, oldVal) {
+    parentType (val, oldVal) {
       this.nowPage = 1
       this.getListData()
     },
-    parentType (val, oldVal) {
+    parentSearch (val, oldVal) {
       this.nowPage = 1
       this.getListData()
     }

@@ -1,35 +1,36 @@
 <template>
   <div>
-    <el-dialog title="新增工单" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+    <el-dialog title="新增事件" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
       <el-form class="divide-from" :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
-        <el-form-item label="工单名称" prop="name">
+        <el-form-item label="事件名称" prop="name">
           <el-input v-model.trim="formData.name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="发生地址" prop="site">
+        <el-form-item label="事件类型" prop="type">
+          <el-select v-model="formData.type" @change="typeChange" placeholder="请选择事件类型">
+            <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="事件状态" prop="state">
+          <el-select v-model="formData.state" placeholder="请选择事件状态">
+            <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="事件紧急" prop="level">
+          <el-select v-model="formData.level" :disabled="leveDisabled" placeholder="请选择事件紧急">
+            <el-option v-for="item in levelOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="发生位置" prop="site">
           <el-input v-model="formData.site"></el-input>
           <el-button type="primary" @click="siteDialog = true">选择地址</el-button>
         </el-form-item>
-        <el-form-item label="业务类别" prop="sort">
-          <el-select style="width: 100%;" v-model="formData.sort" clearable placeholder="请选择业务类别">
-            <el-option
-              v-for="item in parentSort"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
+        <el-form-item label="提醒给谁" prop="crew">
+          <el-select v-model="formData.crew" multiple collapse-tags placeholder="请选择提醒人员">
+            <el-option v-for="item in parentCrew" :key="item.user_id" :label="item.user_name" :value="item.user_id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="派单" prop="crew">
-          <el-select style="width: 100%;" v-model="formData.crew" clearable placeholder="请选择执行人员">
-            <el-option
-              v-for="item in parentCrew"
-              :key="item.user_id"
-              :label="item.user_name"
-              :value="item.user_id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
+        <el-form-item label="事件内容" prop="remark">
           <el-input type="textarea" maxlength="100" placeholder="文本长度不得超过100个字符" v-model.trim="formData.remark"></el-input>
         </el-form-item>
       </el-form>
@@ -66,35 +67,76 @@ import { mapState } from 'vuex'
 // 引入地址组件
 import siteModule from '@/components/work/work-site'
 export default{
-  props: ['parentDialog', 'parentSort', 'parentCrew'],
+  props: ['parentDialog', 'parentCrew'],
   data () {
     return {
       formLabelWidth: '100px',
+      typeOptions: [
+        {
+          label: '设备',
+          value: '0'
+        },
+        {
+          label: '公告',
+          value: '1'
+        },
+        {
+          label: '日常',
+          value: '6'
+        }
+      ],
+      stateOptions: [
+        {
+          label: '已处理',
+          value: '1'
+        },
+        {
+          label: '未处理',
+          value: '2'
+        }
+      ],
+      levelOptions: [
+        {
+          label: '一般',
+          value: '0'
+        },
+        {
+          label: '重要',
+          value: '1'
+        },
+        {
+          label: '紧急',
+          value: '2'
+        }
+      ],
       rules: {
         name: [
-          { required: true, message: '请输入工单名称', trigger: 'blur' }
+          { required: true, message: '请输入事件名称', trigger: 'blur' }
+        ],
+        remark: [
+          { required: true, message: '请输入事件内容', trigger: 'blur' }
         ]
       },
       formData: {
         name: '',
+        type: '6',
+        state: '2',
+        level: '0',
         site: '',
-        sort: '',
-        crew: '',
+        crew: [],
         remark: ''
       },
       reqUrl: '',
       imgLimit: 9,
       fileList: [],
+      leveDisabled: false,
       disabled: false,
       siteDialog: false
     }
   },
-  created () {
-
-  },
   mounted () {
-    // 设置上传地址
-    this.reqUrl = this.sysetApi() + '/upload?state=10&user_id' + this.userId
+    // 设置上传图片地址
+    this.reqUrl = this.sysetApi() + '/upload?state=2&user_id=' + this.userId
   },
   components: {
     siteModule
@@ -104,6 +146,7 @@ export default{
       {
         nowClientId: state => state.nowClientId,
         userId: state => state.info.userId,
+        userName: state => state.info.userName,
         nowProid: state => state.nowProid
       }
     )
@@ -112,12 +155,23 @@ export default{
     addInit () {
       this.formData = {
         name: '',
+        type: '6',
+        state: '2',
+        level: '0',
         site: '',
-        sort: '',
-        crew: '',
+        crew: [],
         remark: ''
       }
       this.fileList = []
+    },
+    // 选择类型
+    typeChange (type) {
+      if (type === '1') {
+        this.formData.level = '2'
+        this.leveDisabled = true
+      } else {
+        this.leveDisabled = false
+      }
     },
     // 验证表单
     submitForm (formName) {
@@ -140,25 +194,30 @@ export default{
       fileList.forEach(item => {
         fileName.push(item.response)
       })
-      const imgUrls = fileName.join('/')
+      let imgUrls = fileName.join('/')
+      if (imgUrls) {
+        imgUrls = '/' + imgUrls
+      }
       let params = {
         company_id: this.nowClientId,
         user_id: this.userId,
-        projectN_id: this.nowProid,
-        wo_name: this.formData.name,
+        project_id: this.nowProid,
+        event_title: this.formData.name,
+        event_type: this.formData.type,
+        event_state: this.formData.state,
+        event_level: this.formData.level,
+        atuserid: this.formData.crew.join(','),
+        atgroupid: '',
+        event_content: this.formData.remark,
         address: this.formData.site,
-        business_type: this.formData.sort,
-        content: this.formData.remark,
-        wo_from: '维修报修',
-        accept_user: this.formData.crew,
-        isd_id: '',
-        attachment: imgUrls
+        user_name: this.userName,
+        add_info: imgUrls
       }
       params = this.$qs.stringify(params)
       this.disabled = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/wo/addWo',
+        url: this.sysetApi() + '/apk/addIEventNew',
         data: params
       }).then((res) => {
         this.disabled = false

@@ -186,9 +186,9 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 // 引入chart
 import Chart from '@/components/public/chart'
-import { mapState } from 'vuex'
 export default{
   name: 'home',
   data () {
