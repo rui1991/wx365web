@@ -67,11 +67,15 @@ Vue.prototype.$common = common
 // Vue.prototype.sysetApi = () => 'http://szydak.eicp.net:82/ezx_syset'
 // Vue.prototype.reportApi = () => 'http://szydak.eicp.net:8089'
 
+Vue.prototype.baseUrl = () => 'http://192.168.1.199:8080'
+Vue.prototype.sysetApi = () => 'http://192.168.1.199:8080/ezx_syset'
+Vue.prototype.reportApi = () => 'http://192.168.1.199:8089'
+
 // Vue.prototype.locationApi = () => '/apiUrl/ezx_location'
 
-Vue.prototype.baseUrl = () => 'http://www.allsps.com'
-Vue.prototype.sysetApi = () => 'http://www.allsps.com/ezx_syset'
-Vue.prototype.reportApi = () => 'http://www.allsps.com:8089'
+// Vue.prototype.baseUrl = () => 'http://www.allsps.com'
+// Vue.prototype.sysetApi = () => 'http://www.allsps.com/ezx_syset'
+// Vue.prototype.reportApi = () => 'http://www.allsps.com:8089'
 Vue.prototype.videoApi = () => 'http://www.allsps.com:8083'
 
 Vue.config.productionTip = false

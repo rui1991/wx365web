@@ -14,7 +14,7 @@
 <script>
 import { mapState } from 'vuex'
 export default{
-  props: ['parentDialog', 'parentUid', 'parentState', 'parentStart', 'parentEnd'],
+  props: ['parentDialog', 'parentPro', 'parentUid', 'parentState', 'parentStart', 'parentEnd'],
   data () {
     return {
       tableData: []
@@ -23,9 +23,7 @@ export default{
   computed: {
     ...mapState(
       {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
+        userId: state => state.info.userId
       }
     )
   },
@@ -37,7 +35,7 @@ export default{
     // 获取详情
     getDetails () {
       let params = {
-        project_id: this.nowProid,
+        project_id: this.parentPro,
         user_id: this.parentUid,
         pos: this.parentState,
         start_date: this.parentStart,
