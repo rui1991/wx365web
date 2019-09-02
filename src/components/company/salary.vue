@@ -52,6 +52,12 @@
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" fixed width="50" label="序号"></el-table-column>
           <el-table-column prop="user_name" fixed width="120" label="姓名"></el-table-column>
+          <el-table-column fixed width="120" label="工号">
+            <template slot-scope="scope">
+              <span v-if="scope.row.pin">{{ scope.row.pin }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="ogz_name" fixed width="150" :show-overflow-tooltip="true" label="所属部门"></el-table-column>
           <el-table-column :label="tableTitle">
             <el-table-column v-for="(item, i) in days" :label="item.date" :key="item.date">

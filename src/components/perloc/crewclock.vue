@@ -58,7 +58,7 @@
               </div>
             </div>
             <div class="search-input">
-              <div class="item">
+              <div class="item" v-show="orgType === 3">
                 <span>员工姓名</span>
                 <el-input style="width: 160px;" v-model="nowSearch.name"></el-input>
               </div>
@@ -219,8 +219,7 @@ export default{
     ...mapState(
       {
         nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
+        userId: state => state.info.userId
       }
     )
   },
@@ -732,7 +731,7 @@ export default{
       if (this.orgType === 3) {
         let params = {
           user_id: this.userId,
-          project_id: this.nowProid,
+          project_id: this.proId,
           user_name: this.search.name,
           start_date: this.search.startDate,
           end_date: this.search.endDate
