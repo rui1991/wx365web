@@ -8,8 +8,8 @@
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>人员位置管理</el-breadcrumb-item>
-          <el-breadcrumb-item>人员打卡报表</el-breadcrumb-item>
+          <el-breadcrumb-item>品质过程管理</el-breadcrumb-item>
+          <el-breadcrumb-item>人员打卡率报表</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
       <el-container class="module-content">
@@ -170,7 +170,7 @@
 <script>
 import { mapState } from 'vuex'
 // 引入详情组件
-import detModule from '@/components/perloc/crewclock-det'
+import detModule from '@/components/quality/crewclock-det'
 export default{
   name: 'crewclock',
   data () {

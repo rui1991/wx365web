@@ -3,8 +3,8 @@
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>巡检管理</el-breadcrumb-item>
           <el-breadcrumb-item>固定岗管理</el-breadcrumb-item>
+          <el-breadcrumb-item>固定岗打卡记录</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
       <el-main class="module-main">
@@ -32,46 +32,54 @@
                 placeholder="选择日期">
               </el-date-picker>
             </div>
+            <div class="item">
+              <span>岗位名称</span>
+              <el-select v-model="nowSearch.station" clearable filterable style="width: 160px;" placeholder="请选择岗位名称">
+                <el-option v-for="item in stationOptions" :key="item.position_id" :label="item.position_name" :value="item.position_id"></el-option>
+              </el-select>
+            </div>
             <div class="operate">
               <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" v-if="setAut" @click="setClick">设置</el-button>
+              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
             </div>
           </div>
           <div class="search-input" style="margin-bottom: 10px;">
             <div class="item">
-              <span>岗位名称</span>
-              <el-select v-model="nowSearch.station" clearable filterable style="width: 160px;" placeholder="请选择岗位名称">
-                <el-option
-                  v-for="item in stationOptions"
-                  :key="item.position_id"
-                  :label="item.position_name"
-                  :value="item.position_id">
-                </el-option>
+              <span>人员姓名</span>
+              <el-input style="width: 160px;" v-model.trim="nowSearch.crew"></el-input>
+            </div>
+            <div class="item">
+              <span>打卡状态</span>
+              <el-select v-model="nowSearch.state" clearable style="width: 160px;" placeholder="请选择打卡状态">
+                <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </div>
-            <div class="operate">
-              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
-            </div>
+            <div class="operate"></div>
           </div>
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column prop="date" label="日期"></el-table-column>
+          <el-table-column prop="this_date" label="日期"></el-table-column>
+          <el-table-column label="当班人姓名">
+            <template slot-scope="scope">
+              <span v-if="scope.row.user_name">{{ scope.row.user_name }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="position_name" label="岗位名称"></el-table-column>
-          <el-table-column prop="record_size" label="打卡数"></el-table-column>
-          <el-table-column label="打卡成功数">
+          <el-table-column prop="start_time" label="当班开始时间"></el-table-column>
+          <el-table-column prop="end_time" label="当班结束时间"></el-table-column>
+          <el-table-column label="打卡时间">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row, 1)">{{ scope.row.sucess_size }}</a>
+              <span v-if="scope.row.record_time">{{ scope.row.record_time | formatDate }}</span>
+              <span v-else>-</span>
             </template>
           </el-table-column>
-          <el-table-column label="未打卡数">
+          <el-table-column label="打卡状态">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="details red" @click="detClick(scope.row, 2)">{{ scope.row.failed_size }}</a>
-            </template>
-          </el-table-column>
-          <el-table-column label="打卡异常数">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="details red" @click="detClick(scope.row, 3)">{{ scope.row.ab_size }}</a>
+              <span v-if="scope.row.record_state === 0">已打卡</span>
+              <span class="red" v-else-if="scope.row.record_state === 1">未打卡</span>
+              <span class="red" v-else-if="scope.row.record_state === 2">异常</span>
             </template>
           </el-table-column>
         </el-table>
@@ -89,44 +97,49 @@
         </el-pagination>
       </el-main>
     </el-container>
-    <!-- 详情 -->
-    <det-module
-      :parentDialog="detDialog"
-      :parentDate="detDate"
-      :parentPos="detPos"
-      :parentType="detType"
-      @parentClose="detClose">
-    </det-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-// 引入详情组件
-import detModule from '@/components/polling/fixedpost-det'
 export default{
-  name: 'fixedpost',
+  name: 'fixedpostLog',
   data () {
     return {
       search: {
         startDate: '',
         endDate: '',
-        station: ''
+        station: '',
+        crew: '',
+        state: ''
       },
       nowSearch: {
         startDate: '',
         endDate: '',
-        station: ''
+        station: '',
+        crew: '',
+        state: ''
       },
       stationOptions: [],
+      stateOptions: [
+        {
+          label: '已打卡',
+          value: 0
+        },
+        {
+          label: '未打卡',
+          value: 1
+        },
+        {
+          label: '异常',
+          value: 2
+        }
+      ],
       tableData: [],
       total: 0,
       nowPage: 1,
       limit: 10,
       detDialog: false,
-      detDate: '',
-      detPos: 0,
-      detType: 0,
       downDisabled: false
     }
   },
@@ -142,16 +155,13 @@ export default{
     // 获取固定岗列表
     this.getStationOptions()
   },
-  components: {
-    detModule
-  },
   computed: {
     ...mapState(
       {
         nowClientId: state => state.nowClientId,
+        companyName: state => state.info.companyName,
         userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        setAut: state => state.authority.plan
+        nowProid: state => state.nowProid
       }
     )
   },
@@ -173,23 +183,20 @@ export default{
         start_date: this.search.startDate,
         end_date: this.search.endDate,
         position_id: this.search.station,
+        user_name: this.search.crew,
+        record_state: this.search.state,
         page: this.nowPage,
         limit1: this.limit
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v1.0/selPermanentMain',
+        url: this.sysetApi() + '/v1.0/selPermanentOnWork',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
-          this.tableData = res.data.data1.pms
-          // 检验是否列表为空
-          if (this.tableData.length === 0 && this.nowPage > 1) {
-            this.nowPage--
-            this.getListData()
-          }
+          this.tableData = res.data.data1.sp
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -252,16 +259,6 @@ export default{
         })
       })
     },
-    /* 详情 */
-    detClick (data, type) {
-      this.detDate = data.date
-      this.detPos = data.position_id
-      this.detType = type
-      this.detDialog = true
-    },
-    detClose () {
-      this.detDialog = false
-    },
     /* 导出 */
     downFile () {
       let params = {
@@ -270,18 +267,16 @@ export default{
         project_id: this.nowProid,
         start_date: this.search.startDate,
         end_date: this.search.endDate,
-        position_id: this.search.station
+        position_id: this.search.station,
+        user_name: this.search.crew,
+        record_state: this.search.state
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true
       setTimeout(() => {
         this.downDisabled = false
       }, 5000)
-      window.location.href = this.sysetApi() + '/v1.0/permanentMainEO?' + params
-    },
-    /* 设置 */
-    setClick () {
-      this.$router.push({ path: '/main/fixedpost-set' })
+      window.location.href = this.sysetApi() + '/v1.0/permanentOnWorkEO?' + params
     }
   }
 }

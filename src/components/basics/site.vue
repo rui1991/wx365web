@@ -8,7 +8,7 @@
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>巡检管理</el-breadcrumb-item>
+          <el-breadcrumb-item>基础配置</el-breadcrumb-item>
           <el-breadcrumb-item>地址管理</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
@@ -73,28 +73,12 @@
             </el-table-column>
             <el-table-column label="地址标签">
               <template slot-scope="scope">
-                <span>{{ scope.row.position_mac | filterMac }}</span>
+                <span>{{ scope.row.position_mac | formatMac }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="设备电量">
-              <template slot-scope="scope">
-                <span v-if="scope.row.node_btpw === undefined">-</span>
-                <span v-else>{{ scope.row.node_btpw }}%</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="区域类型">
-              <template slot-scope="scope">
-                <span v-if="scope.row.area_type === 1">办公室区域</span>
-                <span v-else-if="scope.row.area_type === 2">工作区域</span>
-                <span v-else-if="scope.row.area_type === 6">固定岗位</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="上级位置">
-              <template slot-scope="scope">
-                <span v-if="scope.row.parent_address">{{ scope.row.parent_address }}</span>
-                <span v-else>-</span>
-              </template>
-            </el-table-column>
+            <el-table-column prop="node_btpw" :formatter="eleFormatter" label="设备电量"></el-table-column>
+            <el-table-column prop="area_type" :formatter="areaFormatter" label="区域类型"></el-table-column>
+            <el-table-column prop="parent_address" label="上级位置"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.position_id)">编辑</a>
@@ -362,6 +346,13 @@ export default{
       // 获取列表数据
       this.getListData()
     },
+    // 格式化设置Mac地址
+    formatSetMac (str) {
+      if (!str) { return '' }
+      const mac = str.replace(/:/g, '')
+      let value = mac.toLowerCase()
+      return value
+    },
     // 获取列表数据
     getListData () {
       if (!this.siteId) return
@@ -410,6 +401,53 @@ export default{
           type: 'error'
         })
       })
+    },
+    // 筛选设备电量
+    eleFormatter (row, column, cellValue, index) {
+      if (cellValue === undefined) {
+        return '-'
+      } else {
+        return cellValue + '%'
+      }
+    },
+    // 筛选区域类型
+    areaFormatter (row, column, cellValue, index) {
+      let areaType = ''
+      switch (cellValue) {
+        case 1:
+          areaType = '楼栋'
+          break
+        case 2:
+          areaType = '单元'
+          break
+        case 3:
+          areaType = '楼层'
+          break
+        case 4:
+          areaType = '办公区域'
+          break
+        case 5:
+          areaType = '商铺'
+          break
+        case 6:
+          areaType = '卫生间'
+          break
+        case 7:
+          areaType = '停车场'
+          break
+        case 8:
+          areaType = '公共区域'
+          break
+        case 9:
+          areaType = '外围'
+          break
+        case 10:
+          areaType = '岗亭'
+          break
+        default:
+          areaType = ''
+      }
+      return areaType
     },
     // 切换单页大小
     handleSizeChange (limit) {
@@ -507,16 +545,6 @@ export default{
     /* 生成二维码 */
     qrFinish () {
       this.qrDialog = false
-    }
-  },
-  filters: {
-    filterMac (str) {
-      if (!str) { return '-' }
-      let value = str.toUpperCase()
-      value = value.replace(/:/g, '')
-      value = value.replace(/(.{2})/g, '$1:')
-      const lastStr = value.charAt(value.length - 1)
-      return lastStr === ':' ? value.substr(0, value.length - 1) : value
     }
   },
   watch: {

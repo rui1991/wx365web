@@ -8,10 +8,14 @@
         <el-input v-model.trim="formData.name" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="区域类型" prop="areaType">
-        <el-radio-group v-model="formData.areaType">
-          <el-radio :label="1">办公室区域</el-radio>
-          <el-radio :label="2">工作区域</el-radio>
-        </el-radio-group>
+        <el-select style="width: 100%;" v-model="formData.areaType" placeholder="请选择区域类型">
+          <el-option
+            v-for="item in areaOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="地址类型" prop="type">
         <el-select style="width: 100%;" v-model="formData.type" placeholder="请选择地址类型">
@@ -67,6 +71,48 @@ export default{
     }
     return {
       formLabelWidth: '100px',
+      areaOptions: [
+        {
+          label: '楼栋',
+          value: 1
+        },
+        {
+          label: '单元',
+          value: 2
+        },
+        {
+          label: '楼层',
+          value: 3
+        },
+        {
+          label: '办公区域',
+          value: 4
+        },
+        {
+          label: '商铺',
+          value: 5
+        },
+        {
+          label: '卫生间',
+          value: 6
+        },
+        {
+          label: '停车场',
+          value: 7
+        },
+        {
+          label: '公共区域',
+          value: 8
+        },
+        {
+          label: '外围',
+          value: 9
+        },
+        {
+          label: '岗亭',
+          value: 10
+        }
+      ],
       typeOptions: [
         {
           label: '巡检地址',
@@ -94,7 +140,7 @@ export default{
         parent: '',
         parentPath: '',
         name: '',
-        areaType: 2,
+        areaType: 1,
         type: 0,
         mac: '',
         norm: '',
@@ -118,7 +164,7 @@ export default{
         parent: '',
         parentPath: '',
         name: '',
-        areaType: 2,
+        areaType: 1,
         type: 0,
         mac: '',
         norm: '',

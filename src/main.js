@@ -63,13 +63,13 @@ Object.keys(custom).forEach(key => {
 Vue.prototype.$common = common
 
 // 配置公共变量
-// Vue.prototype.baseUrl = () => 'http://szydak.eicp.net:82'
-// Vue.prototype.sysetApi = () => 'http://szydak.eicp.net:82/ezx_syset'
-// Vue.prototype.reportApi = () => 'http://szydak.eicp.net:8089'
+Vue.prototype.baseUrl = () => 'http://szydak.eicp.net:82'
+Vue.prototype.sysetApi = () => 'http://szydak.eicp.net:82/ezx_syset'
+Vue.prototype.reportApi = () => 'http://szydak.eicp.net:8089'
 
-Vue.prototype.baseUrl = () => 'http://192.168.1.199:8080'
-Vue.prototype.sysetApi = () => 'http://192.168.1.199:8080/ezx_syset'
-Vue.prototype.reportApi = () => 'http://192.168.1.199:8089'
+// Vue.prototype.baseUrl = () => 'http://192.168.1.199:8080'
+// Vue.prototype.sysetApi = () => 'http://192.168.1.199:8080/ezx_syset'
+// Vue.prototype.reportApi = () => 'http://192.168.1.199:8089'
 
 // Vue.prototype.locationApi = () => '/apiUrl/ezx_location'
 

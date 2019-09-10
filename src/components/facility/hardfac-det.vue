@@ -72,14 +72,14 @@
           <el-input :disabled="true" v-model="detEleForm.state"></el-input>
         </el-form-item>
       </div>
-      <div class="two-form">
-        <el-form-item class="item" label="充电频次">
-          <el-input :disabled="true" v-model="detEleForm.frequency"></el-input>
-        </el-form-item>
-        <el-form-item class="item" label="可用时长">
-          <el-input :disabled="true" v-model="detEleForm.usable"></el-input>
-        </el-form-item>
-      </div>
+      <!--<div class="two-form">-->
+        <!--<el-form-item class="item" label="充电频次">-->
+          <!--<el-input :disabled="true" v-model="detEleForm.frequency"></el-input>-->
+        <!--</el-form-item>-->
+        <!--<el-form-item class="item" label="可用时长">-->
+          <!--<el-input :disabled="true" v-model="detEleForm.usable"></el-input>-->
+        <!--</el-form-item>-->
+      <!--</div>-->
     </el-form>
     <el-form :model="detRecForm" :label-width="formLabelWidth" v-show="detActive === 'record'">
       <div class="two-form">
@@ -128,9 +128,9 @@ export default{
         name: '',
         mac: '',
         quantity: '',
-        state: '',
-        frequency: '',
-        usable: ''
+        state: ''
+        // frequency: '',
+        // usable: ''
       },
       detRecState: false,
       detRecForm: {
@@ -271,9 +271,9 @@ export default{
           name: '',
           mac: '',
           quantity: '',
-          state: '',
-          frequency: '',
-          usable: ''
+          state: ''
+          // frequency: '',
+          // usable: ''
         }
         this.checkEleDetails()
       } else if (tab.name === 'record' && !this.detRecState) {
@@ -309,19 +309,19 @@ export default{
             quantity = quantity + '%'
           }
           // 充电频次
-          let frequency = itemData.frequency || ''
-          if (frequency) {
-            frequency = '1周' + frequency + '次'
-          }
+          // let frequency = itemData.frequency || ''
+          // if (frequency) {
+          //   frequency = '1周' + frequency + '次'
+          // }
           // 可用时长
-          const usable = this.timeStamp(itemData.ctime)
+          // const usable = this.timeStamp(itemData.ctime)
           this.detEleForm = {
             name: itemData.card_name || '',
             mac: itemData.card_mac || '',
             quantity: quantity,
-            state: itemData.lineState || '',
-            frequency: frequency,
-            usable: usable
+            state: itemData.lineState || ''
+            // frequency: frequency,
+            // usable: usable
           }
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)

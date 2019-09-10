@@ -1,49 +1,58 @@
 <template>
-  <div class="callname">
+  <div class="fixedpost-set">
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>人员位置管理</el-breadcrumb-item>
-          <el-breadcrumb-item><router-link to="/main/callname">点名管理</router-link></el-breadcrumb-item>
-          <el-breadcrumb-item>点名规则设置</el-breadcrumb-item>
+          <el-breadcrumb-item>固定岗管理</el-breadcrumb-item>
+          <el-breadcrumb-item><router-link to="/main/fixedpost-rep">固定岗打卡报表</router-link></el-breadcrumb-item>
+          <el-breadcrumb-item>固定岗设置</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
       <el-main class="module-main">
-        <div class="search">
-          <div class="operate">
-            <el-button type="primary" @click="addDialog = true">新增</el-button>
-          </div>
-        </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column prop="user_names" :show-overflow-tooltip="true" label="点名人员"></el-table-column>
-          <el-table-column :show-overflow-tooltip="true" label="点名地址">
+          <el-table-column label="岗位地址" width="160">
             <template slot-scope="scope">
-              <span v-if="scope.row.position_names">{{ scope.row.position_names }}</span>
-              <span v-else>全部</span>
+              <a href="javascript:void(0);" class="name" @click="detClick(scope.row.message)">{{ scope.row.position_name }}</a>
             </template>
           </el-table-column>
-          <el-table-column width="120" prop="urc_size" label="点名次数"></el-table-column>
-          <el-table-column width="160" label="操作">
+          <el-table-column label="时间段" class-name="multi-row">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
-              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.rcs_id)">删除</a>
+              <span>{{ scope.row.message | filterTimeFrame }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="160">
+            <template slot-scope="scope">
+              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.position_id, scope.row.message)">编辑</a>
+              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.position_id)">删除</a>
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination
+          background
+          prev-text="上一页"
+          next-text="下一页"
+          :current-page="nowPage"
+          layout="sizes, prev, pager, next, total"
+          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+          :page-size="limit"
+          @size-change="handleSizeChange"
+          @current-change="pageChang"
+          :total="total">
+        </el-pagination>
       </el-main>
     </el-container>
-    <!-- 新增 -->
-    <add-module
-      :parentDialog="addDialog"
-      @parentUpdata="addUpdata"
-      @parentCancel="addCancel">
-    </add-module>
+    <!-- 详情 -->
+    <det-module
+      :parentDialog="detDialog"
+      :parentTimes="times"
+      @parentClose="detClose">
+    </det-module>
     <!-- 编辑 -->
     <com-module
       :parentDialog="comDialog"
       :parentId="itemId"
-      :parentForm="comForm"
+      :parentTimes="times"
       @parentUpdata="comUpdata"
       @parentCancel="comCancel">
     </com-module>
@@ -51,46 +60,45 @@
     <del-module
       :parentDialog="delDialog"
       :parentId="itemId"
+      :parentTimes="times"
       @parentUpdata="delUpdata"
       @parentCancel="delCancel">
     </del-module>
+
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-// 引入新增组件
-import addModule from '@/components/perloc/callname-add'
+// 引入详情组件
+import detModule from '@/components/fixedpost/fixedpost-det2'
 // 引入编辑组件
-import comModule from '@/components/perloc/callname-com'
+import comModule from '@/components/fixedpost/fixedpost-com'
 // 引入删除组件
-import delModule from '@/components/perloc/callname-del'
+import delModule from '@/components/fixedpost/fixedpost-del'
 export default{
-  name: 'callnameSet',
+  name: 'fixedpostSet',
   data () {
     return {
       tableData: [],
+      total: 0,
+      nowPage: 1,
+      limit: 10,
       itemId: '',
-      addDialog: false,
+      times: '',
+      detDialog: false,
       comDialog: false,
-      comForm: {
-        crewName: '',
-        crewId: [],
-        siteName: '',
-        siteId: '',
-        count: ''
-      },
       delDialog: false
     }
   },
   created () {
     // 设置全局项目禁用
     this.$store.commit('setProDisabled', true)
-    // 获取列表数据
+    // 查询列表数据
     this.getListData()
   },
   components: {
-    addModule,
+    detModule,
     comModule,
     delModule
   },
@@ -109,17 +117,24 @@ export default{
       let params = {
         company_id: this.nowClientId,
         user_id: this.userId,
-        project_id: this.nowProid
+        project_id: this.nowProid,
+        page: this.nowPage,
+        limit1: this.limit
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v2.0/selRollCallMessage',
+        url: this.sysetApi() + '/v1.0/selPermanentSet',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          // 表格数据
-          this.tableData = res.data.data1
+          this.total = res.data.data1.total
+          this.tableData = res.data.data1.sp
+          // 检验是否列表为空
+          if (this.tableData.length === 0 && this.nowPage > 1) {
+            this.nowPage--
+            this.getListData()
+          }
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -136,40 +151,41 @@ export default{
         })
       })
     },
-    /* 新增 */
-    addUpdata () {
-      this.addDialog = false
-      // 更新列表
+    // 切换单页大小
+    handleSizeChange (limit) {
+      // 设置大小
+      this.limit = limit
+      // 初始化页码
+      this.nowPage = 1
+      // 获取列表数据
       this.getListData()
     },
-    addCancel () {
-      this.addDialog = false
+    // 点击分页
+    pageChang (page) {
+      this.nowPage = page
+      // 获取列表数据
+      this.getListData()
+    },
+    /* 详情 */
+    detClick (timeStr) {
+      let times = []
+      if (timeStr) {
+        times = JSON.parse(timeStr)
+      }
+      this.times = times
+      this.detDialog = true
+    },
+    detClose () {
+      this.detDialog = false
     },
     /* 编辑 */
-    comClick (data) {
-      this.itemId = data.rcs_id
-      // 人员id
-      let users = data.users
-      let userArr = []
-      if (users) {
-        userArr = users.split(',')
+    comClick (id, timeStr) {
+      this.itemId = id
+      let times = []
+      if (timeStr) {
+        times = JSON.parse(timeStr)
       }
-      let crewId = userArr.map((value) => {
-        return Number.parseInt(value)
-      })
-      // 地址id
-      let sites = data.positions
-      let siteId = []
-      if (sites) {
-        siteId = sites.split(',')
-      }
-      this.comForm = {
-        crewName: data.user_names,
-        crewId: crewId,
-        siteName: data.position_names,
-        siteId: siteId,
-        count: data.urc_size
-      }
+      this.times = times
       this.comDialog = true
     },
     comUpdata () {
@@ -194,6 +210,17 @@ export default{
       this.delDialog = false
     }
   },
+  filters: {
+    filterTimeFrame (str) {
+      if (!str) { return '' }
+      const timeData = JSON.parse(str)
+      let timeStr = ''
+      timeData.forEach(item => {
+        timeStr += item.time + '，' + item.frequency + '次； '
+      })
+      return timeStr
+    }
+  },
   beforeDestroy () {
     // 设置全局项目禁用
     this.$store.commit('setProDisabled', false)
@@ -202,7 +229,7 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.callname{
+.fixedpost-set{
   height: 100%;
   .module-container{
     height: 100%;
@@ -223,16 +250,6 @@ export default{
       margin-left: 20px;
       margin-right: 20px;
       background: #ffffff;
-      .search{
-        display: table;
-        width: 100%;
-        height: 60px;
-        .operate{
-          display: table-cell;
-          vertical-align: middle;
-          text-align: right;
-        }
-      }
     }
   }
 }

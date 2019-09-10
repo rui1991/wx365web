@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog title="新增标准" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+    <el-dialog title="编辑标准" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
       <el-form class="entirety-from" :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
         <el-form-item label="模板名称" prop="name">
           <el-input v-model.trim="formData.name" auto-complete="off"></el-input>

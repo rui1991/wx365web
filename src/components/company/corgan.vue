@@ -3,8 +3,8 @@
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>企业管理</el-breadcrumb-item>
-          <el-breadcrumb-item>组织机构</el-breadcrumb-item>
+          <el-breadcrumb-item>企业配置</el-breadcrumb-item>
+          <el-breadcrumb-item>组织管理</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
       <el-container class="module-content">

@@ -160,6 +160,12 @@ input:-webkit-autofill {
   color: #272727;
   text-align: center;
 }
+.list-table tbody tr td.blue{
+  color: #4fa5f2;
+}
+.list-table tbody tr td.red{
+  color: red;
+}
 .list-table td, .list-table th.is-leaf {
   border-bottom: 1px solid #dcdcdc;
 }

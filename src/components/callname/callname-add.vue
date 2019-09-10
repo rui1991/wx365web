@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog title="编辑点名规则" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+    <el-dialog title="新增点名规则" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
       <el-form class="divide-from" :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
         <el-form-item label="点名人员" prop="crewName">
           <el-input :disabled="true" type="textarea" v-model="formData.crewName"></el-input>
@@ -43,9 +43,9 @@ import { mapState } from 'vuex'
 // 引入新增组件
 import crewModule from '@/components/public/crew-checkbox'
 // 引入编辑组件
-import siteModule from '@/components/perloc/callname-site'
+import siteModule from '@/components/callname/callname-site'
 export default{
-  props: ['parentDialog', 'parentId', 'parentForm'],
+  props: ['parentDialog'],
   data () {
     return {
       formLabelWidth: '100px',
@@ -69,10 +69,6 @@ export default{
       siteDialog: false
     }
   },
-  components: {
-    crewModule,
-    siteModule
-  },
   computed: {
     ...mapState(
       {
@@ -82,9 +78,19 @@ export default{
       }
     )
   },
+  components: {
+    crewModule,
+    siteModule
+  },
   methods: {
-    comInit () {
-      this.formData = JSON.parse(JSON.stringify(this.parentForm))
+    addInit () {
+      this.formData = {
+        crewName: '',
+        crewId: [],
+        siteName: '',
+        siteId: [],
+        count: ''
+      }
     },
     // 验证表单
     submitForm (formName) {
@@ -119,7 +125,6 @@ export default{
       let params = {
         company_id: this.nowClientId,
         user_id: this.userId,
-        rcs_id: this.parentId,
         project_id: this.nowProid,
         users: crewId,
         positions: siteId,
@@ -129,7 +134,7 @@ export default{
       this.disabled = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v2.0/altRollCallMessage',
+        url: this.sysetApi() + '/v2.0/setRollCallMessage',
         data: params
       }).then((res) => {
         this.disabled = false
@@ -188,7 +193,7 @@ export default{
   watch: {
     parentDialog (val, oldVal) {
       if (val) {
-        this.comInit()
+        this.addInit()
       }
     }
   }

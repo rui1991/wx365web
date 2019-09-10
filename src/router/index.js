@@ -21,25 +21,21 @@ const Message = () => import(/* webpackChunkName: "group-message" */ '@/componen
 // 日志管理
 const Log = () => import(/* webpackChunkName: "group-log" */ '@/components/profile/log')
 
-/* 系统配置 */
-// 组织机构（黑卡）
+/* 企业配置 */
+// 组织管理（黑卡）
 const Oorgan = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/oorgan')
-// 组织机构（客户）
+// 组织管理（客户）
 const Corgan = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/corgan')
-
-/* 企业管理 */
 // 用户管理（黑卡）
 const Ouser = () => import(/* webpackChunkName: "group-user" */ '@/components/company/ouser')
 // 用户管理（客户）
 const Cuser = () => import(/* webpackChunkName: "group-user" */ '@/components/company/cuser')
-// 考勤排班
-const Shift = () => import(/* webpackChunkName: "group-Shift" */ '@/components/company/shift')
-// 排班管理 arrange
-const Schedul = () => import(/* webpackChunkName: "group-scheduling" */ '@/components/company/schedul')
-// 审批列表
-const Salary = () => import(/* webpackChunkName: "group-approval" */ '@/components/company/salary')
 // 审批列表
 const Approval = () => import(/* webpackChunkName: "group-approval" */ '@/components/company/approval')
+// 考勤排班
+const Shift = () => import(/* webpackChunkName: "group-Shift" */ '@/components/company/shift')
+// 排班管理
+const Schedul = () => import(/* webpackChunkName: "group-schedul" */ '@/components/company/schedul')
 
 /* 基础配置 */
 // 位置管理
@@ -47,7 +43,27 @@ const Position = () => import(/* webpackChunkName: "group-position" */ '@/compon
 // 地址管理
 const Site = () => import(/* webpackChunkName: "group-site" */ '@/components/basics/site')
 
-/* 巡检管理 */
+/* 品质过程管理 */
+// 人员管理汇总
+const Crewcollect = () => import(/* webpackChunkName: "group-loccollect" */ '@/components/quality/crewcollect')
+// 人员管理汇总详情
+const CrewcollectDet = () => import(/* webpackChunkName: "group-loccollect" */ '@/components/quality/crewcollect-det')
+// 人员打卡率报表
+const Crewclock = () => import(/* webpackChunkName: "group-crewclock" */ '@/components/quality/crewclock')
+// 位置巡查覆盖率
+const Poscover = () => import(/* webpackChunkName: "group-poscover" */ '@/components/quality/poscover')
+// 位置打卡记录
+const Posclock = () => import(/* webpackChunkName: "group-posclock" */ '@/components/quality/posclock')
+// 位置打卡记录汇总
+const Posclockall = () => import(/* webpackChunkName: "group-posclock" */ '@/components/quality/posclockall')
+// 人员打卡记录详情
+const Posclockdet = () => import(/* webpackChunkName: "group-posclock" */ '@/components/quality/posclockdet')
+// 轨迹记录总览
+const Trackall = () => import(/* webpackChunkName: "group-trackall" */ '@/components/quality/trackall')
+// 轨迹记录详情
+const Trackdet = () => import(/* webpackChunkName: "group-trackdet" */ '@/components/quality/trackdet')
+
+/* 巡检巡查 */
 // 组管理
 const Group = () => import(/* webpackChunkName: "group-group" */ '@/components/polling/group')
 // 巡检计划管理
@@ -57,12 +73,6 @@ const PlanCom = () => import(/* webpackChunkName: "group-plan" */ '@/components/
 // 巡检任务
 const Task = () => import(/* webpackChunkName: "group-task" */ '@/components/polling/task')
 const TaskCom = () => import(/* webpackChunkName: "group-task" */ '@/components/polling/task-com')
-// 固定岗管理
-const Fixedpost = () => import(/* webpackChunkName: "group-fixedpost" */ '@/components/polling/fixedpost')
-// 固定岗设置
-const FixedpostSet = () => import(/* webpackChunkName: "group-fixedpost" */ '@/components/polling/fixedpost-set')
-// 人员当班记录
-const FixedpostLog = () => import(/* webpackChunkName: "group-fixedpost" */ '@/components/polling/fixedpost-log')
 // 巡检日历
 const Calendar = () => import(/* webpackChunkName: "group-calendar" */ '@/components/polling/calendar')
 // 巡检日历详情
@@ -74,29 +84,23 @@ const Abnormal = () => import(/* webpackChunkName: "group-abnormal" */ '@/compon
 // 巡检异常历史记录
 const AbnormalHistory = () => import(/* webpackChunkName: "group-abnormal" */ '@/components/polling/abnormal-history')
 
-/* 人员位置管理 */
-// 人员管理汇总
-const Crewcollect = () => import(/* webpackChunkName: "group-loccollect" */ '@/components/perloc/crewcollect')
-// 人员管理汇总详情
-const CrewcollectDet = () => import(/* webpackChunkName: "group-loccollect" */ '@/components/perloc/crewcollect-det')
-// 点名管理
-const Callname = () => import(/* webpackChunkName: "group-callname" */ '@/components/perloc/callname')
+/* 固定岗管理 */
+// 固定岗打卡报表
+const FixedpostRep = () => import(/* webpackChunkName: "group-fixedpost" */ '@/components/fixedpost/fixedpost-rep')
+// 固定岗设置
+const FixedpostSet = () => import(/* webpackChunkName: "group-fixedpost" */ '@/components/fixedpost/fixedpost-set')
+// 固定岗打卡记录
+const FixedpostLog = () => import(/* webpackChunkName: "group-fixedpost" */ '@/components/fixedpost/fixedpost-log')
+
+/* 点名管理 */
 // 点名设置
-const CallnameSet = () => import(/* webpackChunkName: "group-callname" */ '@/components/perloc/callname-set')
-// 人员打卡报表
-const Crewclock = () => import(/* webpackChunkName: "group-crewclock" */ '@/components/perloc/crewclock')
-// 位置打卡记录
-const Posclock = () => import(/* webpackChunkName: "group-clocklog" */ '@/components/perloc/posclock')
-// 位置打卡记录汇总
-const Posclockall = () => import(/* webpackChunkName: "group-clocklog" */ '@/components/perloc/posclockall')
-// 人员打卡记录详情
-const Posclockdet = () => import(/* webpackChunkName: "group-clocklog" */ '@/components/perloc/posclockdet')
-// 轨迹记录总览
-const Trackall = () => import(/* webpackChunkName: "group-locman" */ '@/components/perloc/trackall')
-// 轨迹记录详情
-const Trackdet = () => import(/* webpackChunkName: "group-loclog" */ '@/components/perloc/trackdet')
-// 人员轨迹图
-const Crewtrack = () => import(/* webpackChunkName: "group-crewtrack" */ '@/components/perloc/crewtrack')
+const CallnameSet = () => import(/* webpackChunkName: "group-callname" */ '@/components/callname/callname-set')
+// 点名管理
+const CallnameRep = () => import(/* webpackChunkName: "group-callname" */ '@/components/callname/callname-rep')
+
+/* 考勤管理 */
+// 考勤报表
+const Salary = () => import(/* webpackChunkName: "group-salary" */ '@/components/attend/salary')
 
 /* 工单管理 */
 // 工单列表管理
@@ -227,6 +231,14 @@ export default new Router({
           }
         },
         {
+          path: 'approval',
+          name: 'approval',
+          component: Approval,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
           path: 'shift',
           name: 'shift',
           component: Shift,
@@ -243,22 +255,6 @@ export default new Router({
           }
         },
         {
-          path: 'salary',
-          name: 'salary',
-          component: Salary,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
-          path: 'approval',
-          name: 'approval',
-          component: Approval,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
           path: 'position',
           name: 'position',
           component: Position,
@@ -270,6 +266,81 @@ export default new Router({
           path: 'site',
           name: 'site',
           component: Site,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'crewcollect',
+          name: 'crewcollect',
+          component: Crewcollect,
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: 'crewcollect-det',
+          name: 'crewcollectDet',
+          component: CrewcollectDet,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'crewclock',
+          name: 'crewclock',
+          component: Crewclock,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'poscover',
+          name: 'poscover',
+          component: Poscover,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'posclock',
+          name: 'posclock',
+          component: Posclock,
+          redirect: '/main/posclock/posclockall',
+          meta: {
+            keepAlive: false
+          },
+          children: [
+            {
+              path: 'posclockall',
+              name: 'posclockall',
+              component: Posclockall,
+              meta: {
+                keepAlive: true
+              }
+            },
+            {
+              path: 'posclockdet',
+              name: 'posclockdet',
+              component: Posclockdet,
+              meta: {
+                keepAlive: true
+              }
+            }
+          ]
+        },
+        {
+          path: 'trackall',
+          name: 'trackall',
+          component: Trackall,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'trackdet',
+          name: 'trackdet',
+          component: Trackdet,
           meta: {
             keepAlive: false
           }
@@ -323,30 +394,6 @@ export default new Router({
           }
         },
         {
-          path: 'fixedpost',
-          name: 'fixedpost',
-          component: Fixedpost,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
-          path: 'fixedpost-set',
-          name: 'fixedpostSet',
-          component: FixedpostSet,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
-          path: 'fixedpost-log',
-          name: 'fixedpostLog',
-          component: FixedpostLog,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
           path: 'calendar',
           name: 'calendar',
           component: Calendar,
@@ -387,25 +434,25 @@ export default new Router({
           }
         },
         {
-          path: 'crewcollect',
-          name: 'crewcollect',
-          component: Crewcollect,
-          meta: {
-            keepAlive: true
-          }
-        },
-        {
-          path: 'crewcollect-det',
-          name: 'crewcollectDet',
-          component: CrewcollectDet,
+          path: 'fixedpost-rep',
+          name: 'fixedpostRep',
+          component: FixedpostRep,
           meta: {
             keepAlive: false
           }
         },
         {
-          path: 'callname',
-          name: 'callname',
-          component: Callname,
+          path: 'fixedpost-set',
+          name: 'fixedpostSet',
+          component: FixedpostSet,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'fixedpost-log',
+          name: 'fixedpostLog',
+          component: FixedpostLog,
           meta: {
             keepAlive: false
           }
@@ -419,60 +466,17 @@ export default new Router({
           }
         },
         {
-          path: 'crewclock',
-          name: 'crewclock',
-          component: Crewclock,
+          path: 'callname-rep',
+          name: 'callnameRep',
+          component: CallnameRep,
           meta: {
             keepAlive: false
           }
         },
         {
-          path: 'posclock',
-          name: 'posclock',
-          component: Posclock,
-          redirect: '/main/posclock/posclockall',
-          meta: {
-            keepAlive: false
-          },
-          children: [
-            {
-              path: 'posclockall',
-              name: 'posclockall',
-              component: Posclockall,
-              meta: {
-                keepAlive: true
-              }
-            },
-            {
-              path: 'posclockdet',
-              name: 'posclockdet',
-              component: Posclockdet,
-              meta: {
-                keepAlive: true
-              }
-            }
-          ]
-        },
-        {
-          path: 'trackall',
-          name: 'trackall',
-          component: Trackall,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
-          path: 'trackdet',
-          name: 'trackdet',
-          component: Trackdet,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
-          path: 'crewtrack',
-          name: 'crewtrack',
-          component: Crewtrack,
+          path: 'salary',
+          name: 'salary',
+          component: Salary,
           meta: {
             keepAlive: false
           }

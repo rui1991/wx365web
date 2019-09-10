@@ -1,17 +1,40 @@
 <template>
-  <div class="fixedpost">
+  <div
+    class="trackall"
+    v-loading="loading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>巡检管理</el-breadcrumb-item>
-          <el-breadcrumb-item>固定岗打卡记录</el-breadcrumb-item>
+          <el-breadcrumb-item>品质过程管理</el-breadcrumb-item>
+          <el-breadcrumb-item>轨迹记录总览</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
       <el-main class="module-main">
         <div class="search">
           <div class="search-input" style="margin-bottom: 10px;">
             <div class="item">
-              <span>开始时间</span>
+              <span>区域类型</span>
+              <el-select v-model="nowSearch.type" clearable style="width: 160px;" placeholder="请选择区域类型">
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </div>
+            <div class="item">
+              <span>人员名称</span>
+              <el-input style="width: 160px;" v-model.trim="nowSearch.crew"></el-input>
+            </div>
+            <div class="operate"></div>
+          </div>
+          <div class="search-input">
+            <div class="item">
+              <span>创建时段</span>
               <el-date-picker
                 style="width: 160px;"
                 v-model="nowSearch.startDate"
@@ -22,7 +45,7 @@
               </el-date-picker>
             </div>
             <div class="item">
-              <span>结束时间</span>
+              <span>----</span>
               <el-date-picker
                 style="width: 160px;"
                 v-model="nowSearch.endDate"
@@ -32,56 +55,23 @@
                 placeholder="选择日期">
               </el-date-picker>
             </div>
-            <div class="item">
-              <span>岗位名称</span>
-              <el-select v-model="nowSearch.station" clearable filterable style="width: 160px;" placeholder="请选择岗位名称">
-                <el-option v-for="item in stationOptions" :key="item.position_id" :label="item.position_name" :value="item.position_id"></el-option>
-              </el-select>
-            </div>
             <div class="operate">
               <el-button type="primary" @click="searchList">搜索</el-button>
               <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
             </div>
           </div>
-          <div class="search-input" style="margin-bottom: 10px;">
-            <div class="item">
-              <span>人员姓名</span>
-              <el-input style="width: 160px;" v-model.trim="nowSearch.crew"></el-input>
-            </div>
-            <div class="item">
-              <span>打卡状态</span>
-              <el-select v-model="nowSearch.state" clearable style="width: 160px;" placeholder="请选择打卡状态">
-                <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-              </el-select>
-            </div>
-            <div class="operate"></div>
-          </div>
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column prop="this_date" label="日期"></el-table-column>
-          <el-table-column label="当班人姓名">
+          <el-table-column prop="user_name" label="姓名"></el-table-column>
+          <el-table-column prop="at_date" label="日期"></el-table-column>
+          <el-table-column prop="start_date" label="区域类型">
             <template slot-scope="scope">
-              <span v-if="scope.row.user_name">{{ scope.row.user_name }}</span>
-              <span v-else>-</span>
+              <span v-if="scope.row.area_type === 1">办公室区域</span>
+              <span v-else-if="scope.row.area_type === 2">工作区域</span>
             </template>
           </el-table-column>
-          <el-table-column prop="position_name" label="岗位名称"></el-table-column>
-          <el-table-column prop="start_time" label="当班开始时间"></el-table-column>
-          <el-table-column prop="end_time" label="当班结束时间"></el-table-column>
-          <el-table-column label="打卡时间">
-            <template slot-scope="scope">
-              <span v-if="scope.row.record_time">{{ scope.row.record_time | formatDate }}</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="打卡状态">
-            <template slot-scope="scope">
-              <span v-if="scope.row.record_state === 0">已打卡</span>
-              <span class="red" v-else-if="scope.row.record_state === 1">未打卡</span>
-              <span class="red" v-else-if="scope.row.record_state === 2">异常</span>
-            </template>
-          </el-table-column>
+          <el-table-column prop="wait_time" label="停留时长（min）"></el-table-column>
         </el-table>
         <el-pagination
           background
@@ -103,63 +93,48 @@
 <script>
 import { mapState } from 'vuex'
 export default{
-  name: 'fixedpostLog',
+  name: 'trackall',
   data () {
     return {
       search: {
-        startDate: '',
-        endDate: '',
-        station: '',
+        type: '',
         crew: '',
-        state: ''
+        startDate: this.$common.getNowDate('yyyy-mm-dd'),
+        endDate: this.$common.getNowDate('yyyy-mm-dd')
       },
       nowSearch: {
-        startDate: '',
-        endDate: '',
-        station: '',
+        type: '',
         crew: '',
-        state: ''
+        startDate: this.$common.getNowDate('yyyy-mm-dd'),
+        endDate: this.$common.getNowDate('yyyy-mm-dd')
       },
-      stationOptions: [],
-      stateOptions: [
+      typeOptions: [
         {
-          label: '已打卡',
-          value: 0
-        },
-        {
-          label: '未打卡',
+          label: '办公室区域',
           value: 1
         },
         {
-          label: '异常',
+          label: '工作区域',
           value: 2
         }
       ],
+      logData: [],
       tableData: [],
       total: 0,
       nowPage: 1,
       limit: 10,
-      detDialog: false,
-      downDisabled: false
+      downDisabled: false,
+      loading: false
     }
   },
-  created () {
-    // 获取当天日期
-    const nowDate = this.$common.getNowDate('yyyy-mm-dd')
-    this.search.startDate = nowDate
-    this.search.endDate = nowDate
-    this.nowSearch.startDate = nowDate
-    this.nowSearch.endDate = nowDate
+  mounted () {
     // 获取列表数据
     this.getListData()
-    // 获取固定岗列表
-    this.getStationOptions()
   },
   computed: {
     ...mapState(
       {
         nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
         userId: state => state.info.userId,
         nowProid: state => state.nowProid
       }
@@ -180,23 +155,29 @@ export default{
         company_id: this.nowClientId,
         user_id: this.userId,
         project_id: this.nowProid,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
-        position_id: this.search.station,
+        area_type: this.search.type || 0,
         user_name: this.search.crew,
-        record_state: this.search.state,
-        page: this.nowPage,
-        limit1: this.limit
+        start_date: this.search.startDate,
+        end_date: this.search.endDate
       }
       params = this.$qs.stringify(params)
+      this.loading = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v1.0/selPermanentOnWork',
+        url: this.sysetApi() + '/inspection/locationTimeStatistics',
         data: params
       }).then((res) => {
+        this.loading = false
         if (res.data.result === 'Sucess') {
-          this.total = res.data.data1.total
-          this.tableData = res.data.data1.sp
+          // 全部数据
+          const logData = res.data.data1
+          this.logData = logData
+          // 总页数
+          const total = logData.length
+          this.total = total
+          // 表格数据
+          const tableData = logData.slice(0, this.limit)
+          this.tableData = tableData
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -206,6 +187,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.loading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -219,71 +201,44 @@ export default{
       this.limit = limit
       // 初始化页码
       this.nowPage = 1
-      // 获取列表数据
-      this.getListData()
+      // 更新列表数据
+      const start = this.nowPage * this.limit - this.limit
+      const end = this.nowPage * this.limit
+      const tableData = this.logData.slice(start, end)
+      this.tableData = tableData
     },
     // 点击分页
     pageChang (page) {
       this.nowPage = page
-      // 获取列表数据
-      this.getListData()
-    },
-    // 获取固定岗列表
-    getStationOptions () {
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.nowProid
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v1.0/selPermanentPosition',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          this.stationOptions = res.data.data1
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+      // 更新列表数据
+      const start = page * this.limit - this.limit
+      const end = page * this.limit
+      const tableData = this.logData.slice(start, end)
+      this.tableData = tableData
     },
     /* 导出 */
     downFile () {
       let params = {
         company_id: this.nowClientId,
-        user_id: this.userId,
         project_id: this.nowProid,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
-        position_id: this.search.station,
+        area_type: this.search.type || 0,
         user_name: this.search.crew,
-        record_state: this.search.state
+        start_date: this.search.startDate,
+        end_date: this.search.endDate
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true
       setTimeout(() => {
         this.downDisabled = false
       }, 5000)
-      window.location.href = this.sysetApi() + '/v1.0/permanentOnWorkEO?' + params
+      window.location.href = this.sysetApi() + '/inspection/locationTimeStatisticsEo?' + params
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.fixedpost{
+.trackall{
   height: 100%;
   .module-container{
     height: 100%;

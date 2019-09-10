@@ -8,7 +8,7 @@
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>企业管理</el-breadcrumb-item>
+          <el-breadcrumb-item>考勤管理</el-breadcrumb-item>
           <el-breadcrumb-item>考勤报表</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
@@ -34,7 +34,7 @@
             </div>
             <div class="item">
               <span>所属部门</span>
-              <el-select v-model="nowSearch.sector" style="width: 160px;" clearable filterable placeholder="请选择执行部门">
+              <el-select v-model="nowSearch.sector" style="width: 160px;" clearable filterable placeholder="请选择所属部门">
                 <el-option
                   v-for="item in sectorOptions"
                   :key="item.base_id"
@@ -238,8 +238,8 @@ export default{
         whether = true
       }
       const dateArr = date.split('-')
-      const year = dateArr[0]
-      const month = dateArr[1]
+      const year = Number.parseInt(dateArr[0])
+      const month = Number.parseInt(dateArr[1])
       // 本月天数
       let daysCount = new Date(year, month, 0).getDate()
       let days = []
@@ -258,6 +258,9 @@ export default{
           }
         )
       }
+      // 清空表格
+      this.tableData = []
+      // 设置表头
       this.days = days
       // 初始化页码
       this.nowPage = 1

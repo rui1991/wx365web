@@ -1,30 +1,32 @@
 <template>
-  <div class="fixedpost-set">
+  <div class="callname">
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>巡检管理</el-breadcrumb-item>
-          <el-breadcrumb-item><router-link to="/main/fixedpost">固定岗管理</router-link></el-breadcrumb-item>
-          <el-breadcrumb-item>固定岗设置</el-breadcrumb-item>
+          <el-breadcrumb-item>人员位置管理</el-breadcrumb-item>
+          <el-breadcrumb-item>点名规则设置</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
       <el-main class="module-main">
+        <div class="search">
+          <div class="operate">
+            <el-button type="primary" @click="addDialog = true">新增</el-button>
+          </div>
+        </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column label="岗位地址" width="160">
+          <el-table-column prop="user_names" :show-overflow-tooltip="true" label="点名人员"></el-table-column>
+          <el-table-column :show-overflow-tooltip="true" label="点名地址">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="name" @click="detClick(scope.row.message)">{{ scope.row.position_name }}</a>
+              <span v-if="scope.row.position_names">{{ scope.row.position_names }}</span>
+              <span v-else>全部</span>
             </template>
           </el-table-column>
-          <el-table-column label="时间段" class-name="multi-row">
+          <el-table-column width="120" prop="urc_size" label="点名次数"></el-table-column>
+          <el-table-column width="160" label="操作">
             <template slot-scope="scope">
-              <span>{{ scope.row.message | filterTimeFrame }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="160">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.position_id, scope.row.message)">编辑</a>
-              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.position_id)">删除</a>
+              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
+              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.rcs_id)">删除</a>
             </template>
           </el-table-column>
         </el-table>
@@ -42,17 +44,17 @@
         </el-pagination>
       </el-main>
     </el-container>
-    <!-- 详情 -->
-    <det-module
-      :parentDialog="detDialog"
-      :parentTimes="times"
-      @parentClose="detClose">
-    </det-module>
+    <!-- 新增 -->
+    <add-module
+      :parentDialog="addDialog"
+      @parentUpdata="addUpdata"
+      @parentCancel="addCancel">
+    </add-module>
     <!-- 编辑 -->
     <com-module
       :parentDialog="comDialog"
       :parentId="itemId"
-      :parentTimes="times"
+      :parentForm="comForm"
       @parentUpdata="comUpdata"
       @parentCancel="comCancel">
     </com-module>
@@ -60,24 +62,22 @@
     <del-module
       :parentDialog="delDialog"
       :parentId="itemId"
-      :parentTimes="times"
       @parentUpdata="delUpdata"
       @parentCancel="delCancel">
     </del-module>
-
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-// 引入详情组件
-import detModule from '@/components/polling/fixedpost-det2'
+// 引入新增组件
+import addModule from '@/components/callname/callname-add'
 // 引入编辑组件
-import comModule from '@/components/polling/fixedpost-com'
+import comModule from '@/components/callname/callname-com'
 // 引入删除组件
-import delModule from '@/components/polling/fixedpost-del'
+import delModule from '@/components/callname/callname-del'
 export default{
-  name: 'fixedpostSet',
+  name: 'callnameSet',
   data () {
     return {
       tableData: [],
@@ -85,20 +85,24 @@ export default{
       nowPage: 1,
       limit: 10,
       itemId: '',
-      times: '',
-      detDialog: false,
+      addDialog: false,
       comDialog: false,
+      comForm: {
+        crewName: '',
+        crewId: [],
+        siteName: '',
+        siteId: '',
+        count: ''
+      },
       delDialog: false
     }
   },
   created () {
-    // 设置全局项目禁用
-    this.$store.commit('setProDisabled', true)
-    // 查询列表数据
+    // 获取列表数据
     this.getListData()
   },
   components: {
-    detModule,
+    addModule,
     comModule,
     delModule
   },
@@ -124,17 +128,12 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v1.0/selPermanentSet',
+        url: this.sysetApi() + '/v2.0/selRollCallMessage',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
-          this.tableData = res.data.data1.sp
-          // 检验是否列表为空
-          if (this.tableData.length === 0 && this.nowPage > 1) {
-            this.nowPage--
-            this.getListData()
-          }
+          this.tableData = res.data.data1.message
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -166,26 +165,40 @@ export default{
       // 获取列表数据
       this.getListData()
     },
-    /* 详情 */
-    detClick (timeStr) {
-      let times = []
-      if (timeStr) {
-        times = JSON.parse(timeStr)
-      }
-      this.times = times
-      this.detDialog = true
+    /* 新增 */
+    addUpdata () {
+      this.addDialog = false
+      // 更新列表
+      this.getListData()
     },
-    detClose () {
-      this.detDialog = false
+    addCancel () {
+      this.addDialog = false
     },
     /* 编辑 */
-    comClick (id, timeStr) {
-      this.itemId = id
-      let times = []
-      if (timeStr) {
-        times = JSON.parse(timeStr)
+    comClick (data) {
+      this.itemId = data.rcs_id
+      // 人员id
+      let users = data.users
+      let userArr = []
+      if (users) {
+        userArr = users.split(',')
       }
-      this.times = times
+      let crewId = userArr.map((value) => {
+        return Number.parseInt(value)
+      })
+      // 地址id
+      let sites = data.positions
+      let siteId = []
+      if (sites) {
+        siteId = sites.split(',')
+      }
+      this.comForm = {
+        crewName: data.user_names,
+        crewId: crewId,
+        siteName: data.position_names,
+        siteId: siteId,
+        count: data.urc_size
+      }
       this.comDialog = true
     },
     comUpdata () {
@@ -209,27 +222,12 @@ export default{
     delCancel () {
       this.delDialog = false
     }
-  },
-  filters: {
-    filterTimeFrame (str) {
-      if (!str) { return '' }
-      const timeData = JSON.parse(str)
-      let timeStr = ''
-      timeData.forEach(item => {
-        timeStr += item.time + '，' + item.frequency + '次； '
-      })
-      return timeStr
-    }
-  },
-  beforeDestroy () {
-    // 设置全局项目禁用
-    this.$store.commit('setProDisabled', false)
   }
 }
 </script>
 
 <style lang="less" scoped>
-.fixedpost-set{
+.callname{
   height: 100%;
   .module-container{
     height: 100%;
@@ -250,6 +248,16 @@ export default{
       margin-left: 20px;
       margin-right: 20px;
       background: #ffffff;
+      .search{
+        display: table;
+        width: 100%;
+        height: 60px;
+        .operate{
+          display: table-cell;
+          vertical-align: middle;
+          text-align: right;
+        }
+      }
     }
   }
 }

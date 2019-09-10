@@ -1,6 +1,6 @@
 <template>
   <div
-    class="trackall"
+    class="callname-rep"
     v-loading="loading"
     element-loading-text="拼命加载中"
     element-loading-spinner="el-icon-loading"
@@ -9,32 +9,35 @@
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
           <el-breadcrumb-item>人员位置管理</el-breadcrumb-item>
-          <el-breadcrumb-item>轨迹记录总览</el-breadcrumb-item>
+          <el-breadcrumb-item>点名管理</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
       <el-main class="module-main">
         <div class="search">
           <div class="search-input" style="margin-bottom: 10px;">
             <div class="item">
-              <span>区域类型</span>
-              <el-select v-model="nowSearch.type" clearable style="width: 160px;" placeholder="请选择区域类型">
+              <span>人员名称</span>
+              <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
+            </div>
+            <div class="item">
+              <span>点名结果</span>
+              <el-select v-model="nowSearch.result" clearable style="width: 160px;" placeholder="请选择点名结果">
                 <el-option
-                  v-for="item in typeOptions"
+                  v-for="item in resultOptions"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value">
                 </el-option>
               </el-select>
             </div>
-            <div class="item">
-              <span>人员名称</span>
-              <el-input style="width: 160px;" v-model.trim="nowSearch.crew"></el-input>
+            <div class="operate">
+              <el-button type="primary" @click="searchList">搜索</el-button>
+              <!--<el-button type="primary" @click="setClick">设置</el-button>-->
             </div>
-            <div class="operate"></div>
           </div>
           <div class="search-input">
             <div class="item">
-              <span>创建时段</span>
+              <span>开始日期</span>
               <el-date-picker
                 style="width: 160px;"
                 v-model="nowSearch.startDate"
@@ -45,7 +48,7 @@
               </el-date-picker>
             </div>
             <div class="item">
-              <span>----</span>
+              <span>结束日期</span>
               <el-date-picker
                 style="width: 160px;"
                 v-model="nowSearch.endDate"
@@ -56,22 +59,32 @@
               </el-date-picker>
             </div>
             <div class="operate">
-              <el-button type="primary" @click="searchList">搜索</el-button>
               <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+              <el-button type="primary" :disabled="downAllDisabled" @click="downAllFile">导出汇总</el-button>
             </div>
           </div>
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column prop="user_name" label="姓名"></el-table-column>
-          <el-table-column prop="at_date" label="日期"></el-table-column>
-          <el-table-column prop="start_date" label="区域类型">
+          <el-table-column prop="user_name" width="150" label="姓名"></el-table-column>
+          <el-table-column prop="adate" width="180" label="日期"></el-table-column>
+          <el-table-column :show-overflow-tooltip="true" label="点名地址">
             <template slot-scope="scope">
-              <span v-if="scope.row.area_type === 1">办公室区域</span>
-              <span v-else-if="scope.row.area_type === 2">工作区域</span>
+              <span v-if="scope.row.positions">{{ scope.row.positions }}</span>
+              <span v-else>全部</span>
             </template>
           </el-table-column>
-          <el-table-column prop="wait_time" label="停留时长（min）"></el-table-column>
+          <el-table-column width="150" label="点名次数">
+            <template slot-scope="scope">
+              <a href="javascript:void(0);" class="name" @click="detClick(scope.row)">{{ scope.row.sf }}</a>
+            </template>
+          </el-table-column>
+          <el-table-column width="150" label="点名结果">
+            <template slot-scope="scope">
+              <span v-if="scope.row.over === 1">成功</span>
+              <span class="red" v-else-if="scope.row.over === 0">失败</span>
+            </template>
+          </el-table-column>
         </el-table>
         <el-pagination
           background
@@ -87,49 +100,67 @@
         </el-pagination>
       </el-main>
     </el-container>
+    <!-- 详情 -->
+    <det-module
+      :parentDialog="detDialog"
+      :parentUid="uid"
+      :parentDate="itemDate"
+      @parentClose="detClose">
+    </det-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入详情组件
+import detModule from '@/components/callname/callname-det'
 export default{
-  name: 'trackall',
+  name: 'callnameRep',
   data () {
     return {
       search: {
-        type: '',
-        crew: '',
-        startDate: this.$common.getNowDate('yyyy-mm-dd'),
-        endDate: this.$common.getNowDate('yyyy-mm-dd')
+        name: '',
+        result: '',
+        startDate: this.$common.getBeforeDate(),
+        endDate: this.$common.getBeforeDate()
       },
       nowSearch: {
-        type: '',
-        crew: '',
-        startDate: this.$common.getNowDate('yyyy-mm-dd'),
-        endDate: this.$common.getNowDate('yyyy-mm-dd')
+        name: '',
+        result: '',
+        startDate: this.$common.getBeforeDate(),
+        endDate: this.$common.getBeforeDate()
       },
-      typeOptions: [
+      resultOptions: [
         {
-          label: '办公室区域',
+          label: '成功',
           value: 1
         },
         {
-          label: '工作区域',
-          value: 2
+          label: '失败',
+          value: 0
         }
       ],
-      logData: [],
       tableData: [],
+      loading: false,
       total: 0,
       nowPage: 1,
       limit: 10,
+      detDialog: false,
+      uid: 0,
+      itemDate: '',
       downDisabled: false,
-      loading: false
+      downAllDisabled: false
     }
+  },
+  created () {
+
   },
   mounted () {
     // 获取列表数据
     this.getListData()
+  },
+  components: {
+    detModule
   },
   computed: {
     ...mapState(
@@ -143,6 +174,17 @@ export default{
   methods: {
     // 搜索
     searchList () {
+      const startDate = this.nowSearch.startDate
+      const endDate = this.nowSearch.endDate
+      const fate = this.getDateDiff(startDate, endDate)
+      if (fate) {
+        this.$message({
+          showClose: true,
+          message: '查询时长不能超过31天',
+          type: 'warning'
+        })
+        return
+      }
       this.search = JSON.parse(JSON.stringify(this.nowSearch))
       // 当前页码初始化
       this.nowPage = 1
@@ -155,29 +197,29 @@ export default{
         company_id: this.nowClientId,
         user_id: this.userId,
         project_id: this.nowProid,
-        area_type: this.search.type || 0,
-        user_name: this.search.crew,
+        user_name: this.search.name,
+        over: this.search.result,
         start_date: this.search.startDate,
-        end_date: this.search.endDate
+        end_date: this.search.endDate,
+        page: this.nowPage,
+        limit1: this.limit
       }
       params = this.$qs.stringify(params)
       this.loading = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/locationTimeStatistics',
+        url: this.sysetApi() + '/v2.0/selRollCallResult',
         data: params
       }).then((res) => {
         this.loading = false
         if (res.data.result === 'Sucess') {
-          // 全部数据
-          const logData = res.data.data1
-          this.logData = logData
-          // 总页数
-          const total = logData.length
-          this.total = total
-          // 表格数据
-          const tableData = logData.slice(0, this.limit)
-          this.tableData = tableData
+          this.total = res.data.data1.total
+          this.tableData = res.data.data1.rcs
+          // 检验是否列表为空
+          if (this.tableData.length === 0 && this.nowPage > 1) {
+            this.nowPage--
+            this.getListData()
+          }
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -201,28 +243,43 @@ export default{
       this.limit = limit
       // 初始化页码
       this.nowPage = 1
-      // 更新列表数据
-      const start = this.nowPage * this.limit - this.limit
-      const end = this.nowPage * this.limit
-      const tableData = this.logData.slice(start, end)
-      this.tableData = tableData
+      // 获取列表数据
+      this.getListData()
     },
     // 点击分页
     pageChang (page) {
       this.nowPage = page
-      // 更新列表数据
-      const start = page * this.limit - this.limit
-      const end = page * this.limit
-      const tableData = this.logData.slice(start, end)
-      this.tableData = tableData
+      // 获取列表数据
+      this.getListData()
+    },
+    /* 详情 */
+    detClick (data) {
+      this.uid = data.user_id
+      this.itemId = data.adate
+      this.detDialog = true
+    },
+    detClose () {
+      this.detDialog = false
+    },
+    // 获取跨越天数
+    getDateDiff (startDate, endDate) {
+      let startTime = new Date(Date.parse(startDate.replace(/-/g, '/'))).getTime()
+      let endTime = new Date(Date.parse(endDate.replace(/-/g, '/'))).getTime()
+      const seaDuration = endTime - startTime
+      const maxDuration = 1000 * 60 * 60 * 24 * 31
+      if (seaDuration > maxDuration) {
+        return true
+      } else {
+        return false
+      }
     },
     /* 导出 */
     downFile () {
       let params = {
         company_id: this.nowClientId,
         project_id: this.nowProid,
-        area_type: this.search.type || 0,
-        user_name: this.search.crew,
+        user_name: this.search.name,
+        over: this.search.result,
         start_date: this.search.startDate,
         end_date: this.search.endDate
       }
@@ -231,14 +288,36 @@ export default{
       setTimeout(() => {
         this.downDisabled = false
       }, 5000)
-      window.location.href = this.sysetApi() + '/inspection/locationTimeStatisticsEo?' + params
+      window.location.href = this.sysetApi() + '/v2.0/rollCallResultEO?' + params
+    },
+    downAllFile () {
+      let params = {
+        company_id: this.nowClientId,
+        user_id: this.userId,
+        project_id: this.nowProid,
+        user_name: this.search.name,
+        over: this.search.result,
+        start_date: this.search.startDate,
+        end_date: this.search.endDate
+      }
+      params = this.$qs.stringify(params)
+      this.downAllDisabled = true
+      setTimeout(() => {
+        this.downAllDisabled = false
+      }, 5000)
+      window.location.href = this.sysetApi() + '/v2.0/selRollCallReportSummaryEO?' + params
+    },
+    /* 点名次数 */
+    /* 设置 */
+    setClick () {
+      this.$router.push({ path: '/main/callname-set' })
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.trackall{
+.callname-rep{
   height: 100%;
   .module-container{
     height: 100%;
@@ -260,7 +339,8 @@ export default{
       margin-right: 20px;
       background: #ffffff;
       .search{
-        padding: 5px 0;
+        padding-top: 5px;
+        padding-bottom: 5px;
         .search-input{
           display: table;
           width: 100%;

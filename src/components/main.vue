@@ -60,18 +60,21 @@
               <span slot="title" style="font-size: 18px;">首页</span>
             </el-menu-item>
             <el-submenu index="1" class="submenu-item" v-if="authority.organ || authority.user || authority.shift || authority.approval">
-              <template slot="title"><i class="iconfont icon-qiye"></i>企业管理</template>
+              <template slot="title"><i class="iconfont icon-qiye"></i>企业配置</template>
               <el-menu-item-group v-if="authority.organ && companyId === 1">
-                <el-menu-item index="/main/oorgan">组织机构</el-menu-item>
+                <el-menu-item index="/main/oorgan">组织管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.organ && companyId !== 1">
-                <el-menu-item index="/main/corgan">组织机构</el-menu-item>
+                <el-menu-item index="/main/corgan">组织管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.user && companyId === 1">
-                <el-menu-item index="/main/ouser">用户列表</el-menu-item>
+                <el-menu-item index="/main/ouser">用户管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.user && companyId !== 1">
-                <el-menu-item index="/main/cuser">用户列表</el-menu-item>
+                <el-menu-item index="/main/cuser">用户管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="authority.approval">
+                <el-menu-item index="/main/approval">审批管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.shift">
                 <el-menu-item index="/main/shift">编制排班</el-menu-item>
@@ -79,59 +82,26 @@
               <el-menu-item-group v-if="authority.shift">
                 <el-menu-item index="/main/schedul">排班管理</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.shift">
-                <el-menu-item index="/main/salary">考勤报表</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group v-if="authority.approval">
-                <el-menu-item index="/main/approval">审批列表</el-menu-item>
-              </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="2" class="submenu-item" v-if="authority.user">
+            <el-submenu index="2" class="submenu-item" v-if="authority.site">
               <template slot="title"><i class="iconfont icon-shezhi"></i>基础配置</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/position">位置管理</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.site">
+              <el-menu-item-group>
                 <el-menu-item index="/main/site">地址管理</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="3" class="submenu-item">
-              <template slot="title"><i class="iconfont icon-xunjianguanli"></i>巡检管理</template>
-              <el-menu-item-group v-if="authority.plan">
-                <el-menu-item index="/main/group">组管理</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group v-if="authority.plan">
-                <el-menu-item index="/main/plan">巡检计划管理</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group v-if="authority.task">
-                <el-menu-item index="/main/task">巡检任务</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group>
-                <el-menu-item index="/main/fixedpost">固定岗管理</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group>
-                <el-menu-item index="/main/fixedpost-log">固定岗打卡记录</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group>
-                <el-menu-item index="/main/calendar">巡检日历</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group v-if="authority.norm">
-                <el-menu-item index="/main/norm">巡检标准维护</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group v-if="authority.abnormal">
-                <el-menu-item index="/main/abnormal">异常检查项</el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="4" class="submenu-item">
-              <template slot="title"><i class="iconfont icon-renyuanweizhi"></i>人员位置管理</template>
+              <template slot="title"><i class="iconfont icon-pinzhibaozhang"></i>品质过程管理</template>
               <el-menu-item-group v-if="authority.plan">
                 <el-menu-item index="/main/crewcollect">人员管理汇总</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.plan">
-                <el-menu-item index="/main/callname">点名管理</el-menu-item>
+                <el-menu-item index="/main/crewclock">人员打卡率报表</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.plan">
-                <el-menu-item index="/main/crewclock">人员打卡报表</el-menu-item>
+                <el-menu-item index="/main/poscover">位置巡查覆盖率</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.plan">
                 <el-menu-item index="/main/posclock">位置打卡记录</el-menu-item>
@@ -143,7 +113,53 @@
                 <el-menu-item index="/main/trackdet">轨迹记录详情</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="5" class="submenu-item">
+            <el-submenu index="4" class="submenu-item">
+              <template slot="title"><i class="iconfont icon-xunjianguanli"></i>巡检巡查</template>
+              <el-menu-item-group v-if="authority.plan">
+                <el-menu-item index="/main/group">组管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="authority.plan">
+                <el-menu-item index="/main/plan">巡检计划管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="authority.task">
+                <el-menu-item index="/main/task">巡检任务</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/calendar">巡检日历</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="authority.norm">
+                <el-menu-item index="/main/norm">巡检标准维护</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="authority.abnormal">
+                <el-menu-item index="/main/abnormal">异常检查项</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+
+            <el-submenu index="5" class="submenu-item" v-if="authority.plan">
+              <template slot="title"><i class="iconfont icon-guding"></i>固定岗管理</template>
+              <el-menu-item-group>
+                <el-menu-item index="/main/fixedpost-rep">固定岗打卡报表</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/fixedpost-log">固定岗打卡记录</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="6" class="submenu-item" v-if="authority.plan">
+              <template slot="title"><i class="iconfont icon-dianmin"></i>点名管理</template>
+              <el-menu-item-group v-if="authority.plan">
+                <el-menu-item index="/main/callname-set">点名设置</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="authority.plan">
+                <el-menu-item index="/main/callname-rep">点名报表</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="7" class="submenu-item" v-if="authority.shift">
+              <template slot="title"><i class="iconfont icon-kaoqinguanli"></i>考勤管理</template>
+              <el-menu-item-group v-if="authority.shift">
+                <el-menu-item index="/main/salary">考勤报表</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="8" class="submenu-item">
               <template slot="title"><i class="iconfont icon-ccgl-fahuodanguanli-5"></i>工单管理</template>
               <el-menu-item-group v-if="authority.work">
                 <el-menu-item index="/main/work">工单列表</el-menu-item>
@@ -152,13 +168,13 @@
                 <el-menu-item index="/main/rule">异常处理规则设置</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="6" class="submenu-item" v-if="authority.polcard">
+            <el-submenu index="9" class="submenu-item" v-if="authority.polcard">
               <template slot="title"><i class="iconfont icon-shebeiguanli1"></i>设备管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/hardfac">硬件设备管理</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="7" class="submenu-item" v-if="authority.polReport || authority.workReport">
+            <el-submenu index="10" class="submenu-item" v-if="authority.polReport || authority.workReport">
               <template slot="title"><i class="iconfont icon-baobiaoguanli"></i>报表管理</template>
               <el-menu-item-group v-if="authority.polReport">
                 <el-menu-item index="/main/report-task">巡检任务执行报表</el-menu-item>
@@ -176,7 +192,7 @@
                 <el-menu-item index="/main/report-worksta">员工工单报表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="8" class="submenu-item" v-if="authority.videoSetting || authority.videoPlaza">
+            <el-submenu index="11" class="submenu-item" v-if="authority.videoSetting || authority.videoPlaza">
               <template slot="title"><i class="iconfont icon-jiankong"></i>视频监控</template>
               <el-menu-item-group v-if="authority.videoSetting">
                 <el-menu-item index="/main/video-setting">视频监控设置</el-menu-item>
@@ -185,7 +201,7 @@
                 <el-menu-item index="/main/video-plaza">视频广场</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="9" class="submenu-item" v-if="authority.event">
+            <el-submenu index="12" class="submenu-item" v-if="authority.event">
               <template slot="title"><i class="iconfont icon-shijian"></i>事件管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/event">事件列表</el-menu-item>

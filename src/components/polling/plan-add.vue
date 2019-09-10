@@ -3,7 +3,7 @@
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>巡检管理</el-breadcrumb-item>
+          <el-breadcrumb-item>巡检巡查</el-breadcrumb-item>
           <el-breadcrumb-item><router-link to="/main/plan">巡检计划管理</router-link></el-breadcrumb-item>
           <el-breadcrumb-item>新增巡检计划</el-breadcrumb-item>
         </el-breadcrumb>

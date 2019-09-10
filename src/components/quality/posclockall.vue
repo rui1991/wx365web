@@ -54,7 +54,7 @@
 <script>
 import { mapState } from 'vuex'
 // 引入详情组件
-import detModule from '@/components/perloc/posclockall-det'
+import detModule from '@/components/quality/posclockall-det'
 export default{
   name: 'posclockall',
   data () {
