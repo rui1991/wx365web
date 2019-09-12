@@ -1,5 +1,10 @@
 <template>
-  <div class="home">
+  <div
+    class="home"
+    v-loading="loading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -506,7 +511,8 @@ export default{
         ],
         color: ['#44bd8a', '#d8d8d8']
       },
-      domWidth: this.$common.getDomClientSize().width
+      domWidth: this.$common.getDomClientSize().width,
+      loading: false
     }
   },
   created () {
@@ -643,11 +649,13 @@ export default{
         organize_id: this.orgId
       }
       params = this.$qs.stringify(params)
+      this.loading = true
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/v3.7/selMain',
         data: params
       }).then((res) => {
+        this.loading = false
         if (res.data.result === 'Sucess') {
           const homeData = res.data.data1
           /* 概况 */
@@ -746,6 +754,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.loading = false
         // this.$message({
         //   showClose: true,
         //   message: '服务器连接失败！',

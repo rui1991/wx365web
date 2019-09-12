@@ -1,5 +1,10 @@
 <template>
-  <div class="posclockall">
+  <div
+    class="posclockall"
+    v-loading="loading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
     <div class="search">
       <div class="item">
         <el-date-picker
@@ -75,7 +80,8 @@ export default{
       detDialog: false,
       itemId: 0,
       itemDate: '',
-      downDisabled: false
+      downDisabled: false,
+      loading: false
     }
   },
   created () {
@@ -130,11 +136,13 @@ export default{
         limit1: this.limit
       }
       params = this.$qs.stringify(params)
+      this.loading = true
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/v3.8/selUserRecordMessage',
         data: params
       }).then((res) => {
+        this.loading = false
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
           this.tableData = res.data.data1.message
@@ -147,6 +155,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.loading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',

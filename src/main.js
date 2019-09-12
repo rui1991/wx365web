@@ -39,7 +39,7 @@ require('vue-video-player/src/custom-theme.css')
 // 注册axios
 // axios.defaults.baseURL = 'http://www.allsps.com:82'
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8'
-// axios.defaults.timeout = 5000
+// axios.defaults.timeout = 60000
 Vue.prototype.$axios = axios
 
 // 注册qs
@@ -63,9 +63,9 @@ Object.keys(custom).forEach(key => {
 Vue.prototype.$common = common
 
 // 配置公共变量
-Vue.prototype.baseUrl = () => 'http://szydak.eicp.net:82'
-Vue.prototype.sysetApi = () => 'http://szydak.eicp.net:82/ezx_syset'
-Vue.prototype.reportApi = () => 'http://szydak.eicp.net:8089'
+// Vue.prototype.baseUrl = () => 'http://szydak.eicp.net:82'
+// Vue.prototype.sysetApi = () => 'http://szydak.eicp.net:82/ezx_syset'
+// Vue.prototype.reportApi = () => 'http://szydak.eicp.net:8089'
 
 // Vue.prototype.baseUrl = () => 'http://192.168.1.199:8080'
 // Vue.prototype.sysetApi = () => 'http://192.168.1.199:8080/ezx_syset'
@@ -73,9 +73,9 @@ Vue.prototype.reportApi = () => 'http://szydak.eicp.net:8089'
 
 // Vue.prototype.locationApi = () => '/apiUrl/ezx_location'
 
-// Vue.prototype.baseUrl = () => 'http://www.allsps.com'
-// Vue.prototype.sysetApi = () => 'http://www.allsps.com/ezx_syset'
-// Vue.prototype.reportApi = () => 'http://www.allsps.com:8089'
+Vue.prototype.baseUrl = () => 'http://www.allsps.com'
+Vue.prototype.sysetApi = () => 'http://www.allsps.com/ezx_syset'
+Vue.prototype.reportApi = () => 'http://www.allsps.com:8089'
 Vue.prototype.videoApi = () => 'http://www.allsps.com:8083'
 
 Vue.config.productionTip = false

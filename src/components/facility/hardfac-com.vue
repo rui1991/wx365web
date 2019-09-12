@@ -15,7 +15,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="设备mac" prop="mac" v-if="!serialShow">
+        <el-form-item label="设备mac" prop="mac" v-if="!serialShow" :disabled="true">
           <el-input v-model.trim="formData.mac" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="序列号" prop="serial" v-if="serialShow">
