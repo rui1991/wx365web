@@ -74,17 +74,17 @@ export default{
     siteModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     comInit () {
-      this.formData = JSON.parse(JSON.stringify(this.parentForm))
+      this.formData = this.parentForm
     },
     // 验证表单
     submitForm (formName) {
@@ -117,10 +117,10 @@ export default{
       let siteId = this.formData.siteId
       siteId = siteId.join(',')
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
         rcs_id: this.parentId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         users: crewId,
         positions: siteId,
         urc_size: count

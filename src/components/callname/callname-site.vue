@@ -31,13 +31,13 @@ export default{
     }
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     siteInit () {
@@ -53,9 +53,9 @@ export default{
     // 获取地址树
     getTreeData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid
+        project_id: this.projectId
       }
       params = this.$qs.stringify(params)
       this.$axios({

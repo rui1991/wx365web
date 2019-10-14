@@ -95,14 +95,14 @@ export default{
     addModule2
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        nowProname: state => state.nowProname
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId',
+      'projectName'
+    ])
   },
   methods: {
     /*
@@ -114,9 +114,9 @@ export default{
     // 获取位置树
     getPositionTree (b = false) {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid
+        project_id: this.projectId
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -129,7 +129,7 @@ export default{
           this.treeData = [
             {
               'id': 0,
-              'name': this.nowProname,
+              'name': this.projectName,
               'children': treeData
             }
           ]

@@ -72,13 +72,13 @@ export default{
     this.reqUrl = this.sysetApi() + '/upload?state=10&user_id' + this.userId
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     addInit () {
@@ -117,9 +117,9 @@ export default{
       })
       const imgUrls = fileName.join('/')
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        projectN_id: this.nowProid,
+        projectN_id: this.projectId,
         wo_name: this.formData.name,
         address: this.formData.site,
         business_type: this.formData.sort,
@@ -162,7 +162,7 @@ export default{
     // 获取业务类别
     getSortOptions () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
         project_id: 0
       }

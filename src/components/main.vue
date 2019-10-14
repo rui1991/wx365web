@@ -8,9 +8,9 @@
         </div>
         <div class="right main-header-nav">
           <div class="nav-item">
-            <el-select v-model="nowProid" filterable placeholder="请选择项目" :disabled="proDisabled" @change="projectChange">
+            <el-select v-model="nowProjectId" filterable placeholder="请选择项目" :disabled="proDisabled" @change="projectChange">
               <el-option
-                v-for="item in allPros"
+                v-for="item in allProject"
                 :key="item.project_id"
                 :label="item.project_name"
                 :value="item.project_id">
@@ -173,6 +173,15 @@
               <el-menu-item-group>
                 <el-menu-item index="/main/hardfac">硬件设备管理</el-menu-item>
               </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/envmonit">环境监控设置</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/envalarm">告警记录</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/monitman">环境监控管理</el-menu-item>
+              </el-menu-item-group>
             </el-submenu>
             <el-submenu index="10" class="submenu-item" v-if="authority.polReport || authority.workReport">
               <template slot="title"><i class="iconfont icon-baobiaoguanli"></i>报表管理</template>
@@ -232,7 +241,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import initIcon from '../assets/images/head.png'
 // 引入个人资料组件
 import introModule from '@/components/profile/main-intro'
@@ -245,10 +254,12 @@ export default{
       menuActive: '',
       iconUrl: '',
       introDialog: false,
-      pwdDialog: false
+      pwdDialog: false,
+      nowProjectId: 0
     }
   },
   created () {
+    this.nowProjectId = this.projectId
     this.menuActive = this.$route.path
   },
   mounted () {
@@ -268,29 +279,26 @@ export default{
     pwdModule
   },
   computed: {
-    ...mapState(
-      {
-        companyName: state => state.info.companyName,
-        companyId: state => state.info.companyId,
-        userId: state => state.info.userId,
-        userName: state => state.info.userName,
-        userPhoto: state => state.info.userPhoto,
-        allPros: state => state.info.allPros,
-        authority: state => state.authority,
-        proDisabled: state => state.proDisabled,
-        unreadMesCount: state => state.unreadMesCount
-      }
-    ),
-    nowProid: {
-      get () {
-        return this.$store.state.nowProid
-      },
-      set (value) {
-        this.$store.commit('nowProChange', value)
-      }
-    }
+    ...mapState('user', [
+      'companyName',
+      'companyId',
+      'userId',
+      'userName',
+      'userPhoto',
+      'authority'
+    ]),
+    ...mapState('other', [
+      'allProject',
+      'projectId',
+      'proDisabled',
+      'unreadMesCount'
+    ])
   },
   methods: {
+    ...mapActions('other', [
+      'setNowProject',
+      'setUnreadMes'
+    ]),
     // 保存项目id
     projectChange (value) {
       let params = {
@@ -304,6 +312,17 @@ export default{
         url: this.sysetApi() + '/switchProject',
         data: params
       }).then((res) => {
+        // 保存用户当前项目
+        const nowProject = this.allProject.find(item => {
+          return item.project_id === value
+        })
+        let project = {
+          id: nowProject.project_id,
+          name: nowProject.project_name,
+          orgId: nowProject.organize_id,
+          companyId: nowProject.company_id
+        }
+        this.setNowProject(project)
       }).catch(() => {
         this.$message({
           showClose: true,
@@ -343,7 +362,7 @@ export default{
           const clerkCount = itemData.secretaryNrTotal || 0
           // 总未读数
           const allCount = workCount + helperCount + clerkCount
-          this.$store.commit('setUnreadMesCount', allCount)
+          this.setUnreadMes(allCount)
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -372,7 +391,7 @@ export default{
     }
   },
   watch: {
-    nowProid (newVal, oldVal) {
+    projectId (newVal, oldVal) {
       // 刷新页面
       this.$router.go(0)
     }

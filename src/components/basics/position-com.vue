@@ -119,13 +119,13 @@ export default{
     this.reqUrl = this.sysetApi() + '/upload?state=10&user_id' + this.userId
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     comInit () {
@@ -146,9 +146,9 @@ export default{
     // 获取详情
     getDetails () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         location_id: this.parentId
       }
       params = this.$qs.stringify(params)
@@ -226,9 +226,9 @@ export default{
       }
       let picture = this.formData.picture
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         location_id: this.parentId,
         location_type: this.formData.type,
         location_name: this.formData.name,

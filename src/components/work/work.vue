@@ -158,20 +158,20 @@ export default{
     addModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        nowOrgid: state => state.nowOrgid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId',
+      'projectOrgId'
+    ])
   },
   methods: {
     // 获取业务类别
     getSortOptions () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
         project_id: 0
       }
@@ -210,7 +210,7 @@ export default{
     // 获取项目人员
     getCrewOptions () {
       let params = {
-        organize_id: this.nowOrgid,
+        organize_id: this.projectOrgId,
         user_name: '',
         user_phone: '',
         role_id: '',
@@ -269,9 +269,9 @@ export default{
     /* 导出 */
     downFile () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        projectN_id: this.nowProid,
+        projectN_id: this.projectId,
         woN_name: this.search.name,
         startN_date: this.search.startDate,
         endN_date: this.search.endDate,

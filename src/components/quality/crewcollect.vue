@@ -18,7 +18,7 @@
             <span>选择项目</span>
             <el-select v-model="nowSearch.project" style="width: 160px;"  multiple collapse-tags placeholder="请选择项目">
               <el-option
-                v-for="item in allPros"
+                v-for="item in allProject"
                 :key="item.project_id"
                 :label="item.project_name"
                 :value="item.project_id">
@@ -136,13 +136,12 @@ export default{
     this.getListData()
   },
   computed: {
-    ...mapState(
-      {
-        userId: state => state.info.userId,
-        allPros: state => state.info.allPros,
-        allProid: state => state.info.allProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'allProject'
+    ])
   },
   methods: {
     // 搜索

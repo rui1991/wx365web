@@ -105,20 +105,20 @@ export default{
     this.getCrewOptions()
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        nowOrgid: state => state.nowOrgid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId',
+      'projectOrgId'
+    ])
   },
   methods: {
     /* 人员 */
     getCrewOptions () {
       let params = {
-        organize_id: this.nowOrgid,
+        organize_id: this.projectOrgId,
         user_name: '',
         user_phone: '',
         role_id: '',
@@ -165,9 +165,9 @@ export default{
     // 获取列表数据
     getListData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         userN_id: this.search.crew,
         start_date: this.search.date + ' 00:00',
         end_date: this.search.date + ' 23:59',
@@ -233,9 +233,9 @@ export default{
     // 导出个人
     downCrew () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         userN_id: this.search.crew,
         start_date: this.search.date + ' 00:00',
         end_date: this.search.date + ' 23:59',
@@ -251,9 +251,9 @@ export default{
     // 导出项目
     downProject () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         userN_id: '',
         start_date: this.search.date + ' 00:00',
         end_date: this.search.date + ' 23:59',

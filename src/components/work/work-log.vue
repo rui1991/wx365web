@@ -53,14 +53,14 @@ export default{
     this.reqUrl = this.sysetApi() + '/upload?state=10&user_id' + this.userId
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        userName: state => state.info.userName,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId',
+      'userName'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     logInit (id) {
@@ -91,9 +91,9 @@ export default{
         imgUrl = fileList[0].response
       }
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         wo_id: this.parentId,
         user_name: this.userName,
         follow_content: this.formData.content,

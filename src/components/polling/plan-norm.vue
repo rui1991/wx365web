@@ -85,22 +85,21 @@ export default{
     delModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     // 获取地址数据
     getListData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         position_ids: this.parentSite.positions.join(',')
       }
       params = this.$qs.stringify(params)

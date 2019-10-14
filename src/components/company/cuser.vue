@@ -226,12 +226,10 @@ export default{
     upModule
   },
   computed: {
-    ...mapState(
-      {
-        companyId: state => state.info.companyId,
-        userId: state => state.info.userId
-      }
-    )
+    ...mapState('user', [
+      'companyId',
+      'userId'
+    ])
   },
   methods: {
     // 获取组织树

@@ -9,7 +9,7 @@
       </el-header>
       <el-main class="module-main">
         <div class="nav">
-          <el-radio-group v-model="navActive">
+          <el-radio-group v-model="navActive" @change="navChange">
             <el-radio-button :label="1">位置打卡记录汇总</el-radio-button>
             <el-radio-button :label="2">人员打卡记录详情</el-radio-button>
           </el-radio-group>
@@ -24,15 +24,30 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
 export default{
   name: 'posclock',
   data () {
     return {
-      navActive: '1'
+      navActive: ''
     }
   },
-  watch: {
-    navActive (val, oldVal) {
+  mounted () {
+    this.navActive = this.posclockNav
+  },
+  computed: {
+    ...mapState('other', [
+      'companyId',
+      'projectId',
+      'posclockNav'
+    ])
+  },
+  methods: {
+    ...mapActions('other', [
+      'setPosclockNav'
+    ]),
+    navChange (val) {
+      this.setPosclockNav(val)
       if (val === 1) {
         this.$router.push({ path: '/main/posclock/posclockall' })
       } else if (val === 2) {

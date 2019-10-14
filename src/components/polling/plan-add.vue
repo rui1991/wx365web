@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 // 引入基础配置
 import planBasics from '@/components/polling/plan-basics'
 // 引入选择地址
@@ -88,7 +88,7 @@ export default{
   },
   created () {
     // 设置全局项目禁用
-    this.$store.commit('setProDisabled', true)
+    this.setProDisabled(true)
   },
   components: {
     planBasics,
@@ -97,15 +97,18 @@ export default{
     planOrder
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
+    ...mapActions('other', [
+      'setProDisabled'
+    ]),
     // 基本信息
     basicsFun (data) {
       this.basicsForm = data
@@ -206,9 +209,9 @@ export default{
       let positions = this.siteForm.positions
       positions = positions.join(',')
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        projectN_id: this.nowProid,
+        projectN_id: this.projectId,
         plan_name: this.basicsForm.name,
         ogz_id: sector,
         group_id: group,
@@ -259,7 +262,7 @@ export default{
   },
   beforeDestroy () {
     // 设置全局项目禁用
-    this.$store.commit('setProDisabled', false)
+    this.setProDisabled(false)
   }
 }
 </script>

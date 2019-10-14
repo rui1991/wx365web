@@ -29,21 +29,23 @@ export default{
     return {
       reqUrl: '',
       reqHead: {
-        token: sessionStorage.getItem('wxWebToken'),
-        user_id: sessionStorage.getItem('wxWebUserId')
+        token: '',
+        user_id: 0
       },
       fileList: []
     }
   },
   created () {
-
+    // 设置上传参数
+    this.reqHead = {
+      token: sessionStorage.getItem('wxWebToken'),
+      user_id: this.userId
+    }
   },
   computed: {
-    ...mapState(
-      {
-        userId: state => state.info.userId
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ])
   },
   methods: {
     upInit () {

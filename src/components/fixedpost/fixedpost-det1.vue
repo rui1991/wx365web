@@ -31,13 +31,13 @@ export default{
 
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     // 初始化数据
@@ -55,9 +55,9 @@ export default{
     // 成功详情
     getSucessDet () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         position_id: this.parentPos,
         this_date: this.parentDate
       }
@@ -88,9 +88,9 @@ export default{
     // 未打卡详情
     getFailedDet () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         position_id: this.parentPos,
         this_date: this.parentDate
       }
@@ -121,9 +121,9 @@ export default{
     // 异常详情
     getAbnormalDet () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         position_id: this.parentPos,
         this_date: this.parentDate
       }

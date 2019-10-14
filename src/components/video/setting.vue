@@ -182,22 +182,21 @@ export default{
     this.getServerIp()
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     // 获取IP与端口
     getServerIp () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         page: 1,
         limit1: 1,
         conditions: ''
@@ -375,9 +374,9 @@ export default{
     // 提交
     sendServerIp () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         mntip: this.basics.serve,
         login_name: this.basics.userName,
         login_pwd: this.basics.userPwd

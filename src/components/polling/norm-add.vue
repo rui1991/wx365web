@@ -71,13 +71,13 @@ export default{
     temModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     addInit () {
@@ -106,9 +106,9 @@ export default{
     // 提交
     sendRequest () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         template_name: this.formData.name,
         template_type: this.formData.type,
         describe: this.formData.remark,
@@ -157,7 +157,7 @@ export default{
     },
     getTemContent (ids) {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
         project_id: 0,
         ins_ids: ids

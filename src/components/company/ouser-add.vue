@@ -143,11 +143,9 @@ export default{
     accreditModule
   },
   computed: {
-    ...mapState(
-      {
-        userId: state => state.info.userId
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ])
   },
   methods: {
     // 初始化数据

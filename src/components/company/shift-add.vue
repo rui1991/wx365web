@@ -66,13 +66,13 @@ export default{
 
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     // 验证表单
@@ -92,9 +92,9 @@ export default{
     // 提交
     sendRequest () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         work_name: this.formData.name,
         start_time: this.formData.startTime,
         end_time: this.formData.endTime

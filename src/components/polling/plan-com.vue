@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 // 引入基础配置
 import planBasics from '@/components/polling/plan-basics'
 // 引入选择地址
@@ -89,7 +89,7 @@ export default{
   },
   created () {
     // 设置全局项目禁用
-    this.$store.commit('setProDisabled', true)
+    this.setProDisabled(true)
     // 保存计划ID
     this.planId = this.$route.query.id
     // 获取计划详情
@@ -102,21 +102,24 @@ export default{
     planOrder
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
+    ...mapActions('other', [
+      'setProDisabled'
+    ]),
     // 获取计划详情
     getPlanDetails () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         plan_id: this.planId
       }
       params = this.$qs.stringify(params)
@@ -319,9 +322,9 @@ export default{
       let positions = this.siteForm.positions
       positions = positions.join(',')
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        projectN_id: this.nowProid,
+        projectN_id: this.projectId,
         plan_id: this.planId,
         plan_name: this.basicsForm.name,
         ogz_id: sector,
@@ -373,7 +376,7 @@ export default{
   },
   beforeDestroy () {
     // 设置全局项目禁用
-    this.$store.commit('setProDisabled', false)
+    this.setProDisabled(false)
   }
 }
 </script>

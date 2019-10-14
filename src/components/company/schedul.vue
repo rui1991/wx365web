@@ -117,8 +117,8 @@ export default{
       upDate: '',
       reqUrl: '',
       reqHead: {
-        token: sessionStorage.getItem('wxWebToken'),
-        user_id: sessionStorage.getItem('wxWebUserId')
+        token: '',
+        user_id: 0
       },
       fileList: [],
       pickerOptions: {
@@ -129,7 +129,11 @@ export default{
     }
   },
   created () {
-
+    // 设置上传参数
+    this.reqHead = {
+      token: sessionStorage.getItem('wxWebToken'),
+      user_id: this.userId
+    }
   },
   mounted () {
     // 获取当前月份
@@ -138,9 +142,9 @@ export default{
     this.upDate = mydata
     let params = {
       state: 14,
-      company_id: this.nowClientId,
+      company_id: this.companyId,
       user_id: this.userId,
-      project_id: this.nowProid,
+      project_id: this.projectId,
       month_day: this.upDate
     }
     params = this.$qs.stringify(params)
@@ -158,16 +162,15 @@ export default{
     crewModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        nowProname: state => state.nowProname,
-        nowOrgid: state => state.nowOrgid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId',
+      'projectName',
+      'projectOrgId'
+    ])
   },
   methods: {
     /* 选择年月 */
@@ -197,9 +200,9 @@ export default{
     // 获取班次列表
     getShiftList () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid
+        project_id: this.projectId
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -240,7 +243,7 @@ export default{
     // 获取人员列表
     getCrewList () {
       let params = {
-        organize_id: this.nowOrgid,
+        organize_id: this.projectOrgId,
         user_name: '',
         user_phone: '',
         role_id: '',
@@ -287,9 +290,9 @@ export default{
       const upDate = this.upDate
       let params = {
         state: 14,
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         month_day: upDate
       }
       params = this.$qs.stringify(params)
@@ -335,10 +338,10 @@ export default{
     /* 导出 */
     downTemplate () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
-        project_name: this.nowProname
+        project_id: this.projectId,
+        project_name: this.projectName
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true

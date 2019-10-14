@@ -29,28 +29,35 @@ export default{
     return {
       reqUrl: '',
       reqHead: {
-        token: sessionStorage.getItem('wxWebToken'),
-        user_id: sessionStorage.getItem('wxWebUserId')
+        token: '',
+        user_id: 0
       },
       fileList: []
     }
   },
+  created () {
+    // 设置上传参数
+    this.reqHead = {
+      token: sessionStorage.getItem('wxWebToken'),
+      user_id: this.userId
+    }
+  },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     upInit () {
       let params = {
         state: 17,
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid
+        project_id: this.projectId
       }
       params = this.$qs.stringify(params)
       const reqUrl = this.sysetApi() + '/upload?' + params
@@ -92,7 +99,7 @@ export default{
     },
     // 下载模板
     downTemplate () {
-      window.location.href = this.sysetApi() + '/v3.7.3/poModelEO?project_id=' + this.nowProid
+      window.location.href = this.sysetApi() + '/v3.7.3/poModelEO?project_id=' + this.projectId
     },
     // 关闭
     closeClick () {

@@ -14,18 +14,8 @@
       </el-header>
       <el-container class="module-content">
         <el-aside width="280px" class="module-aside">
-          <el-tree
-            style="padding: 5px"
-            :data="orgTree"
-            ref="orgTree"
-            show-checkbox
-            default-expand-all
-            check-strictly
-            node-key="id"
-            @check-change="orgCheckChange"
-            @node-click="orgNodeClick"
-            :props="defaultProps">
-          </el-tree>
+          <!-- 组织树 -->
+          <org-module @parentUpdata="orgUpdata"></org-module>
         </el-aside>
         <el-main class="module-main">
           <div class="search">
@@ -169,6 +159,8 @@
 
 <script>
 import { mapState } from 'vuex'
+// 引入组织树组件
+import orgModule from '@/components/public/org-radio'
 // 引入详情组件
 import detModule from '@/components/quality/crewclock-det'
 export default{
@@ -184,11 +176,6 @@ export default{
         startDate: this.$common.getBeforeDate(),
         endDate: this.$common.getBeforeDate(),
         name: ''
-      },
-      orgTree: [],
-      defaultProps: {
-        children: 'children',
-        label: 'name'
       },
       orgId: 0,
       orgType: 0,
@@ -208,20 +195,14 @@ export default{
   created () {
 
   },
-  mounted () {
-    // 获取组织树
-    this.getOrganTree()
-  },
   components: {
+    orgModule,
     detModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ])
   },
   filters: {
     countRate (want, already) {
@@ -232,108 +213,20 @@ export default{
     }
   },
   methods: {
-    // 获取机构树
-    getOrganTree () {
-      let params = {
-        user_id: this.userId
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.2/selOgzTrees',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          let orgData = res.data.data1
-          // 处理部门树
-          orgData = this.initDisSecTree(orgData)
-          this.orgTree = orgData
-          if (this.orgId) {
-            this.$refs.orgTree.setCheckedKeys([this.orgId])
-          }
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 初始化处理部门
-    initDisSecTree (treeData) {
-      treeData.forEach((item, index, array) => {
-        if (item.organize_type === 4) {
-          item.disabled = true
-        }
-        if (item.children) {
-          this.initRecSecTree(item.children)
-        }
-      })
-      return treeData
-    },
-    initRecSecTree (data) {
-      data.forEach((item, index, array) => {
-        if (item.children) {
-          this.initRecSecTree(item.children)
-        } else if (item.organize_type === 4) {
-          item.disabled = true
-        }
-      })
-    },
-    // 点击机构树
-    orgCheckChange (data, checked, self) {
-      if (checked === true) {
-        if (this.orgId === data.id) return
-        const type = data.organize_type
-        this.orgId = data.id
-        this.orgType = type
-        this.$refs.orgTree.setCheckedKeys([data.id])
-        // 清空搜索框
-        this.search.name = ''
-        this.nowSearch.name = ''
-        // 当前页码初始化
-        this.nowPage = 1
-        if (type === 3) {
-          this.proId = data.base_id
-          // 获取列表数据
-          this.getListDetData()
-        } else {
-          this.proId = 0
-          // 获取列表数据
-          this.getListAllData()
-        }
-      } else {
-        if (this.orgId === data.id) {
-          this.$refs.orgTree.setCheckedKeys([data.id])
-        }
-      }
-    },
-    orgNodeClick (data, node, self) {
-      if (data.disabled) return
-      if (node.checked) return
-      const type = data.organize_type
+    // 组织树
+    orgUpdata (data) {
       this.orgId = data.id
-      this.orgType = type
-      this.$refs.orgTree.setCheckedKeys([data.id])
+      this.orgType = data.type
+      this.proId = data.projectId
       // 清空搜索框
       this.search.name = ''
       this.nowSearch.name = ''
       // 当前页码初始化
       this.nowPage = 1
-      if (type === 3) {
-        this.proId = data.base_id
+      if (data.type === 3) {
         // 获取列表数据
         this.getListDetData()
       } else {
-        this.proId = 0
         // 获取列表数据
         this.getListAllData()
       }

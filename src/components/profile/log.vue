@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 export default{
   name: 'log',
   data () {
@@ -106,21 +106,22 @@ export default{
   },
   created () {
     // 设置全局项目禁用
-    this.$store.commit('setProDisabled', true)
+    this.setProDisabled(true)
     // 设置初始化搜索时间
     this.nowSearch.startDate = this.$common.getNowDate()
     this.nowSearch.endDate = this.$common.getNowDate()
     this.getListData()
   },
   computed: {
-    ...mapState(
-      {
-        companyId: state => state.info.companyId,
-        userId: state => state.info.userId
-      }
-    )
+    ...mapState('user', [
+      'companyId',
+      'userId'
+    ])
   },
   methods: {
+    ...mapActions('other', [
+      'setProDisabled'
+    ]),
     // 搜索
     searchList () {
       this.search = JSON.parse(JSON.stringify(this.nowSearch))
@@ -198,7 +199,7 @@ export default{
   },
   beforeDestroy () {
     // 设置全局项目禁用
-    this.$store.commit('setProDisabled', false)
+    this.setProDisabled(false)
   }
 }
 </script>

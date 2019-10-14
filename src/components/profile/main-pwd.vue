@@ -84,13 +84,11 @@ export default{
 
   },
   computed: {
-    ...mapState(
-      {
-        companyId: state => state.info.companyId,
-        userId: state => state.info.userId,
-        userPhone: state => state.info.userPhone
-      }
-    )
+    ...mapState('user', [
+      'companyId',
+      'userId',
+      'userPhone'
+    ])
   },
   methods: {
     pwdInit () {

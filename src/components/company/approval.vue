@@ -120,7 +120,7 @@
     <!-- 详情 -->
     <det-module
       :parentDialog="detDialog"
-      :parentPro="nowProid"
+      :parentPro="projectId"
       :parentId="itemId"
       @parentClose="detClose">
     </det-module>
@@ -145,7 +145,6 @@ export default{
   name: 'approval',
   data () {
     return {
-      authority: true,
       creCrewDis: false,
       search: {
         creCrew: '',
@@ -208,9 +207,10 @@ export default{
     }
   },
   created () {
+
+  },
+  mounted () {
     // 权限
-    let autDet = this.autDet
-    autDet.indexOf(62) === -1 ? this.authority = false : this.authority = true
     if (!this.authority) {
       const userName = this.userName
       this.search.creCrew = userName
@@ -225,16 +225,17 @@ export default{
     appModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
-        userId: state => state.info.userId,
-        userName: state => state.info.userName,
-        nowProid: state => state.nowProid,
-        autDet: state => state.autDet.approval
-      }
-    )
+    ...mapState('user', [
+      'userId',
+      'userName'
+    ]),
+    ...mapState('user', {
+      authority: state => state.authority.approval
+    }),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     // 搜索
@@ -248,9 +249,9 @@ export default{
     // 获取列表数据
     getListData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         user_name: this.search.creCrew,
         apply_type: this.search.type,
         audit_state: this.search.state,

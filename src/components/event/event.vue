@@ -126,7 +126,7 @@
     <!-- 详情 -->
     <det-module
       :parentDialog="detDialog"
-      :parentPro="nowProid"
+      :parentPro="projectId"
       :parentId="itemId"
       @parentClose="detClose">
     </det-module>
@@ -201,15 +201,14 @@ export default{
     mesModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        nowOrgid: state => state.nowOrgid,
-        autDet: state => state.autDet.shift
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId',
+      'projectOrgId'
+    ])
   },
   filters: {
     formatReplyTime (value) {
@@ -225,7 +224,7 @@ export default{
     // 获取项目人员
     getCrewOptions () {
       let params = {
-        organize_id: this.nowOrgid,
+        organize_id: this.projectOrgId,
         user_name: '',
         user_phone: '',
         role_id: '',
@@ -268,9 +267,9 @@ export default{
     // 获取列表数据
     getListData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         eventString: this.search.name,
         event_state: this.search.state,
         userN_id: this.search.creCrew,
@@ -356,9 +355,9 @@ export default{
     /* 处理 */
     disposeClick (id) {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         te_id: id,
         event_state: '1'
       }

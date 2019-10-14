@@ -102,7 +102,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 // 引入事件详情组件
 import eventModule from '@/components/event/event-det'
 // 引入工单详情组件
@@ -137,7 +137,7 @@ export default{
   },
   created () {
     // 设置全局项目禁用
-    this.$store.commit('setProDisabled', true)
+    this.setProDisabled(true)
   },
   mounted () {
     // 获取未读总数
@@ -154,14 +154,16 @@ export default{
     delModule
   },
   computed: {
-    ...mapState(
-      {
-        companyId: state => state.info.companyId,
-        userId: state => state.info.userId
-      }
-    )
+    ...mapState('user', [
+      'companyId',
+      'userId'
+    ])
   },
   methods: {
+    ...mapActions('other', [
+      'setUnreadMes',
+      'setProDisabled'
+    ]),
     /*
     * type:
     * 0：事件
@@ -194,7 +196,7 @@ export default{
           const clerkCount = itemData.secretaryNrTotal || 0
           // 总未读数
           const allCount = workCount + helperCount + clerkCount
-          this.$store.commit('setUnreadMesCount', allCount)
+          this.setUnreadMes(allCount)
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -448,7 +450,7 @@ export default{
   },
   beforeDestroy () {
     // 设置全局项目禁用
-    this.$store.commit('setProDisabled', false)
+    this.setProDisabled(false)
   }
 }
 </script>

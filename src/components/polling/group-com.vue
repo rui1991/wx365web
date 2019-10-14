@@ -55,13 +55,13 @@ export default{
     crewModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     // 初始化数据
@@ -87,9 +87,9 @@ export default{
       let crewId = this.formData.crewId
       crewId = crewId.join(',')
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         group_id: this.parentId,
         group_name: this.formData.name,
         userN_ids: crewId

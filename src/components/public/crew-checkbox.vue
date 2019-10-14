@@ -37,11 +37,9 @@ export default{
     }
   },
   computed: {
-    ...mapState(
-      {
-        nowOrgid: state => state.nowOrgid
-      }
-    )
+    ...mapState('other', [
+      'projectOrgId'
+    ])
   },
   methods: {
     crewInit () {
@@ -59,7 +57,7 @@ export default{
     // 获取项目人员
     getCrewData () {
       let params = {
-        organize_id: this.nowOrgid,
+        organize_id: this.projectOrgId,
         user_name: '',
         user_phone: '',
         role_id: '',

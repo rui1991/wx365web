@@ -58,7 +58,7 @@
     <!-- 详情 -->
     <det-module
       :parentDialog="detDialog"
-      :parentPro="nowProid"
+      :parentPro="projectId"
       :parentId="itemId"
       @parentClose="detClose">
     </det-module>
@@ -133,22 +133,24 @@ export default{
     crewModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        autDet: state => state.autDet.work
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('user', {
+      autDet: state => state.autDet.work
+    }),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     // 获取列表数据
     getListData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        projectN_id: this.nowProid,
+        projectN_id: this.projectId,
         woN_name: this.parentSearch.name,
         startN_date: this.parentSearch.startDate,
         endN_date: this.parentSearch.endDate,
@@ -239,9 +241,9 @@ export default{
     /* 结单 */
     closeClick (id) {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         wo_id: id
       }
       params = this.$qs.stringify(params)
@@ -290,10 +292,10 @@ export default{
     /* 接单 */
     orderClick (id) {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
-        projectN_id: this.nowProid,
+        project_id: this.projectId,
+        projectN_id: this.projectId,
         userN_id: this.userId,
         wo_id: id
       }
@@ -330,9 +332,9 @@ export default{
     // 催单
     reminderClick (id) {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         wo_id: id
       }
       params = this.$qs.stringify(params)

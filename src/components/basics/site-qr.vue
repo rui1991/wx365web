@@ -19,13 +19,13 @@ export default{
     vueQr
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     qrInit () {
@@ -35,7 +35,7 @@ export default{
           {
             id: item.position_id,
             name: item.position_name,
-            value: this.qrUrl + '?proid=' + this.nowProid + '&posid=' + item.position_id
+            value: this.qrUrl + '?proid=' + this.projectId + '&posid=' + item.position_id
           }
         )
       })

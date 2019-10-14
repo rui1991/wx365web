@@ -205,23 +205,22 @@ export default{
     this.getDisposeRule()
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        nowOrgid: state => state.nowOrgid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId',
+      'projectOrgId'
+    ])
   },
   methods: {
     /* 设置告警人 */
     getWarning () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid
+        project_id: this.projectId
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -256,7 +255,7 @@ export default{
     // 获取项目人员
     getCrewOptions () {
       let params = {
-        organize_id: this.nowOrgid,
+        organize_id: this.projectOrgId,
         user_name: '',
         user_phone: '',
         role_id: '',
@@ -332,9 +331,9 @@ export default{
       })
       uids = uids.join(',')
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         user_ids: uids
       }
       params = this.$qs.stringify(params)
@@ -374,9 +373,9 @@ export default{
     submitDelForm () {
       let uid = this.linkmanId
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         wp_id: uid
       }
       params = this.$qs.stringify(params)
@@ -411,9 +410,9 @@ export default{
     /* 自动派单规则设置 */
     getSendRule () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid
+        project_id: this.projectId
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -472,9 +471,9 @@ export default{
         skillState = 1
       }
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         with_skill: skillState,
         with_role: skillState,
         was_id: this.sendId
@@ -509,9 +508,9 @@ export default{
     /* 响应超时设置 */
     getResponseRule () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         rd_type: 'r'
       }
       params = this.$qs.stringify(params)
@@ -574,9 +573,9 @@ export default{
         state = 1
       }
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         rd_type: 'r',
         wot_id: this.responseId,
         rd_time: this.responseTime || 0,
@@ -612,9 +611,9 @@ export default{
     /* 处理超时设置 */
     getDisposeRule () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         rd_type: 'd'
       }
       params = this.$qs.stringify(params)
@@ -677,9 +676,9 @@ export default{
         state = 1
       }
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         rd_type: 'd',
         wot_id: this.disposeId,
         rd_time: this.disposeTime || 0,

@@ -214,12 +214,9 @@ export default{
     mapModule
   },
   computed: {
-    ...mapState(
-      {
-        userId: state => state.info.userId,
-        orgId: state => state.org.orgId
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ])
   },
   methods: {
     // 验证表单

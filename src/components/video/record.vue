@@ -57,7 +57,7 @@
       </el-row>
     </div>
     <!-- 播放 -->
-    <el-dialog :title="companyName" :visible.sync="playDialog" :show-close="false" :close-on-click-modal="false" custom-class="my-dialog">
+    <el-dialog title="播放录像" :visible.sync="playDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
       <div class="body-top">
         <h5 class="title">播放录像</h5>
       </div>
@@ -123,14 +123,13 @@ export default{
     this.getServerIp()
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   filters: {
     filterDate (value) {
@@ -161,9 +160,9 @@ export default{
     // 获取IP与端口
     getServerIp () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         page: 1,
         limit1: 1,
         conditions: ''

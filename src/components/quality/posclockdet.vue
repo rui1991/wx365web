@@ -102,6 +102,7 @@ export default{
     }
   },
   mounted () {
+    // 日期
     const myDate = new Date()
     const year = myDate.getFullYear()
     const month = myDate.getMonth() + 1
@@ -134,19 +135,18 @@ export default{
     crewModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'projectId'
+    ])
   },
   methods: {
     // 获取列表数据
     getListData () {
       let params = {
-        project_id: this.nowProid,
+        project_id: this.projectId,
         month: this.searchDate,
         page: this.nowPage,
         limit1: this.limit
@@ -247,7 +247,7 @@ export default{
         return
       }
       let params = {
-        project_id: this.nowProid
+        project_id: this.projectId
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -285,7 +285,7 @@ export default{
       crewId = crewId.join(',')
       let params = {
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         userids: crewId
       }
       params = this.$qs.stringify(params)
@@ -324,7 +324,7 @@ export default{
     /* 导出 */
     downFile () {
       let params = {
-        project_id: this.nowProid,
+        project_id: this.projectId,
         month: this.searchDate
       }
       params = this.$qs.stringify(params)

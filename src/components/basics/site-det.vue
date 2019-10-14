@@ -8,7 +8,14 @@
         <el-input :disabled="true" v-model="formData.name"></el-input>
       </el-form-item>
       <el-form-item label="区域类型">
-        <el-input :disabled="true" v-model="formData.areaType"></el-input>
+        <el-select disabled style="width: 100%;" v-model="formData.areaType">
+          <el-option
+            v-for="item in areaOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="地址类型">
         <el-input :disabled="true" v-model="formData.type"></el-input>
@@ -36,6 +43,48 @@ export default{
   data () {
     return {
       formLabelWidth: '100px',
+      areaOptions: [
+        {
+          label: '楼栋',
+          value: 0
+        },
+        {
+          label: '单元',
+          value: 1
+        },
+        {
+          label: '楼层',
+          value: 2
+        },
+        {
+          label: '办公区域',
+          value: 3
+        },
+        {
+          label: '商铺',
+          value: 4
+        },
+        {
+          label: '卫生间',
+          value: 5
+        },
+        {
+          label: '停车场',
+          value: 6
+        },
+        {
+          label: '公共区域',
+          value: 7
+        },
+        {
+          label: '外围',
+          value: 8
+        },
+        {
+          label: '岗亭',
+          value: 9
+        }
+      ],
       formData: {
         parentPath: '',
         name: '',
@@ -48,13 +97,13 @@ export default{
     }
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     detInit () {
@@ -73,9 +122,9 @@ export default{
     // 获取详情
     getDetails () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         position_id: this.parentId
       }
       params = this.$qs.stringify(params)
@@ -86,14 +135,6 @@ export default{
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           const itemData = res.data.data1
-          // 区域类型
-          const areaNum = itemData.area_type || ''
-          let areaType = ''
-          if (areaNum === 1) {
-            areaType = '办公室区域'
-          } else if (areaNum === 2) {
-            areaType = '工作区域'
-          }
           // 地址类型
           const typeNum = itemData.position_type
           let type = ''
@@ -106,7 +147,7 @@ export default{
           this.formData = {
             parentPath: itemData.parent_address,
             name: itemData.position_name,
-            areaType: areaType,
+            areaType: itemData.area_type,
             type: type,
             mac: itemData.position_mac,
             norm: itemData.template_name || '',

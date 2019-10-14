@@ -82,11 +82,9 @@ export default{
     // this.getSectorOptions()
   },
   computed: {
-    ...mapState(
-      {
-        nowOrgid: state => state.nowOrgid
-      }
-    )
+    ...mapState('other', [
+      'projectOrgId'
+    ])
   },
   methods: {
     // 验证表单
@@ -109,7 +107,7 @@ export default{
     /* 选择部门 */
     getSectorOptions () {
       let params = {
-        organize_id: this.nowOrgid
+        organize_id: this.projectOrgId
       }
       params = this.$qs.stringify(params)
       this.$axios({

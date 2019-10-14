@@ -8,6 +8,9 @@ const Cipher = () => import(/* webpackChunkName: "group-login" */ '@/components/
 // 验证码登录
 const Authcode = () => import(/* webpackChunkName: "group-login" */ '@/components/login/authcode')
 
+/* 展会环境监控管理 */
+const Monitdemo = () => import(/* webpackChunkName: "group-login" */ '@/components/monitdemo')
+
 /* 找回密码 */
 const Findpwd = () => import(/* webpackChunkName: "group-findpwd" */ '@/components/findpwd')
 
@@ -111,6 +114,20 @@ const Rule = () => import(/* webpackChunkName: "group-rule" */ '@/components/wor
 /* 设备管理 */
 // 硬件设备管理
 const Hardfac = () => import(/* webpackChunkName: "group-hardfac" */ '@/components/facility/hardfac')
+// 环境监控设置
+const Envmonit = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/facility/envmonit')
+// 环境监控传感器
+const Envccd = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/facility/envccd')
+// 环境监控传感器历史记录
+const EnvccdLog = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/facility/envccd-log')
+// 环境监控网关
+const Envswg = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/facility/envswg')
+// 告警记录
+const Envalarm = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/facility/envalarm')
+// 告警设置
+const EnvalarmSet = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/facility/envalarm-set')
+// 环境监控管理
+const Monitman = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/facility/monitman')
 
 /* 报表管理 */
 // 巡检任务执行报表
@@ -167,6 +184,11 @@ export default new Router({
       path: '/findpwd',
       name: 'findpwd',
       component: Findpwd
+    },
+    {
+      path: '/monitdemo',
+      name: 'monitdemo',
+      component: Monitdemo
     },
     {
       path: '/main',
@@ -308,7 +330,7 @@ export default new Router({
           component: Posclock,
           redirect: '/main/posclock/posclockall',
           meta: {
-            keepAlive: false
+            keepAlive: true
           },
           children: [
             {
@@ -501,6 +523,65 @@ export default new Router({
           path: 'hardfac',
           name: 'hardfac',
           component: Hardfac,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'envmonit',
+          name: 'envmonit',
+          component: Envmonit,
+          redirect: '/main/envmonit/envccd',
+          meta: {
+            keepAlive: false
+          },
+          children: [
+            {
+              path: 'envccd',
+              name: 'envccd',
+              component: Envccd,
+              meta: {
+                keepAlive: false
+              }
+            },
+            {
+              path: 'envswg',
+              name: 'envswg',
+              component: Envswg,
+              meta: {
+                keepAlive: false
+              }
+            }
+          ]
+        },
+        {
+          path: 'envccd-log',
+          name: 'envccdLog',
+          component: EnvccdLog,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'envalarm',
+          name: 'envalarm',
+          component: Envalarm,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'envalarm-set',
+          name: 'envalarmSet',
+          component: EnvalarmSet,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'monitman',
+          name: 'monitman',
+          component: Monitman,
           meta: {
             keepAlive: false
           }

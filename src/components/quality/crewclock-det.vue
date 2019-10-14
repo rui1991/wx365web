@@ -21,11 +21,9 @@ export default{
     }
   },
   computed: {
-    ...mapState(
-      {
-        userId: state => state.info.userId
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ])
   },
   methods: {
     detInit () {

@@ -169,19 +169,19 @@ export default{
     this.getSectorOptions()
   },
   computed: {
-    ...mapState(
-      {
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        nowOrgid: state => state.nowOrgid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'projectId',
+      'projectOrgId'
+    ])
   },
   methods: {
     // 获取列表数据
     getListData () {
       let params = {
-        project_id: this.nowProid,
+        project_id: this.projectId,
         month: this.searchDate,
         user_name: this.search.name,
         ogz_id: this.search.sector,
@@ -282,7 +282,7 @@ export default{
       let params = {
         company_id: this.nowClientId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         userN_id: uid,
         this_date: date
       }
@@ -322,7 +322,7 @@ export default{
     /* 获取部门 */
     getSectorOptions () {
       let params = {
-        organize_id: this.nowOrgid
+        organize_id: this.projectOrgId
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -351,7 +351,7 @@ export default{
     /* 导出 */
     downFile () {
       let params = {
-        project_id: this.nowProid,
+        project_id: this.projectId,
         month: this.searchDate,
         user_name: this.search.name,
         ogz_id: this.search.sector

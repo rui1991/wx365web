@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default{
   name: 'authcode',
   data () {
@@ -44,6 +45,17 @@ export default{
 
   },
   methods: {
+    ...mapActions('user', [
+      'setUserInfo',
+      'setModAuthority',
+      'setDetAuthority'
+    ]),
+    ...mapActions('other', [
+      'setAllProject',
+      'setNowProject',
+      'setOrganTree',
+      'setOrganData'
+    ]),
     // 校验手机号码格式
     verifyPhone () {
       let phone = this.phone
@@ -183,7 +195,6 @@ export default{
           let companyName = loginData.user.company_name
           // 存储用户ID
           let userId = loginData.user.user_id
-          sessionStorage.setItem('wxWebUserId', userId)
           // 存储用户名称
           let userName = loginData.user.user_name
           // 存储用户角色id
@@ -195,9 +206,9 @@ export default{
           // 存储用户头像
           let userPhoto = loginData.user.head_picture || ''
           // 存储用户全部项目
-          const allPros = loginData.projects
+          const allProject = loginData.projects
           // 判断是否有项目
-          if (allPros.length === 0) {
+          if (allProject.length === 0) {
             this.$message({
               showClose: true,
               message: '您还未分配项目，请联系管理员分配项目！',
@@ -205,19 +216,6 @@ export default{
             })
             return
           }
-          // 存储用户全部项目id
-          let allProid = []
-          allPros.forEach(item => {
-            allProid.push(item.project_id)
-          })
-          allProid = allProid.join(',')
-          // 存储用户当前项目id
-          let nowProid = loginData.user.last_project || ''
-          if (nowProid) {
-            nowProid = parseInt(nowProid)
-          }
-          // 存储用户当前项目名称
-          // let nowProname = loginData.user.project_name || ''
           // 保存用户基本信息
           const info = {
             companyId,
@@ -227,41 +225,36 @@ export default{
             roleId,
             sectorId,
             userPhone,
-            userPhoto,
-            allPros,
-            allProid
+            userPhoto
           }
-          this.$store.commit('setLoginInfo', info)
+          this.setUserInfo(info)
+          // 保存所有项目
+          this.setAllProject(allProject)
           // 保存用户当前项目
           let project = {}
+          let nowProid = loginData.user.last_project || ''
           if (nowProid) {
-            const nowPro = allPros.find(item => {
+            nowProid = Number.parseInt(nowProid)
+            const nowProject = allProject.find(item => {
               return item.project_id === nowProid
             })
-            if (nowPro) {
+            if (nowProject) {
               project = {
-                nowProid: nowProid,
-                nowProname: nowPro.project_name,
-                nowOrgid: nowPro.organize_id,
-                nowClientId: nowPro.company_id
+                id: nowProid,
+                name: nowProject.project_name,
+                orgId: nowProject.organize_id,
+                companyId: nowProject.company_id
               }
             } else {
               project = {
-                nowProid: allPros[0].project_id,
-                nowProname: allPros[0].project_name,
-                nowOrgid: allPros[0].organize_id,
-                nowClientId: allPros[0].company_id
+                id: nowProject[0].project_id,
+                name: nowProject[0].project_name,
+                orgId: nowProject[0].organize_id,
+                companyId: nowProject[0].company_id
               }
             }
-          } else {
-            project = {
-              nowProid: allPros[0].project_id,
-              nowProname: allPros[0].project_name,
-              nowOrgid: allPros[0].organize_id,
-              nowClientId: allPros[0].company_id
-            }
           }
-          this.$store.commit('setNowProject', project)
+          this.setNowProject(project)
           /* 存储权限 */
           const userAuts = loginData.permissions
           let authority = {
@@ -375,7 +368,7 @@ export default{
             }
           })
           // 存储权限
-          this.$store.commit('setModAuthority', authority)
+          this.setModAuthority(authority)
           const autDet = {
             organ: autOrgan,
             user: autUser,
@@ -393,7 +386,13 @@ export default{
             polcard: autPolcard,
             event: autEvent
           }
-          this.$store.commit('setDetAuthority', autDet)
+          this.setDetAuthority(autDet)
+          // 保存机构树
+          const orgTree = loginData.trees
+          this.setOrganTree(orgTree)
+          // 处理部门
+          const orgData = this.initDisSecTree(orgTree)
+          this.setOrganData(orgData)
           // 路由跳转
           this.$router.push({ path: '/main/home' })
         } else {
@@ -410,6 +409,28 @@ export default{
           message: '服务器连接失败！',
           type: 'error'
         })
+      })
+    },
+    // 初始化处理部门
+    initDisSecTree (treeData) {
+      treeData.forEach((item, index, array) => {
+        if (item.organize_type === 4) {
+          item.disabled = true
+        }
+        if (item.children) {
+          this.initRecSecTree(item.children)
+        }
+      })
+      return treeData
+    },
+    initRecSecTree (data) {
+      data.forEach((item, index, array) => {
+        if (item.organize_type === 4) {
+          item.disabled = true
+        }
+        if (item.children) {
+          this.initRecSecTree(item.children)
+        }
       })
     }
   },

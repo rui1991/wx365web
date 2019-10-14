@@ -38,14 +38,14 @@ export default{
 
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        userName: state => state.info.userName,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId',
+      'userName'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     // 初始化数据
@@ -67,7 +67,7 @@ export default{
         orgId = this.parentSector
       }
       let params = {
-        project_id: this.nowProid,
+        project_id: this.projectId,
         ogz_id: orgId
       }
       params = this.$qs.stringify(params)
@@ -110,10 +110,10 @@ export default{
     // 提交派遣
     submitDispatch () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
         user_name: this.userName,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         id_id: this.parentId,
         type: 1,
         userN_name: this.name,
@@ -155,9 +155,9 @@ export default{
     // 提交换人
     submitTrade () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         id_id: this.parentId,
         userN_id: this.id
       }

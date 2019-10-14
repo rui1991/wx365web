@@ -107,11 +107,9 @@ export default{
     comModule2
   },
   computed: {
-    ...mapState(
-      {
-        userId: state => state.info.userId
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ])
   },
   methods: {
     /*

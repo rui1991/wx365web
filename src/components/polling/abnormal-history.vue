@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 export default{
   name: 'abnormalHistory',
   data () {
@@ -79,28 +79,31 @@ export default{
   },
   created () {
     // 设置全局项目禁用
-    this.$store.commit('setProDisabled', true)
+    this.setProDisabled(true)
     // 获取全路径
     this.getAllPath()
     // 获取列表
     this.getListData()
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
+    ...mapActions('other', [
+      'setProDisabled'
+    ]),
     // 获取全路径
     getAllPath () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         position_id: this.$route.query.pos
       }
       params = this.$qs.stringify(params)
@@ -131,9 +134,9 @@ export default{
     // 获取列表数据
     getListData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         position_id: this.$route.query.pos,
         ins_id: this.$route.query.tem,
         page: this.nowPage,
@@ -186,7 +189,7 @@ export default{
   },
   beforeDestroy () {
     // 设置全局项目禁用
-    this.$store.commit('setProDisabled', false)
+    this.setProDisabled(false)
   }
 }
 </script>

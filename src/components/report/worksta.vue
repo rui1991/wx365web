@@ -14,18 +14,8 @@
       </el-header>
       <el-container class="module-content">
         <el-aside width="280px" class="module-aside">
-          <el-tree
-            style="padding: 5px"
-            :data="orgTree"
-            ref="orgTree"
-            show-checkbox
-            default-expand-all
-            check-strictly
-            node-key="id"
-            @check-change="orgCheckChange"
-            @node-click="orgNodeClick"
-            :props="defaultProps">
-          </el-tree>
+          <!-- 组织树 -->
+          <org-module></org-module>
         </el-aside>
         <el-main class="module-main">
           <div class="search">
@@ -125,7 +115,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
+// 引入组织树组件
+import orgModule from '@/components/report/report-org'
 export default{
   name: 'reportWorksta',
   data () {
@@ -140,11 +132,6 @@ export default{
         endDate: '',
         name: ''
       },
-      orgTree: [],
-      defaultProps: {
-        children: 'children',
-        label: 'name'
-      },
       tableData: [],
       total: 0,
       nowPage: 1,
@@ -154,6 +141,9 @@ export default{
     }
   },
   created () {
+
+  },
+  mounted () {
     // 开始时间
     let startDate = ''
     this.startDate ? startDate = this.startDate : startDate = this.$common.getNowDate('yyyy-mm-dd')
@@ -164,142 +154,31 @@ export default{
     this.endDate ? endDate = this.endDate : endDate = this.$common.getNowDate('yyyy-mm-dd')
     this.search.endDate = endDate
     this.nowSearch.endDate = endDate
-  },
-  mounted () {
-    // 获取机构树
-    this.getOrganTree()
-    if (this.orgId) {
+    if (this.organizeId) {
       this.downDisabled = false
       // 获取列表数据
       this.getListData()
     }
   },
+  components: {
+    orgModule
+  },
   computed: {
-    ...mapState(
-      {
-        companyId: state => state.info.companyId,
-        userId: state => state.info.userId,
-        orgId: state => state.reportArg.orgId,
-        orgType: state => state.reportArg.orgType,
-        startDate: state => state.reportArg.startDate,
-        endDate: state => state.reportArg.endDate
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('report', [
+      'organizeId',
+      'startDate',
+      'endDate'
+    ])
   },
   methods: {
-    // 获取机构树
-    getOrganTree () {
-      let params = {
-        user_id: this.userId
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.2/selOgzTrees',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          let orgData = res.data.data1
-          // 处理部门树
-          orgData = this.initDisSecTree(orgData)
-          this.orgTree = orgData
-          if (this.orgId) {
-            this.$refs.orgTree.setCheckedKeys([this.orgId])
-          }
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 初始化处理部门
-    initDisSecTree (treeData) {
-      treeData.forEach((item, index, array) => {
-        if (item.organize_type === 4) {
-          item.disabled = true
-        }
-        if (item.children) {
-          this.initRecSecTree(item.children)
-        }
-      })
-      return treeData
-    },
-    initRecSecTree (data) {
-      data.forEach((item, index, array) => {
-        if (item.organize_type === 4) {
-          item.disabled = true
-        }
-        if (item.children) {
-          this.initRecSecTree(item.children)
-        }
-      })
-    },
-    // 点击机构树
-    orgCheckChange (data, checked, self) {
-      if (checked === true) {
-        if (this.orgId === data.id) return
-        const type = data.organize_type
-        let args = {}
-        if (type === 3) {
-          args = {
-            id: data.id,
-            type: type,
-            proId: data.base_id
-          }
-        } else {
-          args = {
-            id: data.id,
-            type: type,
-            proId: ''
-          }
-        }
-        this.$refs.orgTree.setCheckedKeys([data.id])
-        // 机构ID
-        this.$store.commit('setReportOrg', args)
-        // 清空搜索框
-        this.search.name = ''
-        this.nowSearch.name = ''
-        // 当前页码初始化
-        this.nowPage = 1
-        // 获取列表数据
-        this.getListData()
-      } else {
-        if (this.orgId === data.id) {
-          this.$refs.orgTree.setCheckedKeys([data.id])
-        }
-      }
-    },
-    orgNodeClick (data, node, self) {
-      if (data.disabled) return
-      if (node.checked) return
-      const type = data.organize_type
-      let args = {}
-      if (type === 3) {
-        args = {
-          id: data.id,
-          type: type,
-          proId: data.base_id
-        }
-      } else {
-        args = {
-          id: data.id,
-          type: type,
-          proId: ''
-        }
-      }
-      this.$refs.orgTree.setCheckedKeys([data.id])
-      // 机构ID
-      this.$store.commit('setReportOrg', args)
+    ...mapActions('report', [
+      'setReportDate'
+    ]),
+    // 更新列表
+    updateList () {
       // 清空搜索框
       this.search.name = ''
       this.nowSearch.name = ''
@@ -312,23 +191,23 @@ export default{
     searchList () {
       this.search = JSON.parse(JSON.stringify(this.nowSearch))
       // 判断是否选择组织
-      if (!this.orgId) return
-      // 报表日期
-      const args = {
-        startDate: this.search.startDate,
-        endDate: this.search.endDate
-      }
-      this.$store.commit('setReportDate', args)
+      if (!this.organizeId) return
       // 当前页码初始化
       this.nowPage = 1
       // 获取列表数据
       this.getListData()
+      // 设置报表时间
+      const date = {
+        startDate: this.search.startDate,
+        endDate: this.search.endDate
+      }
+      this.setReportDate(date)
     },
     // 获取列表数据
     getListData () {
-      if (!this.orgId) return
+      if (!this.organizeId) return
       let params = {
-        organize_id: this.orgId,
+        organize_id: this.organizeId,
         project_name: '',
         user_name: this.search.name,
         start_date: this.search.startDate,
@@ -527,7 +406,7 @@ export default{
     /* 导出文件 */
     downFile () {
       let params = {
-        organize_id: this.orgId,
+        organize_id: this.organizeId,
         project_name: '',
         user_name: this.search.name,
         start_date: this.search.startDate,
@@ -542,8 +421,10 @@ export default{
     }
   },
   watch: {
-    orgId (val, oldVal) {
+    organizeId (val, oldVal) {
       if (val) {
+        // 更新列表
+        this.updateList()
         this.downDisabled = false
       } else {
         this.downDisabled = true

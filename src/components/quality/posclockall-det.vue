@@ -23,11 +23,9 @@ export default{
     }
   },
   computed: {
-    ...mapState(
-      {
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('other', [
+      'projectId'
+    ])
   },
   methods: {
     detInit () {
@@ -37,7 +35,7 @@ export default{
     // 获取详情
     getDetails () {
       let params = {
-        project_id: this.nowProid,
+        project_id: this.projectId,
         now_date: this.parentDate,
         position_id: this.parentId,
         page: 1,

@@ -142,14 +142,14 @@ export default{
     siteModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        userName: state => state.info.userName,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId',
+      'userName'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     addInit () {
@@ -199,9 +199,9 @@ export default{
         imgUrls = '/' + imgUrls
       }
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         event_title: this.formData.name,
         event_type: this.formData.type,
         event_state: this.formData.state,

@@ -108,13 +108,13 @@ export default{
     this.reqUrl = this.sysetApi() + '/upload?state=10&user_id' + this.userId
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     addInit () {
@@ -146,9 +146,9 @@ export default{
         stateCode = 0
       }
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         parent_id: this.parentId,
         location_type: this.formData.type,
         location_name: this.formData.name,

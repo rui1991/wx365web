@@ -435,14 +435,14 @@ export default{
 
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        nowOrgid: state => state.nowOrgid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId',
+      'projectOrgId'
+    ])
   },
   methods: {
     // 选择频次
@@ -489,7 +489,7 @@ export default{
     /* 选择部门 */
     getSectorOptions () {
       let params = {
-        organize_id: this.nowOrgid
+        organize_id: this.projectOrgId
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -518,7 +518,7 @@ export default{
     // 部门人员
     sectorChange (value) {
       let params = {
-        project_id: this.nowProid,
+        project_id: this.projectId,
         ogz_id: value
       }
       params = this.$qs.stringify(params)
@@ -556,7 +556,7 @@ export default{
     // 编辑时初始化部门人员
     getSectorCrew () {
       let params = {
-        project_id: this.nowProid,
+        project_id: this.projectId,
         ogz_id: this.parentBasics.sector
       }
       params = this.$qs.stringify(params)
@@ -586,9 +586,9 @@ export default{
     /* 选择组 */
     getGroupOptions () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         user_name: '',
         group_id: '',
         start_date: '',

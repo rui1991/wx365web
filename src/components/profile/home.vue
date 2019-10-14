@@ -15,7 +15,8 @@
         <div class="search">
           <span>组织机构</span>
           <el-input style="width: 240px; margin-left: 10px; margin-right: 20px;" :disabled="true" v-model="orgName"></el-input>
-          <el-button type="primary" @click="clickOrgan">选择组织</el-button>
+          <el-button type="primary" @click="orgDialog = true">选择组织</el-button>
+          <!--<p class="hint">{{ yestDate }}</p>-->
           <div class="track">
             <el-button type="primary" @click="clickTrack" v-if="roleId === 500">人员轨迹</el-button>
           </div>
@@ -170,28 +171,20 @@
       </el-main>
     </el-container>
     <!-- 选择组织机构 -->
-    <el-dialog title="选择组织机构" :visible.sync="orgDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-tree
-        :data="orgData"
-        ref="orgTree"
-        show-checkbox
-        default-expand-all
-        check-strictly
-        node-key="id"
-        @check-change="orgCheckChange"
-        @node-click="orgNodeClick"
-        :props="defaultProps">
-      </el-tree>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="orgDialog = false">取 消</el-button>
-        <el-button type="primary" :disabled="orgDisabled" @click="selectOrgan">确 定</el-button>
-      </div>
-    </el-dialog>
+    <org-module
+      :parentDialog="orgDialog"
+      :parentId="orgId"
+      :parentName="orgName"
+      @parentUpdata="orgUpdata"
+      @parentCancel="orgCancel">
+    </org-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入组织组件
+import orgModule from '@/components/profile/home-org'
 // 引入chart
 import Chart from '@/components/public/chart'
 export default{
@@ -199,17 +192,9 @@ export default{
   data () {
     return {
       orgDialog: false,
-      orgData: [],
-      defaultProps: {
-        children: 'children',
-        label: 'name'
-      },
       orgName: '',
       orgId: '',
-      nowOrgName: '',
-      nowOrgId: '',
-      orgDisabled: true,
-      whetherChange: false,
+      yestDate: '',
       dicesData: {
         loginSize: 0,
         userSize: 0,
@@ -519,134 +504,50 @@ export default{
 
   },
   mounted () {
+    this.yestDate = this.$common.getBeforeDate()
     // 监控窗口变化
     window.onresize = () => {
       const domWidth = this.$common.getDomClientSize().width
       this.domWidth = domWidth
     }
-    this.orgName = this.nowProname
-    this.orgId = this.nowOrgid
+    this.orgName = this.projectName
+    this.orgId = this.projectOrgId
     // 获取数据
     this.getHomeData()
   },
   components: {
+    orgModule,
     Chart
   },
   computed: {
-    ...mapState(
-      {
-        companyId: state => state.info.companyId,
-        userId: state => state.info.userId,
-        nowOrgid: state => state.nowOrgid,
-        nowProname: state => state.nowProname,
-        roleId: state => state.info.roleId,
-        userPhone: state => state.info.userPhone
-      }
-    )
+    ...mapState('user', [
+      'userId',
+      'roleId',
+      'userPhone'
+    ]),
+    ...mapState('other', [
+      'projectId',
+      'projectOrgId',
+      'projectName'
+    ])
   },
   methods: {
-    clickOrgan () {
-      this.orgDialog = true
-      this.nowOrgName = this.orgName
-      this.nowOrgId = this.orgId
-      if (this.orgData.length > 0) {
-        setTimeout(() => {
-          this.$refs.orgTree.setCheckedKeys([this.orgId])
-        }, 100)
-      } else {
-        // 获取组织树
-        this.getOrganTree()
-      }
-    },
-    // 获取组织树
-    getOrganTree () {
-      let params = {
-        user_id: this.userId
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.2/selOgzTrees',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          let orgData = res.data.data1
-          // 处理部门树
-          orgData = this.initDisSecTree(orgData)
-          this.orgData = orgData
-          setTimeout(() => {
-            this.$refs.orgTree.setCheckedKeys([this.orgId])
-          }, 100)
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 初始化处理部门
-    initDisSecTree (treeData) {
-      treeData.forEach((item, index, array) => {
-        if (item.organize_type === 4) {
-          item.disabled = true
-        }
-        if (item.children) {
-          this.initRecSecTree(item.children)
-        }
-      })
-      return treeData
-    },
-    initRecSecTree (data) {
-      data.forEach((item, index, array) => {
-        if (item.organize_type === 4) {
-          item.disabled = true
-        }
-        if (item.children) {
-          this.initRecSecTree(item.children)
-        }
-      })
-    },
-    // 点击机构树
-    orgCheckChange (data, checked, self) {
-      if (checked === true) {
-        if (this.nowOrgId === data.id) return
-        this.$refs.orgTree.setCheckedKeys([data.id])
-        this.nowOrgName = data.name
-        this.nowOrgId = data.id
-      } else {
-        if (this.nowOrgId === data.id) {
-          this.$refs.orgTree.setCheckedKeys([data.id])
-        }
-      }
-    },
-    orgNodeClick (data, node, self) {
-      if (data.disabled) return
-      if (node.checked) return
-      this.$refs.orgTree.setCheckedKeys([data.id])
-      this.nowOrgName = data.name
-      this.nowOrgId = data.id
-    },
-    // 确定
-    selectOrgan () {
+    /* 选择组织 */
+    orgUpdata (data) {
+      this.orgId = data.id
+      this.orgName = data.name
       this.orgDialog = false
-      this.orgName = this.nowOrgName
-      this.orgId = this.nowOrgId
       // 获取数据
-      this.getHomeData()
+      this.getNewHomeData()
+    },
+    orgCancel () {
+      this.orgDialog = false
     },
     // 获取数据
     getHomeData () {
       let params = {
-        organize_id: this.orgId
+        organize_id: this.orgId,
+        project_id: this.projectId
       }
       params = this.$qs.stringify(params)
       this.loading = true
@@ -658,93 +559,7 @@ export default{
         this.loading = false
         if (res.data.result === 'Sucess') {
           const homeData = res.data.data1
-          /* 概况 */
-          this.dicesData = {
-            loginSize: homeData.loginSize,
-            userSize: homeData.userSize,
-            projectSize: homeData.projectSize,
-            onlineDevice: homeData.onlineDevice,
-            deviceSize: homeData.deviceSize
-          }
-
-          /* 巡检统计 */
-          this.task = {
-            todayTask: homeData.taskData.taskSize || 0,
-            endTimelyRatio: homeData.taskData.endTimelyRatio,
-            endRatio: homeData.taskData.endRatio,
-            abnormalSize: homeData.taskData.abnormalSize
-          }
-          // 今日任务
-          // const todayTask = homeData.taskData.taskSize
-          // 已完成任务
-          const finishTask = homeData.taskData.endTaskSize || 0
-          // 未完成任务
-          const undoneTask = homeData.taskData.notTaskSize || 0
-          const taskChart = [
-            {value: finishTask, name: '巡检任务已完成'},
-            {value: undoneTask, name: '巡检任务未完成'}
-          ]
-          // this.taskOption.title.text = '今日巡检任务' + todayTask
-          this.taskOption.series[0].data = taskChart
-
-          /* 工单统计 */
-          this.work = {
-            todayWork: homeData.woSize || 0,
-            woContinueRate: homeData.woContinueRate,
-            xywotimeAV: homeData.xywotimeAV,
-            clwotimeAV: homeData.clwotimeAV
-          }
-          // 今日工单
-          // const todayWork = homeData.woSize || 0
-          // 已完成工单
-          const finishWork = homeData.allContinueWoSize || 0
-          // 未完成工单
-          const undoneWork = homeData.notContinueWoSize || 0
-          const workChart = [
-            {value: finishWork, name: '已完成工单'},
-            {value: undoneWork, name: '未完成工单'}
-          ]
-          // this.workOption.title.text = '今日工单总数' + todayWork
-          this.workOption.series[0].data = workChart
-
-          /* 点名管理统计 */
-          const callnameSucceed = homeData.rollCallData.rcSucessSize || 0
-          const callnameFailed = homeData.rollCallData.rcFailedSize || 0
-          this.callname = {
-            callnameSucceed: callnameSucceed,
-            callnameFailed: callnameFailed
-          }
-          const callnameChart = [
-            {value: callnameSucceed, name: '成功人数'},
-            {value: callnameFailed, name: '失败人数'}
-          ]
-          this.callnameOption.series[0].data = callnameChart
-
-          /* 位置打卡统计 */
-          const positionExist = homeData.positionRecordData.haveRecordSize || 0
-          const positionWithout = homeData.positionRecordData.notRecordSize || 0
-          this.position = {
-            positionExist: positionExist,
-            positionWithout: positionWithout
-          }
-          const positionChart = [
-            {value: positionExist, name: '有记录'},
-            {value: positionWithout, name: '无记录'}
-          ]
-          this.positionOption.series[0].data = positionChart
-
-          /* 固定岗打卡统计 */
-          const fixationSucceed = homeData.permanentData.permanentSucessSize || 0
-          const fixationFailed = homeData.permanentData.permanentFailedSize || 0
-          this.fixation = {
-            fixationSucceed: fixationSucceed,
-            fixationFailed: fixationFailed
-          }
-          const fixationChart = [
-            {value: fixationSucceed, name: '成功数'},
-            {value: fixationFailed, name: '失败数'}
-          ]
-          this.fixationOption.series[0].data = fixationChart
+          this.disHomeData(homeData)
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -762,19 +577,125 @@ export default{
         // })
       })
     },
+    getNewHomeData () {
+      let params = {
+        organize_id: this.orgId
+      }
+      params = this.$qs.stringify(params)
+      this.loading = true
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.9/selMain',
+        data: params
+      }).then((res) => {
+        this.loading = false
+        if (res.data.result === 'Sucess') {
+          const homeData = res.data.data1
+          this.disHomeData(homeData)
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.loading = false
+        // this.$message({
+        //   showClose: true,
+        //   message: '服务器连接失败！',
+        //   type: 'error'
+        // })
+      })
+    },
+    // 数据处理
+    disHomeData (data) {
+      /* 概况 */
+      this.dicesData = {
+        loginSize: data.loginSize,
+        userSize: data.userSize,
+        projectSize: data.projectSize,
+        onlineDevice: data.onlineDevice,
+        deviceSize: data.deviceSize
+      }
+
+      /* 巡检统计 */
+      this.task = {
+        todayTask: data.taskSize || 0,
+        endTimelyRatio: data.endTimelyRatio,
+        endRatio: data.endRatio,
+        abnormalSize: data.abnormalSize
+      }
+      // 已完成任务
+      const finishTask = data.endTaskSize || 0
+      // 未完成任务
+      const undoneTask = data.notTaskSize || 0
+      const taskChart = [
+        {value: finishTask, name: '巡检任务已完成'},
+        {value: undoneTask, name: '巡检任务未完成'}
+      ]
+      this.taskOption.series[0].data = taskChart
+      /* 工单统计 */
+      this.work = {
+        todayWork: data.woSize || 0,
+        woContinueRate: data.woContinueRate,
+        xywotimeAV: data.xywotimeAV,
+        clwotimeAV: data.clwotimeAV
+      }
+      // 已完成工单
+      const finishWork = data.allContinueWoSize || 0
+      // 未完成工单
+      const undoneWork = data.notContinueWoSize || 0
+      const workChart = [
+        {value: finishWork, name: '已完成工单'},
+        {value: undoneWork, name: '未完成工单'}
+      ]
+      this.workOption.series[0].data = workChart
+
+      /* 点名管理统计 */
+      const callnameSucceed = data.rcSucessSize || 0
+      const callnameFailed = data.rcFailedSize || 0
+      this.callname = {
+        callnameSucceed: callnameSucceed,
+        callnameFailed: callnameFailed
+      }
+      const callnameChart = [
+        {value: callnameSucceed, name: '成功人数'},
+        {value: callnameFailed, name: '失败人数'}
+      ]
+      this.callnameOption.series[0].data = callnameChart
+
+      /* 位置打卡统计 */
+      const positionExist = data.haveRecordSize || 0
+      const positionWithout = data.notRecordSize || 0
+      this.position = {
+        positionExist: positionExist,
+        positionWithout: positionWithout
+      }
+      const positionChart = [
+        {value: positionExist, name: '有记录'},
+        {value: positionWithout, name: '无记录'}
+      ]
+      this.positionOption.series[0].data = positionChart
+
+      /* 固定岗打卡统计 */
+      const fixationSucceed = data.permanentSucessSize || 0
+      const fixationFailed = data.permanentFailedSize || 0
+      this.fixation = {
+        fixationSucceed: fixationSucceed,
+        fixationFailed: fixationFailed
+      }
+      const fixationChart = [
+        {value: fixationSucceed, name: '成功数'},
+        {value: fixationFailed, name: '失败数'}
+      ]
+      this.fixationOption.series[0].data = fixationChart
+    },
     // 人员轨迹
     clickTrack () {
       const openUrl = this.baseUrl() + '/trackmap/#/login?phone=' + this.userPhone
       window.open(openUrl)
-    }
-  },
-  watch: {
-    nowOrgId (val, oldVal) {
-      if (val) {
-        this.orgDisabled = false
-      } else {
-        this.orgDisabled = true
-      }
     }
   }
 }
@@ -809,6 +730,10 @@ export default{
         padding-left: 20px;
         padding-right: 20px;
         background: #ffffff;
+        .hint{
+          padding-left: 20px;
+          color: #272727;
+        }
         .track{
           flex-grow: 1;
           text-align: right;

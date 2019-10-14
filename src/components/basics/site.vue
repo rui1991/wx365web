@@ -223,22 +223,22 @@ export default{
     qrModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        nowProname: state => state.nowProname
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId',
+      'projectName'
+    ])
   },
   methods: {
     // 获取地址树
     getSiteTree (b = false) {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid
+        project_id: this.projectId
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -251,7 +251,7 @@ export default{
           this.siteTree = [
             {
               id: '0',
-              name: this.nowProname,
+              name: this.projectName,
               children: treeData
             }
           ]
@@ -357,9 +357,9 @@ export default{
     getListData () {
       if (!this.siteId) return
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         position_id: this.siteId.replace(/w/g, ''),
         position_type: this.search.type,
         s_po_name: this.search.name,
@@ -414,34 +414,34 @@ export default{
     areaFormatter (row, column, cellValue, index) {
       let areaType = ''
       switch (cellValue) {
-        case 1:
+        case 0:
           areaType = '楼栋'
           break
-        case 2:
+        case 1:
           areaType = '单元'
           break
-        case 3:
+        case 2:
           areaType = '楼层'
           break
-        case 4:
+        case 3:
           areaType = '办公区域'
           break
-        case 5:
+        case 4:
           areaType = '商铺'
           break
-        case 6:
+        case 5:
           areaType = '卫生间'
           break
-        case 7:
+        case 6:
           areaType = '停车场'
           break
-        case 8:
+        case 7:
           areaType = '公共区域'
           break
-        case 9:
+        case 8:
           areaType = '外围'
           break
-        case 10:
+        case 9:
           areaType = '岗亭'
           break
         default:
@@ -530,9 +530,9 @@ export default{
     // 导出文件
     downFile () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         depth: 1
       }
       params = this.$qs.stringify(params)

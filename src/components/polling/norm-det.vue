@@ -39,13 +39,13 @@ export default{
     }
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     detInit () {
@@ -61,9 +61,9 @@ export default{
     // 获取详情
     getDetails () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         template_id: this.parentId
       }
       params = this.$qs.stringify(params)
@@ -106,7 +106,7 @@ export default{
     },
     getTemContent (ids) {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
         project_id: 0,
         ins_ids: ids

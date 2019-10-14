@@ -32,14 +32,14 @@ export default{
     }
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        nowOrgid: state => state.nowOrgid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId',
+      'projectOrgId'
+    ])
   },
   methods: {
     crewInit () {
@@ -52,7 +52,7 @@ export default{
     // 获取项目人员
     getCrewOptions () {
       let params = {
-        organize_id: this.nowOrgid,
+        organize_id: this.projectOrgId,
         user_name: '',
         user_phone: '',
         role_id: '',
@@ -89,10 +89,10 @@ export default{
     // 确定
     confirmClick () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
-        projectN_id: this.nowProid,
+        project_id: this.projectId,
+        projectN_id: this.projectId,
         userN_id: this.crewId,
         wo_id: this.parentId
       }

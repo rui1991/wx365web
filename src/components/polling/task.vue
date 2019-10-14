@@ -160,7 +160,7 @@
     <!-- 详情 -->
     <det-module
       :parentDialog="detDialog"
-      :parentPro="nowProid"
+      :parentPro="projectId"
       :parentId="itemId"
       @parentClose="detClose">
     </det-module>
@@ -266,17 +266,19 @@ export default{
     crewModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        userName: state => state.info.userName,
-        sectorId: state => state.info.sectorId,
-        nowProid: state => state.nowProid,
-        nowOrgid: state => state.nowOrgid,
-        autDet: state => state.autDet.task
-      }
-    )
+    ...mapState('user', [
+      'userId',
+      'userName',
+      'sectorId'
+    ]),
+    ...mapState('user', {
+      autDet: state => state.autDet.task
+    }),
+    ...mapState('other', [
+      'companyId',
+      'projectId',
+      'projectOrgId'
+    ])
   },
   methods: {
     // 搜索
@@ -303,10 +305,10 @@ export default{
     // 获取列表数据
     getListData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
-        projectN_id: this.nowProid,
+        project_id: this.projectId,
+        projectN_id: this.projectId,
         planN_name: this.search.name,
         startN_date: this.search.startDate,
         endN_date: this.search.endDate,
@@ -416,7 +418,7 @@ export default{
     /* 获取部门 */
     getSectorOptions () {
       let params = {
-        organize_id: this.nowOrgid
+        organize_id: this.projectOrgId
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -445,7 +447,7 @@ export default{
     /* 项目人员 */
     getCrewOptions () {
       let params = {
-        organize_id: this.nowOrgid,
+        organize_id: this.projectOrgId,
         user_name: '',
         user_phone: '',
         role_id: '',
@@ -481,7 +483,7 @@ export default{
     /* 获取组人员 */
     getGrouoCrew (id) {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
         group_id: id
       }
@@ -526,9 +528,9 @@ export default{
     /* 领取 */
     drawClick (id) {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         id_id: id,
         type: 0,
         user_name: this.userName
@@ -598,10 +600,10 @@ export default{
     /* 导出 */
     downFile () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
-        projectN_id: this.nowProid,
+        project_id: this.projectId,
+        projectN_id: this.projectId,
         planN_name: this.search.name,
         startN_date: this.search.startDate,
         endN_date: this.search.endDate,

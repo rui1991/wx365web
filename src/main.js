@@ -63,9 +63,11 @@ Object.keys(custom).forEach(key => {
 Vue.prototype.$common = common
 
 // 配置公共变量
-// Vue.prototype.baseUrl = () => 'http://szydak.eicp.net:82'
-// Vue.prototype.sysetApi = () => 'http://szydak.eicp.net:82/ezx_syset'
-// Vue.prototype.reportApi = () => 'http://szydak.eicp.net:8089'
+Vue.prototype.baseUrl = () => 'http://szydak.eicp.net:82'
+Vue.prototype.sysetApi = () => 'http://szydak.eicp.net:82/ezx_syset'
+Vue.prototype.reportApi = () => 'http://szydak.eicp.net:8089'
+Vue.prototype.loraApi = () => 'http://szydak.eicp.net:8099'
+// Vue.prototype.loraApi = () => '/apiUrl'
 
 // Vue.prototype.baseUrl = () => 'http://192.168.1.199:8080'
 // Vue.prototype.sysetApi = () => 'http://192.168.1.199:8080/ezx_syset'
@@ -73,9 +75,10 @@ Vue.prototype.$common = common
 
 // Vue.prototype.locationApi = () => '/apiUrl/ezx_location'
 
-Vue.prototype.baseUrl = () => 'http://www.allsps.com'
-Vue.prototype.sysetApi = () => 'http://www.allsps.com/ezx_syset'
-Vue.prototype.reportApi = () => 'http://www.allsps.com:8089'
+// Vue.prototype.baseUrl = () => 'http://www.allsps.com'
+// Vue.prototype.sysetApi = () => 'http://www.allsps.com/ezx_syset'
+// Vue.prototype.reportApi = () => 'http://www.allsps.com:8089'
+// Vue.prototype.loraApi = () => 'http://www.allsps.com:8099'
 Vue.prototype.videoApi = () => 'http://www.allsps.com:8083'
 
 Vue.config.productionTip = false
@@ -83,10 +86,10 @@ Vue.config.productionTip = false
 // 注册请求拦截器
 axios.interceptors.request.use((config) => {
   const token = sessionStorage.getItem('wxWebToken')
-  const userId = sessionStorage.getItem('wxWebUserId')
+  const userId = store.state.user.userId
   const newUrl = config.url
   const reqMethod = config.method.toLowerCase()
-  if (token && newUrl.indexOf(':8089') === -1 && newUrl.indexOf(':8083') === -1 && reqMethod === 'post') {
+  if (token && newUrl.indexOf(':8089') === -1 && newUrl.indexOf(':8099') === -1 && newUrl.indexOf(':8083') === -1 && reqMethod === 'post') {
     config.headers.token = token
     config.headers.user_id = userId
   }
@@ -101,7 +104,7 @@ router.beforeEach((to, from, next) => {
   if (token) {
     next()
   } else {
-    if (to.path === '/login/cipher' || to.path === '/login/authcode' || to.path === '/findpwd') {
+    if (to.path === '/login/cipher' || to.path === '/login/authcode' || to.path === '/findpwd' || to.path === '/monitdemo') {
       next()
     } else {
       next({path: '/login/cipher'})

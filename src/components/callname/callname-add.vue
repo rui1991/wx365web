@@ -40,9 +40,9 @@
 
 <script>
 import { mapState } from 'vuex'
-// 引入新增组件
+// 引入人员组件
 import crewModule from '@/components/public/crew-checkbox'
-// 引入编辑组件
+// 引入地址组件
 import siteModule from '@/components/callname/callname-site'
 export default{
   props: ['parentDialog'],
@@ -70,13 +70,13 @@ export default{
     }
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   components: {
     crewModule,
@@ -123,9 +123,9 @@ export default{
       let siteId = this.formData.siteId
       siteId = siteId.join(',')
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         users: crewId,
         positions: siteId,
         urc_size: count

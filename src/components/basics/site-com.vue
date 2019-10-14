@@ -74,43 +74,43 @@ export default{
       areaOptions: [
         {
           label: '楼栋',
-          value: 1
+          value: 0
         },
         {
           label: '单元',
-          value: 2
+          value: 1
         },
         {
           label: '楼层',
-          value: 3
+          value: 2
         },
         {
           label: '办公区域',
-          value: 4
+          value: 3
         },
         {
           label: '商铺',
-          value: 5
+          value: 4
         },
         {
           label: '卫生间',
-          value: 6
+          value: 5
         },
         {
           label: '停车场',
-          value: 7
+          value: 6
         },
         {
           label: '公共区域',
-          value: 8
+          value: 7
         },
         {
           label: '外围',
-          value: 9
+          value: 8
         },
         {
           label: '岗亭',
-          value: 10
+          value: 9
         }
       ],
       typeOptions: [
@@ -140,7 +140,7 @@ export default{
         parent: '',
         parentPath: '',
         name: '',
-        areaType: 1,
+        areaType: 0,
         type: 0,
         mac: '',
         norm: '',
@@ -150,13 +150,13 @@ export default{
     }
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     comInit () {
@@ -164,7 +164,7 @@ export default{
         parent: '',
         parentPath: '',
         name: '',
-        areaType: 1,
+        areaType: 0,
         type: 0,
         mac: '',
         norm: '',
@@ -180,9 +180,9 @@ export default{
     // 获取详情
     getDetails () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         position_id: this.parentId
       }
       params = this.$qs.stringify(params)
@@ -198,7 +198,7 @@ export default{
             parent: itemData.parent_po_id,
             parentPath: itemData.parent_address || '',
             name: itemData.position_name,
-            areaType: itemData.area_type || '',
+            areaType: itemData.area_type,
             type: itemData.position_type,
             mac: itemData.position_mac || '',
             norm: itemData.template_id || '',
@@ -239,9 +239,9 @@ export default{
       let mac = this.formData.mac
       mac = this.formatSetMac(mac)
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         position_id: this.parentId,
         parent_po_id: this.formData.parent,
         position_name: this.formData.name,
@@ -297,10 +297,10 @@ export default{
     // 获取标准
     getNormOptions () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
-        projectN_id: this.nowProid,
+        project_id: this.projectId,
+        projectN_id: this.projectId,
         page: 1,
         limit1: 1000
       }

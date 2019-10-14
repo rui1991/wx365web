@@ -34,7 +34,7 @@
             </div>
             <div class="operate">
               <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" v-if="setAut" @click="setClick">设置</el-button>
+              <el-button type="primary" v-if="authority" @click="setClick">设置</el-button>
             </div>
           </div>
           <div class="search-input" style="margin-bottom: 10px;">
@@ -146,14 +146,16 @@ export default{
     detModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        setAut: state => state.authority.plan
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('user', {
+      authority: state => state.authority.plan
+    }),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     // 搜索
@@ -167,9 +169,9 @@ export default{
     // 获取列表数据
     getListData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         start_date: this.search.startDate,
         end_date: this.search.endDate,
         position_id: this.search.station,
@@ -224,9 +226,9 @@ export default{
     // 获取固定岗列表
     getStationOptions () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid
+        project_id: this.projectId
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -265,9 +267,9 @@ export default{
     /* 导出 */
     downFile () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         start_date: this.search.startDate,
         end_date: this.search.endDate,
         position_id: this.search.station

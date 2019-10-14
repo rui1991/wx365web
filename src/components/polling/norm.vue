@@ -155,13 +155,13 @@ export default{
     delModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     // 搜索
@@ -175,10 +175,10 @@ export default{
     // 获取列表数据
     getListData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
-        projectN_id: this.nowProid,
+        project_id: this.projectId,
+        projectN_id: this.projectId,
         templateN_name: this.search.name,
         templateN_type: this.search.type,
         createN_time: this.search.creDate,

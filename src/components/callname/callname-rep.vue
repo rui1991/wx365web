@@ -163,13 +163,13 @@ export default{
     detModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     // 搜索
@@ -194,9 +194,9 @@ export default{
     // 获取列表数据
     getListData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         user_name: this.search.name,
         over: this.search.result,
         start_date: this.search.startDate,
@@ -276,8 +276,8 @@ export default{
     /* 导出 */
     downFile () {
       let params = {
-        company_id: this.nowClientId,
-        project_id: this.nowProid,
+        company_id: this.companyId,
+        project_id: this.projectId,
         user_name: this.search.name,
         over: this.search.result,
         start_date: this.search.startDate,
@@ -292,9 +292,9 @@ export default{
     },
     downAllFile () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         user_name: this.search.name,
         over: this.search.result,
         start_date: this.search.startDate,

@@ -82,7 +82,7 @@
     <!-- 详情 -->
     <det-module
       :parentDialog="detDialog"
-      :parentPro="nowProid"
+      :parentPro="projectId"
       :parentId="itemId"
       @parentClose="detClose">
     </det-module>
@@ -90,14 +90,13 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 // 引入详情组件
 import detModule from '@/components/polling/task-det'
 export default{
   name: 'calendarItem',
   data () {
     return {
-      authority: true,
       tableData: [],
       groupContent: '',
       total: 0,
@@ -109,10 +108,7 @@ export default{
   },
   created () {
     // 设置全局项目禁用
-    this.$store.commit('setProDisabled', true)
-    // 权限
-    let autDet = this.autDet
-    autDet.indexOf(40) === -1 ? this.authority = false : this.authority = true
+    this.setProDisabled(true)
     // 获取列表数据
     this.getListData()
   },
@@ -120,39 +116,29 @@ export default{
     detModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        autDet: state => state.autDet.calendar
-      }
-    )
-  },
-  filters: {
-    filterDate (str) {
-      if (!str) { return '' }
-      let value = new Date(parseInt(str))
-      let month = value.getMonth() + 1 + ''
-      month = month.padStart(2, '0')
-      let day = value.getDate() + ''
-      day = day.padStart(2, '0')
-      let hour = value.getHours() + ''
-      hour = hour.padStart(2, '0')
-      let minutes = value.getMinutes() + ''
-      minutes = minutes.padStart(2, '0')
-      return `${month}-${day} ${hour}:${minutes}`
-    }
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('user', {
+      authority: state => state.authority.calendar
+    }),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
+    ...mapActions('other', [
+      'setProDisabled'
+    ]),
     getListData () {
       let params = {}
       if (this.authority) {
         params = {
-          company_id: this.nowClientId,
+          company_id: this.companyId,
           user_id: this.userId,
-          project_id: this.nowProid,
-          projectN_id: this.nowProid,
+          project_id: this.projectId,
+          projectN_id: this.projectId,
           planN_name: '',
           startN_date: this.$route.query.date,
           endN_date: this.$route.query.date,
@@ -164,10 +150,10 @@ export default{
         }
       } else {
         params = {
-          company_id: this.nowClientId,
+          company_id: this.companyId,
           user_id: this.userId,
-          project_id: this.nowProid,
-          projectN_id: this.nowProid,
+          project_id: this.projectId,
+          projectN_id: this.projectId,
           planN_name: '',
           startN_date: this.$route.query.date,
           endN_date: this.$route.query.date,
@@ -221,7 +207,7 @@ export default{
     /* 获取组人员 */
     getGrouoCrew (id) {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
         group_id: id
       }
@@ -268,9 +254,24 @@ export default{
       this.$router.go(-1)
     }
   },
+  filters: {
+    filterDate (str) {
+      if (!str) { return '' }
+      let value = new Date(parseInt(str))
+      let month = value.getMonth() + 1 + ''
+      month = month.padStart(2, '0')
+      let day = value.getDate() + ''
+      day = day.padStart(2, '0')
+      let hour = value.getHours() + ''
+      hour = hour.padStart(2, '0')
+      let minutes = value.getMinutes() + ''
+      minutes = minutes.padStart(2, '0')
+      return `${month}-${day} ${hour}:${minutes}`
+    }
+  },
   beforeDestroy () {
     // 设置全局项目禁用
-    this.$store.commit('setProDisabled', false)
+    this.setProDisabled(false)
   }
 }
 </script>

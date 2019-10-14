@@ -274,8 +274,6 @@ export default{
     // 提交密码修改
     sendComPwd () {
       let params = {
-        company_id: sessionStorage.getItem('wxWebFirmId'),
-        user_id: sessionStorage.getItem('wxWebUserId'),
         project_id: 0,
         user_phone: this.pwdForm.phone,
         login_pass: this.pwdForm.newpwd1

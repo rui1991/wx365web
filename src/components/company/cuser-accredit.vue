@@ -26,19 +26,16 @@ export default{
       defaultProps: {
         children: 'children',
         label: 'name'
-      },
-      checkNode: []
+      }
     }
   },
   created () {
 
   },
   computed: {
-    ...mapState(
-      {
-        userId: state => state.info.userId
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ])
   },
   methods: {
     // 初始化数据
@@ -167,70 +164,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-  .user{
-    height: 100%;
-    .module-container{
-      height: 100%;
-      padding: 0;
-      .module-header{
-        padding-left: 0;
-        padding-right: 0;
-        padding-bottom: 20px;
-        .el-breadcrumb{
-          padding-top: 15px;
-          padding-left: 20px;
-          padding-bottom: 15px;
-          background: #ffffff;
-        }
-      }
-      .module-content{
-        height: 100%;
-        padding-top: 10px;
-        padding-right: 0;
-        padding-bottom: 10px;
-        padding-left: 10px;
-        margin-left: 20px;
-        margin-right: 20px;
-        background: #ffffff;
-        .module-aside{
-          height: 100%;
-          padding: 5px;
-          border-radius: 6px;
-          border: 1px solid #cccccc;
-        }
-        .module-main{
-          padding-top: 0;
-          padding-right: 10px;
-          padding-bottom: 0;
-          padding-left: 20px;
-          overflow: scroll;
-          .search{
-            padding-top: 5px;
-            padding-bottom: 5px;
-            .search-input{
-              display: table;
-              width: 100%;
-              .item{
-                display: table-cell;
-                vertical-align: middle;
-                width: 280px;
-                font-size: 0;
-                span{
-                  width: 70px;
-                  display: inline-block;
-                  line-height: 34px;
-                  font-size: 14px;
-                }
-              }
-              .operate{
-                display: table-cell;
-                vertical-align: middle;
-                text-align: right;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+
 </style>

@@ -119,18 +119,18 @@ export default{
     detModule
   },
   computed: {
-    ...mapState(
-      {
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'projectId'
+    ])
   },
   methods: {
     // 获取列表数据
     getListData () {
       let params = {
-        project_id: this.nowProid,
+        project_id: this.projectId,
         month: this.searchDate,
         page: this.nowPage,
         limit1: this.limit
@@ -226,7 +226,7 @@ export default{
     /* 导出 */
     downFile () {
       let params = {
-        project_id: this.nowProid,
+        project_id: this.projectId,
         month: this.searchDate
       }
       params = this.$qs.stringify(params)

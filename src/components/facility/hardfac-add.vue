@@ -118,16 +118,26 @@ export default{
     posModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        nowOrgid: state => state.nowOrgid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
+    // 初始化数据
+    addInit () {
+      this.formData = {
+        name: '',
+        type: 'sjwg',
+        mac: '',
+        serial: '',
+        posName: '',
+        posId: ''
+      }
+    },
     // 验证表单
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
@@ -156,9 +166,9 @@ export default{
       let params = {}
       if (this.formData.posId) {
         params = {
-          company_id: this.nowClientId,
+          company_id: this.companyId,
           user_id: this.userId,
-          project_id: this.nowProid,
+          project_id: this.projectId,
           dname: this.formData.name,
           dtype: this.formData.type,
           mac: coding,
@@ -166,9 +176,9 @@ export default{
         }
       } else {
         params = {
-          company_id: this.nowClientId,
+          company_id: this.companyId,
           user_id: this.userId,
-          project_id: this.nowProid,
+          project_id: this.projectId,
           dname: this.formData.name,
           dtype: type,
           mac: coding
@@ -234,6 +244,11 @@ export default{
     }
   },
   watch: {
+    parentDialog (val, oldVal) {
+      if (val) {
+        this.addInit()
+      }
+    },
     'formData.type' (nowVal, oldVal) {
       if (nowVal === 'sjwg') {
         this.serialShow = false

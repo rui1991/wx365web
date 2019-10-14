@@ -62,7 +62,6 @@ export default{
   name: 'calendar',
   data () {
     return {
-      authority: true,
       loading: false,
       nowYear: '',
       nowMonth: '',
@@ -87,20 +86,20 @@ export default{
     this.nowYear = year + ''
     this.nowMonth = month
     this.showDate = year + '-' + month
-    // 权限
-    let autDet = this.autDet
-    autDet.indexOf(40) === -1 ? this.authority = false : this.authority = true
+    // 获取数据
     this.getCalendarData()
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        autDet: state => state.autDet.calendar
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('user', {
+      authority: state => state.authority.calendar
+    }),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     dateChange (date) {
@@ -114,16 +113,16 @@ export default{
       let params = {}
       if (this.authority) {
         params = {
-          company_id: this.nowClientId,
+          company_id: this.companyId,
           user_id: this.userId,
-          projectN_id: this.nowProid,
+          projectN_id: this.projectId,
           month_day: this.showDate
         }
       } else {
         params = {
-          company_id: this.nowClientId,
+          company_id: this.companyId,
           user_id: this.userId,
-          projectN_id: this.nowProid,
+          projectN_id: this.projectId,
           month_day: this.showDate,
           ins_user: this.userId
         }

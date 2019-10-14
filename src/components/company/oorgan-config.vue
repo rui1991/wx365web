@@ -35,11 +35,9 @@ export default{
     this.getTreeData()
   },
   computed: {
-    ...mapState(
-      {
-        userId: state => state.info.userId
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ])
   },
   methods: {
     // 获取权限树

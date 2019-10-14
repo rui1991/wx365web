@@ -31,12 +31,12 @@ export default{
     }
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId'
+    ])
   },
   methods: {
     temInit () {
@@ -52,7 +52,7 @@ export default{
     // 获取标准模板
     getTemData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
         project_id: 0
       }

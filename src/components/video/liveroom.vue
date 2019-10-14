@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 // 引入视频播放组件
 import 'videojs-flash'
 // import 'videojs-contrib-hls'
@@ -73,7 +73,7 @@ export default{
   },
   created () {
     // 设置全局项目禁用
-    this.$store.commit('setProDisabled', true)
+    this.setProDisabled(true)
     // 获取播放参数
     this.name = this.$route.query.name
     this.videoOptions.sources[0].src = this.$route.query.hls
@@ -85,21 +85,24 @@ export default{
     }, 60000)
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
+    ...mapActions('other', [
+      'setProDisabled'
+    ]),
     // 获取IP与端口
     getServerIp () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         page: 1,
         limit1: 1,
         conditions: ''
@@ -265,7 +268,7 @@ export default{
   },
   beforeDestroy () {
     // 设置全局项目启用
-    this.$store.commit('setProDisabled', false)
+    this.setProDisabled(false)
     // 清除录制时长定时器
     clearInterval(this.recordBeat)
     // 清除心跳定时器

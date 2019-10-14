@@ -24,6 +24,7 @@ export default{
     return {
       posDialog: false,
       posTree: [],
+      posState: false,
       defaultProps: {
         children: 'children',
         label: 'name'
@@ -34,35 +35,39 @@ export default{
     }
   },
   created () {
-    // 获取位置数
-    setTimeout(() => {
-      this.getPositionTree()
-    }, 100)
+
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     // 初始化数据
     posInit () {
-      // 清空选中项
-      this.checkedPosId = ''
-      this.checkedPosName = ''
-      // 取消高亮
-      this.posHighlight = false
+      if (!this.posState) {
+        // 获取位置数
+        setTimeout(() => {
+          this.getPositionTree()
+        }, 100)
+      } else {
+        // 清空选中项
+        this.checkedPosId = ''
+        this.checkedPosName = ''
+        // 取消高亮
+        this.posHighlight = false
+      }
     },
     // 获取位置树
     getPositionTree () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid
+        project_id: this.projectId
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -72,6 +77,7 @@ export default{
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           this.posTree = res.data.data1
+          this.posState = true
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({

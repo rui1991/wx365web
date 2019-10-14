@@ -91,13 +91,13 @@ export default{
     posModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     /* 编辑 */
@@ -142,9 +142,9 @@ export default{
       let params = {}
       if (this.formData.posId) {
         params = {
-          company_id: this.nowClientId,
+          company_id: this.companyId,
           user_id: this.userId,
-          project_id: this.nowProid,
+          project_id: this.projectId,
           device_id: this.formData.id,
           dname: this.formData.name,
           dtype: this.formData.type,
@@ -152,9 +152,9 @@ export default{
         }
       } else {
         params = {
-          company_id: this.nowClientId,
+          company_id: this.companyId,
           user_id: this.userId,
-          project_id: this.nowProid,
+          project_id: this.projectId,
           device_id: this.formData.id,
           dname: this.formData.name,
           dtype: this.formData.type

@@ -83,22 +83,21 @@ export default{
     }
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
     // 获取日历数据
     getCalendarData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        projectN_id: this.nowProid,
+        projectN_id: this.projectId,
         work_id: this.parentTabActive,
         month_day: this.parentTime
       }
@@ -184,9 +183,9 @@ export default{
     // 获取人员
     getCrewData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         date: this.date
       }
       params = this.$qs.stringify(params)
@@ -225,9 +224,9 @@ export default{
       })
       uids = uids.join(',')
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         date: this.date,
         work_users: uids,
         work_id: this.parentTabActive
@@ -269,9 +268,9 @@ export default{
     },
     submitDelForm () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        project_id: this.nowProid,
+        project_id: this.projectId,
         date: this.date,
         work_user: this.uId,
         work_id: this.parentTabActive

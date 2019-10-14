@@ -110,7 +110,7 @@
     <!-- 详情 -->
     <det-module
       :parentDialog="detDialog"
-      :parentPro="nowProid"
+      :parentPro="projectId"
       :parentId="itemId"
       @parentClose="detClose">
     </det-module>
@@ -170,17 +170,14 @@ export default{
     delModule
   },
   computed: {
-    ...mapState(
-      {
-        nowClientId: state => state.nowClientId,
-        companyName: state => state.info.companyName,
-        userId: state => state.info.userId,
-        nowProid: state => state.nowProid,
-        nowProname: state => state.nowProname,
-        nowOrgid: state => state.nowOrgid,
-        autDet: state => state.autDet.plan
-      }
-    )
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('other', [
+      'companyId',
+      'projectId',
+      'projectOrgId'
+    ])
   },
   methods: {
     // 搜索
@@ -194,9 +191,9 @@ export default{
     // 获取列表数据
     getListData () {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
-        projectN_id: this.nowProid,
+        projectN_id: this.projectId,
         plan_name: this.search.name,
         start_date: this.search.startDate,
         end_date: this.search.endDate,
@@ -253,7 +250,7 @@ export default{
     /* 获取组人员 */
     getGrouoCrew (id) {
       let params = {
-        company_id: this.nowClientId,
+        company_id: this.companyId,
         user_id: this.userId,
         group_id: id
       }
@@ -315,7 +312,7 @@ export default{
     /* 部门 */
     getSectorOptions () {
       let params = {
-        organize_id: this.nowOrgid
+        organize_id: this.projectOrgId
       }
       params = this.$qs.stringify(params)
       this.$axios({
