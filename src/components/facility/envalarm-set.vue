@@ -17,12 +17,12 @@
           <el-table-column type="index" width="50" label="序号"></el-table-column>
           <el-table-column prop="alarm_node" :show-overflow-tooltip="true" label="告警设备"></el-table-column>
           <!--<el-table-column prop="alarm_condition" :show-overflow-tooltip="true" label="告警条件"></el-table-column>-->
-          <el-table-column prop="alarm_condition" :show-overflow-tooltip="true" label="告警条件">
-            <template slot-scope="scope">
-              <span v-if="scope.row.alarm_condition">{{ scope.row.alarm_condition }}</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
+          <!--<el-table-column prop="alarm_condition" :show-overflow-tooltip="true" label="告警条件">-->
+            <!--<template slot-scope="scope">-->
+              <!--<span v-if="scope.row.alarm_condition">{{ scope.row.alarm_condition }}</span>-->
+              <!--<span v-else>-</span>-->
+            <!--</template>-->
+          <!--</el-table-column>-->
           <el-table-column prop="push_user" :show-overflow-tooltip="true" label="推送人"></el-table-column>
           <el-table-column width="160" label="操作">
             <template slot-scope="scope">
@@ -198,6 +198,9 @@ export default{
       // 告警人ID
       let crewId = data.push_user_id
       crewId = crewId.split(',')
+      crewId = crewId.map(item => {
+        return Number.parseInt(item)
+      })
       this.itemData = {
         ccdName: data.alarm_node,
         ccdId: ccdId,

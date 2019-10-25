@@ -253,6 +253,14 @@ input:-webkit-autofill {
 .el-input__inner, .el-textarea__inner {
   color: #272727;
 }
+/*处理input*/
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input[type="number"]{
+  -moz-appearance: textfield;
+}
 
 /* 对话框 */
 .el-dialog {

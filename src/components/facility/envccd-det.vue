@@ -7,6 +7,97 @@
       <el-form-item label="设备类型">
         <el-input :disabled="true" v-model.trim="formData.type" auto-complete="off"></el-input>
       </el-form-item>
+      <el-form-item label="设置温度" style="width: 440px;" v-if="formData.type === '温湿度'">
+        <el-col :span="11">
+          <el-form-item>
+            <el-input style="width: 140px;" placeholder="最低温度" type="number" disabled v-model.number="formData.htempMin">
+              <template slot="append">℃</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col class="line" :span="2">-</el-col>
+        <el-col :span="11">
+          <el-form-item>
+            <el-input style="width: 140px;" placeholder="最高温度" type="number" disabled v-model.number="formData.htempMax">
+              <template slot="append">℃</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-form-item>
+      <el-form-item label="设置湿度" style="width: 440px;" v-if="formData.type === '温湿度'">
+        <el-col :span="11">
+          <el-form-item>
+            <el-input style="width: 140px;" placeholder="最低湿度" type="number" disabled v-model.number="formData.moisMin">
+              <template slot="append">%</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col class="line" :span="2">-</el-col>
+        <el-col :span="11">
+          <el-form-item>
+            <el-input style="width: 140px;" placeholder="最高湿度" type="number" disabled v-model.number="formData.moisMax">
+              <template slot="append">%</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-form-item>
+      <el-form-item label="设置规则" style="width: 440px;" v-if="formData.type === '无线水浸'">
+        <el-radio-group v-model="formData.waterRule">
+          <el-radio label="wet">浸水自动报警</el-radio>
+          <el-radio label="dry">无水自动报警</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="设置温度" style="width: 440px;" v-if="formData.type === '安全用电'">
+        <el-col :span="11">
+          <el-form-item>
+            <el-input style="width: 140px;" placeholder="最低温度" type="number" disabled v-model.number="formData.etempMin">
+              <template slot="append">℃</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col class="line" :span="2">-</el-col>
+        <el-col :span="11">
+          <el-form-item>
+            <el-input style="width: 140px;" placeholder="最高温度" type="number" disabled v-model.number="formData.etempMax">
+              <template slot="append">℃</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-form-item>
+      <el-form-item label="设置电压" style="width: 440px;" v-if="formData.type === '安全用电'">
+        <el-col :span="11">
+          <el-form-item>
+            <el-input style="width: 140px;" placeholder="最低电压" type="number" disabled v-model.number="formData.voltageMin">
+              <template slot="append">V</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col class="line" :span="2">-</el-col>
+        <el-col :span="11">
+          <el-form-item>
+            <el-input style="width: 140px;" placeholder="最高电压" type="number" disabled v-model.number="formData.voltageMax">
+              <template slot="append">V</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-form-item>
+      <el-form-item label="设置电流" style="width: 440px;" v-if="formData.type === '安全用电'">
+        <el-col :span="11">
+          <el-form-item>
+            <el-input style="width: 140px;" placeholder="最低电流" type="number" disabled v-model.number="formData.electMin">
+              <template slot="append">A</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col class="line" :span="2">-</el-col>
+        <el-col :span="11">
+          <el-form-item>
+            <el-input style="width: 140px;" placeholder="最高电流" type="number" disabled v-model.number="formData.electMax">
+              <template slot="append">A</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-form-item>
       <!--<el-form-item label="授权码">-->
         <!--<el-input v-model.trim="formData.code" auto-complete="off"></el-input>-->
       <!--</el-form-item>-->
@@ -45,6 +136,17 @@ export default{
         name: '',
         typeValue: '',
         type: '',
+        htempMin: '',
+        htempMax: '',
+        moisMin: '',
+        moisMax: '',
+        waterRule: '',
+        etempMin: '',
+        etempMax: '',
+        voltageMin: '',
+        voltageMax: '',
+        electMin: '',
+        electMax: '',
         code: '',
         posName: '',
         posId: '',
@@ -59,7 +161,7 @@ export default{
   },
   methods: {
     detInit () {
-      this.formData = JSON.parse(JSON.stringify(this.parentData))
+      this.formData = this.parentData
     },
     /* 关闭 */
     closeClick () {

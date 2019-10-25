@@ -19,9 +19,10 @@ export default{
   data () {
     let checkMac = (rule, value, callback) => {
       const formValue = value.replace(/:/g, '')
-      let regex = /^[a-zA-Z0-9]{12}$/
+      let regex1 = /^[a-zA-Z0-9]{12}$/
+      let regex2 = /^[a-zA-Z0-9]{16}$/
       if (formValue) {
-        if (formValue.match(regex)) {
+        if (formValue.match(regex1) || formValue.match(regex2)) {
           callback()
         } else {
           callback(new Error('你输入的mac地址格式有误，请认真核对'))

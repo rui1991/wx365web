@@ -256,6 +256,9 @@ export default{
     },
     // 获取列表数据
     getListAllData () {
+      if (!this.orgId) {
+        return
+      }
       let params = {
         user_id: this.userId,
         ogz_id: this.orgId,

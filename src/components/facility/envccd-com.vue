@@ -9,19 +9,97 @@
         <el-form-item label="设备类型" prop="type">
           <el-input :disabled="true" v-model.trim="formData.type" auto-complete="off"></el-input>
         </el-form-item>
-        <!--<el-form-item label="设备类型" prop="type">-->
-          <!--<el-select :disabled="true" v-model="formData.type" placeholder="请选择设备类型">-->
-            <!--<el-option-->
-              <!--v-for="item in typeOptions"-->
-              <!--:key="item.value"-->
-              <!--:label="item.label"-->
-              <!--:value="item.value">-->
-            <!--</el-option>-->
-          <!--</el-select>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item label="授权码" prop="code">-->
-          <!--<el-input v-model.trim="formData.code" auto-complete="off"></el-input>-->
-        <!--</el-form-item>-->
+        <el-form-item label="设置温度" style="width: 440px;" v-if="formData.type === '温湿度'">
+          <el-col :span="11">
+            <el-form-item>
+              <el-input style="width: 140px;" placeholder="最低温度" type="number" v-model.number="formData.htempMin">
+                <template slot="append">℃</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col class="line" :span="2">-</el-col>
+          <el-col :span="11">
+            <el-form-item>
+              <el-input style="width: 140px;" placeholder="最高温度" type="number" v-model.number="formData.htempMax">
+                <template slot="append">℃</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="设置湿度" style="width: 440px;" v-if="formData.type === '温湿度'">
+          <el-col :span="11">
+            <el-form-item>
+              <el-input style="width: 140px;" placeholder="最低湿度" type="number" v-model.number="formData.moisMin">
+                <template slot="append">%</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col class="line" :span="2">-</el-col>
+          <el-col :span="11">
+            <el-form-item>
+              <el-input style="width: 140px;" placeholder="最高湿度" type="number" v-model.number="formData.moisMax">
+                <template slot="append">%</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="设置规则" style="width: 440px;" v-if="formData.type === '无线水浸'">
+          <el-radio-group v-model="formData.waterRule">
+            <el-radio label="wet">浸水自动报警</el-radio>
+            <el-radio label="dry">无水自动报警</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="设置温度" style="width: 440px;" v-if="formData.type === '安全用电'">
+          <el-col :span="11">
+            <el-form-item>
+              <el-input style="width: 140px;" placeholder="最低温度" type="number" v-model.number="formData.etempMin">
+                <template slot="append">℃</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col class="line" :span="2">-</el-col>
+          <el-col :span="11">
+            <el-form-item>
+              <el-input style="width: 140px;" placeholder="最高温度" type="number" v-model.number="formData.etempMax">
+                <template slot="append">℃</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="设置电压" style="width: 440px;" v-if="formData.type === '安全用电'">
+          <el-col :span="11">
+            <el-form-item>
+              <el-input style="width: 140px;" placeholder="最低电压" type="number" v-model.number="formData.voltageMin">
+                <template slot="append">V</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col class="line" :span="2">-</el-col>
+          <el-col :span="11">
+            <el-form-item>
+              <el-input style="width: 140px;" placeholder="最高电压" type="number" v-model.number="formData.voltageMax">
+                <template slot="append">V</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="设置电流" style="width: 440px;" v-if="formData.type === '安全用电'">
+          <el-col :span="11">
+            <el-form-item>
+              <el-input style="width: 140px;" placeholder="最低电流" type="number" v-model.number="formData.electMin">
+                <template slot="append">A</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col class="line" :span="2">-</el-col>
+          <el-col :span="11">
+            <el-form-item>
+              <el-input style="width: 140px;" placeholder="最高电流" type="number" v-model.number="formData.electMax">
+                <template slot="append">A</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
         <el-form-item label="设备位置" prop="posName">
           <el-input :disabled="true" v-model="formData.posName"></el-input>
           <el-button type="primary" @click="posDialog = true">选择位置</el-button>
@@ -66,24 +144,6 @@ export default{
   props: ['parentDialog', 'parentId', 'parentData'],
   data () {
     return {
-      typeOptions: [
-        {
-          label: '温湿度',
-          value: 45
-        },
-        {
-          label: '无线水浸',
-          value: 25
-        },
-        {
-          label: '无线烟感',
-          value: 39
-        },
-        {
-          label: '报警设备',
-          value: 44
-        }
-      ],
       formLabelWidth: '100px',
       rules: {
         name: [
@@ -115,6 +175,17 @@ export default{
         name: '',
         typeValue: 0,
         type: '',
+        htempMin: '',
+        htempMax: '',
+        moisMin: '',
+        moisMax: '',
+        waterRule: '',
+        etempMin: '',
+        etempMax: '',
+        voltageMin: '',
+        voltageMax: '',
+        electMin: '',
+        electMax: '',
         code: '',
         posName: '',
         posId: '',
@@ -164,11 +235,72 @@ export default{
     },
     // 提交
     sendRequest () {
+      const type = this.formData.type
+      // 温湿度
+      let htempMinVal = ''
+      const htempMin = Number.parseFloat(this.formData.htempMin)
+      let htempMaxVal = ''
+      const htempMax = Number.parseFloat(this.formData.htempMax)
+      let moisMinVal = ''
+      const moisMin = Number.parseFloat(this.formData.moisMin)
+      let moisMaxVal = ''
+      const moisMax = Number.parseFloat(this.formData.moisMax)
+      // 无线水浸
+      let waterVal = ''
+      const waterRule = this.formData.waterRule
+      // 安全用电
+      let etempMinVal = ''
+      const etempMin = Number.parseFloat(this.formData.etempMin)
+      let etempMaxVal = ''
+      const etempMax = Number.parseFloat(this.formData.etempMax)
+      let voltageMinVal = ''
+      const voltageMin = Number.parseFloat(this.formData.voltageMin)
+      let voltageMaxVal = ''
+      const voltageMax = Number.parseFloat(this.formData.voltageMax)
+      let electMinVal = ''
+      const electMin = Number.parseFloat(this.formData.electMin)
+      let electMaxVal = ''
+      const electMax = Number.parseFloat(this.formData.electMax)
+      switch (type) {
+        case '温湿度':
+          let htemp = this.compareSize(htempMin, htempMax)
+          htempMinVal = htemp.min
+          htempMaxVal = htemp.max
+          let mois = this.compareSize(moisMin, moisMax)
+          moisMinVal = mois.min
+          moisMaxVal = mois.max
+          break
+        case '无线水浸':
+          waterVal = waterRule
+          break
+        case '安全用电':
+          let etemp = this.compareSize(etempMin, etempMax)
+          etempMinVal = etemp.min
+          etempMaxVal = etemp.max
+          let voltage = this.compareSize(voltageMin, voltageMax)
+          voltageMinVal = voltage.min
+          voltageMaxVal = voltage.max
+          let elect = this.compareSize(electMin, electMax)
+          electMinVal = elect.min
+          electMaxVal = elect.max
+          break
+      }
       let params = {
         user_id: this.userId,
         project_id: this.projectId,
         name: this.formData.name,
         type: this.formData.typeValue,
+        min_temperature: htempMinVal,
+        max_temperature: htempMaxVal,
+        min_humidity: moisMinVal,
+        max_humidity: moisMaxVal,
+        dry_wet: waterVal,
+        min_temp: etempMinVal,
+        max_temp: etempMaxVal,
+        min_voltage: voltageMinVal,
+        max_voltage: voltageMaxVal,
+        min_current: electMinVal,
+        max_current: electMaxVal,
         authCode: this.formData.code,
         location_id: this.formData.posId,
         devEUI: this.formData.DevEui,
@@ -205,6 +337,31 @@ export default{
           type: 'error'
         })
       })
+    },
+    // 比较大小值
+    compareSize (min, max) {
+      let minResult = ''
+      let maxResult = ''
+      if (min && max) {
+        if (min > max) {
+          minResult = max
+          maxResult = min
+        } else {
+          minResult = min
+          maxResult = max
+        }
+      } else {
+        if (min) {
+          minResult = min
+        }
+        if (max) {
+          maxResult = max
+        }
+      }
+      return {
+        min: minResult,
+        max: maxResult
+      }
     },
     // 取消
     cancelClick () {

@@ -16,98 +16,100 @@
           </div>
           <div class="item-body">
             <el-row :gutter="10">
-              <el-col :xs="12" :sm="12" :md="8" :lg="6" :xl="6" v-for="chunk in item.nodeMessages" :key="chunk.lm_id">
-                <div class="chunk" v-if="chunk.lora_type === '温湿度'">
-                  <p class="chunk-title blue">{{ chunk.node_name }}</p>
-                  <div class="chunk-body">
-                    <div class="chunk-icon">
-                      <i class="iconfont icon-wenshidu"></i>
-                      <span class="icon-text">{{ chunk.lora_type }}</span>
-                    </div>
-                    <div class="chunk-content">
-                      <p class="content-single" :class="{'red': chunk.sensor_state !== '正常/正常'}">设备状态：{{ chunk.sensor_state }}</p>
-                      <p class="content-single" :class="{'red': chunk.demolition_state !== '正常'}">防拆状态：{{ chunk.demolition_state }}</p>
-                      <p class="content-single">当前温度：{{ chunk.temperature }}</p>
-                      <p class="content-single">当前湿度：{{ chunk.humidity }}</p>
-                      <p class="content-single" :class="{'red': chunk.battery_state !== '正常'}">电压状态：{{ chunk.battery_state }}</p>
-                      <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="chunk" v-else-if="chunk.lora_type === '无线水浸'">
-                  <p class="chunk-title blue">{{ chunk.node_name }}</p>
-                  <div class="chunk-body">
-                    <div class="chunk-icon">
-                      <i class="iconfont icon-shuijin"></i>
-                      <span class="icon-text">{{ chunk.lora_type }}</span>
-                    </div>
-                    <div class="chunk-content">
-                      <p class="content-single">设备状态：{{ chunk.sensor_state }}</p>
-                      <p class="content-single" :class="{'red': chunk.battery_state !== '电压正常'}">电压状态：{{ chunk.battery_state }}</p>
-                      <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+              <div v-for="chunk in item.nodeMessages" :key="chunk.lm_id">
+                <el-col :xs="12" :sm="12" :md="8" :lg="6" :xl="6">
+                  <div class="chunk" v-if="chunk.lora_type === '温湿度'">
+                    <p class="chunk-title blue">{{ chunk.node_name }}</p>
+                    <div class="chunk-body">
+                      <div class="chunk-icon">
+                        <i class="iconfont icon-wenshidu"></i>
+                        <span class="icon-text">{{ chunk.lora_type }}</span>
+                      </div>
+                      <div class="chunk-content">
+                        <p class="content-single" :class="{'red': chunk.sensor_state !== '正常/正常'}">设备状态：{{ chunk.sensor_state }}</p>
+                        <p class="content-single" :class="{'red': chunk.demolition_state !== '正常'}">防拆状态：{{ chunk.demolition_state }}</p>
+                        <p class="content-single">当前温度：{{ chunk.temperature }}</p>
+                        <p class="content-single">当前湿度：{{ chunk.humidity }}</p>
+                        <p class="content-single" :class="{'red': chunk.battery_state !== '正常'}">电压状态：{{ chunk.battery_state }}</p>
+                        <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="chunk" v-else-if="chunk.lora_type === '无线烟感'">
-                  <p class="chunk-title blue">{{ chunk.node_name }}</p>
-                  <div class="chunk-body">
-                    <div class="chunk-icon">
-                      <i class="iconfont icon-yangan"></i>
-                      <span class="icon-text">{{ chunk.lora_type }}</span>
-                    </div>
-                    <div class="chunk-content">
-                      <p class="content-single" :class="{'red': chunk.sensor_state !== '正常'}">设备状态：{{ chunk.sensor_state }}</p>
-                      <!--<p class="content-single">电压状态：{{ chunk.battery_state }}</p>-->
-                      <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="chunk" v-else-if="chunk.lora_type === '燃气报警'">
-                  <p class="chunk-title blue">{{ chunk.node_name }}</p>
-                  <div class="chunk-body">
-                    <div class="chunk-icon">
-                      <i class="iconfont icon-keranqiti"></i>
-                      <span class="icon-text">{{ chunk.lora_type }}</span>
-                    </div>
-                    <div class="chunk-content">
-                      <p class="content-single" :class="{'red': chunk.sensor_state !== '正常'}">设备状态：{{ chunk.sensor_state }}</p>
-                      <p class="content-single" :class="{'red': chunk.demolition_state !== '正常'}">防拆状态：{{ chunk.demolition_state }}</p>
-                      <p class="content-single" :class="{'red': chunk.battery_state !== '正常'}">电压状态：{{ chunk.battery_state }}</p>
-                      <p class="content-single">当前浓度：{{ chunk.concentration }}</p>
+                  <div class="chunk" v-else-if="chunk.lora_type === '无线水浸'">
+                    <p class="chunk-title blue">{{ chunk.node_name }}</p>
+                    <div class="chunk-body">
+                      <div class="chunk-icon">
+                        <i class="iconfont icon-shuijin"></i>
+                        <span class="icon-text">{{ chunk.lora_type }}</span>
+                      </div>
+                      <div class="chunk-content">
+                        <p class="content-single">设备状态：{{ chunk.sensor_state }}</p>
+                        <p class="content-single" :class="{'red': chunk.battery_state !== '电压正常'}">电压状态：{{ chunk.battery_state }}</p>
+                        <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="chunk" v-else-if="chunk.lora_type === '一键报警'">
-                  <p class="chunk-title blue">{{ chunk.node_name }}</p>
-                  <div class="chunk-body">
-                    <div class="chunk-icon">
-                      <i class="iconfont icon-yijian"></i>
-                      <span class="icon-text">{{ chunk.lora_type }}</span>
-                    </div>
-                    <div class="chunk-content">
-                      <p class="content-single" :class="{'red': chunk.sensor_state !== '正常'}">设备状态：{{ chunk.sensor_state }}</p>
-                      <p class="content-single" :class="{'red': chunk.demolition_state !== '正常'}">防拆状态：{{ chunk.demolition_state }}</p>
-                      <p class="content-single" :class="{'red': chunk.battery_state !== '正常'}">电压状态：{{ chunk.battery_state }}</p>
-                      <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="chunk" v-else-if="chunk.lora_type === '红外报警'">
-                  <p class="chunk-title blue">{{ chunk.node_name }}</p>
-                  <div class="chunk-body">
-                    <div class="chunk-icon">
-                      <i class="iconfont icon-hongwai"></i>
-                      <span class="icon-text">{{ chunk.lora_type }}</span>
-                    </div>
-                    <div class="chunk-content">
-                      <p class="content-single" :class="{ 'red' : chunk.sensor_state !== '正常' }">设备状态：{{ chunk.sensor_state }}</p>
-                      <p class="content-single" :class="{ 'red' : chunk.demolition_state !== '正常' }">防拆状态：{{ chunk.demolition_state }}</p>
-                      <p class="content-single" :class="{ 'red' : chunk.battery_state !== '正常' }">电池状态：{{ chunk.battery_state }}</p>
-                      <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+                  <div class="chunk" v-else-if="chunk.lora_type === '无线烟感'">
+                    <p class="chunk-title blue">{{ chunk.node_name }}</p>
+                    <div class="chunk-body">
+                      <div class="chunk-icon">
+                        <i class="iconfont icon-yangan"></i>
+                        <span class="icon-text">{{ chunk.lora_type }}</span>
+                      </div>
+                      <div class="chunk-content">
+                        <p class="content-single" :class="{'red': chunk.sensor_state !== '正常'}">设备状态：{{ chunk.sensor_state }}</p>
+                        <!--<p class="content-single">电压状态：{{ chunk.battery_state }}</p>-->
+                        <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </el-col>
+                  <div class="chunk" v-else-if="chunk.lora_type === '燃气报警'">
+                    <p class="chunk-title blue">{{ chunk.node_name }}</p>
+                    <div class="chunk-body">
+                      <div class="chunk-icon">
+                        <i class="iconfont icon-keranqiti"></i>
+                        <span class="icon-text">{{ chunk.lora_type }}</span>
+                      </div>
+                      <div class="chunk-content">
+                        <p class="content-single" :class="{'red': chunk.sensor_state !== '正常'}">设备状态：{{ chunk.sensor_state }}</p>
+                        <p class="content-single" :class="{'red': chunk.demolition_state !== '正常'}">防拆状态：{{ chunk.demolition_state }}</p>
+                        <p class="content-single" :class="{'red': chunk.battery_state !== '正常'}">电压状态：{{ chunk.battery_state }}</p>
+                        <p class="content-single">当前浓度：{{ chunk.concentration }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="chunk" v-else-if="chunk.lora_type === '一键报警'">
+                    <p class="chunk-title blue">{{ chunk.node_name }}</p>
+                    <div class="chunk-body">
+                      <div class="chunk-icon">
+                        <i class="iconfont icon-yijian"></i>
+                        <span class="icon-text">{{ chunk.lora_type }}</span>
+                      </div>
+                      <div class="chunk-content">
+                        <p class="content-single" :class="{'red': chunk.sensor_state !== '正常' && chunk.sensor_state !== '无危险报警'}">设备状态：{{ chunk.sensor_state }}</p>
+                        <p class="content-single" :class="{'red': chunk.demolition_state !== '正常'}">防拆状态：{{ chunk.demolition_state }}</p>
+                        <p class="content-single" :class="{'red': chunk.battery_state !== '正常'}">电压状态：{{ chunk.battery_state }}</p>
+                        <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="chunk" v-else-if="chunk.lora_type === '红外报警'">
+                    <p class="chunk-title blue">{{ chunk.node_name }}</p>
+                    <div class="chunk-body">
+                      <div class="chunk-icon">
+                        <i class="iconfont icon-hongwai"></i>
+                        <span class="icon-text">{{ chunk.lora_type }}</span>
+                      </div>
+                      <div class="chunk-content">
+                        <p class="content-single" :class="{ 'red' : chunk.sensor_state !== '正常' }">设备状态：{{ chunk.sensor_state }}</p>
+                        <p class="content-single" :class="{ 'red' : chunk.demolition_state !== '正常' }">防拆状态：{{ chunk.demolition_state }}</p>
+                        <p class="content-single" :class="{ 'red' : chunk.battery_state !== '正常' }">电池状态：{{ chunk.battery_state }}</p>
+                        <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </el-col>
+              </div>
             </el-row>
           </div>
         </div>

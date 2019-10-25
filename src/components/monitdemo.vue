@@ -77,7 +77,7 @@
                   <span class="icon-text">{{ chunk.lora_type }}</span>
                 </div>
                 <div class="chunk-content">
-                  <p class="content-single" :class="{'red': chunk.sensor_state !== '正常'}">设备状态：{{ chunk.sensor_state }}</p>
+                  <p class="content-single" :class="{'red': chunk.sensor_state !== '正常' && chunk.sensor_state !== '无危险报警'}">设备状态：{{ chunk.sensor_state }}</p>
                   <p class="content-single" :class="{'red': chunk.demolition_state !== '正常'}">防拆状态：{{ chunk.demolition_state }}</p>
                   <p class="content-single" :class="{'red': chunk.battery_state !== '正常'}">电压状态：{{ chunk.battery_state }}</p>
                   <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
