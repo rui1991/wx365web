@@ -3,8 +3,8 @@
     <el-transfer
       filterable
       ref="myTransfer"
-      :filter-method="filterMethod"
       filter-placeholder="请输入设备名称"
+      :filter-method="filterMethod"
       v-model="checkCcd"
       :props="props"
       :titles="['设备列表', '已选择']"
@@ -24,14 +24,13 @@ export default{
   data () {
     return {
       ccdData: [],
-      ccdState: false,
       props: {
-        label: 'name',
-        key: 'devEUI'
+        label: 'node_name',
+        key: 'dev_eui'
       },
       checkCcd: [],
       filterMethod (query, item) {
-        return item.name.indexOf(query) > -1
+        return item.node_name.indexOf(query) > -1
       },
       disabled: true
     }
@@ -44,9 +43,9 @@ export default{
   methods: {
     ccdInit () {
       this.checkCcd = this.parentIds
-      if (!this.ccdState) {
-        this.getCcdData()
-      }
+      // 获取未设置设备列表
+      this.getCcdData()
+      // 清空搜索
       if (this.$refs.myTransfer) {
         // 清空左边搜索
         this.$refs.myTransfer.$children['0']._data.query = ''
@@ -54,26 +53,20 @@ export default{
         this.$refs.myTransfer.$children['3']._data.query = ''
       }
     },
-    // 获取项目人员
+    // 获取设备列表
     getCcdData () {
       let params = {
-        user_id: this.userId,
-        project_id: this.projectId,
-        search: '',
-        location_name: '',
-        online: '',
-        type: ''
+        project_id: this.projectId
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.loraApi() + '/lora/selNodeList',
+        url: this.loraApi() + '/lora/selNotSetAlarm',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           let ccdData = res.data.data1
           this.ccdData = ccdData
-          this.ccdState = true
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -97,7 +90,7 @@ export default{
       let ccdArr = []
       checkCcd.forEach(itemValue => {
         let temp = ccdData.find((item, index, array) => {
-          return itemValue === item.devEUI
+          return itemValue === item.dev_eui
         })
         if (temp) {
           ccdArr.push(temp)
@@ -106,8 +99,8 @@ export default{
       let ccdName = []
       let ccdId = []
       ccdArr.forEach(item => {
-        ccdName.push(item.name)
-        ccdId.push(item.devEUI)
+        ccdName.push(item.node_name)
+        ccdId.push(item.dev_eui)
       })
       ccdName = ccdName.join('、')
       const obj = {

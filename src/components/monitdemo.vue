@@ -1,5 +1,9 @@
 <template>
   <div class="monitdemo">
+    <div class="search">
+      <el-input style="width: 280px; margin-right: 30px;" placeholder="请输入位置" clearable v-model.trim="posNowName"></el-input>
+      <el-button type="primary" @click="searchList">搜索</el-button>
+    </div>
     <div class="item" v-for="item in listData" :key="item.location_id">
       <div class="item-head">
         <span>{{ item.location_name }}</span>
@@ -8,98 +12,185 @@
       </div>
       <div class="item-body">
         <el-row :gutter="30">
-          <el-col :xs="8" :sm="8" :md="6" :lg="6" :xl="6" v-for="chunk in item.nodeMessages" :key="chunk.lm_id">
-            <div class="chunk" v-if="chunk.lora_type === '温湿度'">
-              <p class="chunk-title blue">{{ chunk.node_name }}</p>
-              <div class="chunk-body">
-                <div class="chunk-icon">
-                  <i class="iconfont icon-wenshidu"></i>
-                  <span class="icon-text">{{ chunk.lora_type }}</span>
-                </div>
-                <div class="chunk-content">
-                  <p class="content-single" :class="{'red': chunk.sensor_state !== '正常/正常'}">设备状态：{{ chunk.sensor_state }}</p>
-                  <p class="content-single" :class="{'red': chunk.demolition_state !== '正常'}">防拆状态：{{ chunk.demolition_state }}</p>
-                  <p class="content-single">当前温度：{{ chunk.temperature }}</p>
-                  <p class="content-single">当前湿度：{{ chunk.humidity }}</p>
-                  <p class="content-single" :class="{'red': chunk.battery_state !== '正常'}">电压状态：{{ chunk.battery_state }}</p>
-                  <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
-                </div>
-              </div>
-            </div>
-            <div class="chunk" v-else-if="chunk.lora_type === '无线水浸'">
-              <p class="chunk-title blue">{{ chunk.node_name }}</p>
-              <div class="chunk-body">
-                <div class="chunk-icon">
-                  <i class="iconfont icon-shuijin"></i>
-                  <span class="icon-text">{{ chunk.lora_type }}</span>
-                </div>
-                <div class="chunk-content">
-                  <p class="content-single">设备状态：{{ chunk.sensor_state }}</p>
-                  <p class="content-single" :class="{'red': chunk.battery_state !== '电压正常'}">电压状态：{{ chunk.battery_state }}</p>
-                  <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+          <div v-for="chunk in item.nodeMessages" :key="chunk.lm_id">
+            <el-col :xs="12" :sm="8" :md="8" :lg="6" :xl="6" v-if="chunk.lora_type !== '安全用电'">
+              <div class="chunk" v-if="chunk.lora_type === '温湿度'">
+                <p class="chunk-title blue">{{ chunk.node_name }}</p>
+                <div class="chunk-body">
+                  <div class="chunk-icon">
+                    <i class="iconfont icon-wenshidu"></i>
+                    <span class="icon-text">{{ chunk.lora_type }}</span>
+                  </div>
+                  <div class="chunk-content">
+                    <p class="content-single" :class="{'red': chunk.sensor_state !== '正常/正常'}">设备状态：{{ chunk.sensor_state }}</p>
+                    <p class="content-single" :class="{'red': chunk.demolition_state !== '正常'}">防拆状态：{{ chunk.demolition_state }}</p>
+                    <p class="content-single"
+                       :class="{'red': Number.parseFloat(chunk.temperature) < Number.parseFloat(chunk.min_temperature) || Number.parseFloat(chunk.temperature) > Number.parseFloat(chunk.max_temperature)}">
+                      当前温度：{{ chunk.temperature }}
+                    </p>
+                    <p class="content-single"
+                       :class="{'red': Number.parseFloat(chunk.humidity) < Number.parseFloat(chunk.min_humidity) || Number.parseFloat(chunk.humidity) > Number.parseFloat(chunk.max_humidity)}">
+                      当前湿度：{{ chunk.humidity }}
+                    </p>
+                    <p class="content-single" :class="{'red': chunk.battery_state !== '正常'}">电压状态：{{ chunk.battery_state }}</p>
+                    <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="chunk" v-else-if="chunk.lora_type === '无线烟感'">
-              <p class="chunk-title blue">{{ chunk.node_name }}</p>
-              <div class="chunk-body">
-                <div class="chunk-icon">
-                  <i class="iconfont icon-yangan"></i>
-                  <span class="icon-text">{{ chunk.lora_type }}</span>
-                </div>
-                <div class="chunk-content">
-                  <p class="content-single" :class="{'red': chunk.sensor_state !== '正常'}">设备状态：{{ chunk.sensor_state }}</p>
-                  <!--<p class="content-single">电压状态：{{ chunk.battery_state }}</p>-->
-                  <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
-                </div>
-              </div>
-            </div>
-            <div class="chunk" v-else-if="chunk.lora_type === '燃气报警'">
-              <p class="chunk-title blue">{{ chunk.node_name }}</p>
-              <div class="chunk-body">
-                <div class="chunk-icon">
-                  <i class="iconfont icon-keranqiti"></i>
-                  <span class="icon-text">{{ chunk.lora_type }}</span>
-                </div>
-                <div class="chunk-content">
-                  <p class="content-single" :class="{'red': chunk.sensor_state !== '正常'}">设备状态：{{ chunk.sensor_state }}</p>
-                  <p class="content-single" :class="{'red': chunk.demolition_state !== '正常'}">防拆状态：{{ chunk.demolition_state }}</p>
-                  <p class="content-single" :class="{'red': chunk.battery_state !== '正常'}">电压状态：{{ chunk.battery_state }}</p>
-                  <p class="content-single">当前浓度：{{ chunk.concentration }}</p>
+              <div class="chunk" v-else-if="chunk.lora_type === '无线水浸'">
+                <p class="chunk-title blue">{{ chunk.node_name }}</p>
+                <div class="chunk-body">
+                  <div class="chunk-icon">
+                    <i class="iconfont icon-shuijin"></i>
+                    <span class="icon-text">{{ chunk.lora_type }}</span>
+                  </div>
+                  <div class="chunk-content">
+                    <p class="content-single" :class="{'red': chunk.dry_wet === 'wet' && chunk.sensor_state === '水浸', 'red': chunk.dry_wet === 'dry' && chunk.sensor_state === '未被水浸'}">设备状态：{{ chunk.sensor_state }}</p>
+                    <p class="content-single" :class="{'red': chunk.battery_state !== '电压正常'}">电压状态：{{ chunk.battery_state }}</p>
+                    <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="chunk" v-else-if="chunk.lora_type === '一键报警'">
-              <p class="chunk-title blue">{{ chunk.node_name }}</p>
-              <div class="chunk-body">
-                <div class="chunk-icon">
-                  <i class="iconfont icon-yijian"></i>
-                  <span class="icon-text">{{ chunk.lora_type }}</span>
-                </div>
-                <div class="chunk-content">
-                  <p class="content-single" :class="{'red': chunk.sensor_state !== '正常' && chunk.sensor_state !== '无危险报警'}">设备状态：{{ chunk.sensor_state }}</p>
-                  <p class="content-single" :class="{'red': chunk.demolition_state !== '正常'}">防拆状态：{{ chunk.demolition_state }}</p>
-                  <p class="content-single" :class="{'red': chunk.battery_state !== '正常'}">电压状态：{{ chunk.battery_state }}</p>
-                  <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
-                </div>
-              </div>
-            </div>
-            <div class="chunk" v-else-if="chunk.lora_type === '红外报警'">
-              <p class="chunk-title blue">{{ chunk.node_name }}</p>
-              <div class="chunk-body">
-                <div class="chunk-icon">
-                  <i class="iconfont icon-hongwai"></i>
-                  <span class="icon-text">{{ chunk.lora_type }}</span>
-                </div>
-                <div class="chunk-content">
-                  <p class="content-single" :class="{ 'red' : chunk.sensor_state !== '正常' }">设备状态：{{ chunk.sensor_state }}</p>
-                  <p class="content-single" :class="{ 'red' : chunk.demolition_state !== '正常' }">防拆状态：{{ chunk.demolition_state }}</p>
-                  <p class="content-single" :class="{ 'red' : chunk.battery_state !== '正常' }">电池状态：{{ chunk.battery_state }}</p>
-                  <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+              <div class="chunk" v-else-if="chunk.lora_type === '无线烟感'">
+                <p class="chunk-title blue">{{ chunk.node_name }}</p>
+                <div class="chunk-body">
+                  <div class="chunk-icon">
+                    <i class="iconfont icon-yangan"></i>
+                    <span class="icon-text">{{ chunk.lora_type }}</span>
+                  </div>
+                  <div class="chunk-content">
+                    <p class="content-single" :class="{'red': chunk.sensor_state !== '正常'}">设备状态：{{ chunk.sensor_state }}</p>
+                    <!--<p class="content-single">电压状态：{{ chunk.battery_state }}</p>-->
+                    <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </el-col>
+              <div class="chunk" v-else-if="chunk.lora_type === '燃气报警'">
+                <p class="chunk-title blue">{{ chunk.node_name }}</p>
+                <div class="chunk-body">
+                  <div class="chunk-icon">
+                    <i class="iconfont icon-keranqiti"></i>
+                    <span class="icon-text">{{ chunk.lora_type }}</span>
+                  </div>
+                  <div class="chunk-content">
+                    <p class="content-single" :class="{'red': chunk.sensor_state !== '正常'}">设备状态：{{ chunk.sensor_state }}</p>
+                    <p class="content-single" :class="{'red': chunk.demolition_state !== '正常'}">防拆状态：{{ chunk.demolition_state }}</p>
+                    <p class="content-single" :class="{'red': chunk.battery_state !== '正常'}">电压状态：{{ chunk.battery_state }}</p>
+                    <p class="content-single">当前浓度：{{ chunk.concentration }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="chunk" v-else-if="chunk.lora_type === '一键报警'">
+                <p class="chunk-title blue">{{ chunk.node_name }}</p>
+                <div class="chunk-body">
+                  <div class="chunk-icon">
+                    <i class="iconfont icon-yijian"></i>
+                    <span class="icon-text">{{ chunk.lora_type }}</span>
+                  </div>
+                  <div class="chunk-content">
+                    <p class="content-single" :class="{'red': chunk.sensor_state !== '正常' && chunk.sensor_state !== '无危险报警'}">设备状态：{{ chunk.sensor_state }}</p>
+                    <p class="content-single" :class="{'red': chunk.demolition_state !== '正常'}">防拆状态：{{ chunk.demolition_state }}</p>
+                    <p class="content-single" :class="{'red': chunk.battery_state !== '正常'}">电压状态：{{ chunk.battery_state }}</p>
+                    <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="chunk" v-else-if="chunk.lora_type === '红外报警'">
+                <p class="chunk-title blue">{{ chunk.node_name }}</p>
+                <div class="chunk-body">
+                  <div class="chunk-icon">
+                    <i class="iconfont icon-hongwai"></i>
+                    <span class="icon-text">{{ chunk.lora_type }}</span>
+                  </div>
+                  <div class="chunk-content">
+                    <p class="content-single" :class="{ 'red' : chunk.sensor_state !== '正常' }">设备状态：{{ chunk.sensor_state }}</p>
+                    <p class="content-single" :class="{ 'red' : chunk.demolition_state !== '正常' }">防拆状态：{{ chunk.demolition_state }}</p>
+                    <p class="content-single" :class="{ 'red' : chunk.battery_state !== '正常' }">电池状态：{{ chunk.battery_state }}</p>
+                    <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+                  </div>
+                </div>
+              </div>
+            </el-col>
+            <el-col :xs="24" :sm="16" :md="16" :lg="12" :xl="12" v-else>
+              <div class="chunk elect">
+                <p class="chunk-title blue">{{ chunk.node_name }}</p>
+                <div class="chunk-body">
+                  <div class="chunk-icon">
+                    <i class="iconfont icon-anquanyongdian"></i>
+                    <span class="icon-text">{{ chunk.lora_type }}</span>
+                  </div>
+                  <div class="chunk-content">
+                    <p class="content-single" :class="{'red': chunk.sensor_state !== '正常'}">设备状态：{{ chunk.sensor_state }}</p>
+                    <p class="content-single" :class="{'red': chunk.trip_state !== '不脱扣'}">脱扣状态：{{ chunk.trip_state }}</p>
+                    <p class="content-single" :class="{'red': Number.parseFloat(chunk.leave_electricity) > 0}">剩余电流：{{ chunk.leave_electricity }}</p>
+                  </div>
+                  <div class="chunk-item">
+                    <div class="chunk-item-in">
+                      <div class="chunk-item-title">电压值</div>
+                      <div class="chunk-strip"
+                           :class="{'red': Number.parseFloat(chunk.a_voltage) < Number.parseFloat(chunk.min_voltage) || Number.parseFloat(chunk.a_voltage) > Number.parseFloat(chunk.max_voltage)}">
+                        电压A：{{ chunk.a_voltage }}
+                      </div>
+                      <div class="chunk-strip"
+                           :class="{'red': Number.parseFloat(chunk.b_voltage) < Number.parseFloat(chunk.min_voltage) || Number.parseFloat(chunk.b_voltage) > Number.parseFloat(chunk.max_voltage)}">
+                        电压B：{{ chunk.b_voltage }}
+                      </div>
+                      <div class="chunk-strip"
+                           :class="{'red': Number.parseFloat(chunk.c_voltage) < Number.parseFloat(chunk.min_voltage) || Number.parseFloat(chunk.c_voltage) > Number.parseFloat(chunk.max_voltage)}">
+                        电压C：{{ chunk.c_voltage }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="chunk-item">
+                    <div class="chunk-item-in">
+                      <div class="chunk-item-title">电流值</div>
+                      <div class="chunk-strip"
+                           :class="{'red': Number.parseFloat(chunk.a_current) < Number.parseFloat(chunk.min_current) || Number.parseFloat(chunk.a_current) > Number.parseFloat(chunk.max_current)}">
+                        电流A：{{ chunk.a_current }}
+                      </div>
+                      <div class="chunk-strip"
+                           :class="{'red': Number.parseFloat(chunk.b_current) < Number.parseFloat(chunk.min_current) || Number.parseFloat(chunk.b_current) > Number.parseFloat(chunk.max_current)}">
+                        电流B：{{ chunk.b_current }}
+                      </div>
+                      <div class="chunk-strip"
+                           :class="{'red': Number.parseFloat(chunk.c_current) < Number.parseFloat(chunk.min_current) || Number.parseFloat(chunk.c_current) > Number.parseFloat(chunk.max_current)}">
+                        电流C：{{ chunk.c_current }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="chunk-item">
+                    <div class="chunk-item-in">
+                      <div class="chunk-item-title">功率值</div>
+                      <div class="chunk-strip">功率A：{{ chunk.a_power }}</div>
+                      <div class="chunk-strip">功率B：{{ chunk.b_power }}</div>
+                      <div class="chunk-strip">功率C：{{ chunk.c_power }}</div>
+                    </div>
+                  </div>
+                  <div class="chunk-item">
+                    <div class="chunk-item-in">
+                      <div class="chunk-item-title">温度值</div>
+                      <div class="chunk-strip"
+                           :class="{'red': Number.parseFloat(chunk.temp01) < Number.parseFloat(chunk.min_temp) || Number.parseFloat(chunk.temp01) > Number.parseFloat(chunk.max_temp)}">
+                        温度01：{{ chunk.temp01 }}
+                      </div>
+                      <div class="chunk-strip"
+                           :class="{'red': Number.parseFloat(chunk.temp02) < Number.parseFloat(chunk.min_temp) || Number.parseFloat(chunk.temp02) > Number.parseFloat(chunk.max_temp)}">
+                        温度02：{{ chunk.temp02 }}
+                      </div>
+                      <div class="chunk-strip"
+                           :class="{'red': Number.parseFloat(chunk.temp03) < Number.parseFloat(chunk.min_temp) || Number.parseFloat(chunk.temp03) > Number.parseFloat(chunk.max_temp)}">
+                        温度03：{{ chunk.temp03 }}
+                      </div>
+                      <div class="chunk-strip"
+                           :class="{'red': Number.parseFloat(chunk.temp04) < Number.parseFloat(chunk.min_temp) || Number.parseFloat(chunk.temp04) > Number.parseFloat(chunk.max_temp)}">
+                        温度04：{{ chunk.temp04 }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-col>
+          </div>
         </el-row>
       </div>
     </div>
@@ -174,6 +265,13 @@ export default{
     height: 100%;
     padding: 5px 10px;
     background: #f0f3f4;
+    .search{
+      display: flex;
+      align-items: center;
+      height: 60px;
+      padding-left: 20px;
+      background: #ffffff;
+    }
     .item{
       padding: 10px;
       margin-bottom: 10px;
@@ -236,6 +334,40 @@ export default{
                 display: flex;
                 height: 30px;
                 align-items: center;
+              }
+            }
+          }
+        }
+        .elect{
+          .chunk-body{
+            .chunk-icon{
+              flex-grow: 1;
+            }
+            .chunk-content{
+              flex-grow: 1;
+            }
+            .chunk-item{
+              flex-grow: 1;
+              padding: 0 5px;
+              .chunk-item-in{
+                display: flex;
+                flex-direction: column;
+                height: 154px;
+                padding: 0 5px;
+                border: 1px solid #a2a2a2;
+                .chunk-item-title{
+                  display: flex;
+                  height: 30px;
+                  justify-content: center;
+                  align-items: center;
+                  font-size: 14px;
+                  font-weight: 600;
+                }
+                .chunk-strip {
+                  display: flex;
+                  height: 30px;
+                  align-items: center;
+                }
               }
             }
           }

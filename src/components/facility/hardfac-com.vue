@@ -16,10 +16,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="设备mac" prop="mac" v-if="!serialShow" :disabled="true">
-          <el-input v-model.trim="formData.mac" auto-complete="off"></el-input>
+          <el-input v-model.trim="formData.mac" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="序列号" prop="serial" v-if="serialShow">
-          <el-input v-model.trim="formData.serial" auto-complete="off"></el-input>
+          <el-input v-model.trim="formData.serial" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="设备位置" prop="posName" v-show="postionShow">
           <el-input :disabled="true" v-model="formData.posName"></el-input>

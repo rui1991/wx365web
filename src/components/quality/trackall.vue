@@ -66,10 +66,7 @@
           <el-table-column prop="user_name" label="姓名"></el-table-column>
           <el-table-column prop="at_date" label="日期"></el-table-column>
           <el-table-column prop="start_date" label="区域类型">
-            <template slot-scope="scope">
-              <span v-if="scope.row.area_type === 1">办公室区域</span>
-              <span v-else-if="scope.row.area_type === 2">工作区域</span>
-            </template>
+            <template slot-scope="scope">{{ scope.row.area_type | filterType }}</template>
           </el-table-column>
           <el-table-column prop="wait_time" label="停留时长（min）"></el-table-column>
         </el-table>
@@ -110,12 +107,44 @@ export default{
       },
       typeOptions: [
         {
-          label: '办公室区域',
+          label: '楼栋',
+          value: 0
+        },
+        {
+          label: '单元',
           value: 1
         },
         {
-          label: '工作区域',
+          label: '楼层',
           value: 2
+        },
+        {
+          label: '办公区域',
+          value: 3
+        },
+        {
+          label: '商铺',
+          value: 4
+        },
+        {
+          label: '卫生间',
+          value: 5
+        },
+        {
+          label: '停车场',
+          value: 6
+        },
+        {
+          label: '公共区域',
+          value: 7
+        },
+        {
+          label: '外围',
+          value: 8
+        },
+        {
+          label: '岗亭',
+          value: 9
         }
       ],
       logData: [],
@@ -232,6 +261,46 @@ export default{
         this.downDisabled = false
       }, 5000)
       window.location.href = this.sysetApi() + '/inspection/locationTimeStatisticsEo?' + params
+    }
+  },
+  filters: {
+    filterType (value) {
+      let areaType = ''
+      switch (value) {
+        case 0:
+          areaType = '楼栋'
+          break
+        case 1:
+          areaType = '单元'
+          break
+        case 2:
+          areaType = '楼层'
+          break
+        case 3:
+          areaType = '办公区域'
+          break
+        case 4:
+          areaType = '商铺'
+          break
+        case 5:
+          areaType = '卫生间'
+          break
+        case 6:
+          areaType = '停车场'
+          break
+        case 7:
+          areaType = '公共区域'
+          break
+        case 8:
+          areaType = '外围'
+          break
+        case 9:
+          areaType = '岗亭'
+          break
+        default:
+          areaType = ''
+      }
+      return areaType
     }
   }
 }

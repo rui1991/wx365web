@@ -79,7 +79,7 @@
           <el-table-column prop="alarm_message" :show-overflow-tooltip="true" label="告警内容"></el-table-column>
           <el-table-column label="操作" width="120">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="details blue" @click="addLogClick(scope.row.lam_id)">追加日志</a>
+              <a href="javascript:void(0);" class="details blue" @click="addLogClick(scope.row.lam_id)" v-if="scope.row.push_user.split('、').indexOf(userName) !== -1">追加日志</a>
             </template>
           </el-table-column>
         </el-table>
@@ -189,7 +189,8 @@ export default{
   },
   computed: {
     ...mapState('user', [
-      'userId'
+      'userId',
+      'userName'
     ]),
     ...mapState('other', [
       'companyId',

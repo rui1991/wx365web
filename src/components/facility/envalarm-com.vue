@@ -5,7 +5,7 @@
       <el-form class="divide-from" :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
         <el-form-item label="告警设备" prop="ccdName">
           <el-input :disabled="true" type="textarea" v-model="formData.ccdName"></el-input>
-          <el-button type="primary" style="vertical-align: top;" @click="ccdDialog = true">选择设备</el-button>
+          <!--<el-button type="primary" style="vertical-align: top;" @click="ccdDialog = true">选择设备</el-button>-->
         </el-form-item>
         <el-form-item label="告警推送人" prop="crewName">
           <el-input :disabled="true" type="textarea" v-model="formData.crewName"></el-input>

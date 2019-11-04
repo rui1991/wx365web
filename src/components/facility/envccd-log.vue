@@ -115,6 +115,88 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-table class="list-table" :data="tableData" border v-else-if="type == 41" style="width: 100%">
+          <el-table-column type="index" width="50" label="序号"></el-table-column>
+          <el-table-column width="180" label="上报时间">
+            <template slot-scope="scope">
+              <span>{{ scope.row.create_time | formatDate}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="电压值">
+            <el-table-column
+              prop="a_voltage"
+              label="电压A">
+            </el-table-column>
+            <el-table-column
+              prop="b_voltage"
+              label="电压B">
+            </el-table-column>
+            <el-table-column
+              prop="c_voltage"
+              label="电压C">
+            </el-table-column>
+          </el-table-column>
+          <el-table-column label="电流值">
+            <el-table-column
+              prop="a_current"
+              label="电流A">
+            </el-table-column>
+            <el-table-column
+              prop="b_current"
+              label="电流B">
+            </el-table-column>
+            <el-table-column
+              prop="c_current"
+              label="电流C">
+            </el-table-column>
+          </el-table-column>
+          <el-table-column label="功率值">
+            <el-table-column
+              prop="a_power"
+              label="功率A">
+            </el-table-column>
+            <el-table-column
+              prop="b_power"
+              label="功率B">
+            </el-table-column>
+            <el-table-column
+              prop="c_power"
+              label="功率C">
+            </el-table-column>
+          </el-table-column>
+          <el-table-column label="温度值">
+            <el-table-column
+              prop="temp01"
+              label="温度01">
+            </el-table-column>
+            <el-table-column
+              prop="temp02"
+              label="温度02">
+            </el-table-column>
+            <el-table-column
+              prop="temp03"
+              label="温度03">
+            </el-table-column>
+            <el-table-column
+              prop="temp04"
+              label="温度04">
+            </el-table-column>
+          </el-table-column>
+          <el-table-column label="告警">
+            <el-table-column
+              prop="leave_electricity"
+              label="剩余电流">
+            </el-table-column>
+            <el-table-column
+              prop="trip_state"
+              label="脱扣状态">
+            </el-table-column>
+            <el-table-column
+              prop="sensor_state"
+              label="告警状态">
+            </el-table-column>
+          </el-table-column>
+        </el-table>
         <el-table class="list-table" :data="tableData" border v-else-if="type == 44" style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
           <el-table-column label="上报时间">

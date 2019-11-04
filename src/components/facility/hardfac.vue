@@ -191,7 +191,7 @@ export default{
       ],
       stateOptions: [
         {
-          label: '正常',
+          label: '在线',
           value: 0
         },
         {
@@ -310,6 +310,14 @@ export default{
       this.nowPage = page
       // 获取列表数据
       this.getListData()
+    },
+    // 格式化Mac地址
+    formatSetMac (str) {
+      let value = str.toLowerCase()
+      value = value.replace(/:/g, '')
+      value = value.replace(/(.{2})/g, '$1:')
+      const lastStr = value.charAt(value.length - 1)
+      return lastStr === ':' ? value.substr(0, value.length - 1) : value
     },
     /* 新增 */
     addCancel () {
