@@ -15,7 +15,7 @@
       <el-main class="module-main">
         <div class="search">
           <div class="item date">
-            <span>日期</span>
+            <span>选择时段</span>
             <el-date-picker
               style="width: 280px;"
               v-model="nowSearch.date"
@@ -46,7 +46,7 @@
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column prop="user_name" label="姓名"></el-table-column>
+          <el-table-column prop="user_name" label="姓名" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="position_name" label="位置" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column label="打卡时间">
             <template slot-scope="scope">

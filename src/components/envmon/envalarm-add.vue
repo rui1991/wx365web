@@ -37,7 +37,7 @@
 <script>
 import { mapState } from 'vuex'
 // 引入位置组件
-import ccdModule from '@/components/facility/envalarm-ccd'
+import ccdModule from '@/components/envmon/envalarm-ccd'
 // 引入人员组件
 import crewModule from '@/components/public/crew-checkbox'
 export default{

@@ -15,32 +15,6 @@
               <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
             </div>
             <div class="item">
-              <span>创建时段</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.startDate"
-                type="date"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="item">
-              <span>----</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.endDate"
-                type="date"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="operate">
-              <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" @click="addDialog = true">新增</el-button>
-            </div>
-          </div>
-          <div class="search-input">
-            <div class="item">
               <span>工单来源</span>
               <el-select v-model="nowSearch.source" clearable style="width: 160px;" placeholder="请选择工单来源">
                 <el-option v-for="item in sourceOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -52,6 +26,12 @@
                 <el-option v-for="item in sortOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </div>
+            <div class="operate">
+              <el-button type="primary" @click="searchList">搜索</el-button>
+              <el-button type="primary" @click="addDialog = true">新增</el-button>
+            </div>
+          </div>
+          <div class="search-input">
             <div class="item">
               <span>执行人员</span>
               <el-select v-model="nowSearch.crews" style="width: 160px;" multiple collapse-tags placeholder="请选择执行人员">
@@ -62,6 +42,20 @@
                   :value="item.user_id">
                 </el-option>
               </el-select>
+            </div>
+            <div class="item date">
+              <span>创建时段</span>
+              <el-date-picker
+                style="width: 280px;"
+                v-model="nowSearch.date"
+                type="daterange"
+                value-format="yyyy-MM-dd"
+                :clearable="true"
+                :picker-options="pickerOptions"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
             </div>
             <div class="operate">
               <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
@@ -108,19 +102,22 @@ export default{
     return {
       search: {
         name: '',
-        startDate: '',
-        endDate: '',
         source: '',
         sort: '',
-        crews: '0'
+        crews: '0',
+        date: []
       },
       nowSearch: {
         name: '',
-        startDate: '',
-        endDate: '',
         source: '',
         sort: '',
-        crews: []
+        crews: [],
+        date: []
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now()
+        }
       },
       sourceOptions: [
         {
@@ -252,11 +249,10 @@ export default{
       }
       this.search = {
         name: this.nowSearch.name,
-        startDate: this.nowSearch.startDate,
-        endDate: this.nowSearch.endDate,
         source: this.nowSearch.source,
         sort: this.nowSearch.sort,
-        crews: crews
+        crews: crews,
+        date: this.nowSearch.date
       }
     },
     /* 新增 */
@@ -268,13 +264,14 @@ export default{
     },
     /* 导出 */
     downFile () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         projectN_id: this.projectId,
         woN_name: this.search.name,
-        startN_date: this.search.startDate,
-        endN_date: this.search.endDate,
+        startN_date: date[0] || '',
+        endN_date: date[1] || '',
         woN_from: this.search.source,
         businessN_type: this.search.sort,
         userN_id: this.search.crews,
@@ -333,6 +330,9 @@ export default{
               line-height: 34px;
               font-size: 14px;
             }
+          }
+          .date {
+            width: 420px;
           }
           .operate{
             display: table-cell;

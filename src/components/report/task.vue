@@ -20,40 +20,31 @@
         <el-main class="module-main">
           <div class="search">
             <div class="search-input" style="margin-bottom: 10px;">
-              <div class="item">
-                <span>开始日期</span>
+              <div class="item date">
+                <span>选择时段</span>
                 <el-date-picker
-                  style="width: 160px;"
-                  v-model="nowSearch.startDate"
-                  type="date"
-                  :clearable="false"
+                  style="width: 280px;"
+                  v-model="nowSearch.date"
+                  type="daterange"
                   value-format="yyyy-MM-dd"
-                  placeholder="选择日期">
-                </el-date-picker>
-              </div>
-              <div class="item">
-                <span>结束日期</span>
-                <el-date-picker
-                  style="width: 160px;"
-                  v-model="nowSearch.endDate"
-                  type="date"
                   :clearable="false"
-                  value-format="yyyy-MM-dd"
-                  placeholder="选择日期">
+                  :picker-options="pickerOptions"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期">
                 </el-date-picker>
               </div>
               <div class="operate">
                 <el-button type="primary" @click="searchList">搜索</el-button>
+                <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
               </div>
             </div>
             <div class="search-input">
-              <div class="item">
+              <div class="item" v-show="nameSearch">
                 <span>任务名称</span>
                 <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
               </div>
-              <div class="operate">
-                <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
-              </div>
+              <div class="operate"></div>
             </div>
           </div>
           <el-table class="list-table" :data="tableData" border :summary-method="getSummaries" show-summary style="width: 100%">
@@ -111,15 +102,19 @@ export default{
   data () {
     return {
       search: {
-        startDate: '',
-        endDate: '',
+        date: [],
         name: ''
       },
       nowSearch: {
-        startDate: '',
-        endDate: '',
+        date: [],
         name: ''
       },
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now()
+        }
+      },
+      nameSearch: false,
       tableAllData: [],
       tableData: [],
       // tableAllData: [],
@@ -138,25 +133,27 @@ export default{
 
   },
   mounted () {
-    // 开始时间
-    let startDate = ''
-    this.startDate ? startDate = this.startDate : startDate = this.$common.getNowDate('yyyy-mm-dd')
-    this.search.startDate = startDate
-    this.nowSearch.startDate = startDate
-    // 结束时间
-    let endDate = ''
-    this.endDate ? endDate = this.endDate : endDate = this.$common.getNowDate('yyyy-mm-dd')
-    this.search.endDate = endDate
-    this.nowSearch.endDate = endDate
+    // 时段
+    const nowDate = this.$common.getNowDate('yyyy-mm-dd')
+    if (this.date.length === 0) {
+      this.search.date = [nowDate, nowDate]
+      this.nowSearch.date = [nowDate, nowDate]
+      this.setReportDate([nowDate, nowDate])
+    } else {
+      this.search.date = this.date
+      this.nowSearch.date = this.date
+    }
     if (this.organizeId) {
       this.downDisabled = false
       if (this.organizeType === 3) {
+        this.nameSearch = true
         this.tableLabelName = '任务名称'
         this.tablePropName = 'plan_name'
         this.tablePropRel = 'dutySize'
         // 获取列表详情数据
         this.getListDetData()
       } else {
+        this.nameSearch = false
         this.tableLabelName = '机构名称'
         this.tablePropName = 'organize_name'
         this.tablePropRel = 'insSize'
@@ -176,8 +173,7 @@ export default{
       'organizeId',
       'organizeType',
       'projectId',
-      'startDate',
-      'endDate'
+      'date'
     ])
   },
   methods: {
@@ -214,21 +210,19 @@ export default{
         this.getListAllData()
       }
       // 设置报表时间
-      const date = {
-        startDate: this.search.startDate,
-        endDate: this.search.endDate
-      }
+      const date = this.search.date
       this.setReportDate(date)
     },
     // 获取列表数据
     getListAllData () {
       if (!this.organizeId) return
+      let date = this.search.date
       let params = {
         organize_id: this.organizeId,
         seltype: this.organizeType,
         plan_name: this.search.name,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
+        start_date: date[0],
+        end_date: date[1],
         page: this.nowPage,
         limit1: this.limit
       }
@@ -266,11 +260,12 @@ export default{
     },
     getListDetData () {
       if (!this.organizeId) return
+      let date = this.search.date
       let params = {
         project_id: this.projectId,
         plan_name: this.search.name,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
+        start_date: date[0],
+        end_date: date[1],
         page: this.nowPage,
         limit1: this.limit
       }
@@ -431,12 +426,13 @@ export default{
       }
     },
     downAllFile () {
+      let date = this.search.date
       let params = {
         organize_id: this.organizeId,
         seltype: this.organizeType,
         plan_name: this.search.name,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate
+        start_date: date[0],
+        end_date: date[1]
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true
@@ -446,11 +442,12 @@ export default{
       window.location.href = this.reportApi() + '/v3.4/selInspectTaskEO?' + params
     },
     downDetFile () {
+      let date = this.search.date
       let params = {
         project_id: this.projectId,
         plan_name: this.search.name,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate
+        start_date: date[0],
+        end_date: date[1]
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true
@@ -472,10 +469,12 @@ export default{
     },
     organizeType (val, oldVal) {
       if (val === 3) {
+        this.nameSearch = true
         this.tableLabelName = '任务名称'
         this.tablePropName = 'plan_name'
         this.tablePropRel = 'dutySize'
       } else {
+        this.nameSearch = false
         this.tableLabelName = '机构名称'
         this.tablePropName = 'organize_name'
         this.tablePropRel = 'insSize'
@@ -540,6 +539,9 @@ export default{
                   line-height: 34px;
                   font-size: 14px;
                 }
+              }
+              .date{
+                width: 420px;
               }
               .operate{
                 display: table-cell;

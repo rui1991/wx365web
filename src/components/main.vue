@@ -169,21 +169,24 @@
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="9" class="submenu-item" v-if="authority.polcard">
-              <template slot="title"><i class="iconfont icon-shebeiguanli1"></i>设备管理</template>
-              <el-menu-item-group>
-                <el-menu-item index="/main/hardfac">硬件设备管理</el-menu-item>
-              </el-menu-item-group>
+              <template slot="title"><i class="iconfont icon-jianzhuanquan"></i>环境监控管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/envmonit">环境监控设置</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group>
-                <el-menu-item index="/main/envalarm">告警记录</el-menu-item>
+                <el-menu-item index="/main/monitman">环境监控</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group>
-                <el-menu-item index="/main/monitman">环境监控管理</el-menu-item>
+                <el-menu-item index="/main/envalarm">告警记录</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="10" class="submenu-item" v-if="authority.polReport || authority.workReport">
+            <el-submenu index="10" class="submenu-item" v-if="authority.polcard">
+              <template slot="title"><i class="iconfont icon-shebeiguanli1"></i>设备管理</template>
+              <el-menu-item-group>
+                <el-menu-item index="/main/hardfac">硬件设备管理</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="11" class="submenu-item" v-if="authority.polReport || authority.workReport">
               <template slot="title"><i class="iconfont icon-baobiaoguanli"></i>报表管理</template>
               <el-menu-item-group v-if="authority.polReport">
                 <el-menu-item index="/main/report-task">巡检任务执行报表</el-menu-item>
@@ -201,7 +204,7 @@
                 <el-menu-item index="/main/report-worksta">员工工单报表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="11" class="submenu-item" v-if="authority.videoSetting || authority.videoPlaza">
+            <el-submenu index="12" class="submenu-item" v-if="authority.videoSetting || authority.videoPlaza">
               <template slot="title"><i class="iconfont icon-jiankong"></i>视频监控</template>
               <el-menu-item-group v-if="authority.videoSetting">
                 <el-menu-item index="/main/video-setting">视频监控设置</el-menu-item>
@@ -210,7 +213,7 @@
                 <el-menu-item index="/main/video-plaza">视频广场</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="12" class="submenu-item" v-if="authority.event">
+            <el-submenu index="13" class="submenu-item" v-if="authority.event">
               <template slot="title"><i class="iconfont icon-shijian"></i>事件管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/event">事件列表</el-menu-item>

@@ -20,31 +20,6 @@
               <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
             </div>
             <div class="item">
-              <span>开始时间</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.startDate"
-                type="date"
-                :clearable="false"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="item">
-              <span>结束时间</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.endDate"
-                type="date"
-                :clearable="false"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="operate"></div>
-          </div>
-          <div class="search-input">
-            <div class="item">
               <span>执行部门</span>
               <el-select v-model="nowSearch.sector" style="width: 160px;" clearable filterable placeholder="请选择执行部门">
                 <el-option
@@ -61,6 +36,9 @@
                 <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </div>
+            <div class="operate"></div>
+          </div>
+          <div class="search-input">
             <div class="item">
               <span>执行人员</span>
               <el-select v-model="nowSearch.crews" style="width: 160px;" multiple collapse-tags placeholder="请选择执行人员">
@@ -71,6 +49,20 @@
                   :value="item.user_id">
                 </el-option>
               </el-select>
+            </div>
+            <div class="item date">
+              <span>选择时段</span>
+              <el-date-picker
+                style="width: 280px;"
+                v-model="nowSearch.date"
+                type="daterange"
+                value-format="yyyy-MM-dd"
+                :clearable="false"
+                :picker-options="pickerOptions"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
             </div>
             <div class="operate">
               <el-button type="primary" @click="searchList">搜索</el-button>
@@ -198,15 +190,20 @@ export default{
         endDate: '',
         sector: '',
         state: '',
-        crews: '0'
+        crews: '0',
+        date: []
       },
       nowSearch: {
         name: '',
-        startDate: '',
-        endDate: '',
         sector: '',
         state: '',
-        crews: []
+        crews: [],
+        date: []
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now()
+        }
       },
       sectorOptions: [],
       stateOptions: [
@@ -238,10 +235,8 @@ export default{
   created () {
     // 获取当天日期
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
-    this.search.startDate = nowDate
-    this.search.endDate = nowDate
-    this.nowSearch.startDate = nowDate
-    this.nowSearch.endDate = nowDate
+    this.search.date = [nowDate, nowDate]
+    this.nowSearch.date = [nowDate, nowDate]
     // 今天开始毫秒
     let todayStartTime = nowDate + ' 00:00:00'
     this.todayStartTime = new Date(todayStartTime).getTime()
@@ -291,11 +286,10 @@ export default{
       }
       this.search = {
         name: this.nowSearch.name,
-        startDate: this.nowSearch.startDate,
-        endDate: this.nowSearch.endDate,
         sector: this.nowSearch.sector,
         state: this.nowSearch.state,
-        crews: crews
+        crews: crews,
+        date: this.nowSearch.date
       }
       // 当前页码初始化
       this.nowPage = 1
@@ -304,14 +298,15 @@ export default{
     },
     // 获取列表数据
     getListData () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         project_id: this.projectId,
         projectN_id: this.projectId,
         planN_name: this.search.name,
-        startN_date: this.search.startDate,
-        endN_date: this.search.endDate,
+        startN_date: date[0] || '',
+        endN_date: date[1] || '',
         ogz_id: this.search.sector,
         continueN_state: this.search.state,
         userN_id: this.search.crews,
@@ -599,14 +594,15 @@ export default{
     },
     /* 导出 */
     downFile () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         project_id: this.projectId,
         projectN_id: this.projectId,
         planN_name: this.search.name,
-        startN_date: this.search.startDate,
-        endN_date: this.search.endDate,
+        startN_date: date[0] || '',
+        endN_date: date[1] || '',
         ogz_id: this.search.sector,
         continueN_state: this.search.state,
         userN_id: this.search.crews,
@@ -688,6 +684,9 @@ export default{
               line-height: 34px;
               font-size: 14px;
             }
+          }
+          .date{
+            width: 420px;
           }
           .operate{
             display: table-cell;

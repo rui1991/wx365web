@@ -19,9 +19,9 @@
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column prop="ins_name" width="160" label="检查项"></el-table-column>
+          <el-table-column prop="ins_name" width="160" label="检查项" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="check_content" :show-overflow-tooltip="true" label="检查内容及要求"></el-table-column>
-          <el-table-column label="执行人" width="100">
+          <el-table-column label="执行人" width="100" :show-overflow-tooltip="true">
             <template slot-scope="scope">
               <span v-if="scope.row.user_name">{{ scope.row.user_name }}</span>
               <span v-else>-</span>

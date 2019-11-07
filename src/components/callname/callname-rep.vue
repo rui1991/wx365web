@@ -36,26 +36,18 @@
             </div>
           </div>
           <div class="search-input">
-            <div class="item">
-              <span>开始日期</span>
+            <div class="item date">
+              <span>选择时段</span>
               <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.startDate"
-                type="date"
-                :clearable="false"
+                style="width: 280px;"
+                v-model="nowSearch.date"
+                type="daterange"
                 value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="item">
-              <span>结束日期</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.endDate"
-                type="date"
                 :clearable="false"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
+                :picker-options="pickerOptions"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
               </el-date-picker>
             </div>
             <div class="operate">
@@ -66,7 +58,7 @@
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column prop="user_name" width="150" label="姓名"></el-table-column>
+          <el-table-column prop="user_name" width="150" label="姓名" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="adate" width="180" label="日期"></el-table-column>
           <el-table-column :show-overflow-tooltip="true" label="点名地址">
             <template slot-scope="scope">
@@ -121,14 +113,17 @@ export default{
       search: {
         name: '',
         result: '',
-        startDate: this.$common.getBeforeDate(),
-        endDate: this.$common.getBeforeDate()
+        date: []
       },
       nowSearch: {
         name: '',
         result: '',
-        startDate: this.$common.getBeforeDate(),
-        endDate: this.$common.getBeforeDate()
+        date: []
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now() - 8.64e7
+        }
       },
       resultOptions: [
         {
@@ -156,6 +151,9 @@ export default{
 
   },
   mounted () {
+    const nowDate = this.$common.getBeforeDate()
+    this.search.date = [nowDate, nowDate]
+    this.nowSearch.date = [nowDate, nowDate]
     // 获取列表数据
     this.getListData()
   },
@@ -174,8 +172,9 @@ export default{
   methods: {
     // 搜索
     searchList () {
-      const startDate = this.nowSearch.startDate
-      const endDate = this.nowSearch.endDate
+      let date = this.search.date || []
+      const startDate = date[0] || ''
+      const endDate = date[1] || ''
       const fate = this.getDateDiff(startDate, endDate)
       if (fate) {
         this.$message({
@@ -193,14 +192,15 @@ export default{
     },
     // 获取列表数据
     getListData () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         project_id: this.projectId,
         user_name: this.search.name,
         over: this.search.result,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
         page: this.nowPage,
         limit1: this.limit
       }
@@ -275,13 +275,14 @@ export default{
     },
     /* 导出 */
     downFile () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         project_id: this.projectId,
         user_name: this.search.name,
         over: this.search.result,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate
+        start_date: date[0] || '',
+        end_date: date[1] || ''
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true
@@ -291,14 +292,15 @@ export default{
       window.location.href = this.sysetApi() + '/v2.0/rollCallResultEO?' + params
     },
     downAllFile () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         project_id: this.projectId,
         user_name: this.search.name,
         over: this.search.result,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate
+        start_date: date[0] || '',
+        end_date: date[1] || ''
       }
       params = this.$qs.stringify(params)
       this.downAllDisabled = true
@@ -355,6 +357,9 @@ export default{
               line-height: 34px;
               font-size: 14px;
             }
+          }
+          .date{
+            width: 420px;
           }
           .operate{
             display: table-cell;

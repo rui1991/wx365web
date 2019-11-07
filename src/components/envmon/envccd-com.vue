@@ -49,6 +49,23 @@
             <el-radio label="dry">无水自动报警</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item label="设置压力" style="width: 440px;" v-show="formData.type === '无线压力变送器'">
+          <el-col :span="11">
+            <el-form-item>
+              <el-input style="width: 140px;" placeholder="最小压力" type="number" v-model.number="formData.presMin">
+                <template slot="append">kPa</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col class="line" :span="2">-</el-col>
+          <el-col :span="11">
+            <el-form-item>
+              <el-input style="width: 140px;" placeholder="最大压力" type="number" v-model.number="formData.presMax">
+                <template slot="append">kPa</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
         <el-form-item label="设置温度" style="width: 440px;" v-if="formData.type === '安全用电'">
           <el-col :span="11">
             <el-form-item>
@@ -106,12 +123,6 @@
         </el-form-item>
         <el-form-item label="DevEui" prop="DevEui">
           <el-input :disabled="true" v-model.trim="formData.DevEui" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="AppEui" prop="AppEui">
-          <el-input :disabled="true" v-model.trim="formData.AppEui" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="AppKey" prop="AppKey">
-          <el-input :disabled="true" v-model.trim="formData.AppKey" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="心跳时间" prop="beat">
           <el-input placeholder="请输入心跳时间" type="number" v-model="formData.beat">
@@ -180,18 +191,17 @@ export default{
         moisMin: '',
         moisMax: '',
         waterRule: '',
+        presMin: '',
+        presMax: '',
         etempMin: '',
         etempMax: '',
         voltageMin: '',
         voltageMax: '',
         electMin: '',
         electMax: '',
-        code: '',
         posName: '',
         posId: '',
         DevEui: '',
-        AppEui: '',
-        AppKey: '',
         beat: '',
         lastTime: '',
         describe: ''
@@ -248,6 +258,11 @@ export default{
       // 无线水浸
       let waterVal = ''
       const waterRule = this.formData.waterRule
+      // 无线压力变送器
+      let presMinVal = ''
+      const presMin = Number.parseFloat(this.formData.presMin)
+      let presMaxVal = ''
+      const presMax = Number.parseFloat(this.formData.presMax)
       // 安全用电
       let etempMinVal = ''
       const etempMin = Number.parseFloat(this.formData.etempMin)
@@ -273,6 +288,11 @@ export default{
         case '无线水浸':
           waterVal = waterRule
           break
+        case '无线压力变送器':
+          let pressure = this.compareSize(presMin, presMax)
+          presMinVal = pressure.min
+          presMaxVal = pressure.max
+          break
         case '安全用电':
           let etemp = this.compareSize(etempMin, etempMax)
           etempMinVal = etemp.min
@@ -295,17 +315,16 @@ export default{
         min_humidity: moisMinVal,
         max_humidity: moisMaxVal,
         dry_wet: waterVal,
+        min_pressure: presMinVal,
+        max_pressure: presMaxVal,
         min_temp: etempMinVal,
         max_temp: etempMaxVal,
         min_voltage: voltageMinVal,
         max_voltage: voltageMaxVal,
         min_current: electMinVal,
         max_current: electMaxVal,
-        authCode: this.formData.code,
         location_id: this.formData.posId,
         devEUI: this.formData.DevEui,
-        appEUI: this.formData.AppEui,
-        appKey: this.formData.AppKey,
         out_time: this.formData.beat,
         description: this.formData.describe
       }

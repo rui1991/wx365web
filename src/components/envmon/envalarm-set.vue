@@ -3,7 +3,7 @@
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>设备管理</el-breadcrumb-item>
+          <el-breadcrumb-item>环境监控管理</el-breadcrumb-item>
           <el-breadcrumb-item><router-link to="/main/envalarm">告警记录</router-link></el-breadcrumb-item>
           <el-breadcrumb-item>告警设置</el-breadcrumb-item>
         </el-breadcrumb>
@@ -73,11 +73,11 @@
 <script>
 import { mapState } from 'vuex'
 // 引入新增组件
-import addModule from '@/components/facility/envalarm-add'
+import addModule from '@/components/envmon/envalarm-add'
 // 引入编辑组件
-import comModule from '@/components/facility/envalarm-com'
+import comModule from '@/components/envmon/envalarm-com'
 // 引入删除组件
-import delModule from '@/components/facility/envalarm-del'
+import delModule from '@/components/envmon/envalarm-del'
 export default{
   name: 'envalarmSet',
   data () {

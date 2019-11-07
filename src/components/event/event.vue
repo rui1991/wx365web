@@ -34,24 +34,18 @@
             <div class="operate"></div>
           </div>
           <div class="search-input">
-            <div class="item">
+            <div class="item date">
               <span>创建时段</span>
               <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.startDate"
-                type="date"
+                style="width: 280px;"
+                v-model="nowSearch.date"
+                type="daterange"
                 value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="item">
-              <span>----</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.endDate"
-                type="date"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
+                :clearable="true"
+                :picker-options="pickerOptions"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
               </el-date-picker>
             </div>
             <div class="operate">
@@ -157,15 +151,18 @@ export default{
         name: '',
         state: '',
         creCrew: '',
-        startDate: '',
-        endDate: ''
+        date: []
       },
       nowSearch: {
         name: '',
         state: '',
         creCrew: '',
-        startDate: '',
-        endDate: ''
+        date: []
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now()
+        }
       },
       stateOptions: [
         {
@@ -266,6 +263,7 @@ export default{
     },
     // 获取列表数据
     getListData () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
@@ -273,8 +271,8 @@ export default{
         eventString: this.search.name,
         event_state: this.search.state,
         userN_id: this.search.creCrew,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
         page: this.nowPage,
         limit1: this.limit
       }
@@ -433,6 +431,9 @@ export default{
               line-height: 34px;
               font-size: 14px;
             }
+          }
+          .date{
+            width: 420px;
           }
           .operate{
             display: table-cell;

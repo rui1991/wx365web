@@ -9,7 +9,7 @@ const Cipher = () => import(/* webpackChunkName: "group-login" */ '@/components/
 const Authcode = () => import(/* webpackChunkName: "group-login" */ '@/components/login/authcode')
 
 /* 展会环境监控管理 */
-const Monitdemo = () => import(/* webpackChunkName: "group-login" */ '@/components/monitdemo')
+const Monitfull = () => import(/* webpackChunkName: "group-login" */ '@/components/monitfull')
 
 /* 找回密码 */
 const Findpwd = () => import(/* webpackChunkName: "group-findpwd" */ '@/components/findpwd')
@@ -111,23 +111,25 @@ const Work = () => import(/* webpackChunkName: "group-work" */ '@/components/wor
 // 异常处理规则设置
 const Rule = () => import(/* webpackChunkName: "group-rule" */ '@/components/work/rule')
 
+/* 环境监控管理 */
+// 环境监控设置
+const Envmonit = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/envmon/envmonit')
+// 环境监控传感器
+const Envccd = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/envmon/envccd')
+// 环境监控传感器历史记录
+const EnvccdLog = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/envmon/envccd-log')
+// 环境监控网关
+const Envswg = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/envmon/envswg')
+// 告警记录
+const Envalarm = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/envmon/envalarm')
+// 告警设置
+const EnvalarmSet = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/envmon/envalarm-set')
+// 环境监控管理
+const Monitman = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/envmon/monitman')
+
 /* 设备管理 */
 // 硬件设备管理
 const Hardfac = () => import(/* webpackChunkName: "group-hardfac" */ '@/components/facility/hardfac')
-// 环境监控设置
-const Envmonit = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/facility/envmonit')
-// 环境监控传感器
-const Envccd = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/facility/envccd')
-// 环境监控传感器历史记录
-const EnvccdLog = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/facility/envccd-log')
-// 环境监控网关
-const Envswg = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/facility/envswg')
-// 告警记录
-const Envalarm = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/facility/envalarm')
-// 告警设置
-const EnvalarmSet = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/facility/envalarm-set')
-// 环境监控管理
-const Monitman = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/facility/monitman')
 
 /* 报表管理 */
 // 巡检任务执行报表
@@ -186,9 +188,9 @@ export default new Router({
       component: Findpwd
     },
     {
-      path: '/monitdemo',
-      name: 'monitdemo',
-      component: Monitdemo
+      path: '/monitfull',
+      name: 'monitfull',
+      component: Monitfull
     },
     {
       path: '/main',
@@ -520,14 +522,6 @@ export default new Router({
           }
         },
         {
-          path: 'hardfac',
-          name: 'hardfac',
-          component: Hardfac,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
           path: 'envmonit',
           name: 'envmonit',
           component: Envmonit,
@@ -555,6 +549,14 @@ export default new Router({
           ]
         },
         {
+          path: 'monitman',
+          name: 'monitman',
+          component: Monitman,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
           path: 'envccd-log',
           name: 'envccdLog',
           component: EnvccdLog,
@@ -579,9 +581,9 @@ export default new Router({
           }
         },
         {
-          path: 'monitman',
-          name: 'monitman',
-          component: Monitman,
+          path: 'hardfac',
+          name: 'hardfac',
+          component: Hardfac,
           meta: {
             keepAlive: false
           }

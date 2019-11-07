@@ -3,8 +3,8 @@
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>设备管理</el-breadcrumb-item>
-          <el-breadcrumb-item><router-link to="/main/envmonit/envccd">环境监控</router-link></el-breadcrumb-item>
+          <el-breadcrumb-item>环境监控管理</el-breadcrumb-item>
+          <el-breadcrumb-item><router-link to="/main/envmonit/envccd">环境监控传感器</router-link></el-breadcrumb-item>
           <el-breadcrumb-item>设备历史记录</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
@@ -91,6 +91,32 @@
           <el-table-column label="设备状态">
             <template slot-scope="scope">
               <span v-if="scope.row.sensor_state">{{ scope.row.sensor_state }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-table class="list-table" :data="tableData" border v-else-if="type == 36" style="width: 100%">
+          <el-table-column type="index" width="50" label="序号"></el-table-column>
+          <el-table-column label="上报时间">
+            <template slot-scope="scope">
+              <span>{{ scope.row.create_time | formatDate}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="压力值">
+            <template slot-scope="scope">
+              <span v-if="scope.row.pressure">{{ scope.row.pressure }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="电压值">
+            <template slot-scope="scope">
+              <span v-if="scope.row.voltage_value">{{ scope.row.voltage_value }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="电压状态">
+            <template slot-scope="scope">
+              <span v-if="scope.row.battery_state">{{ scope.row.battery_state }}</span>
               <span v-else>-</span>
             </template>
           </el-table-column>

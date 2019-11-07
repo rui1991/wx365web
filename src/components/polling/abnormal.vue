@@ -15,29 +15,6 @@
               <el-input style="width: 160px;" v-model.trim="nowSearch.site"></el-input>
             </div>
             <div class="item">
-              <span>执行时间</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.startDate"
-                type="date"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="item">
-              <span>----</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.endDate"
-                type="date"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="operate"></div>
-          </div>
-          <div class="search-input">
-            <div class="item">
               <span>执行人员</span>
               <el-input style="width: 160px;" v-model.trim="nowSearch.crew"></el-input>
             </div>
@@ -47,6 +24,23 @@
                 <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </div>
+            <div class="operate"></div>
+          </div>
+          <div class="search-input">
+            <div class="item date">
+              <span>执行时段</span>
+              <el-date-picker
+                style="width: 280px;"
+                v-model="nowSearch.date"
+                type="daterange"
+                value-format="yyyy-MM-dd"
+                :clearable="true"
+                :picker-options="pickerOptions"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+            </div>
             <div class="operate">
               <el-button type="primary" @click="searchList">搜索</el-button>
             </div>
@@ -54,19 +48,19 @@
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column label="巡检地址">
+          <el-table-column label="巡检地址" :show-overflow-tooltip="true">
             <template slot-scope="scope">
               <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row.isd_id)">{{ scope.row.position_name }}</a>
             </template>
           </el-table-column>
-          <el-table-column prop="ins_name" label="检查项"></el-table-column>
+          <el-table-column prop="ins_name" label="检查项" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column label="执行人">
             <template slot-scope="scope">
               <span v-if="scope.row.user_name">{{ scope.row.user_name }}</span>
               <span v-else>-</span>
             </template>
           </el-table-column>
-          <el-table-column label="执行时间">
+          <el-table-column label="执行时间" :show-overflow-tooltip="true">
             <template slot-scope="scope">
               <span>{{ scope.row.modification_time | formatDate }}</span>
             </template>
@@ -98,7 +92,7 @@
               <span v-else>-</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作">
+          <el-table-column label="操作" width="160">
             <template slot-scope="scope">
               <a href="javascript:void(0);" class="operate com" @click="addClick(scope.row.isd_id, scope.row.position_name)" v-if="scope.row.wo_state === undefined">提单</a>
               <span class="operate forbid" v-else-if="scope.row.wo_state !== undefined">提单</span>
@@ -149,17 +143,20 @@ export default{
     return {
       search: {
         site: '',
-        startDate: '',
-        endDate: '',
         crew: '',
-        state: ''
+        state: '',
+        date: []
       },
       nowSearch: {
         site: '',
-        startDate: '',
-        endDate: '',
         crew: '',
-        state: ''
+        state: '',
+        date: []
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now()
+        }
       },
       stateOptions: [
         {
@@ -217,13 +214,14 @@ export default{
     },
     // 获取列表数据
     getListData () {
+      let date = this.search.date
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         projectN_id: this.projectId,
         positionN_name: this.search.site,
-        startN_date: this.search.startDate,
-        endN_date: this.search.endDate,
+        startN_date: date[0] || '',
+        endN_date: date[1] || '',
         userN_name: this.search.crew,
         woN_state: this.search.state,
         page: this.nowPage,
@@ -348,6 +346,9 @@ export default{
               line-height: 34px;
               font-size: 14px;
             }
+          }
+          .date{
+            width: 420px;
           }
           .operate{
             display: table-cell;

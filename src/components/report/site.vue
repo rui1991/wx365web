@@ -21,39 +21,31 @@
           <div class="search">
             <div class="search-input" style="margin-bottom: 10px;">
               <div class="item">
-                <span>开始日期</span>
-                <el-date-picker
-                  style="width: 160px;"
-                  v-model="nowSearch.startDate"
-                  type="date"
-                  :clearable="false"
-                  value-format="yyyy-MM-dd"
-                  placeholder="选择日期">
-                </el-date-picker>
-              </div>
-              <div class="item">
-                <span>结束日期</span>
-                <el-date-picker
-                  style="width: 160px;"
-                  v-model="nowSearch.endDate"
-                  type="date"
-                  :clearable="false"
-                  value-format="yyyy-MM-dd"
-                  placeholder="选择日期">
-                </el-date-picker>
-              </div>
-              <div class="operate">
-                <el-button type="primary" @click="searchList">搜索</el-button>
-              </div>
-            </div>
-            <div class="search-input">
-              <div class="item">
                 <span>地址名称</span>
                 <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
               </div>
               <div class="item">
                 <span>任务名称</span>
                 <el-input style="width: 160px;" v-model.trim="nowSearch.task"></el-input>
+              </div>
+              <div class="operate">
+                <el-button type="primary" @click="searchList">搜索</el-button>
+              </div>
+            </div>
+            <div class="search-input">
+              <div class="item date">
+                <span>选择时段</span>
+                <el-date-picker
+                  style="width: 280px;"
+                  v-model="nowSearch.date"
+                  type="daterange"
+                  value-format="yyyy-MM-dd"
+                  :clearable="false"
+                  :picker-options="pickerOptions"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期">
+                </el-date-picker>
               </div>
               <div class="operate">
                 <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
@@ -97,16 +89,19 @@ export default{
   data () {
     return {
       search: {
-        startDate: '',
-        endDate: '',
+        date: [],
         name: '',
         task: ''
       },
       nowSearch: {
-        startDate: '',
-        endDate: '',
+        date: [],
         name: '',
         task: ''
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now()
+        }
       },
       tableData: [],
       total: 0,
@@ -121,16 +116,16 @@ export default{
 
   },
   mounted () {
-    // 开始时间
-    let startDate = ''
-    this.startDate ? startDate = this.startDate : startDate = this.$common.getNowDate('yyyy-mm-dd')
-    this.search.startDate = startDate
-    this.nowSearch.startDate = startDate
-    // 结束时间
-    let endDate = ''
-    this.endDate ? endDate = this.endDate : endDate = this.$common.getNowDate('yyyy-mm-dd')
-    this.search.endDate = endDate
-    this.nowSearch.endDate = endDate
+    // 时段
+    const nowDate = this.$common.getNowDate('yyyy-mm-dd')
+    if (this.date.length === 0) {
+      this.search.date = [nowDate, nowDate]
+      this.nowSearch.date = [nowDate, nowDate]
+      this.setReportDate([nowDate, nowDate])
+    } else {
+      this.search.date = this.date
+      this.nowSearch.date = this.date
+    }
     if (this.organizeId) {
       this.downDisabled = false
       // 获取列表数据
@@ -146,8 +141,7 @@ export default{
     ]),
     ...mapState('report', [
       'organizeId',
-      'startDate',
-      'endDate'
+      'date'
     ])
   },
   methods: {
@@ -176,22 +170,20 @@ export default{
       // 获取列表数据
       this.getListData()
       // 设置报表时间
-      const date = {
-        startDate: this.search.startDate,
-        endDate: this.search.endDate
-      }
+      const date = this.search.date
       this.setReportDate(date)
     },
     // 获取列表数据
     getListData () {
       if (!this.organizeId) return
+      let date = this.search.date
       let params = {
         organize_id: this.organizeId,
         project_name: '',
         position_name: this.search.name,
         plan_name: this.search.task,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
+        start_date: date[0],
+        end_date: date[1],
         page: this.nowPage,
         limit1: this.limit
       }
@@ -269,13 +261,14 @@ export default{
     },
     /* 导出文件 */
     downFile () {
+      const date = this.search.date
       let params = {
         organize_id: this.organizeId,
         project_name: '',
         position_name: this.search.name,
         plan_name: this.search.task,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate
+        start_date: date[0],
+        end_date: date[1]
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true
@@ -354,6 +347,9 @@ export default{
                   line-height: 34px;
                   font-size: 14px;
                 }
+              }
+              .date{
+                width: 420px;
               }
               .operate{
                 display: table-cell;

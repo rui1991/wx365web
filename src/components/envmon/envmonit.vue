@@ -3,7 +3,7 @@
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>设备管理</el-breadcrumb-item>
+          <el-breadcrumb-item>环境监控管理</el-breadcrumb-item>
           <el-breadcrumb-item>环境监控设置</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>

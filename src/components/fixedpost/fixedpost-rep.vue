@@ -10,26 +10,18 @@
       <el-main class="module-main">
         <div class="search">
           <div class="search-input" style="margin-bottom: 10px;">
-            <div class="item">
-              <span>开始时间</span>
+            <div class="item date">
+              <span>选择时段</span>
               <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.startDate"
-                type="date"
-                :clearable="false"
+                style="width: 280px;"
+                v-model="nowSearch.date"
+                type="daterange"
                 value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="item">
-              <span>结束时间</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.endDate"
-                type="date"
                 :clearable="false"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
+                :picker-options="pickerOptions"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
               </el-date-picker>
             </div>
             <div class="operate">
@@ -109,14 +101,17 @@ export default{
   data () {
     return {
       search: {
-        startDate: '',
-        endDate: '',
+        date: [],
         station: ''
       },
       nowSearch: {
-        startDate: '',
-        endDate: '',
+        date: [],
         station: ''
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now()
+        }
       },
       stationOptions: [],
       tableData: [],
@@ -133,10 +128,8 @@ export default{
   created () {
     // 获取当天日期
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
-    this.search.startDate = nowDate
-    this.search.endDate = nowDate
-    this.nowSearch.startDate = nowDate
-    this.nowSearch.endDate = nowDate
+    this.search.date = [nowDate, nowDate]
+    this.nowSearch.date = [nowDate, nowDate]
     // 获取列表数据
     this.getListData()
     // 获取固定岗列表
@@ -168,12 +161,13 @@ export default{
     },
     // 获取列表数据
     getListData () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         project_id: this.projectId,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
         position_id: this.search.station,
         page: this.nowPage,
         limit1: this.limit
@@ -266,12 +260,13 @@ export default{
     },
     /* 导出 */
     downFile () {
+      let date = this.search.date
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         project_id: this.projectId,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
         position_id: this.search.station
       }
       params = this.$qs.stringify(params)
@@ -327,6 +322,9 @@ export default{
               line-height: 34px;
               font-size: 14px;
             }
+          }
+          .date{
+            width: 420px;
           }
           .operate{
             display: table-cell;

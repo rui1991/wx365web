@@ -24,7 +24,7 @@
     </div>
     <el-table class="list-table" :data="tableData" border style="width: 100%">
       <el-table-column type="index" fixed width="50" label="序号"></el-table-column>
-      <el-table-column prop="user_name" fixed width="80" label="姓名"></el-table-column>
+      <el-table-column prop="user_name" fixed width="80" label="姓名" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="position_name" fixed width="150" :show-overflow-tooltip="true" label="位置名称"></el-table-column>
       <el-table-column label="日期">
         <el-table-column width="80" v-for="item in days" :label="item.date" :key="item.date">

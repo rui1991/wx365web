@@ -11,39 +11,11 @@
         <div class="search">
           <div class="search-input" style="margin-bottom: 10px;">
             <div class="item">
-              <span>开始时间</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.startDate"
-                type="date"
-                :clearable="false"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="item">
-              <span>结束时间</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.endDate"
-                type="date"
-                :clearable="false"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="item">
               <span>岗位名称</span>
               <el-select v-model="nowSearch.station" clearable filterable style="width: 160px;" placeholder="请选择岗位名称">
                 <el-option v-for="item in stationOptions" :key="item.position_id" :label="item.position_name" :value="item.position_id"></el-option>
               </el-select>
             </div>
-            <div class="operate">
-              <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
-            </div>
-          </div>
-          <div class="search-input" style="margin-bottom: 10px;">
             <div class="item">
               <span>人员姓名</span>
               <el-input style="width: 160px;" v-model.trim="nowSearch.crew"></el-input>
@@ -53,6 +25,26 @@
               <el-select v-model="nowSearch.state" clearable style="width: 160px;" placeholder="请选择打卡状态">
                 <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
+            </div>
+            <div class="operate">
+              <el-button type="primary" @click="searchList">搜索</el-button>
+              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+            </div>
+          </div>
+          <div class="search-input" style="margin-bottom: 10px;">
+            <div class="item date">
+              <span>选择时段</span>
+              <el-date-picker
+                style="width: 280px;"
+                v-model="nowSearch.date"
+                type="daterange"
+                value-format="yyyy-MM-dd"
+                :clearable="false"
+                :picker-options="pickerOptions"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
             </div>
             <div class="operate"></div>
           </div>
@@ -107,18 +99,21 @@ export default{
   data () {
     return {
       search: {
-        startDate: '',
-        endDate: '',
         station: '',
         crew: '',
-        state: ''
+        state: '',
+        date: []
       },
       nowSearch: {
-        startDate: '',
-        endDate: '',
         station: '',
         crew: '',
-        state: ''
+        state: '',
+        date: []
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now()
+        }
       },
       stationOptions: [],
       stateOptions: [
@@ -146,10 +141,8 @@ export default{
   created () {
     // 获取当天日期
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
-    this.search.startDate = nowDate
-    this.search.endDate = nowDate
-    this.nowSearch.startDate = nowDate
-    this.nowSearch.endDate = nowDate
+    this.search.date = [nowDate, nowDate]
+    this.nowSearch.date = [nowDate, nowDate]
     // 获取列表数据
     this.getListData()
     // 获取固定岗列表
@@ -175,12 +168,13 @@ export default{
     },
     // 获取列表数据
     getListData () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         project_id: this.projectId,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
         position_id: this.search.station,
         user_name: this.search.crew,
         record_state: this.search.state,
@@ -260,12 +254,13 @@ export default{
     },
     /* 导出 */
     downFile () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         project_id: this.projectId,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
         position_id: this.search.station,
         user_name: this.search.crew,
         record_state: this.search.state
@@ -319,6 +314,9 @@ export default{
               line-height: 34px;
               font-size: 14px;
             }
+          }
+          .date{
+            width: 420px;
           }
           .operate{
             display: table-cell;

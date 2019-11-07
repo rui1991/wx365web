@@ -20,26 +20,18 @@
         <el-main class="module-main">
           <div class="search">
             <div class="search-input" style="margin-bottom: 10px;">
-              <div class="item">
-                <span>开始时间</span>
+              <div class="item date">
+                <span>选择时段</span>
                 <el-date-picker
-                  style="width: 160px;"
-                  v-model="nowSearch.startDate"
-                  type="date"
-                  :clearable="false"
+                  style="width: 280px;"
+                  v-model="nowSearch.date"
+                  type="daterange"
                   value-format="yyyy-MM-dd"
-                  placeholder="选择日期">
-                </el-date-picker>
-              </div>
-              <div class="item">
-                <span>结束时间</span>
-                <el-date-picker
-                  style="width: 160px;"
-                  v-model="nowSearch.endDate"
-                  type="date"
                   :clearable="false"
-                  value-format="yyyy-MM-dd"
-                  placeholder="选择日期">
+                  :picker-options="pickerOptions"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期">
                 </el-date-picker>
               </div>
               <div class="operate">
@@ -168,14 +160,17 @@ export default{
   data () {
     return {
       search: {
-        startDate: this.$common.getBeforeDate(),
-        endDate: this.$common.getBeforeDate(),
+        date: [],
         name: ''
       },
       nowSearch: {
-        startDate: this.$common.getBeforeDate(),
-        endDate: this.$common.getBeforeDate(),
+        date: [],
         name: ''
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now() - 8.64e7
+        }
       },
       orgId: 0,
       orgType: 0,
@@ -193,7 +188,9 @@ export default{
     }
   },
   created () {
-
+    const nowDate = this.$common.getBeforeDate()
+    this.search.date = [nowDate, nowDate]
+    this.nowSearch.date = [nowDate, nowDate]
   },
   components: {
     orgModule,
@@ -233,8 +230,9 @@ export default{
     },
     // 搜索
     searchList () {
-      const startDate = this.nowSearch.startDate
-      const endDate = this.nowSearch.endDate
+      let date = this.search.date || []
+      const startDate = date[0]
+      const endDate = date[1]
       const fate = this.getDateDiff(startDate, endDate)
       if (fate) {
         this.$message({
@@ -259,11 +257,12 @@ export default{
       if (!this.orgId) {
         return
       }
+      let date = this.search.date || []
       let params = {
         user_id: this.userId,
         ogz_id: this.orgId,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
         page: this.nowPage,
         limit1: this.limit
       }
@@ -296,12 +295,13 @@ export default{
       })
     },
     getListDetData () {
+      let date = this.search.date || []
       let params = {
         user_id: this.userId,
         project_id: this.proId,
         user_name: this.search.name,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
         page: this.nowPage,
         limit1: this.limit
       }
@@ -624,13 +624,14 @@ export default{
     },
     /* 导出 */
     downFile () {
+      let date = this.search.date || []
       if (this.orgType === 3) {
         let params = {
           user_id: this.userId,
           project_id: this.proId,
           user_name: this.search.name,
-          start_date: this.search.startDate,
-          end_date: this.search.endDate
+          start_date: date[0] || '',
+          end_date: date[1] || ''
         }
         params = this.$qs.stringify(params)
         this.downDisabled = true
@@ -642,8 +643,8 @@ export default{
         let params = {
           user_id: this.userId,
           ogz_id: this.orgId,
-          start_date: this.search.startDate,
-          end_date: this.search.endDate
+          start_date: date[0] || '',
+          end_date: date[1] || ''
         }
         params = this.$qs.stringify(params)
         this.downDisabled = true
@@ -712,6 +713,9 @@ export default{
                 line-height: 34px;
                 font-size: 14px;
               }
+            }
+            .date{
+              width: 420px;
             }
             .operate{
               display: table-cell;

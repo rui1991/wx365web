@@ -3,7 +3,7 @@
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>设备管理</el-breadcrumb-item>
+          <el-breadcrumb-item>环境监控管理</el-breadcrumb-item>
           <el-breadcrumb-item>告警记录</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
@@ -11,35 +11,9 @@
         <div class="search">
           <div class="search-input" style="margin-bottom: 10px;">
             <div class="item">
-              <span>告警时间</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.startDate"
-                type="date"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="item">
-              <span>----</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.endDate"
-                type="date"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="item">
               <span>设备名称</span>
               <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
             </div>
-            <div class="operate">
-              <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" @click="setClick">设置</el-button>
-            </div>
-          </div>
-          <div class="search-input">
             <div class="item">
               <span>设备类型</span>
               <el-select v-model="nowSearch.type" clearable style="width: 160px;" placeholder="请选择设备类型">
@@ -56,19 +30,39 @@
               <el-input style="width: 160px;" v-model.trim="nowSearch.position"></el-input>
             </div>
             <div class="operate">
+              <el-button type="primary" @click="searchList">搜索</el-button>
+              <el-button type="primary" @click="setClick">设置</el-button>
+            </div>
+          </div>
+          <div class="search-input">
+            <div class="item date">
+              <span>告警时段</span>
+              <el-date-picker
+                style="width: 280px;"
+                v-model="nowSearch.date"
+                type="daterange"
+                value-format="yyyy-MM-dd"
+                :clearable="false"
+                :picker-options="pickerOptions"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+            </div>
+            <div class="operate">
               <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
             </div>
           </div>
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column label="告警时间">
+          <el-table-column label="告警时间" :show-overflow-tooltip="true">
             <template slot-scope="scope">
               <span>{{ scope.row.alarm_time | formatDate }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="location_name" label="设备位置"></el-table-column>
-          <el-table-column label="设备名称" width="180">
+          <el-table-column label="设备名称" width="180" :show-overflow-tooltip="true">
             <template slot-scope="scope">
               <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row.lam_id)">{{ scope.row.node_name }}</a>
             </template>
@@ -116,26 +110,29 @@
 <script>
 import { mapState } from 'vuex'
 // 引入详情组件
-import detModule from '@/components/facility/envalarm-det'
+import detModule from '@/components/envmon/envalarm-det'
 // 引入追加日志组件
-import logModule from '@/components/facility/envalarm-log'
+import logModule from '@/components/envmon/envalarm-log'
 export default{
   name: 'envalarm',
   data () {
     return {
       search: {
-        startDate: '',
-        endDate: '',
         name: '',
         type: '',
-        position: ''
+        position: '',
+        date: []
       },
       nowSearch: {
-        startDate: '',
-        endDate: '',
         name: '',
         type: '',
-        position: ''
+        position: '',
+        date: []
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now()
+        }
       },
       typeOptions: [
         {
@@ -145,6 +142,10 @@ export default{
         {
           label: '无线水浸',
           value: '无线水浸'
+        },
+        {
+          label: '无线压力变送器',
+          value: '无线压力变送器'
         },
         {
           label: '无线烟感',
@@ -176,10 +177,8 @@ export default{
   created () {
     // 获取当天日期
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
-    this.search.startDate = nowDate
-    this.search.endDate = nowDate
-    this.nowSearch.startDate = nowDate
-    this.nowSearch.endDate = nowDate
+    this.search.date = [nowDate, nowDate]
+    this.nowSearch.date = [nowDate, nowDate]
     // 获取列表
     this.getListData()
   },
@@ -208,12 +207,13 @@ export default{
     },
     // 获取列表数据
     getListData () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         project_id: this.projectId,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
         node_name: this.search.name,
         node_type: this.search.type,
         location_name: this.search.position,
@@ -287,12 +287,13 @@ export default{
 
     /* 导出 */
     downFile () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         project_id: this.projectId,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
         node_name: this.search.name,
         node_type: this.search.type,
         location_name: this.search.position
@@ -353,6 +354,9 @@ export default{
               line-height: 34px;
               font-size: 14px;
             }
+          }
+          .date{
+            width: 420px;
           }
           .operate{
             display: table-cell;

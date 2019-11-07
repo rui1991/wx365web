@@ -53,12 +53,12 @@
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column label="设备名称">
+          <el-table-column label="设备名称" :show-overflow-tooltip="true">
             <template slot-scope="scope">
               <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row)">{{ scope.row.dname }}</a>
             </template>
           </el-table-column>
-          <el-table-column label="MAC地址/序列号">
+          <el-table-column label="MAC地址/序列号" :show-overflow-tooltip="true">
             <template slot-scope="scope">
               <span>{{scope.row.mac | filterMac(scope.row.dtype)}}</span>
             </template>
@@ -85,7 +85,7 @@
               <span v-else-if="scope.row.device_state === 2">电量不足</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="240">
+          <el-table-column label="操作" width="140">
             <template slot-scope="scope">
               <!--<a href="javascript:void(0);" class="operate com" @click="relateClick(scope.row.id, scope.row.dtype)" v-if="scope.row.dtype === 'sjwg'">设备关联</a>-->
               <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)" v-if="scope.row.dtype === 'sjwg' || scope.row.dtype === 'kqj'">编辑</a>

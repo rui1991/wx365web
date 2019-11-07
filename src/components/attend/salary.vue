@@ -51,7 +51,7 @@
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" fixed width="50" label="序号"></el-table-column>
-          <el-table-column prop="user_name" fixed width="120" label="姓名"></el-table-column>
+          <el-table-column prop="user_name" fixed width="120" label="姓名" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column fixed width="120" label="工号">
             <template slot-scope="scope">
               <span v-if="scope.row.pin">{{ scope.row.pin }}</span>

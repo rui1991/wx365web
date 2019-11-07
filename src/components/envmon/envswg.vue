@@ -1,13 +1,13 @@
 <template>
-  <div class="envccd">
+  <div class="envswg">
     <div class="search">
       <div class="search-input" style="margin-bottom: 10px;">
         <div class="item">
-          <span>设备名称</span>
+          <span>网关名称</span>
           <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
         </div>
         <div class="item">
-          <span>设备位置</span>
+          <span>网关位置</span>
           <el-input style="width: 160px;" v-model.trim="nowSearch.position"></el-input>
         </div>
         <div class="operate">
@@ -17,21 +17,10 @@
       </div>
       <div class="search-input">
         <div class="item">
-          <span>设备状态</span>
+          <span>网关状态</span>
           <el-select v-model="nowSearch.state" clearable style="width: 160px;" placeholder="请选择设备状态">
             <el-option
               v-for="item in stateOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </div>
-        <div class="item">
-          <span>设备类型</span>
-          <el-select v-model="nowSearch.type" clearable style="width: 160px;" placeholder="请选择设备类型">
-            <el-option
-              v-for="item in typeOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value">
@@ -50,24 +39,14 @@
           <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row)">{{ scope.row.name }}</a>
         </template>
       </el-table-column>
-      <el-table-column prop="location_name" label="设备位置"></el-table-column>
-      <el-table-column prop="node_cn_type" label="设备类型"></el-table-column>
-      <!--<el-table-column label="设备类型">-->
-        <!--<template slot-scope="scope">-->
-          <!--<span v-if="scope.row.type === 45">温湿度</span>-->
-          <!--<span v-else-if="scope.row.type === 25">无线水浸</span>-->
-          <!--<span v-else-if="scope.row.type === 39">无线烟感</span>-->
-          <!--<span v-else-if="scope.row.type === 44">报警设备</span>-->
-          <!--<span v-else>其它</span>-->
-        <!--</template>-->
-      <!--</el-table-column>-->
-      <el-table-column prop="devEUI" label="DevEui"></el-table-column>
+      <el-table-column prop="location_name" label="网关位置"></el-table-column>
+      <el-table-column prop="gatewayEUI" label="网关ID"></el-table-column>
+      <el-table-column prop="onlineTime" label="最后在线时间"></el-table-column>
       <el-table-column prop="online" label="状态"></el-table-column>
       <el-table-column label="操作" width="240">
         <template slot-scope="scope">
-          <a href="javascript:void(0);" class="operate com" @click="logClick(scope.row.devEUI, scope.row.name, scope.row.type)">历史记录</a>
           <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
-          <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.devEUI)">删除</a>
+          <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.gatewayEUI)">删除</a>
         </template>
       </el-table-column>
     </el-table>
@@ -106,7 +85,7 @@
     <!-- 删除 -->
     <del-module
       :parentDialog="delDialog"
-      :parentId="itemId"
+      :parentId="itemOId"
       @parentUpdata="delUpdata"
       @parentCancel="delCancel">
     </del-module>
@@ -116,28 +95,26 @@
 <script>
 import { mapState } from 'vuex'
 // 引入新增组件
-import addModule from '@/components/facility/envccd-add'
+import addModule from '@/components/envmon/envswg-add'
 // 引入编辑组件
-import comModule from '@/components/facility/envccd-com'
+import comModule from '@/components/envmon/envswg-com'
 // 引入详情组件
-import detModule from '@/components/facility/envccd-det'
+import detModule from '@/components/envmon/envswg-det'
 // 引入删除组件
-import delModule from '@/components/facility/envccd-del'
+import delModule from '@/components/envmon/envswg-del'
 export default{
-  name: 'envccd',
+  name: 'envswg',
   data () {
     return {
       search: {
         name: '',
         position: '',
-        state: '',
-        type: ''
+        state: ''
       },
       nowSearch: {
         name: '',
         position: '',
-        state: '',
-        type: ''
+        state: ''
       },
       stateOptions: [
         {
@@ -147,28 +124,6 @@ export default{
         {
           label: '离线',
           value: '离线'
-        }
-      ],
-      typeOptions: [
-        {
-          label: '温湿度',
-          value: 45
-        },
-        {
-          label: '无线水浸',
-          value: 25
-        },
-        {
-          label: '无线烟感',
-          value: 39
-        },
-        {
-          label: '安全用电',
-          value: 41
-        },
-        {
-          label: '报警设备',
-          value: 44
         }
       ],
       tableAllData: [],
@@ -181,30 +136,15 @@ export default{
       detDialog: false,
       itemData: {
         name: '',
-        typeValue: '',
-        type: '',
-        htempMin: '',
-        htempMax: '',
-        moisMin: '',
-        moisMax: '',
-        waterRule: '',
-        etempMin: '',
-        etempMax: '',
-        voltageMin: '',
-        voltageMax: '',
-        electMin: '',
-        electMax: '',
-        code: '',
+        id: '',
         posName: '',
         posId: '',
-        DevEui: '',
-        AppEui: '0000000000000001',
-        AppKey: '',
-        beat: '',
-        lastTime: '',
+        longitude: '',
+        latitude: '',
         describe: ''
       },
-      itemId: '',
+      itemOId: '',
+      itemId: 0,
       delDialog: false
     }
   },
@@ -246,13 +186,12 @@ export default{
         project_id: this.projectId,
         search: this.search.name,
         location_name: this.search.position,
-        online: this.search.state,
-        type: this.search.type
+        online: this.search.state
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.loraApi() + '/lora/selNodeList',
+        url: this.loraApi() + '/lora/selGwList',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -320,30 +259,14 @@ export default{
     },
     /* 编辑 */
     comClick (data) {
-      this.itemId = data.devEUI
+      this.itemId = data.id
       this.itemData = {
         name: data.name,
-        typeValue: data.type,
-        type: data.node_cn_type,
-        htempMin: data.min_temperature,
-        htempMax: data.max_temperature,
-        moisMin: data.min_humidity,
-        moisMax: data.max_humidity,
-        waterRule: data.dry_wet,
-        etempMin: data.min_temp,
-        etempMax: data.max_temp,
-        voltageMin: data.min_voltage,
-        voltageMax: data.max_voltage,
-        electMin: data.min_current,
-        electMax: data.max_current,
-        code: data.code,
+        id: data.gatewayEUI,
         posName: data.location_name,
         posId: data.location_id,
-        DevEui: data.devEUI,
-        AppEui: data.appEUI,
-        AppKey: data.appKey,
-        beat: data.out_time || '',
-        lastTime: data.onlineTime,
+        longitude: data.longitude,
+        latitude: data.latitude,
         describe: data.description
       }
       this.comDialog = true
@@ -360,27 +283,11 @@ export default{
     detClick (data) {
       this.itemData = {
         name: data.name,
-        typeValue: data.type,
-        type: data.node_cn_type,
-        htempMin: data.min_temperature,
-        htempMax: data.max_temperature,
-        moisMin: data.min_humidity,
-        moisMax: data.max_humidity,
-        waterRule: data.dry_wet,
-        etempMin: data.min_temp,
-        etempMax: data.max_temp,
-        voltageMin: data.min_voltage,
-        voltageMax: data.max_voltage,
-        electMin: data.min_current,
-        electMax: data.max_current,
-        code: data.code,
+        id: data.gatewayEUI,
         posName: data.location_name,
         posId: data.location_id,
-        DevEui: data.devEUI,
-        AppEui: data.appEUI,
-        AppKey: data.appKey,
-        beat: data.out_time || '',
-        lastTime: data.onlineTime,
+        longitude: data.longitude,
+        latitude: data.latitude,
         describe: data.description
       }
       this.detDialog = true
@@ -390,7 +297,7 @@ export default{
     },
     /* 删除 */
     delClick (id) {
-      this.itemId = id
+      this.itemOId = id
       this.delDialog = true
     },
     delCancel () {
@@ -401,25 +308,24 @@ export default{
       // 获取列表数据
       this.getListData()
     },
-    /* 历史记录 */
-    logClick (id, name, type) {
-      this.$router.push(
-        {
-          path: '/main/envccd-log',
-          query: {
-            id: id,
-            name: name,
-            type: type
-          }
-        }
-      )
+    /* 导出文件 */
+    downFile () {
+      let params = {
+
+      }
+      params = this.$qs.stringify(params)
+      this.downDisabled = true
+      setTimeout(() => {
+        this.downDisabled = false
+      }, 5000)
+      window.location.href = this.reportApi() + '/v3.4/selInspectPositionEO?' + params
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-  .envccd{
+  .envswg{
     .search{
       padding: 5px 0;
       .search-input{

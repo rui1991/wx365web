@@ -3,8 +3,7 @@ const state = {
   organizeId: 0,
   organizeType: 0,
   projectId: 0,
-  startDate: '',
-  endDate: ''
+  date: []
 }
 
 const getters = {
@@ -19,9 +18,8 @@ const mutations = {
     state.projectId = obj.proId
   },
   // 设置当前项目
-  SET_REPORT_DATE (state, obj) {
-    state.startDate = obj.startDate
-    state.endDate = obj.endDate
+  SET_REPORT_DATE (state, arr) {
+    state.date = arr
   }
 }
 

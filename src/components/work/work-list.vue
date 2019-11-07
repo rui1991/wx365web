@@ -2,19 +2,19 @@
   <div class="work-list">
     <el-table class="list-table" :data="tableData" border style="width: 100%">
       <el-table-column type="index" width="50" label="序号"></el-table-column>
-      <el-table-column label="工单名称">
+      <el-table-column label="工单名称" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <a href="javascript:void(0);" class="name" @click="detClick(scope.row.wo_id)">{{ scope.row.wo_name }}</a>
         </template>
       </el-table-column>
       <el-table-column prop="wo_from" label="工单来源"></el-table-column>
-      <el-table-column label="创建时间">
+      <el-table-column label="创建时间" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <span>{{ scope.row.create_time | formatDate }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="user_name" label="创建人"></el-table-column>
-      <el-table-column label="派单时间">
+      <el-table-column label="派单时间" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <span>{{ scope.row.dispatch_time | formatDate }}</span>
         </template>
@@ -147,13 +147,14 @@ export default{
   methods: {
     // 获取列表数据
     getListData () {
+      let date = this.parentSearch.date || []
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         projectN_id: this.projectId,
         woN_name: this.parentSearch.name,
-        startN_date: this.parentSearch.startDate,
-        endN_date: this.parentSearch.endDate,
+        startN_date: date[0] || '',
+        endN_date: date[1] || '',
         woN_from: this.parentSearch.source,
         businessN_type: this.parentSearch.sort,
         userN_id: this.parentSearch.crews,

@@ -15,29 +15,6 @@
               <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
             </div>
             <div class="item">
-              <span>开始时间</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.startDate"
-                type="date"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="item">
-              <span>结束时间</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.endDate"
-                type="date"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="operate"></div>
-          </div>
-          <div class="search-input">
-            <div class="item">
               <span>创建人员</span>
               <el-input style="width: 160px;" v-model.trim="nowSearch.crew"></el-input>
             </div>
@@ -52,6 +29,22 @@
                 </el-option>
               </el-select>
             </div>
+            <div class="operate"></div>
+          </div>
+          <div class="search-input">
+            <div class="item date">
+              <span>执行时段</span>
+              <el-date-picker
+                style="width: 280px;"
+                v-model="nowSearch.date"
+                type="daterange"
+                value-format="yyyy-MM-dd"
+                :clearable="true"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+            </div>
             <div class="operate">
               <el-button type="primary" @click="searchList">搜索</el-button>
               <el-button type="primary" @click="addClick">新增</el-button>
@@ -60,7 +53,7 @@
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column label="计划名称">
+          <el-table-column label="计划名称" :show-overflow-tooltip="true">
             <template slot-scope="scope">
               <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row.plan_id)">{{ scope.row.plan_name }}</a>
             </template>
@@ -136,17 +129,15 @@ export default{
     return {
       search: {
         name: '',
-        startDate: '',
-        endDate: '',
         crew: '',
-        sector: ''
+        sector: '',
+        date: []
       },
       nowSearch: {
         name: '',
-        startDate: '',
-        endDate: '',
         crew: '',
-        sector: ''
+        sector: '',
+        date: []
       },
       sectorOptions: [],
       tableData: [],
@@ -190,15 +181,16 @@ export default{
     },
     // 获取列表数据
     getListData () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         projectN_id: this.projectId,
         plan_name: this.search.name,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate,
         createN_user: this.search.crew,
         ogz_id: this.search.sector,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
         page: this.nowPage,
         limit1: this.limit
       }
@@ -380,6 +372,9 @@ export default{
               line-height: 34px;
               font-size: 14px;
             }
+          }
+          .date{
+            width: 420px;
           }
           .operate{
             display: table-cell;

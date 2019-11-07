@@ -33,26 +33,18 @@
             <div class="operate"></div>
           </div>
           <div class="search-input">
-            <div class="item">
-              <span>创建时段</span>
+            <div class="item date">
+              <span>选择时段</span>
               <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.startDate"
-                type="date"
-                :clearable="false"
+                style="width: 280px;"
+                v-model="nowSearch.date"
+                type="daterange"
                 value-format="yyyy-MM-dd"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
-            <div class="item">
-              <span>----</span>
-              <el-date-picker
-                style="width: 160px;"
-                v-model="nowSearch.endDate"
-                type="date"
                 :clearable="false"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
+                :picker-options="pickerOptions"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
               </el-date-picker>
             </div>
             <div class="operate">
@@ -96,14 +88,17 @@ export default{
       search: {
         type: '',
         crew: '',
-        startDate: this.$common.getNowDate('yyyy-mm-dd'),
-        endDate: this.$common.getNowDate('yyyy-mm-dd')
+        date: []
       },
       nowSearch: {
         type: '',
         crew: '',
-        startDate: this.$common.getNowDate('yyyy-mm-dd'),
-        endDate: this.$common.getNowDate('yyyy-mm-dd')
+        date: []
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now()
+        }
       },
       typeOptions: [
         {
@@ -157,6 +152,9 @@ export default{
     }
   },
   mounted () {
+    const nowDate = this.$common.getNowDate()
+    this.search.date = [nowDate, nowDate]
+    this.nowSearch.date = [nowDate, nowDate]
     // 获取列表数据
     this.getListData()
   },
@@ -180,14 +178,15 @@ export default{
     },
     // 获取列表数据
     getListData () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         project_id: this.projectId,
         area_type: this.search.type || 0,
         user_name: this.search.crew,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate
+        start_date: date[0] || '',
+        end_date: date[1] || ''
       }
       params = this.$qs.stringify(params)
       this.loading = true
@@ -247,13 +246,14 @@ export default{
     },
     /* 导出 */
     downFile () {
+      let date = this.search.date || []
       let params = {
         company_id: this.companyId,
         project_id: this.projectId,
         area_type: this.search.type || 0,
         user_name: this.search.crew,
-        start_date: this.search.startDate,
-        end_date: this.search.endDate
+        start_date: date[0] || '',
+        end_date: date[1] || ''
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true
@@ -344,6 +344,9 @@ export default{
               line-height: 34px;
               font-size: 14px;
             }
+          }
+          .date{
+            width: 420px;
           }
           .operate{
             display: table-cell;
