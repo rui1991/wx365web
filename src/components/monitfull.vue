@@ -71,6 +71,23 @@
                     </div>
                   </div>
                 </div>
+                <div class="chunk" v-else-if="chunk.lora_type === '无线液位变送器'">
+                  <p class="chunk-title blue">{{ chunk.node_name }}</p>
+                  <div class="chunk-body">
+                    <div class="chunk-icon">
+                      <i class="iconfont icon-yeweiji"></i>
+                      <span class="icon-text">{{ chunk.lora_type }}</span>
+                    </div>
+                    <div class="chunk-content">
+                      <p class="content-single"
+                         :class="{'red': Number.parseFloat(chunk.liquid) < Number.parseFloat(chunk.max_liquid) || Number.parseFloat(chunk.liquid) > Number.parseFloat(chunk.max_liquid)}">
+                        当前液位：{{ chunk.liquid }}
+                      </p>
+                      <p class="content-single" :class="{'red': chunk.battery_state !== '电压正常'}">电压状态：{{ chunk.battery_state }}</p>
+                      <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
+                    </div>
+                  </div>
+                </div>
                 <div class="chunk" v-else-if="chunk.lora_type === '无线烟感'">
                   <p class="chunk-title blue">{{ chunk.node_name }}</p>
                   <div class="chunk-body">

@@ -4,6 +4,9 @@
       <el-form-item label="设备名称">
         <el-input :disabled="true" v-model.trim="formData.name" auto-complete="off"></el-input>
       </el-form-item>
+      <el-form-item label="DevEui">
+        <el-input :disabled="true" v-model.trim="formData.DevEui" auto-complete="off"></el-input>
+      </el-form-item>
       <el-form-item label="设备类型">
         <el-input :disabled="true" v-model.trim="formData.type" auto-complete="off"></el-input>
       </el-form-item>
@@ -64,19 +67,19 @@
           </el-form-item>
         </el-col>
       </el-form-item>
-      <el-form-item label="设置压力" style="width: 440px;" v-show="formData.type === '无线压力'">
+      <el-form-item label="设置液位" style="width: 440px;" v-show="formData.type === '无线液位变送器'">
         <el-col :span="11">
           <el-form-item>
-            <el-input style="width: 140px;" placeholder="最小压力" disabled v-model.number="formData.presMin">
-              <template slot="append">kPa</template>
+            <el-input style="width: 140px;" placeholder="最小液位" disabled v-model.number="formData.liquMin">
+              <template slot="append">cm</template>
             </el-input>
           </el-form-item>
         </el-col>
         <el-col class="line" :span="2">-</el-col>
         <el-col :span="11">
           <el-form-item>
-            <el-input style="width: 140px;" placeholder="最大压力" disabled v-model.number="formData.presMax">
-              <template slot="append">kPa</template>
+            <el-input style="width: 140px;" placeholder="最大液位" disabled v-model.number="formData.liquMax">
+              <template slot="append">cm</template>
             </el-input>
           </el-form-item>
         </el-col>
@@ -134,9 +137,6 @@
       </el-form-item>
       <el-form-item label="设备位置">
         <el-input :disabled="true" v-model.trim="formData.posName" auto-complete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="DevEui">
-        <el-input :disabled="true" v-model.trim="formData.DevEui" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="最近在线时间">
         <el-input :disabled="true" v-model.trim="formData.lastTime" auto-complete="off"></el-input>

@@ -619,7 +619,6 @@ export default{
         onlineDevice: data.onlineDevice,
         deviceSize: data.deviceSize
       }
-
       /* 巡检统计 */
       this.task = {
         todayTask: data.taskSize || 0,

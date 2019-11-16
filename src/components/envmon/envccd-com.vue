@@ -6,6 +6,9 @@
         <el-form-item label="设备名称" prop="name">
           <el-input v-model.trim="formData.name" auto-complete="off"></el-input>
         </el-form-item>
+        <el-form-item label="DevEui" prop="DevEui">
+          <el-input :disabled="true" v-model.trim="formData.DevEui" auto-complete="off"></el-input>
+        </el-form-item>
         <el-form-item label="设备类型" prop="type">
           <el-input :disabled="true" v-model.trim="formData.type" auto-complete="off"></el-input>
         </el-form-item>
@@ -66,6 +69,23 @@
             </el-form-item>
           </el-col>
         </el-form-item>
+        <el-form-item label="设置液位" style="width: 440px;" v-show="formData.type === '无线液位变送器'">
+          <el-col :span="11">
+            <el-form-item>
+              <el-input style="width: 140px;" placeholder="最小液位" type="number" v-model.number="formData.liquMin">
+                <template slot="append">cm</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col class="line" :span="2">-</el-col>
+          <el-col :span="11">
+            <el-form-item>
+              <el-input style="width: 140px;" placeholder="最大液位" type="number" v-model.number="formData.liquMax">
+                <template slot="append">cm</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
         <el-form-item label="设置温度" style="width: 440px;" v-if="formData.type === '安全用电'">
           <el-col :span="11">
             <el-form-item>
@@ -120,9 +140,6 @@
         <el-form-item label="设备位置" prop="posName">
           <el-input :disabled="true" v-model="formData.posName"></el-input>
           <el-button type="primary" @click="posDialog = true">选择位置</el-button>
-        </el-form-item>
-        <el-form-item label="DevEui" prop="DevEui">
-          <el-input :disabled="true" v-model.trim="formData.DevEui" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="心跳时间" prop="beat">
           <el-input placeholder="请输入心跳时间" type="number" v-model="formData.beat">
@@ -193,6 +210,8 @@ export default{
         waterRule: '',
         presMin: '',
         presMax: '',
+        liquMin: '',
+        liquMax: '',
         etempMin: '',
         etempMax: '',
         voltageMin: '',
@@ -263,6 +282,11 @@ export default{
       const presMin = Number.parseFloat(this.formData.presMin)
       let presMaxVal = ''
       const presMax = Number.parseFloat(this.formData.presMax)
+      // 无线液位变送器
+      let liquMinVal = ''
+      const liquMin = Number.parseFloat(this.formData.liquMin)
+      let liquMaxVal = ''
+      const liquMax = Number.parseFloat(this.formData.liquMax)
       // 安全用电
       let etempMinVal = ''
       const etempMin = Number.parseFloat(this.formData.etempMin)
@@ -293,6 +317,11 @@ export default{
           presMinVal = pressure.min
           presMaxVal = pressure.max
           break
+        case '无线液位变送器':
+          let liquid = this.compareSize(liquMin, liquMax)
+          liquMinVal = liquid.min
+          liquMaxVal = liquid.max
+          break
         case '安全用电':
           let etemp = this.compareSize(etempMin, etempMax)
           etempMinVal = etemp.min
@@ -317,6 +346,8 @@ export default{
         dry_wet: waterVal,
         min_pressure: presMinVal,
         max_pressure: presMaxVal,
+        min_liquid: liquMinVal,
+        max_liquid: liquMaxVal,
         min_temp: etempMinVal,
         max_temp: etempMaxVal,
         min_voltage: voltageMinVal,

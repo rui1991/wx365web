@@ -148,6 +148,10 @@ export default{
           value: '无线压力变送器'
         },
         {
+          label: '无线液位变送器',
+          value: '无线液位变送器'
+        },
+        {
           label: '无线烟感',
           value: '无线烟感'
         },

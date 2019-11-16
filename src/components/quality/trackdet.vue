@@ -223,39 +223,11 @@ export default{
     /* 导出 */
     // 导出个人
     downCrew () {
-      let params = {
-        company_id: this.companyId,
-        user_id: this.userId,
-        project_id: this.projectId,
-        userN_id: this.search.crew,
-        start_date: this.search.date + ' 00:00',
-        end_date: this.search.date + ' 23:59',
-        type: 'name'
-      }
-      params = this.$qs.stringify(params)
-      this.downCrewDisa = true
-      setTimeout(() => {
-        this.downCrewDisa = false
-      }, 5000)
-      window.location.href = this.sysetApi() + '/inspection/trajectoryEximport?' + params
+
     },
     // 导出项目
     downProject () {
-      let params = {
-        company_id: this.companyId,
-        user_id: this.userId,
-        project_id: this.projectId,
-        userN_id: '',
-        start_date: this.search.date + ' 00:00',
-        end_date: this.search.date + ' 23:59',
-        type: 'name'
-      }
-      params = this.$qs.stringify(params)
-      this.downProDisa = true
-      setTimeout(() => {
-        this.downProDisa = false
-      }, 5000)
-      window.location.href = this.sysetApi() + '/inspection/trajectoryEximport?' + params
+
     }
   }
 }

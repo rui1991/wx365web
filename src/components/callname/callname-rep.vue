@@ -255,7 +255,7 @@ export default{
     /* 详情 */
     detClick (data) {
       this.uid = data.user_id
-      this.itemId = data.adate
+      this.itemDate = data.adate
       this.detDialog = true
     },
     detClose () {

@@ -142,8 +142,8 @@
       :parentPro="proId"
       :parentUid="detUid"
       :parentState="detState"
-      :parentStart="search.startDate"
-      :parentEnd="search.endDate"
+      :parentStart="search.date[0]"
+      :parentEnd="search.date[1]"
       @parentClose="detClose">
     </det-module>
   </div>

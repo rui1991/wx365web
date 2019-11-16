@@ -121,6 +121,32 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-table class="list-table" :data="tableData" border v-else-if="type == 37" style="width: 100%">
+          <el-table-column type="index" width="50" label="序号"></el-table-column>
+          <el-table-column label="上报时间">
+            <template slot-scope="scope">
+              <span>{{ scope.row.create_time | formatDate}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="液位值">
+            <template slot-scope="scope">
+              <span v-if="scope.row.liquid">{{ scope.row.liquid }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="电压值">
+            <template slot-scope="scope">
+              <span v-if="scope.row.voltage_value">{{ scope.row.voltage_value }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="电压状态">
+            <template slot-scope="scope">
+              <span v-if="scope.row.battery_state">{{ scope.row.battery_state }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+        </el-table>
         <el-table class="list-table" :data="tableData" border v-else-if="type == 39" style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
           <el-table-column label="上报时间">

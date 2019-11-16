@@ -163,6 +163,10 @@ export default{
           value: 36
         },
         {
+          label: '无线液位变送器',
+          value: 37
+        },
+        {
           label: '无线烟感',
           value: 39
         },
@@ -194,6 +198,8 @@ export default{
         waterRule: '',
         presMin: '',
         presMax: '',
+        liquMin: '',
+        liquMax: '',
         etempMin: '',
         etempMax: '',
         voltageMin: '',
@@ -335,6 +341,8 @@ export default{
         waterRule: data.dry_wet,
         presMin: data.min_pressure,
         presMax: data.max_pressure,
+        liquMin: data.min_liquid,
+        liquMax: data.max_liquid,
         etempMin: data.min_temp,
         etempMax: data.max_temp,
         voltageMin: data.min_voltage,
@@ -371,6 +379,8 @@ export default{
         waterRule: data.dry_wet,
         presMin: data.min_pressure,
         presMax: data.max_pressure,
+        liquMin: data.min_liquid,
+        liquMax: data.max_liquid,
         etempMin: data.min_temp,
         etempMax: data.max_temp,
         voltageMin: data.min_voltage,

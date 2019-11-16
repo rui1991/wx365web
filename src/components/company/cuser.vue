@@ -22,12 +22,8 @@
           <div class="search">
             <div class="search-input" style="margin-bottom: 10px;">
               <div class="item">
-                <span>用户姓名</span>
-                <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
-              </div>
-              <div class="item">
-                <span>联系电话</span>
-                <el-input style="width: 160px;" v-model.trim="nowSearch.phone"></el-input>
+                <span>搜索用户</span>
+                <el-input style="width: 200px;" placeholder="请输入姓名或MAC" v-model.trim="nowSearch.name"></el-input>
               </div>
               <div class="operate">
                 <el-button type="primary" @click="searchList">搜索</el-button>
@@ -36,16 +32,20 @@
             </div>
             <div class="search-input">
               <div class="item">
-                <span>用户角色</span>
-                <el-select v-model="nowSearch.role" style="width: 160px;" clearable filterable placeholder="请选择用户角色">
-                  <el-option
-                    v-for="item in roleOptions"
-                    :key="item.role_id"
-                    :label="item.role_name"
-                    :value="item.role_id">
-                  </el-option>
-                </el-select>
+                <span>联系电话</span>
+                <el-input style="width: 200px;" v-model.trim="nowSearch.phone"></el-input>
               </div>
+              <!--<div class="item">-->
+                <!--<span>用户角色</span>-->
+                <!--<el-select v-model="nowSearch.role" style="width: 160px;" clearable filterable placeholder="请选择用户角色">-->
+                  <!--<el-option-->
+                    <!--v-for="item in roleOptions"-->
+                    <!--:key="item.role_id"-->
+                    <!--:label="item.role_name"-->
+                    <!--:value="item.role_id">-->
+                  <!--</el-option>-->
+                <!--</el-select>-->
+              <!--</div>-->
               <div class="operate">
                 <el-button type="primary" :disabled="upDisabled" @click="upClick">导入</el-button>
                 <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
@@ -63,7 +63,7 @@
             <el-table-column prop="user_phone" label="联系电话"></el-table-column>
             <el-table-column prop="role_name" label="角色"></el-table-column>
             <el-table-column prop="ogz_name" label="所属部门"></el-table-column>
-            <el-table-column label="卡片mac地址">
+            <el-table-column label="卡片mac地址" width="230">
               <template slot-scope="scope">
                 <span>{{ scope.row.card_mac | filterMac }}</span>
               </template>
@@ -297,9 +297,11 @@ export default{
     // 获取列表数据
     getListData () {
       if (!this.orgId) return
+      let name = this.search.name
+      name = name.replace(/:/g, '')
       let params = {
         organize_id: this.orgId,
-        user_name: this.search.name,
+        user_name: name,
         user_phone: this.search.phone,
         role_id: this.search.role,
         page: this.nowPage,
