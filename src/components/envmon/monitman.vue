@@ -93,7 +93,7 @@
                         </div>
                         <div class="chunk-content">
                           <p class="content-single"
-                             :class="{'red': Number.parseFloat(chunk.liquid) < Number.parseFloat(chunk.max_liquid) || Number.parseFloat(chunk.liquid) > Number.parseFloat(chunk.max_liquid)}">
+                             :class="{'red': Number.parseFloat(chunk.liquid) < Number.parseFloat(chunk.min_liquid) || Number.parseFloat(chunk.liquid) > Number.parseFloat(chunk.max_liquid)}">
                             当前液位：{{ chunk.liquid }}
                           </p>
                           <p class="content-single" :class="{'red': chunk.battery_state !== '电压正常'}">电压状态：{{ chunk.battery_state }}</p>

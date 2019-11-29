@@ -33,7 +33,13 @@ export default{
     }
   },
   mounted () {
-    this.navActive = this.posclockNav
+    const navActive = this.posclockNav
+    this.navActive = navActive
+    if (navActive === 1) {
+      this.$router.push({ path: '/main/posclock/posclockall' })
+    } else if (navActive === 2) {
+      this.$router.push({ path: '/main/posclock/posclockdet' })
+    }
   },
   computed: {
     ...mapState('other', [

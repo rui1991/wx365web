@@ -330,9 +330,9 @@ export default new Router({
           path: 'posclock',
           name: 'posclock',
           component: Posclock,
-          redirect: '/main/posclock/posclockall',
+          // redirect: '/main/posclock/posclockall',
           meta: {
-            keepAlive: true
+            keepAlive: false
           },
           children: [
             {

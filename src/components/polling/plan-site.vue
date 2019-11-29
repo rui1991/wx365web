@@ -97,6 +97,10 @@ export default{
           // 处理地址树
           const siteTree = this.initDisSiteTree(siteData)
           this.siteTree = siteTree
+          // 获取选中信息
+          if (this.parentSite.positions.length > 0) {
+            this.getListData(this.parentSite.positions)
+          }
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -146,9 +150,6 @@ export default{
             this.initRecSiteTree(item.children)
           }
         })
-      }
-      if (this.parentSite.positions.length > 0) {
-        this.getListData(this.parentSite.positions)
       }
       return siteData
     },
