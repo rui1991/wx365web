@@ -155,6 +155,12 @@ const VideoLiveroom = () => import(/* webpackChunkName: "group-video" */ '@/comp
 // 事件列表
 const Event = () => import(/* webpackChunkName: "group-event" */ '@/components/event/event')
 
+/* 硬件对接 */
+// 硬件管控
+const Hardcon = () => import(/* webpackChunkName: "group-event" */ '@/components/external/hardcon')
+// 打卡数据查询
+const Cardcon = () => import(/* webpackChunkName: "group-event" */ '@/components/external/cardcon')
+
 Vue.use(Router)
 
 export default new Router({
@@ -658,6 +664,22 @@ export default new Router({
           component: Event,
           meta: {
             keepAlive: true
+          }
+        },
+        {
+          path: 'hardcon',
+          name: 'hardcon',
+          component: Hardcon,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'cardcon',
+          name: 'cardcon',
+          component: Cardcon,
+          meta: {
+            keepAlive: false
           }
         }
       ]

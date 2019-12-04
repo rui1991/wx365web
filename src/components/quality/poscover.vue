@@ -139,7 +139,7 @@ export default{
       detDialog: false,
       detArea: 0,
       detDate: 1,
-      downDisabled: false,
+      downDisabled: true,
       loading: false
     }
   },
@@ -359,6 +359,13 @@ export default{
           this.downDisabled = false
         }, 5000)
         window.location.href = this.sysetApi() + '/v2.0/selPoPatrolCoverRateEO?' + params
+      }
+    }
+  },
+  watch: {
+    orgId (val, oldVal) {
+      if (val) {
+        this.downDisabled = false
       }
     }
   }

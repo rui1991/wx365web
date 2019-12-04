@@ -9,9 +9,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 export default{
-  props: ['parentDialog', 'parentId', 'parentType'],
+  props: ['parentDialog', 'parentMac'],
   data () {
     return {
       disabled: false
@@ -20,30 +19,17 @@ export default{
   created () {
 
   },
-  computed: {
-    ...mapState('user', [
-      'userId'
-    ]),
-    ...mapState('other', [
-      'companyId',
-      'projectId'
-    ])
-  },
   methods: {
     // 确定
     submitClick () {
       let params = {
-        company_id: this.companyId,
-        user_id: this.userId,
-        project_id: this.projectId,
-        device_id: this.parentId,
-        dtype: this.parentType
+        device_mac: this.parentMac
       }
       params = this.$qs.stringify(params)
       this.disabled = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/hardware/v1.0/altHardwareState',
+        url: this.deviceApi() + '/device/v1/delDevice',
         data: params
       }).then((res) => {
         this.disabled = false

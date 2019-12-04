@@ -183,7 +183,7 @@ export default{
       detDialog: false,
       detUid: 0,
       detState: 1,
-      downDisabled: false,
+      downDisabled: true,
       loading: false
     }
   },
@@ -652,6 +652,13 @@ export default{
           this.downDisabled = false
         }, 5000)
         window.location.href = this.sysetApi() + '/v2.0/selRollCallReport823EO?' + params
+      }
+    }
+  },
+  watch: {
+    orgId (val, oldVal) {
+      if (val) {
+        this.downDisabled = false
       }
     }
   }

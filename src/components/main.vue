@@ -219,6 +219,15 @@
                 <el-menu-item index="/main/event">事件列表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="14" class="submenu-item" v-if="companyId === 1">
+              <template slot="title"><i class="iconfont icon-shijian"></i>硬件对接</template>
+              <el-menu-item-group>
+                <el-menu-item index="/main/hardcon">硬件管控</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/cardcon">打卡数据查询</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
           </el-menu>
         </el-aside>
         <el-main class="main-module">
