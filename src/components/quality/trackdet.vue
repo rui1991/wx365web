@@ -41,6 +41,7 @@
           </div>
           <div class="operate">
             <el-button type="primary" @click="searchList">搜索</el-button>
+            <el-button type="primary" @click="clickTrack">人员轨迹</el-button>
             <!--<el-button type="primary" :disabled="downProDisa" @click="downProject">导出</el-button>-->
           </div>
         </div>
@@ -228,6 +229,17 @@ export default{
     // 导出项目
     downProject () {
 
+    },
+    /* 轨迹 */
+    // 人员轨迹
+    clickTrack () {
+      if (this.projectId === 53) {
+        const openUrl = this.baseUrl() + '/trackimg/#/roadmap?project_id=' + this.projectId
+        window.open(openUrl)
+      } else {
+        const openUrl = this.baseUrl() + '/trackreal/#/roadmap?project_id=' + this.projectId
+        window.open(openUrl)
+      }
     }
   }
 }

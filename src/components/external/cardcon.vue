@@ -45,7 +45,7 @@
             </div>
             <div class="operate">
               <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+              <!--<el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>-->
             </div>
           </div>
           <el-table class="list-table" :data="tableData" border style="width: 100%">

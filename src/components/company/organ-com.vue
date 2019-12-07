@@ -32,8 +32,25 @@
         </el-radio-group>
       </el-form-item>
     </el-form>
+    <div style="text-align: center; overflow-x: hidden;" v-show="imgUrl">
+      <img :src="imgUrl" height="240" alt="">
+    </div>
     <div class="module-operate">
       <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
+      <el-upload
+        style="display: inline-block;"
+        v-show="imgBtn"
+        class="upload-demo"
+        :action="reqUrl"
+        :on-success="handleSuccess"
+        :on-error="handleError"
+        :show-file-list="false"
+        :file-list="fileList"
+        :multiple="false"
+        :limit="imgLimit"
+        list-type="picture">
+        <el-button type="primary">{{ imgBtnTxt }}</el-button>
+      </el-upload>
     </div>
     <!-- 地图坐标 -->
     <map-module
@@ -88,7 +105,13 @@ export default{
       parentDisabled: true,
       filiale: false,
       disabled: false,
-      mapDialog: false
+      mapDialog: false,
+      imgUrl: '',
+      reqUrl: '',
+      imgLimit: 1,
+      imgBtn: false,
+      imgBtnTxt: '上传图片',
+      fileList: []
     }
   },
   created () {
@@ -110,6 +133,17 @@ export default{
       this.mesHint = '项目编辑成功！'
       this.filiale = false
       this.parentDisabled = false
+      // 设置上传图片路径
+      let params = {
+        state: 18,
+        company_id: 1,
+        user_id: this.userId,
+        project_id: this.parentBaseId
+      }
+      params = this.$qs.stringify(params)
+      this.reqUrl = this.sysetApi() + '/upload?' + params
+      // 获取项目图片
+      this.getProjectImg()
     } else if (orgType === 4) {
       this.titleName = '编辑部门'
       this.name = '部门名称'
@@ -253,6 +287,63 @@ export default{
     },
     mapCancel () {
       this.mapDialog = false
+    },
+    /* 项目图片 */
+    // 获取图片
+    getProjectImg () {
+      let params = {
+        project_id: this.parentBaseId
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/selProPicture',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          const imgUrl = res.data.data1 || ''
+          if (imgUrl) {
+            this.imgUrl = this.sysetApi() + '/showImage?state=18&filename=' + imgUrl
+            this.imgBtnTxt = '更换图片'
+          } else {
+            this.imgUrl = ''
+            this.imgBtnTxt = '添加图片'
+          }
+          this.imgBtn = true
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
+    // 上传图片成功
+    handleSuccess (res, file, fileList) {
+      if (res[0].msg === '0') {
+        this.imgUrl = this.sysetApi() + '/showImage?state=18&filename=' + res[0].filename
+        this.$message({
+          showClose: true,
+          message: '上传图片成功！',
+          type: 'success'
+        })
+      }
+    },
+    // 上传图片失败
+    handleError () {
+      this.$message({
+        showClose: true,
+        message: '上传图片失败，请稍后再试！',
+        type: 'error'
+      })
     }
   },
   watch: {
@@ -261,6 +352,18 @@ export default{
       this.resetForm('ruleForm')
       // 获取详情
       this.getDetails()
+      if (this.parentOrgType === 3) {
+        // 设置上传图片路径
+        let params = {
+          state: 18,
+          user_id: this.userId,
+          project_id: this.parentBaseId
+        }
+        params = this.$qs.stringify(params)
+        this.reqUrl = this.sysetApi() + '/upload?' + params
+        // 获取项目图片
+        this.getProjectImg()
+      }
     }
   }
 }
@@ -280,6 +383,9 @@ export default{
     .module-operate {
       margin-top: 50px;
       text-align: center;
+      button{
+        margin: 0 10px;
+      }
     }
   }
 </style>

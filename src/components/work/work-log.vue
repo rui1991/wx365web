@@ -50,7 +50,7 @@ export default{
   },
   mounted () {
     // 设置上传图片地址
-    this.reqUrl = this.sysetApi() + '/upload?state=10&user_id' + this.userId
+    this.reqUrl = this.sysetApi() + '/upload?state=10&user_id=' + this.userId
   },
   computed: {
     ...mapState('user', [
