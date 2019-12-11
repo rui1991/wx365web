@@ -41,6 +41,7 @@
         style="display: inline-block;"
         v-show="imgBtn"
         class="upload-demo"
+        :headers="reqHead"
         :action="reqUrl"
         :on-success="handleSuccess"
         :on-error="handleError"
@@ -107,6 +108,10 @@ export default{
       disabled: false,
       mapDialog: false,
       imgUrl: '',
+      reqHead: {
+        token: '',
+        user_id: 0
+      },
       reqUrl: '',
       imgLimit: 1,
       imgBtn: false,
@@ -136,7 +141,6 @@ export default{
       // 设置上传图片路径
       let params = {
         state: 18,
-        company_id: 1,
         user_id: this.userId,
         project_id: this.parentBaseId
       }
@@ -150,6 +154,11 @@ export default{
       this.mesHint = '部门编辑成功！'
       this.filiale = false
       this.parentDisabled = false
+    }
+    // 设置头部
+    this.reqHead = {
+      token: sessionStorage.getItem('wxWebToken'),
+      user_id: this.userId
     }
   },
   components: {
@@ -330,10 +339,17 @@ export default{
     handleSuccess (res, file, fileList) {
       if (res[0].msg === '0') {
         this.imgUrl = this.sysetApi() + '/showImage?state=18&filename=' + res[0].filename
+        this.imgBtnTxt = '更换图片'
         this.$message({
           showClose: true,
           message: '上传图片成功！',
           type: 'success'
+        })
+      } else {
+        this.$message({
+          showClose: true,
+          message: '上传图片失败！',
+          type: 'error'
         })
       }
     },

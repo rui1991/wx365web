@@ -233,11 +233,17 @@ export default{
     /* 轨迹 */
     // 人员轨迹
     clickTrack () {
+      let params = {
+        user_id: this.userId,
+        token: sessionStorage.getItem('wxWebToken'),
+        project_id: this.projectId
+      }
+      params = this.$qs.stringify(params)
       if (this.projectId === 53) {
-        const openUrl = this.baseUrl() + '/trackimg/#/roadmap?project_id=' + this.projectId
+        const openUrl = this.baseUrl() + '/trackimg/#/home?' + params
         window.open(openUrl)
       } else {
-        const openUrl = this.baseUrl() + '/trackreal/#/roadmap?project_id=' + this.projectId
+        const openUrl = this.baseUrl() + '/trackreal/#/home?' + params
         window.open(openUrl)
       }
     }

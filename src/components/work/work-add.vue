@@ -36,6 +36,7 @@
       <el-upload
         class="upload-demo"
         :action="reqUrl"
+        :headers="reqHead"
         :on-success="handleSuccess"
         :on-error="handleError"
         :on-remove="handleRemove"
@@ -83,6 +84,10 @@ export default{
         remark: ''
       },
       reqUrl: '',
+      reqHead: {
+        token: '',
+        user_id: 0
+      },
       imgLimit: 9,
       fileList: [],
       disabled: false,
@@ -95,6 +100,11 @@ export default{
   mounted () {
     // 设置上传地址
     this.reqUrl = this.sysetApi() + '/upload?state=10&user_id' + this.userId
+    // 设置上传参数
+    this.reqHead = {
+      token: sessionStorage.getItem('wxWebToken'),
+      user_id: this.userId
+    }
   },
   components: {
     siteModule
