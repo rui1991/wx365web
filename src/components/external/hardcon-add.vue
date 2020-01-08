@@ -12,7 +12,7 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="设备mac" prop="mac">
+      <el-form-item label="mac/DevEui" prop="mac">
         <el-input v-model.trim="formData.mac" auto-complete="off"></el-input>
       </el-form-item>
     </el-form>
@@ -34,10 +34,10 @@ export default{
         if (formValue.match(regex)) {
           callback()
         } else {
-          callback(new Error('你输入的mac格式有误，请认真核对'))
+          callback(new Error('你输入的mac/DevEui格式有误，请认真核对'))
         }
       } else {
-        callback(new Error('请输入设备的mac地址'))
+        callback(new Error('请输入设备的mac/DevEui'))
       }
     }
     return {
@@ -49,9 +49,53 @@ export default{
         {
           label: '数据网关',
           value: 'sjwg'
+        },
+        {
+          label: '压力变送器',
+          value: '压力变送器'
+        },
+        {
+          label: '液位变送器',
+          value: '液位变送器'
+        },
+        {
+          label: '温湿度采集器',
+          value: '温湿度采集器'
+        },
+        {
+          label: '燃气报警器',
+          value: '燃气报警器'
+        },
+        {
+          label: '一键报警器',
+          value: '一键报警器'
+        },
+        {
+          label: '红外报警器',
+          value: '红外报警器'
+        },
+        {
+          label: '水浸采集器',
+          value: '水浸采集器'
+        },
+        {
+          label: '安全用电',
+          value: '安全用电'
+        },
+        {
+          label: '烟感报警器',
+          value: '烟感报警器'
+        },
+        {
+          label: 'lora采集卡',
+          value: 'lora采集卡'
+        },
+        {
+          label: 'lora网关',
+          value: 'lora网关'
         }
       ],
-      formLabelWidth: '100px',
+      formLabelWidth: '110px',
       rules: {
         type: [
           { required: true, message: '请选择设备类型', trigger: 'change' }

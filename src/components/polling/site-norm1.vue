@@ -1,6 +1,6 @@
 <template>
   <el-dialog title="关联标准" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-    <el-input placeholder="请输入人员姓名" prefix-icon="el-icon-search" v-model="filterName" style="width: 40%; margin-bottom: 10px;"></el-input>
+    <el-input placeholder="请输入标准名称" prefix-icon="el-icon-search" v-model="filterName" style="width: 40%; margin-bottom: 10px;"></el-input>
     <el-table class="select-table" :data="tableData" style="width: 100%" max-height="360">
       <el-table-column label="" width="65">
         <template slot-scope="scope">

@@ -102,7 +102,9 @@ const CallnameSet = () => import(/* webpackChunkName: "group-callname" */ '@/com
 const CallnameRep = () => import(/* webpackChunkName: "group-callname" */ '@/components/callname/callname-rep')
 
 /* 考勤管理 */
-// 考勤报表
+// 无感考勤报表
+const Nosalary = () => import(/* webpackChunkName: "group-salary" */ '@/components/attend/nosalary')
+// 设备考勤报表
 const Salary = () => import(/* webpackChunkName: "group-salary" */ '@/components/attend/salary')
 
 /* 工单管理 */
@@ -160,6 +162,8 @@ const Event = () => import(/* webpackChunkName: "group-event" */ '@/components/e
 const Hardcon = () => import(/* webpackChunkName: "group-event" */ '@/components/external/hardcon')
 // 打卡数据查询
 const Cardcon = () => import(/* webpackChunkName: "group-event" */ '@/components/external/cardcon')
+// lora数据查询
+const Loracon = () => import(/* webpackChunkName: "group-event" */ '@/components/external/loracon')
 
 Vue.use(Router)
 
@@ -504,6 +508,14 @@ export default new Router({
           }
         },
         {
+          path: 'nosalary',
+          name: 'nosalary',
+          component: Nosalary,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
           path: 'salary',
           name: 'salary',
           component: Salary,
@@ -678,6 +690,14 @@ export default new Router({
           path: 'cardcon',
           name: 'cardcon',
           component: Cardcon,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'loracon',
+          name: 'loracon',
+          component: Loracon,
           meta: {
             keepAlive: false
           }

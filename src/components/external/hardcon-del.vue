@@ -10,7 +10,7 @@
 
 <script>
 export default{
-  props: ['parentDialog', 'parentMac'],
+  props: ['parentDialog', 'parentMac', 'parentType'],
   data () {
     return {
       disabled: false
@@ -23,7 +23,8 @@ export default{
     // 确定
     submitClick () {
       let params = {
-        device_mac: this.parentMac
+        device_mac: this.parentMac,
+        device_type: this.parentType
       }
       params = this.$qs.stringify(params)
       this.disabled = true

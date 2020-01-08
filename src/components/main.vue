@@ -156,7 +156,10 @@
             <el-submenu index="7" class="submenu-item" v-if="authority.shift">
               <template slot="title"><i class="iconfont icon-kaoqinguanli"></i>考勤管理</template>
               <el-menu-item-group v-if="authority.shift">
-                <el-menu-item index="/main/salary">考勤报表</el-menu-item>
+                <el-menu-item index="/main/nosalary">无感考勤报表</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="authority.shift">
+                <el-menu-item index="/main/salary">设备考勤报表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="8" class="submenu-item">
@@ -225,7 +228,10 @@
                 <el-menu-item index="/main/hardcon">硬件管控</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group>
-                <el-menu-item index="/main/cardcon">打卡数据查询</el-menu-item>
+                <el-menu-item index="/main/cardcon">蓝牙数据查询</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/loracon">lora数据查询</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
           </el-menu>
@@ -268,7 +274,7 @@ export default{
       introDialog: false,
       pwdDialog: false,
       nowProjectId: 0,
-      deviceUid: [1, 2, 816, 830]
+      deviceUid: [1, 2, 816, 819, 830]
     }
   },
   created () {

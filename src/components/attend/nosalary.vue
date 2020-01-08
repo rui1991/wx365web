@@ -1,6 +1,6 @@
 <template>
   <div
-    class="salary"
+    class="nosalary"
     v-loading="loading"
     element-loading-text="拼命加载中"
     element-loading-spinner="el-icon-loading"
@@ -9,7 +9,7 @@
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
           <el-breadcrumb-item>考勤管理</el-breadcrumb-item>
-          <el-breadcrumb-item>考勤报表</el-breadcrumb-item>
+          <el-breadcrumb-item>无感考勤报表</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
       <el-main class="module-main">
@@ -25,6 +25,9 @@
                 @change="dateChange"
                 placeholder="选择月">
               </el-date-picker>
+            </div>
+            <div class="operate">
+              <el-button type="primary" @click="setDialog = true">设置</el-button>
             </div>
           </div>
           <div class="search-input">
@@ -52,32 +55,22 @@
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" fixed width="50" label="序号"></el-table-column>
           <el-table-column prop="user_name" fixed width="120" label="姓名" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column fixed width="120" label="工号">
-            <template slot-scope="scope">
-              <span v-if="scope.row.pin">{{ scope.row.pin }}</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
           <el-table-column prop="ogz_name" fixed width="150" :show-overflow-tooltip="true" label="所属部门"></el-table-column>
           <el-table-column :label="tableTitle">
             <el-table-column v-for="(item, i) in days" :label="item.date" :key="item.date">
-              <el-table-column width="100" label="考勤打卡">
+              <el-table-column width="120" label="出勤时段">
                 <template slot-scope="scope">
-                  <span class="blue" v-if="scope.row.dates[i].rc">{{ scope.row.dates[i].rc | filterDate }}</span>
-                  <span v-else-if="item.state">无</span>
-                  <span v-else>-</span>
+                  <span v-if="!item.state">-</span>
+                  <span class="red" v-else-if="scope.row.dates[i].times === '无'">无</span>
+                  <!--<a href="javascript:void(0);">{{ scope.row.dates[i].times }}</a>-->
+                  <a href="javascript:void(0);" style="display: flex; flex-direction: column; max-height: 140px; overflow-y: hidden; color: #4fa5f2;" @click="getCheckDet(scope.row.user_name, scope.row.user_id, scope.row.ogz_name, scope.row.dates[i].date)" v-else>
+                    <span class="time" v-for="timeItem in scope.row.dates[i].times.split(',')">{{ timeItem }}</span>
+                  </a>
                 </template>
               </el-table-column>
-              <el-table-column width="100" label="点名次数">
+              <el-table-column width="100" label="出勤总时长">
                 <template slot-scope="scope">
-                  <el-popover
-                    placement="top"
-                    :title="scope.row.user_name"
-                    trigger="click"
-                    :content="callnameContent"
-                    v-if="scope.row.dates[i].sf">
-                    <a href="javascript:void(0);" slot="reference" class="blue" @click="getCallname(scope.row.user_id, scope.row.dates[i].date)">{{ scope.row.dates[i].sf }}</a>
-                  </el-popover>
+                  <span v-if="scope.row.dates[i].all_time">{{ scope.row.dates[i].all_time }}分</span>
                   <span v-else-if="item.state">0</span>
                   <span v-else>-</span>
                 </template>
@@ -99,13 +92,32 @@
         </el-pagination>
       </el-main>
     </el-container>
+    <!-- 设置 -->
+    <set-module
+      :parentDialog="setDialog"
+      @parentUpdata="setCancel"
+      @parentCancel="setCancel">
+    </set-module>
+    <!-- 详情 -->
+    <det-module
+      :parentDialog="detDialog"
+      :parentUname="uname"
+      :parentUid="uid"
+      :parentUsector="usector"
+      :parentUdate="udate"
+      @parentClose="detClose">
+    </det-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入设置组件
+import setModule from '@/components/attend/nosalary-set'
+// 引入设置组件
+import detModule from '@/components/attend/nosalary-det'
 export default{
-  name: 'salary',
+  name: 'nosalary',
   data () {
     return {
       nowMonth: this.$common.getNowDate('yyyy-mm'),
@@ -133,7 +145,13 @@ export default{
       nowPage: 1,
       limit: 10,
       loading: false,
-      downDisabled: false
+      downDisabled: false,
+      setDialog: false,
+      detDialog: false,
+      uname: '',
+      uid: '',
+      usector: '',
+      udate: ''
     }
   },
   created () {
@@ -169,6 +187,10 @@ export default{
     // 获取部门
     this.getSectorOptions()
   },
+  components: {
+    setModule,
+    detModule
+  },
   computed: {
     ...mapState('user', [
       'userId'
@@ -181,11 +203,20 @@ export default{
   methods: {
     // 获取列表数据
     getListData () {
+      // 部门名称
+      const sectorId = this.search.sector
+      let sectorName = ''
+      if (sectorId) {
+        let sector = this.sectorOptions.find(item => {
+          return item.base_id === sectorId
+        })
+        sectorName = sector.name
+      }
       let params = {
         project_id: this.projectId,
         month: this.searchDate,
         user_name: this.search.name,
-        ogz_id: this.search.sector,
+        ogz_name: sectorName,
         page: this.nowPage,
         limit1: this.limit
       }
@@ -193,7 +224,7 @@ export default{
       this.loading = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/attendance/attendanceMessage',
+        url: this.sysetApi() + '/att/selAttReport',
         data: params
       }).then((res) => {
         this.loading = false
@@ -276,49 +307,16 @@ export default{
       // 获取列表数据
       this.getListData()
     },
-    // 获取点名详情
-    getCallname (uid, date) {
-      // 清空详情
-      this.callnameContent = ''
-      let params = {
-        company_id: this.nowClientId,
-        user_id: this.userId,
-        project_id: this.projectId,
-        userN_id: uid,
-        this_date: date
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/inspection/selRollCallOnly',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const listData = res.data.data1
-          let usefulData = listData.filter(item => {
-            return item.sf === 1
-          })
-          let content = []
-          usefulData.forEach(item => {
-            content.push(item.atime)
-          })
-          content = content.join('、')
-          this.callnameContent = content
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    // 获取考勤详情
+    getCheckDet (uname, uid, usector, udate) {
+      this.uname = uname
+      this.uid = uid
+      this.usector = usector
+      this.udate = udate
+      this.detDialog = true
+    },
+    detClose () {
+      this.detDialog = false
     },
     /* 获取部门 */
     getSectorOptions () {
@@ -349,20 +347,33 @@ export default{
         })
       })
     },
+    /* 设置 */
+    setCancel () {
+      this.setDialog = false
+    },
     /* 导出 */
     downFile () {
+      // 部门名称
+      const sectorId = this.search.sector
+      let sectorName = ''
+      if (sectorId) {
+        let sector = this.sectorOptions.find(item => {
+          return item.base_id === sectorId
+        })
+        sectorName = sector.name
+      }
       let params = {
         project_id: this.projectId,
         month: this.searchDate,
         user_name: this.search.name,
-        ogz_id: this.search.sector
+        ogz_name: sectorName
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true
       setTimeout(() => {
         this.downDisabled = false
       }, 5000)
-      window.location.href = this.sysetApi() + '/v3.8/selAttMessageEO?' + params
+      window.location.href = this.sysetApi() + '/att/selAttReportEO?' + params
     }
   },
   filters: {
@@ -375,7 +386,7 @@ export default{
 </script>
 
 <style lang="less" scoped>
-  .salary{
+  .nosalary{
     height: 100%;
     .module-container{
       height: 100%;
@@ -420,6 +431,12 @@ export default{
             }
           }
         }
+      }
+    }
+    .table{
+      .times{
+        display: flex;
+        flex-direction: column;
       }
     }
   }

@@ -4,7 +4,7 @@
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
           <el-breadcrumb-item>硬件对接</el-breadcrumb-item>
-          <el-breadcrumb-item>打卡数据查询</el-breadcrumb-item>
+          <el-breadcrumb-item>蓝牙数据查询</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
       <el-container class="module-content">
@@ -129,7 +129,7 @@ export default{
   },
   methods: {
     // 获取机构树
-    getOrganTree (b = false) {
+    getOrganTree () {
       let params = {
         ogz_id: 0
       }
@@ -142,9 +142,6 @@ export default{
         if (res.data.result === 'Sucess') {
           let orgData = res.data.data1
           this.orgData = orgData
-          if (b) {
-            this.$refs.tree.setCheckedKeys([this.orgId])
-          }
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -196,6 +193,7 @@ export default{
       let mac = this.search.mac
       mac = mac.replace(/:/g, '')
       let params = {
+        om_type: 'ly',
         ogz_id: this.orgId,
         start_time: this.search.date[0],
         end_time: this.search.date[1],

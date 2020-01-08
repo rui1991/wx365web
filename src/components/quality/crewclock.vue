@@ -34,6 +34,10 @@
                   end-placeholder="结束日期">
                 </el-date-picker>
               </div>
+              <div class="item" v-show="orgType === 3">
+                <span>胸牌编号</span>
+                <el-input style="width: 160px;" v-model="nowSearch.mac"></el-input>
+              </div>
               <div class="operate">
                 <el-button type="primary" @click="searchList">搜索</el-button>
                 <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
@@ -83,14 +87,14 @@
           </el-table>
           <el-table class="list-table" :data="tableData2" border :summary-method="getSummaries2" show-summary style="width: 100%" v-show="orgType === 3">
             <el-table-column type="index" width="50" label="序号"></el-table-column>
-            <el-table-column prop="user_name" label="姓名"></el-table-column>
-            <el-table-column width="200" :show-overflow-tooltip="true" prop="positions" label="点名地址"></el-table-column>
             <el-table-column width="180" :show-overflow-tooltip="true" label="胸牌编号">
               <template slot-scope="scope">
                 <span v-if="scope.row.card_mac">{{ scope.row.card_mac }}</span>
                 <span v-else>-</span>
               </template>
             </el-table-column>
+            <el-table-column prop="user_name" label="姓名"></el-table-column>
+            <el-table-column width="200" :show-overflow-tooltip="true" prop="positions" label="点名地址"></el-table-column>
             <el-table-column prop="po_size" label="负责点位数"></el-table-column>
             <el-table-column label="打卡点位数">
               <template slot-scope="scope">
@@ -161,11 +165,13 @@ export default{
     return {
       search: {
         date: [],
-        name: ''
+        name: '',
+        mac: ''
       },
       nowSearch: {
         date: [],
-        name: ''
+        name: '',
+        mac: ''
       },
       pickerOptions: {
         disabledDate (time) {
@@ -300,6 +306,7 @@ export default{
         user_id: this.userId,
         project_id: this.proId,
         user_name: this.search.name,
+        card_mac: this.search.mac,
         start_date: date[0] || '',
         end_date: date[1] || '',
         page: this.nowPage,
@@ -630,6 +637,7 @@ export default{
           user_id: this.userId,
           project_id: this.proId,
           user_name: this.search.name,
+          card_mac: this.search.mac,
           start_date: date[0] || '',
           end_date: date[1] || ''
         }

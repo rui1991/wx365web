@@ -10,7 +10,6 @@
             ref="siteTree"
             node-key="id"
             show-checkbox
-            check-strictly
             :props="defaultProps">
           </el-tree>
         </div>
@@ -94,9 +93,17 @@ export default{
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           const siteData = res.data.data1
-          // 处理地址树
-          const siteTree = this.initDisSiteTree(siteData)
-          this.siteTree = siteTree
+          // exetype: 1 执行人员    2 执行组
+          const siteType = this.parentSite.exetype
+          if (siteType === 1) {
+            // 处理地址树
+            const siteTree = this.initDisPerson(siteData)
+            this.siteTree = siteTree
+          } else if (siteType === 2) {
+            // 处理地址树
+            const siteTree = this.initDisGroup(siteData)
+            this.siteTree = siteTree
+          }
           // 获取选中信息
           if (this.parentSite.positions.length > 0) {
             this.getListData(this.parentSite.positions)
@@ -117,62 +124,47 @@ export default{
         })
       })
     },
-    // 初始化处理地址树
-    initDisSiteTree (siteData) {
-      const exetype = this.parentSite.exetype
-      if (exetype === 1) {
-        siteData.forEach(item => {
-          if (item.mac) {
-            if (item.mac.length === 8 && item.type == 0) {
-              item.disabled = false
-            } else {
-              item.disabled = true
-            }
+    /* 初始化执行人处理地址树 */
+    initDisPerson (siteData) {
+      siteData.forEach(item => {
+        if (item.id.indexOf('w') !== -1) {
+          item.disabled = false
+        } else {
+          if (item.mac && Number.parseInt(item.type) === 0) {
+            item.disabled = false
           } else {
             item.disabled = true
           }
-          if (item.children) {
-            this.initRecSiteTree(item.children)
-          }
-        })
-      } else if (exetype === 2) {
-        siteData.forEach(item => {
-          if (item.mac) {
-            if (item.mac.length === 12) {
-              item.disabled = false
-            } else {
-              item.disabled = true
-            }
-          } else {
-            item.disabled = true
-          }
-          if (item.children) {
-            this.initRecSiteTree(item.children)
-          }
-        })
-      }
+        }
+        if (item.children) {
+          this.initRecPerson(item.children)
+        }
+      })
       return siteData
     },
-    initRecSiteTree (data) {
-      const exetype = this.parentSite.exetype
-      if (exetype === 1) {
-        data.forEach(item => {
-          if (item.mac) {
-            if (item.mac.length === 8 && item.type == 0) {
-              item.disabled = false
-            } else {
-              item.disabled = true
-            }
+    initRecPerson (data) {
+      data.forEach(item => {
+        if (item.id.indexOf('w') !== -1) {
+          item.disabled = false
+        } else {
+          if (item.mac && Number.parseInt(item.type) === 0) {
+            item.disabled = false
           } else {
             item.disabled = true
           }
-          if (item.children) {
-            this.initRecSiteTree(item.children)
-          }
-        })
-      } else if (exetype === 2) {
-        data.forEach(item => {
-          if (item.mac) {
+        }
+        if (item.children) {
+          this.initRecPerson(item.children)
+        }
+      })
+    },
+    /* 初始化执行组处理地址树 */
+    initDisGroup (siteData) {
+      siteData.forEach(item => {
+        if (item.id.indexOf('w') !== -1) {
+          item.disabled = false
+        } else {
+          if (Number.parseInt(item.type) === 0) {
             if (item.mac.length === 12) {
               item.disabled = false
             } else {
@@ -181,11 +173,32 @@ export default{
           } else {
             item.disabled = true
           }
-          if (item.children) {
-            this.initRecSiteTree(item.children)
+        }
+        if (item.children) {
+          this.initRecGroup(item.children)
+        }
+      })
+      return siteData
+    },
+    initRecGroup (data) {
+      data.forEach(item => {
+        if (item.id.indexOf('w') !== -1) {
+          item.disabled = false
+        } else {
+          if (Number.parseInt(item.type) === 0) {
+            if (item.mac.length === 12) {
+              item.disabled = false
+            } else {
+              item.disabled = true
+            }
+          } else {
+            item.disabled = true
           }
-        })
-      }
+        }
+        if (item.children) {
+          this.initRecGroup(item.children)
+        }
+      })
     },
     // 获取选中项
     handleSelectionChange (data) {
@@ -193,7 +206,13 @@ export default{
     },
     // 添加到列表
     addListData () {
-      let siteIds = this.$refs.siteTree.getCheckedKeys()
+      let nodes = this.$refs.siteTree.getCheckedNodes()
+      let siteIds = []
+      nodes.forEach(item => {
+        if (item.id.indexOf('w') === -1) {
+          siteIds.push(item.id)
+        }
+      })
       if (siteIds.length === 0) {
         this.$message({
           showClose: true,

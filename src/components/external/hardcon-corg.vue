@@ -13,6 +13,12 @@
       <el-form-item label="心跳URL" prop="beaturl">
         <el-input v-model.trim="formData.beaturl" auto-complete="off"></el-input>
       </el-form-item>
+      <el-form-item label="loraUrl" prop="loraUrl">
+        <el-input v-model.trim="formData.loraUrl" auto-complete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="deviceUrl " prop="deviceUrl">
+        <el-input v-model.trim="formData.deviceUrl " auto-complete="off"></el-input>
+      </el-form-item>
       <el-form-item label="有效期" prop="indate">
         <el-input v-model.trim="formData.indate" auto-complete="off"></el-input>
       </el-form-item>
@@ -44,6 +50,8 @@ export default{
         type: '',
         upurl: '',
         beaturl: '',
+        loraUrl: '',
+        deviceUrl: '',
         indate: ''
       },
       disabled: false
@@ -60,6 +68,8 @@ export default{
         type: '',
         upurl: '',
         beaturl: '',
+        loraUrl: '',
+        deviceUrl: '',
         indate: ''
       }
       // 获取组织详情
@@ -83,6 +93,8 @@ export default{
             type: itemDate.ogz_type,
             upurl: itemDate.up_url || '',
             beaturl: itemDate.heartbeat_url || '',
+            loraUrl: itemDate.lora_url || '',
+            deviceUrl: itemDate.device_url || '',
             indate: itemDate.close_date || ''
           }
         } else {
@@ -123,6 +135,8 @@ export default{
         ogz_type: this.formData.type,
         up_url: this.formData.upurl,
         heartbeat_url: this.formData.beaturl,
+        lora_url: this.formData.loraUrl,
+        device_url: this.formData.deviceUrl,
         close_date: this.formData.indate
       }
       params = this.$qs.stringify(params)
