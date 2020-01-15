@@ -11,7 +11,11 @@
       <el-table-column prop="in_position_name" label="进入位置" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="out_time" label="离开时间"></el-table-column>
       <el-table-column prop="out_position_name" label="离开位置" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="att_long" label="出勤时长"></el-table-column>
+      <el-table-column label="出勤时长">
+        <template slot-scope="scope">
+          <span>{{ scope.row.att_long }}分</span>
+        </template>
+      </el-table-column>
     </el-table>
     <div slot="footer" class="dialog-footer">
       <el-button @click="closeClick">关 闭</el-button>

@@ -302,11 +302,13 @@ export default{
     },
     getListDetData () {
       let date = this.search.date || []
+      let mac = this.search.mac
+      mac = mac.replace(/:/g, '')
       let params = {
         user_id: this.userId,
         project_id: this.proId,
         user_name: this.search.name,
-        card_mac: this.search.mac,
+        card_mac: mac,
         start_date: date[0] || '',
         end_date: date[1] || '',
         page: this.nowPage,
@@ -633,11 +635,13 @@ export default{
     downFile () {
       let date = this.search.date || []
       if (this.orgType === 3) {
+        let mac = this.search.mac
+        mac = mac.replace(/:/g, '')
         let params = {
           user_id: this.userId,
           project_id: this.proId,
           user_name: this.search.name,
-          card_mac: this.search.mac,
+          card_mac: mac,
           start_date: date[0] || '',
           end_date: date[1] || ''
         }
