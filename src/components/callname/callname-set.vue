@@ -3,8 +3,13 @@
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
+<<<<<<< HEAD
           <el-breadcrumb-item>点名管理</el-breadcrumb-item>
           <el-breadcrumb-item>点名设置</el-breadcrumb-item>
+=======
+          <el-breadcrumb-item>人员位置管理</el-breadcrumb-item>
+          <el-breadcrumb-item>点名规则设置</el-breadcrumb-item>
+>>>>>>> 6d314248fa5f8245da57f57b5886b18b994b0fa3
         </el-breadcrumb>
       </el-header>
       <el-main class="module-main">

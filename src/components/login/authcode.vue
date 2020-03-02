@@ -391,7 +391,11 @@ export default{
           const orgTree = loginData.trees
           this.setOrganTree(orgTree)
           // 处理部门
+<<<<<<< HEAD
           let orgData = this.initDisSecTree(JSON.parse(JSON.stringify(orgTree)))
+=======
+          const orgData = this.initDisSecTree(orgTree)
+>>>>>>> 6d314248fa5f8245da57f57b5886b18b994b0fa3
           this.setOrganData(orgData)
           // 路由跳转
           this.$router.push({ path: '/main/home' })

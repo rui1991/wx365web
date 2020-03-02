@@ -6,7 +6,11 @@
         <router-view />
       </div>
     </div>
+<<<<<<< HEAD
     <p class="copy">深圳市黑卡科技有限公司&nbsp;&nbsp;<a href="http://www.beian.miit.gov.cn" target="_blank">粤ICP备17024484号</a></p>
+=======
+    <p class="copy">深圳市黑卡科技有限公司&nbsp;&nbsp;粤ICP备17024484号</p>
+>>>>>>> 6d314248fa5f8245da57f57b5886b18b994b0fa3
   </div>
 </template>
 
@@ -67,9 +71,12 @@ export default{
       position: absolute;
       left: 50%;
       bottom: 20px;
+<<<<<<< HEAD
       a:hover{
         color: #4fa5f2;
       }
+=======
+>>>>>>> 6d314248fa5f8245da57f57b5886b18b994b0fa3
     }
   }
 </style>
