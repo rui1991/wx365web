@@ -183,11 +183,7 @@ export default{
         company_id: this.companyId,
         user_id: this.userId,
         project_id: this.projectId,
-<<<<<<< HEAD
         area_type: this.search.type,
-=======
-        area_type: this.search.type || 0,
->>>>>>> 6d314248fa5f8245da57f57b5886b18b994b0fa3
         user_name: this.search.crew,
         start_date: date[0] || '',
         end_date: date[1] || ''
@@ -254,11 +250,7 @@ export default{
       let params = {
         company_id: this.companyId,
         project_id: this.projectId,
-<<<<<<< HEAD
         area_type: this.search.type,
-=======
-        area_type: this.search.type || 0,
->>>>>>> 6d314248fa5f8245da57f57b5886b18b994b0fa3
         user_name: this.search.crew,
         start_date: date[0] || '',
         end_date: date[1] || ''
