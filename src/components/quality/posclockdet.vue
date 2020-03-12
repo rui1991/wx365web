@@ -86,6 +86,8 @@ export default{
         }
       },
       days: [],
+      whetherProject: true,
+      sectionIds: 0,
       tableData: [],
       total: 0,
       nowPage: 1,
@@ -127,8 +129,26 @@ export default{
       )
     }
     this.days = days
-    // 获取列表
-    this.getListData()
+    // 判断组织
+    const allProject = this.allProject
+    const projectId = Number.parseInt(this.projectId)
+    const nowProject = allProject.find(item => {
+      return item.project_id === projectId
+    })
+    if (nowProject.ogzs === undefined) {
+      this.whetherProject = true
+      // 获取列表
+      this.getProjectData()
+    } else {
+      this.whetherProject = false
+      let ids = []
+      nowProject.ogzs.forEach(item => {
+        ids.push(item.ogz_id)
+      })
+      ids = ids.join(',')
+      this.sectionIds = ids
+      this.getSectionData()
+    }
   },
   components: {
     detModule,
@@ -139,12 +159,13 @@ export default{
       'userId'
     ]),
     ...mapState('other', [
+      'allProject',
       'projectId'
     ])
   },
   methods: {
-    // 获取列表数据
-    getListData () {
+    // 获取项目数据
+    getProjectData () {
       let params = {
         project_id: this.projectId,
         month: this.searchDate,
@@ -179,6 +200,43 @@ export default{
         })
       })
     },
+    // 获取部门数据
+    getSectionData () {
+      let params = {
+        project_id: this.projectId,
+        ogz_ids: this.sectionIds,
+        month: this.searchDate,
+        page: this.nowPage,
+        limit1: this.limit
+      }
+      params = this.$qs.stringify(params)
+      this.loading = true
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.7/selOgzUserRecordMessageChildren',
+        data: params
+      }).then((res) => {
+        this.loading = false
+        if (res.data.result === 'Sucess') {
+          this.total = res.data.data1.total
+          this.tableData = res.data.data1.message
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.loading = false
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
     // 切换单页大小
     handleSizeChange (limit) {
       // 设置大小
@@ -186,13 +244,21 @@ export default{
       // 初始化页码
       this.nowPage = 1
       // 获取列表数据
-      this.getListData()
+      if (this.whetherProject) {
+        this.getProjectData()
+      } else {
+        this.getSectionData()
+      }
     },
     // 点击分页
     pageChang (page) {
       this.nowPage = page
       // 获取列表数据
-      this.getListData()
+      if (this.whetherProject) {
+        this.getProjectData()
+      } else {
+        this.getSectionData()
+      }
     },
     // 选择时间
     dateChange (date) {
@@ -226,7 +292,11 @@ export default{
       // 初始化页码
       this.nowPage = 1
       // 获取列表
-      this.getListData()
+      if (this.whetherProject) {
+        this.getProjectData()
+      } else {
+        this.getSectionData()
+      }
     },
     /* 详情 */
     detClick (uid, posid, time) {
@@ -300,7 +370,11 @@ export default{
           // 初始化页码
           this.nowPage = 1
           // 获取列表数据
-          this.getListData()
+          if (this.whetherProject) {
+            this.getProjectData()
+          } else {
+            this.getSectionData()
+          }
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -323,6 +397,14 @@ export default{
     },
     /* 导出 */
     downFile () {
+      if (this.whetherProject) {
+        this.downProject()
+      } else {
+        this.downSection()
+      }
+    },
+    // 项目
+    downProject () {
       let params = {
         project_id: this.projectId,
         month: this.searchDate
@@ -333,6 +415,19 @@ export default{
         this.downDisabled = false
       }, 5000)
       window.location.href = this.sysetApi() + '/v3.7/selUserRecordMessageChildrenEO?' + params
+    },
+    // 部门
+    downSection () {
+      let params = {
+        ogz_ids: this.sectionIds,
+        month: this.searchDate
+      }
+      params = this.$qs.stringify(params)
+      this.downDisabled = true
+      setTimeout(() => {
+        this.downDisabled = false
+      }, 5000)
+      window.location.href = this.sysetApi() + '/v3.7/selOgzUserRecordMessageChildrenEO?' + params
     }
   },
   filters: {

@@ -179,7 +179,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.2/login',
+        url: this.sysetApi() + '/v3.3/login',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {

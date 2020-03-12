@@ -51,7 +51,7 @@
               <div class="operate"></div>
             </div>
           </div>
-          <el-table class="list-table" :data="tableData1" border :summary-method="getSummaries1" show-summary style="width: 100%" v-show="orgType !== 3">
+          <el-table class="list-table" :data="tableData1" border :summary-method="getSummaries1" show-summary style="width: 100%" v-show="!tableDetails">
             <el-table-column type="index" width="50" label="序号"></el-table-column>
             <el-table-column width="200" :show-overflow-tooltip="true" prop="organize_name" label="组织机构"></el-table-column>
             <el-table-column prop="all_po_size" label="地址总数"></el-table-column>
@@ -85,7 +85,7 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-table class="list-table" :data="tableData2" border :summary-method="getSummaries2" show-summary style="width: 100%" v-show="orgType === 3">
+          <el-table class="list-table" :data="tableData2" border :summary-method="getSummaries2" show-summary style="width: 100%" v-show="tableDetails">
             <el-table-column type="index" width="50" label="序号"></el-table-column>
             <el-table-column width="180" :show-overflow-tooltip="true" label="胸牌编号">
               <template slot-scope="scope">
@@ -181,6 +181,8 @@ export default{
       orgId: 0,
       orgType: 0,
       proId: 0,
+      secId: 0,
+      tableDetails: false,
       tableData1: [],
       tableData2: [],
       total: 0,
@@ -221,17 +223,21 @@ export default{
       this.orgId = data.id
       this.orgType = data.type
       this.proId = data.projectId
+      this.secId = data.sectionId
       // 清空搜索框
       this.search.name = ''
       this.nowSearch.name = ''
       // 当前页码初始化
       this.nowPage = 1
       if (data.type === 3) {
-        // 获取列表数据
-        this.getListDetData()
+        // 获取项目数据
+        this.getProjectData()
+      } else if (data.type === 4) {
+        // 获取部门数据
+        this.getSectionData()
       } else {
         // 获取列表数据
-        this.getListAllData()
+        this.getOtherData()
       }
     },
     // 搜索
@@ -253,13 +259,18 @@ export default{
       this.nowPage = 1
       // 获取列表数据
       if (this.orgType === 3) {
-        this.getListDetData()
+        // 获取项目数据
+        this.getProjectData()
+      } else if (this.orgType === 4) {
+        // 获取部门数据
+        this.getSectionData()
       } else {
-        this.getListAllData()
+        // 获取列表数据
+        this.getOtherData()
       }
     },
     // 获取列表数据
-    getListAllData () {
+    getOtherData () {
       if (!this.orgId) {
         return
       }
@@ -300,7 +311,8 @@ export default{
         })
       })
     },
-    getListDetData () {
+    // 获取项目数据
+    getProjectData () {
       let date = this.search.date || []
       let mac = this.search.mac
       mac = mac.replace(/:/g, '')
@@ -319,6 +331,49 @@ export default{
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/v2.0/selRollCallReport',
+        data: params
+      }).then((res) => {
+        this.loading = false
+        if (res.data.result === 'Sucess') {
+          this.total = res.data.data1.total
+          this.tableData2 = res.data.data1.reports
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.loading = false
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
+    // 获取部门数据
+    getSectionData () {
+      let date = this.search.date || []
+      let mac = this.search.mac
+      mac = mac.replace(/:/g, '')
+      let params = {
+        user_id: this.userId,
+        ogz_id: this.secId,
+        user_name: this.search.name,
+        card_mac: mac,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
+        page: this.nowPage,
+        limit1: this.limit
+      }
+      params = this.$qs.stringify(params)
+      this.loading = true
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v2.0/selRollCallReportOgz',
         data: params
       }).then((res) => {
         this.loading = false
@@ -591,9 +646,14 @@ export default{
       this.nowPage = 1
       // 获取列表数据
       if (this.orgType === 3) {
-        this.getListDetData()
+        // 获取项目数据
+        this.getProjectData()
+      } else if (this.orgType === 4) {
+        // 获取部门数据
+        this.getSectionData()
       } else {
-        this.getListAllData()
+        // 获取其它数据
+        this.getOtherData()
       }
     },
     // 点击分页
@@ -601,9 +661,14 @@ export default{
       this.nowPage = page
       // 获取列表数据
       if (this.orgType === 3) {
-        this.getListDetData()
+        // 获取项目数据
+        this.getProjectData()
+      } else if (this.orgType === 4) {
+        // 获取部门数据
+        this.getSectionData()
       } else {
-        this.getListAllData()
+        // 获取列表数据
+        this.getOtherData()
       }
     },
     // 获取跨越天数
@@ -633,44 +698,82 @@ export default{
     },
     /* 导出 */
     downFile () {
-      let date = this.search.date || []
       if (this.orgType === 3) {
-        let mac = this.search.mac
-        mac = mac.replace(/:/g, '')
-        let params = {
-          user_id: this.userId,
-          project_id: this.proId,
-          user_name: this.search.name,
-          card_mac: mac,
-          start_date: date[0] || '',
-          end_date: date[1] || ''
-        }
-        params = this.$qs.stringify(params)
-        this.downDisabled = true
-        setTimeout(() => {
-          this.downDisabled = false
-        }, 5000)
-        window.location.href = this.sysetApi() + '/v2.0/selRollCallReportEO?' + params
+        this.downProject()
+      } else if (this.orgType === 4) {
+        this.downSection()
       } else {
-        let params = {
-          user_id: this.userId,
-          ogz_id: this.orgId,
-          start_date: date[0] || '',
-          end_date: date[1] || ''
-        }
-        params = this.$qs.stringify(params)
-        this.downDisabled = true
-        setTimeout(() => {
-          this.downDisabled = false
-        }, 5000)
-        window.location.href = this.sysetApi() + '/v2.0/selRollCallReport823EO?' + params
+        this.downOther()
       }
+    },
+    // 其它
+    downOther () {
+      let date = this.search.date || []
+      let params = {
+        user_id: this.userId,
+        ogz_id: this.orgId,
+        start_date: date[0] || '',
+        end_date: date[1] || ''
+      }
+      params = this.$qs.stringify(params)
+      this.downDisabled = true
+      setTimeout(() => {
+        this.downDisabled = false
+      }, 5000)
+      window.location.href = this.sysetApi() + '/v2.0/selRollCallReport823EO?' + params
+    },
+    // 项目
+    downProject () {
+      let date = this.search.date || []
+      let mac = this.search.mac
+      mac = mac.replace(/:/g, '')
+      let params = {
+        user_id: this.userId,
+        project_id: this.proId,
+        user_name: this.search.name,
+        card_mac: mac,
+        start_date: date[0] || '',
+        end_date: date[1] || ''
+      }
+      params = this.$qs.stringify(params)
+      this.downDisabled = true
+      setTimeout(() => {
+        this.downDisabled = false
+      }, 5000)
+      window.location.href = this.sysetApi() + '/v2.0/selRollCallReportEO?' + params
+    },
+    // 部门
+    downSection () {
+      let date = this.search.date || []
+      let mac = this.search.mac
+      mac = mac.replace(/:/g, '')
+      let params = {
+        user_id: this.userId,
+        ogz_id: this.secId,
+        user_name: this.search.name,
+        card_mac: mac,
+        start_date: date[0] || '',
+        end_date: date[1] || ''
+      }
+      params = this.$qs.stringify(params)
+      this.downDisabled = true
+      setTimeout(() => {
+        this.downDisabled = false
+      }, 5000)
+      window.location.href = this.sysetApi() + '/v2.0/selRollCallReportOgzEO?' + params
     }
   },
   watch: {
     orgId (val, oldVal) {
       if (val) {
         this.downDisabled = false
+      }
+    },
+    orgType (val, oldVal) {
+      if (val === 3 || val === 4) {
+        this.tableDetails = true
+      } else {
+        this.tableDetails = false
       }
     }
   }

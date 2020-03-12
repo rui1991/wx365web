@@ -161,6 +161,8 @@ export default{
     ]),
     ...mapState('report', [
       'organizeId',
+      'organizeType',
+      'sectionId',
       'date'
     ])
   },
@@ -197,15 +199,32 @@ export default{
     getListData () {
       if (!this.organizeId) return
       const date = this.search.date
-      let params = {
-        organize_id: this.organizeId,
-        project_name: '',
-        user_name: this.search.name,
-        plan_name: this.search.task,
-        start_date: date[0],
-        end_date: date[1],
-        page: this.nowPage,
-        limit1: this.limit
+      const type = this.organizeType
+      let params = {}
+      if (type === 4) {
+        console.log('111')
+        params = {
+          organize_id: this.organizeId,
+          ogz_id: this.sectionId,
+          project_name: '',
+          user_name: this.search.name,
+          plan_name: this.search.task,
+          start_date: date[0],
+          end_date: date[1],
+          page: this.nowPage,
+          limit1: this.limit
+        }
+      } else {
+        params = {
+          organize_id: this.organizeId,
+          project_name: '',
+          user_name: this.search.name,
+          plan_name: this.search.task,
+          start_date: date[0],
+          end_date: date[1],
+          page: this.nowPage,
+          limit1: this.limit
+        }
       }
       params = this.$qs.stringify(params)
       this.loading = true
@@ -379,13 +398,27 @@ export default{
     /* 导出文件 */
     downFile () {
       const date = this.search.date
-      let params = {
-        organize_id: this.organizeId,
-        project_name: '',
-        user_name: this.search.name,
-        plan_name: this.search.task,
-        start_date: date[0],
-        end_date: date[1]
+      const type = this.organizeType
+      let params = {}
+      if (type === 4) {
+        params = {
+          organize_id: this.organizeId,
+          ogz_id: this.sectionId,
+          project_name: '',
+          user_name: this.search.name,
+          plan_name: this.search.task,
+          start_date: date[0],
+          end_date: date[1]
+        }
+      } else {
+        params = {
+          organize_id: this.organizeId,
+          project_name: '',
+          user_name: this.search.name,
+          plan_name: this.search.task,
+          start_date: date[0],
+          end_date: date[1]
+        }
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true

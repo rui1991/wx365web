@@ -1,6 +1,6 @@
 <template>
   <el-tree
-    :data="orgData"
+    :data="orgTree"
     ref="tree"
     show-checkbox
     default-expand-all
@@ -26,7 +26,7 @@ export default{
   },
   computed: {
     ...mapState('other', [
-      'orgData'
+      'orgTree'
     ])
   },
   methods: {
@@ -42,11 +42,16 @@ export default{
         if (type === 3) {
           projectId = data.base_id
         }
+        let sectionId = 0
+        if (type === 4) {
+          sectionId = data.base_id
+        }
         const obj = {
           id: data.id,
           name: data.name,
           type: type,
-          projectId: projectId
+          projectId: projectId,
+          sectionId: sectionId
         }
         this.$emit('parentUpdata', obj)
       } else {
@@ -66,11 +71,16 @@ export default{
       if (type === 3) {
         projectId = data.base_id
       }
+      let sectionId = 0
+      if (type === 4) {
+        sectionId = data.base_id
+      }
       const obj = {
         id: data.id,
         name: data.name,
         type: type,
-        projectId: projectId
+        projectId: projectId,
+        sectionId: sectionId
       }
       this.$emit('parentUpdata', obj)
     }

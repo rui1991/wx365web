@@ -1,6 +1,6 @@
 <template>
   <el-tree
-    :data="orgData"
+    :data="orgTree"
     ref="tree"
     show-checkbox
     default-expand-all
@@ -33,7 +33,7 @@ export default{
   },
   computed: {
     ...mapState('other', [
-      'orgData'
+      'orgTree'
     ]),
     ...mapState('report', [
       'organizeId',
@@ -56,13 +56,22 @@ export default{
           obj = {
             id: data.id,
             type: type,
-            proId: data.base_id
+            proId: data.base_id,
+            secId: 0
+          }
+        } else if (type === 4) {
+          obj = {
+            id: data.id,
+            type: type,
+            proId: 0,
+            secId: data.base_id
           }
         } else {
           obj = {
             id: data.id,
             type: type,
-            proId: 0
+            proId: 0,
+            secId: 0
           }
         }
         // 设置组织参数
@@ -83,13 +92,22 @@ export default{
         obj = {
           id: data.id,
           type: type,
-          proId: data.base_id
+          proId: data.base_id,
+          secId: 0
+        }
+      } else if (type === 4) {
+        obj = {
+          id: data.id,
+          type: type,
+          proId: 0,
+          secId: data.base_id
         }
       } else {
         obj = {
           id: data.id,
           type: type,
-          proId: 0
+          proId: 0,
+          secId: 0
         }
       }
       // 设置组织参数
