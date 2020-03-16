@@ -202,7 +202,6 @@ export default{
       const type = this.organizeType
       let params = {}
       if (type === 4) {
-        console.log('111')
         params = {
           organize_id: this.organizeId,
           ogz_id: this.sectionId,
