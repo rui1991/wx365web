@@ -83,6 +83,7 @@ export default{
         })
       })
     },
+    // 选择组织树
     orgCheckChange (data, checked, self) {
       if (data.disabled) {
         return

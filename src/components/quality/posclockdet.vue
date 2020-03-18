@@ -7,6 +7,17 @@
     element-loading-background="rgba(255, 255, 255, 0.6)">
     <div class="search">
       <div class="item">
+        <span>执行部门</span>
+        <el-select v-model="searchSector" style="width: 160px;" placeholder="请选择执行部门" @change="searchChange">
+          <el-option
+            v-for="item in sectorOptions"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </div>
+      <div class="item">
         <el-date-picker
           v-model="searchDate"
           type="month"
@@ -79,15 +90,15 @@ export default{
     return {
       nowMonth: this.$common.getNowDate('yyyy-mm'),
       nowDay: 0,
+      searchSector: 0,
       searchDate: this.$common.getNowDate('yyyy-mm'),
       pickerOptions: {
         disabledDate (time) {
           return time.getTime() > Date.now()
         }
       },
+      sectorOptions: [],
       days: [],
-      whetherProject: true,
-      sectionIds: 0,
       tableData: [],
       total: 0,
       nowPage: 1,
@@ -129,25 +140,27 @@ export default{
       )
     }
     this.days = days
-    // 判断组织
+    // 全部项目
     const allProject = this.allProject
-    const projectId = Number.parseInt(this.projectId)
+    const projectId = this.projectId
     const nowProject = allProject.find(item => {
       return item.project_id === projectId
     })
     if (nowProject.ogzs === undefined) {
-      this.whetherProject = true
-      // 获取列表
-      this.getProjectData()
+      // 获取项目所有部门
+      this.getProAllSector()
     } else {
-      this.whetherProject = false
-      let ids = []
+      let sectorOptions = []
       nowProject.ogzs.forEach(item => {
-        ids.push(item.ogz_id)
+        sectorOptions.push({
+          id: item.ogz_id,
+          name: item.organize_name
+        })
       })
-      ids = ids.join(',')
-      this.sectionIds = ids
-      this.getSectionData()
+      this.searchSector = nowProject.ogzs[0].ogz_id
+      this.sectorOptions = sectorOptions
+      // 获取列表数据
+      this.getListData()
     }
   },
   components: {
@@ -160,51 +173,16 @@ export default{
     ]),
     ...mapState('other', [
       'allProject',
-      'projectId'
+      'projectId',
+      'projectOrgId'
     ])
   },
   methods: {
-    // 获取项目数据
-    getProjectData () {
+    // 获取列表数据
+    getListData () {
       let params = {
         project_id: this.projectId,
-        month: this.searchDate,
-        page: this.nowPage,
-        limit1: this.limit
-      }
-      params = this.$qs.stringify(params)
-      this.loading = true
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.7/selUserRecordMessageChildren',
-        data: params
-      }).then((res) => {
-        this.loading = false
-        if (res.data.result === 'Sucess') {
-          this.total = res.data.data1.total
-          this.tableData = res.data.data1.message
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.loading = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 获取部门数据
-    getSectionData () {
-      let params = {
-        project_id: this.projectId,
-        ogz_ids: this.sectionIds,
+        ogz_id: this.searchSector,
         month: this.searchDate,
         page: this.nowPage,
         limit1: this.limit
@@ -244,21 +222,21 @@ export default{
       // 初始化页码
       this.nowPage = 1
       // 获取列表数据
-      if (this.whetherProject) {
-        this.getProjectData()
-      } else {
-        this.getSectionData()
-      }
+      this.getListData()
     },
     // 点击分页
     pageChang (page) {
       this.nowPage = page
       // 获取列表数据
-      if (this.whetherProject) {
-        this.getProjectData()
-      } else {
-        this.getSectionData()
-      }
+      this.getListData()
+    },
+    // 选择部门
+    searchChange () {
+      console.log('111')
+      // 初始化页码
+      this.nowPage = 1
+      // 获取列表数据
+      this.getListData()
     },
     // 选择时间
     dateChange (date) {
@@ -291,12 +269,8 @@ export default{
       this.days = days
       // 初始化页码
       this.nowPage = 1
-      // 获取列表
-      if (this.whetherProject) {
-        this.getProjectData()
-      } else {
-        this.getSectionData()
-      }
+      // 获取列表数据
+      this.getListData()
     },
     /* 详情 */
     detClick (uid, posid, time) {
@@ -309,6 +283,46 @@ export default{
     },
     detClose () {
       this.detDialog = false
+    },
+    /* 项目所有部门 */
+    getProAllSector () {
+      let params = {
+        organize_id: this.projectOrgId
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.2/selOrganizeTree',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          const nodeData = res.data.data1[0].children
+          let sectorOptions = []
+          nodeData.forEach(item => {
+            sectorOptions.push({
+              id: item.base_id,
+              name: item.name
+            })
+          })
+          this.searchSector = nodeData[0].base_id
+          this.sectorOptions = sectorOptions
+          // 获取列表数据
+          this.getListData()
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
     },
     /* 设置 */
     crewClick () {
@@ -397,29 +411,9 @@ export default{
     },
     /* 导出 */
     downFile () {
-      if (this.whetherProject) {
-        this.downProject()
-      } else {
-        this.downSection()
-      }
-    },
-    // 项目
-    downProject () {
       let params = {
         project_id: this.projectId,
-        month: this.searchDate
-      }
-      params = this.$qs.stringify(params)
-      this.downDisabled = true
-      setTimeout(() => {
-        this.downDisabled = false
-      }, 5000)
-      window.location.href = this.sysetApi() + '/v3.7/selUserRecordMessageChildrenEO?' + params
-    },
-    // 部门
-    downSection () {
-      let params = {
-        ogz_ids: this.sectionIds,
+        ogz_id: this.searchSector,
         month: this.searchDate
       }
       params = this.$qs.stringify(params)
@@ -449,16 +443,15 @@ export default{
 <style lang="less" scoped>
 .posclockdet{
   .search{
-    display: table;
+    display: flex;
+    align-items: center;
     width: 100%;
     height: 60px;
     .item{
-      display: table-cell;
-      vertical-align: middle;
+      margin-right: 20px;
     }
     .operate{
-      display: table-cell;
-      vertical-align: middle;
+      flex-grow: 1;
       text-align: right;
     }
   }

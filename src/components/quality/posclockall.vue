@@ -7,6 +7,17 @@
     element-loading-background="rgba(255, 255, 255, 0.6)">
     <div class="search">
       <div class="item">
+        <span>执行部门</span>
+        <el-select v-model="searchSector" style="width: 160px;" placeholder="请选择执行部门" @change="searchChange">
+          <el-option
+            v-for="item in sectorOptions"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </div>
+      <div class="item">
         <el-date-picker
           v-model="searchDate"
           type="month"
@@ -66,12 +77,14 @@ export default{
     return {
       nowMonth: this.$common.getNowDate('yyyy-mm'),
       nowDay: 0,
+      searchSector: 0,
       searchDate: this.$common.getNowDate('yyyy-mm'),
       pickerOptions: {
         disabledDate (time) {
           return time.getTime() > Date.now()
         }
       },
+      sectorOptions: [],
       days: [],
       tableData: [],
       total: 0,
@@ -112,8 +125,28 @@ export default{
       )
     }
     this.days = days
-    // 获取列表
-    this.getListData()
+    // 全部项目
+    const allProject = this.allProject
+    const projectId = this.projectId
+    const nowProject = allProject.find(item => {
+      return item.project_id === projectId
+    })
+    if (nowProject.ogzs === undefined) {
+      // 获取项目所有部门
+      this.getProAllSector()
+    } else {
+      let sectorOptions = []
+      nowProject.ogzs.forEach(item => {
+        sectorOptions.push({
+          id: item.ogz_id,
+          name: item.organize_name
+        })
+      })
+      this.searchSector = nowProject.ogzs[0].ogz_id
+      this.sectorOptions = sectorOptions
+      // 获取列表数据
+      this.getListData()
+    }
   },
   components: {
     detModule
@@ -123,14 +156,18 @@ export default{
       'userId'
     ]),
     ...mapState('other', [
-      'projectId'
+      'allProject',
+      'projectId',
+      'projectOrgId'
     ])
   },
   methods: {
     // 获取列表数据
     getListData () {
+      // 部门ID
       let params = {
         project_id: this.projectId,
+        ogz_id: this.searchSector,
         month: this.searchDate,
         page: this.nowPage,
         limit1: this.limit
@@ -139,7 +176,7 @@ export default{
       this.loading = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.8/selUserRecordMessage',
+        url: this.sysetApi() + '/v3.8/selOgzUserRecordMessage',
         data: params
       }).then((res) => {
         this.loading = false
@@ -175,6 +212,13 @@ export default{
     // 点击分页
     pageChang (page) {
       this.nowPage = page
+      // 获取列表数据
+      this.getListData()
+    },
+    // 选择部门
+    searchChange () {
+      // 初始化页码
+      this.nowPage = 1
       // 获取列表数据
       this.getListData()
     },
@@ -223,6 +267,46 @@ export default{
     detClose () {
       this.detDialog = false
     },
+    /* 项目所有部门 */
+    getProAllSector () {
+      let params = {
+        organize_id: this.projectOrgId
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.2/selOrganizeTree',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          const nodeData = res.data.data1[0].children
+          let sectorOptions = []
+          nodeData.forEach(item => {
+            sectorOptions.push({
+              id: item.base_id,
+              name: item.name
+            })
+          })
+          this.searchSector = nodeData[0].base_id
+          this.sectorOptions = sectorOptions
+          // 获取列表数据
+          this.getListData()
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
     /* 导出 */
     downFile () {
       let params = {
@@ -234,7 +318,7 @@ export default{
       setTimeout(() => {
         this.downDisabled = false
       }, 5000)
-      window.location.href = this.sysetApi() + '/v3.8/selUserRecordMessageEO?' + params
+      window.location.href = this.sysetApi() + '/v3.8/selOgzUserRecordMessageEO?' + params
     }
   },
   filters: {
@@ -256,16 +340,15 @@ export default{
 <style lang="less" scoped>
 .posclockall{
   .search{
-    display: table;
+    display: flex;
+    align-items: center;
     width: 100%;
     height: 60px;
     .item{
-      display: table-cell;
-      vertical-align: middle;
+      margin-right: 20px;
     }
     .operate{
-      display: table-cell;
-      vertical-align: middle;
+      flex-grow: 1;
       text-align: right;
     }
   }

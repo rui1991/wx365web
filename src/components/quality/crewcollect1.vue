@@ -148,7 +148,6 @@ export default{
         })
       }
     })
-    console.log(orgOptions)
     this.orgOptions = orgOptions
     // 日期
     const nowDate = this.$common.getBeforeDate()
