@@ -34,7 +34,7 @@
                   end-placeholder="结束日期">
                 </el-date-picker>
               </div>
-              <div class="item" v-show="orgType === 3">
+              <div class="item" v-show="tableDetails">
                 <span>胸牌编号</span>
                 <el-input style="width: 160px;" v-model="nowSearch.mac"></el-input>
               </div>
@@ -44,7 +44,7 @@
               </div>
             </div>
             <div class="search-input">
-              <div class="item" v-show="orgType === 3">
+              <div class="item" v-show="tableDetails">
                 <span>员工姓名</span>
                 <el-input style="width: 160px;" v-model="nowSearch.name"></el-input>
               </div>

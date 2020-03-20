@@ -8,7 +8,7 @@
     <div class="search">
       <div class="item">
         <span>执行部门</span>
-        <el-select v-model="searchSector" style="width: 160px;" placeholder="请选择执行部门" @change="searchChange">
+        <el-select v-model="searchSector" style="width: 160px;" placeholder="请选择执行部门" @change="sectorChange" @clear="sectorChange">
           <el-option
             v-for="item in sectorOptions"
             :key="item.id"
@@ -90,7 +90,7 @@ export default{
     return {
       nowMonth: this.$common.getNowDate('yyyy-mm'),
       nowDay: 0,
-      searchSector: 0,
+      searchSector: '',
       searchDate: this.$common.getNowDate('yyyy-mm'),
       pickerOptions: {
         disabledDate (time) {
@@ -98,6 +98,7 @@ export default{
         }
       },
       sectorOptions: [],
+      sectorIds: '',
       days: [],
       tableData: [],
       total: 0,
@@ -150,14 +151,16 @@ export default{
       // 获取项目所有部门
       this.getProAllSector()
     } else {
+      let ids = []
       let sectorOptions = []
       nowProject.ogzs.forEach(item => {
+        ids.push(item.ogz_id)
         sectorOptions.push({
           id: item.ogz_id,
           name: item.organize_name
         })
       })
-      this.searchSector = nowProject.ogzs[0].ogz_id
+      this.sectorIds = ids.join(',')
       this.sectorOptions = sectorOptions
       // 获取列表数据
       this.getListData()
@@ -182,7 +185,7 @@ export default{
     getListData () {
       let params = {
         project_id: this.projectId,
-        ogz_id: this.searchSector,
+        ogz_ids: this.searchSector || this.sectorIds,
         month: this.searchDate,
         page: this.nowPage,
         limit1: this.limit
@@ -231,8 +234,7 @@ export default{
       this.getListData()
     },
     // 选择部门
-    searchChange () {
-      console.log('111')
+    sectorChange () {
       // 初始化页码
       this.nowPage = 1
       // 获取列表数据
@@ -297,14 +299,16 @@ export default{
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           const nodeData = res.data.data1[0].children
+          let ids = []
           let sectorOptions = []
           nodeData.forEach(item => {
+            ids.push(item.base_id)
             sectorOptions.push({
               id: item.base_id,
               name: item.name
             })
           })
-          this.searchSector = nodeData[0].base_id
+          this.sectorIds = ids.join(',')
           this.sectorOptions = sectorOptions
           // 获取列表数据
           this.getListData()
@@ -413,7 +417,7 @@ export default{
     downFile () {
       let params = {
         project_id: this.projectId,
-        ogz_id: this.searchSector,
+        ogz_ids: this.searchSector || this.sectorIds,
         month: this.searchDate
       }
       params = this.$qs.stringify(params)
