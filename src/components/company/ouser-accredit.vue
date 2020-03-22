@@ -1,5 +1,6 @@
 <template>
   <el-dialog title="选择授权范围" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+    <p class="hint">提示：授权范围不可选直属企业或分公司总部部门，否则登录将无项目权限无权登录进入系统！</p>
     <el-tree
       :data="treeData"
       show-checkbox
@@ -180,5 +181,8 @@ export default{
 </script>
 
 <style lang="less" scoped>
-
+.hint{
+  color: red;
+  margin-bottom: 5px;
+}
 </style>

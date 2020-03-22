@@ -380,14 +380,15 @@ export default{
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
           this.tableData2 = res.data.data1.reports
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
         }
+        //else {
+        //  const errHint = this.$common.errorCodeHint(res.data.error_code)
+        //  this.$message({
+        //    showClose: true,
+        //    message: errHint,
+        //    type: 'error'
+        //  })
+        //}
       }).catch(() => {
         this.loading = false
         this.$message({

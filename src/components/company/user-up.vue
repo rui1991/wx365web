@@ -13,7 +13,7 @@
         <el-button size="small" type="primary">点击导入</el-button>
       </el-upload>
       <p class="up-hint">注：请提前按照模板文件<a href="javascript:;" class="blue" @click="downTemplate">excel示例</a>的格式编辑用户资料</p>
-      <!--<p class="up-hint">&nbsp;&nbsp;&nbsp;&nbsp;2.导入的用户文件仅支持excel文件</p>-->
+      <p>提示：用户导入模板字段要求：1.授权范围为企业、分公司、项目层级只需授权范围栏填写对应名称，授权部门栏不可填；2.授权范围为部门层级则授权范围栏只可填写对应的项目名称，授权部门填写项目直属部门。</p>
     </div>
     <div slot="footer" class="dialog-footer">
       <el-button @click="closeClick">关 闭</el-button>
