@@ -5,9 +5,19 @@
         <el-form-item label="组名称" prop="name">
           <el-input v-model.trim="formData.name" auto-complete="off"></el-input>
         </el-form-item>
+        <el-form-item label="部门" prop="role">
+          <el-select v-model="formData.sector" clearable placeholder="请选择部门" @change="sectionChang" @clear="sectionChang">
+            <el-option
+              v-for="item in sectorOptions"
+              :key="item.base_id"
+              :label="item.name"
+              :value="item.base_id">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="人员" prop="crewName">
           <el-input :disabled="true" type="textarea" v-model="formData.crewName"></el-input>
-          <el-button type="primary" style="vertical-align: top;" @click="crewDialog = true">选择人员</el-button>
+          <el-button type="primary" style="vertical-align: top;" @click="crewClick">选择人员</el-button>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -18,6 +28,7 @@
     <!-- 人员 -->
     <crew-module
       :parentDialog="crewDialog"
+      :parentOrgId="orgId"
       :parentIds="formData.crewId"
       @parentUpdata="crewUpdata"
       @parentCancel="crewCancel">
@@ -28,12 +39,13 @@
 <script>
 import { mapState } from 'vuex'
 // 引入人员组件
-import crewModule from '@/components/public/crew-checkbox'
+import crewModule from '@/components/polling/group-crew'
 export default{
   props: ['parentDialog'],
   data () {
     return {
       formLabelWidth: '100px',
+      sectorOptions: [],
       rules: {
         name: [
           { required: true, message: '请输入组名称', trigger: 'blur' }
@@ -44,10 +56,12 @@ export default{
       },
       formData: {
         name: '',
+        sector: '',
         crewName: '',
         crewId: []
       },
       disabled: false,
+      orgId: 0,
       crewDialog: false
     }
   },
@@ -60,15 +74,21 @@ export default{
     ]),
     ...mapState('other', [
       'companyId',
-      'projectId'
+      'projectId',
+      'projectOrgId'
     ])
   },
   methods: {
     addInit () {
       this.formData = {
         name: '',
+        sector: '',
         crewName: '',
         crewId: []
+      }
+      if (this.sectorOptions.length === 0) {
+        // 获取部门
+        this.getSectorOptions()
       }
     },
     // 验证表单
@@ -85,16 +105,63 @@ export default{
     resetForm (formName) {
       this.$refs[formName].resetFields()
     },
+    /* 部门 */
+    getSectorOptions () {
+      let params = {
+        organize_id: this.projectOrgId
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.2/selOrganizeTree',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          this.sectorOptions = res.data.data1[0].children
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
+    // 选择部门
+    sectionChang () {
+      this.formData.crewName = ''
+      this.formData.crewId = []
+    },
     // 提交
     sendRequest () {
       let crewId = this.formData.crewId
       crewId = crewId.join(',')
-      let params = {
-        company_id: this.companyId,
-        user_id: this.userId,
-        project_id: this.projectId,
-        group_name: this.formData.name,
-        userN_ids: crewId
+      let sector = this.formData.sector
+      let params = {}
+      if (sector) {
+        params = {
+          company_id: this.companyId,
+          user_id: this.userId,
+          project_id: this.projectId,
+          group_name: this.formData.name,
+          ogz_id: sector,
+          userN_ids: crewId
+        }
+      } else {
+        params = {
+          company_id: this.companyId,
+          user_id: this.userId,
+          project_id: this.projectId,
+          group_name: this.formData.name,
+          userN_ids: crewId
+        }
       }
       params = this.$qs.stringify(params)
       this.disabled = true
@@ -133,6 +200,19 @@ export default{
       this.$emit('parentCancel')
     },
     /* 人员 */
+    crewClick () {
+      // 组织ID
+      const sector = this.formData.sector
+      if (sector) {
+        const nowSector = this.sectorOptions.find(item => {
+          return item.base_id === sector
+        })
+        this.orgId = nowSector.id
+      } else {
+        this.orgId = this.projectOrgId
+      }
+      this.crewDialog = true
+    },
     crewUpdata (data) {
       this.formData.crewName = data.names
       this.formData.crewId = data.ids

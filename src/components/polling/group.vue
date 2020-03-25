@@ -119,6 +119,7 @@ export default{
       comDialog: false,
       comForm: {
         name: '',
+        sector: '',
         crewName: '',
         crewId: []
       },
@@ -228,6 +229,7 @@ export default{
     /* 编辑 */
     comClick (data) {
       this.itemId = data.group_id
+      let sector = data.ogz_id || ''
       let uids = data.user_ids
       let userArr = []
       if (uids) {
@@ -238,6 +240,7 @@ export default{
       })
       this.comForm = {
         name: data.group_name,
+        sector: sector,
         crewName: data.user_names,
         crewId: crewId
       }

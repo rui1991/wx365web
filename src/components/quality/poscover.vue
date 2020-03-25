@@ -110,7 +110,7 @@
 <script>
 import { mapState } from 'vuex'
 // 引入组织树组件
-import orgModule from '@/components/public/org-radio'
+import orgModule from '@/components/public/org-radio2'
 // 引入详情组件
 import detModule from '@/components/quality/poscover-det'
 export default{

@@ -6,31 +6,41 @@
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(255, 255, 255, 0.6)">
     <div class="search">
-      <div class="item">
-        <span>执行部门</span>
-        <el-select v-model="searchSector" style="width: 160px;" placeholder="请选择执行部门" @change="sectorChange" @clear="sectorChange">
-          <el-option
-            v-for="item in sectorOptions"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id">
-          </el-option>
-        </el-select>
+      <div class="search-input" style="margin-bottom: 10px;">
+        <div class="item">
+          <span>执行部门</span>
+          <el-select v-model="nowSearch.sector" style="width: 160px;" placeholder="请选择执行部门">
+            <el-option
+              v-for="item in sectorOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </div>
+        <div class="item">
+          <span>执行人员</span>
+          <el-input style="width: 160px;" v-model.trim="nowSearch.crew" placeholder="请输入人员姓名"></el-input>
+        </div>
+        <div class="operate">
+          <el-button type="primary" @click="searchList">搜索</el-button>
+          <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+        </div>
       </div>
-      <div class="item">
-        <el-date-picker
-          v-model="searchDate"
-          type="month"
-          value-format="yyyy-MM"
-          :clearable="false"
-          @change="dateChange"
-          :picker-options="pickerOptions"
-          placeholder="选择月">
-        </el-date-picker>
-      </div>
-      <div class="operate">
-        <el-button type="primary" @click="crewClick">设置</el-button>
-        <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+      <div class="search-input">
+        <div class="item">
+          <el-date-picker
+            v-model="nowSearch.date"
+            type="month"
+            value-format="yyyy-MM"
+            :clearable="false"
+            :picker-options="pickerOptions"
+            placeholder="选择月">
+          </el-date-picker>
+        </div>
+        <div class="operate">
+          <el-button type="primary" @click="crewClick">设置</el-button>
+        </div>
       </div>
     </div>
     <el-table class="list-table" :data="tableData" border style="width: 100%">
@@ -88,10 +98,18 @@ export default{
   name: 'posclockdet',
   data () {
     return {
+      search: {
+        sector: '',
+        crew: '',
+        date: this.$common.getNowDate('yyyy-mm')
+      },
+      nowSearch: {
+        sector: '',
+        crew: '',
+        date: this.$common.getNowDate('yyyy-mm')
+      },
       nowMonth: this.$common.getNowDate('yyyy-mm'),
       nowDay: 0,
-      searchSector: '',
-      searchDate: this.$common.getNowDate('yyyy-mm'),
       pickerOptions: {
         disabledDate (time) {
           return time.getTime() > Date.now()
@@ -181,12 +199,26 @@ export default{
     ])
   },
   methods: {
+    // 搜索
+    searchList () {
+      // 当前页码初始化
+      this.nowPage = 1
+      if (this.nowSearch.date === this.search.date) {
+        this.search.sector = this.nowSearch.sector
+        this.search.crew = this.nowSearch.crew
+        this.getListData()
+      } else {
+        this.search = JSON.parse(JSON.stringify(this.nowSearch))
+        this.dateChange()
+      }
+    },
     // 获取列表数据
     getListData () {
       let params = {
         project_id: this.projectId,
-        ogz_ids: this.searchSector || this.sectorIds,
-        month: this.searchDate,
+        ogz_ids: this.search.sector || this.sectorIds,
+        user_name: this.search.crew,
+        month: this.search.date,
         page: this.nowPage,
         limit1: this.limit
       }
@@ -233,15 +265,9 @@ export default{
       // 获取列表数据
       this.getListData()
     },
-    // 选择部门
-    sectorChange () {
-      // 初始化页码
-      this.nowPage = 1
-      // 获取列表数据
-      this.getListData()
-    },
-    // 选择时间
-    dateChange (date) {
+    // 时间变化
+    dateChange () {
+      const date = this.search.date
       let whether = false
       if (this.nowMonth === date) {
         whether = true
@@ -417,8 +443,9 @@ export default{
     downFile () {
       let params = {
         project_id: this.projectId,
-        ogz_ids: this.searchSector || this.sectorIds,
-        month: this.searchDate
+        ogz_ids: this.search.sector || this.sectorIds,
+        user_name: this.search.crew,
+        month: this.search.date
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true
@@ -447,16 +474,46 @@ export default{
 <style lang="less" scoped>
 .posclockdet{
   .search{
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 60px;
-    .item{
-      margin-right: 20px;
+    padding: 5px 0;
+    .search-input{
+      display: table;
+      width: 100%;
+      .item{
+        display: table-cell;
+        vertical-align: middle;
+        width: 280px;
+        font-size: 0;
+        span{
+          width: 70px;
+          display: inline-block;
+          line-height: 34px;
+          font-size: 14px;
+        }
+      }
+      .date{
+        width: 420px;
+      }
+      .operate{
+        display: table-cell;
+        vertical-align: middle;
+        text-align: right;
+      }
     }
-    .operate{
-      flex-grow: 1;
-      text-align: right;
+  }
+
+  .search{
+    padding: 5px 0;
+    .search-input{
+      display: flex;
+      align-items: center;
+      width: 100%;
+      .item{
+        margin-right: 20px;
+      }
+      .operate{
+        flex-grow: 1;
+        text-align: right;
+      }
     }
   }
 }
