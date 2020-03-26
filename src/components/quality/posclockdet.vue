@@ -9,7 +9,7 @@
       <div class="search-input" style="margin-bottom: 10px;">
         <div class="item">
           <span>执行部门</span>
-          <el-select v-model="nowSearch.sector" style="width: 160px;" placeholder="请选择执行部门">
+          <el-select v-model="nowSearch.sector" clearable style="width: 160px;" placeholder="请选择执行部门">
             <el-option
               v-for="item in sectorOptions"
               :key="item.id"
@@ -306,7 +306,7 @@ export default{
       this.posId = posid
       let day = time.replace(/size/g, '')
       day = day.padStart(2, '0')
-      this.detDate = this.searchDate + '-' + day
+      this.detDate = this.search.date + '-' + day
       this.detDialog = true
     },
     detClose () {
@@ -414,11 +414,7 @@ export default{
           // 初始化页码
           this.nowPage = 1
           // 获取列表数据
-          if (this.whetherProject) {
-            this.getProjectData()
-          } else {
-            this.getSectionData()
-          }
+          this.getListData()
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({

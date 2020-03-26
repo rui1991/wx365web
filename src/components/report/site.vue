@@ -50,12 +50,12 @@
         <el-table class="list-table" :data="tableData" border :summary-method="getSummaries" show-summary style="width: 100%">
           <el-table-column fixed type="index" width="50" label="序号"></el-table-column>
           <el-table-column fixed prop="project_name" label="项目名称" width="200"></el-table-column>
-          <el-table-column prop="position_name" label="地址名称" width="198"></el-table-column>
+          <el-table-column prop="position_name" label="地址名称" width="200"></el-table-column>
           <el-table-column prop="plan_name" label="任务名称" width="200"></el-table-column>
-          <el-table-column prop="start_time" label="开始时间" width="190"></el-table-column>
-          <el-table-column prop="end_time" label="结束时间" width="190"></el-table-column>
-          <el-table-column prop="normalSize" label="正常" width="140"></el-table-column>
-          <el-table-column prop="abnormalSize" label="异常" width="140"></el-table-column>
+          <el-table-column prop="start_time" label="开始时间"></el-table-column>
+          <el-table-column prop="end_time" label="结束时间"></el-table-column>
+          <el-table-column prop="normalSize" label="正常"></el-table-column>
+          <el-table-column prop="abnormalSize" label="异常"></el-table-column>
         </el-table>
         <el-pagination
           background
@@ -110,16 +110,8 @@ export default{
   mounted () {
     // 时段
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
-    if (this.date.length === 0) {
-      this.search.date = [nowDate, nowDate]
-      this.nowSearch.date = [nowDate, nowDate]
-      this.setReportDate([nowDate, nowDate])
-    } else {
-      this.search.date = this.date
-      this.nowSearch.date = this.date
-    }
-    // 获取列表数据
-    this.getListData()
+    this.search.date = [nowDate, nowDate]
+    this.nowSearch.date = [nowDate, nowDate]
   },
   computed: {
     ...mapState('user', [
@@ -151,15 +143,13 @@ export default{
     // 搜索
     searchList () {
       this.search = JSON.parse(JSON.stringify(this.nowSearch))
-      // 判断是否选择组织
-      if (!this.projectOrgId) return
       // 当前页码初始化
       this.nowPage = 1
       // 获取列表数据
       this.getListData()
       // 设置报表时间
-      const date = this.search.date
-      this.setReportDate(date)
+      // const date = this.search.date
+      // this.setReportDate(date)
     },
     // 获取列表数据
     getListData () {

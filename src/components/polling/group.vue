@@ -34,7 +34,13 @@
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column width="280" prop="group_name" label="组名称"></el-table-column>
+          <el-table-column width="180" :show-overflow-tooltip="true" prop="group_name" label="组名称"></el-table-column>
+          <el-table-column width="140" label="部门">
+            <template slot-scope="scope">
+              <span v-if="scope.row.ogz_id">{{ scope.row.ogz_name }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
           <el-table-column width="200" label="创建时间">
             <template slot-scope="scope">
               <span>{{ scope.row.create_time | formatDate }}</span>

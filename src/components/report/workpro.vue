@@ -111,19 +111,8 @@ export default{
   mounted () {
     // 时段
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
-    if (this.date.length === 0) {
-      this.search.date = [nowDate, nowDate]
-      this.nowSearch.date = [nowDate, nowDate]
-      this.setReportDate([nowDate, nowDate])
-    } else {
-      this.search.date = this.date
-      this.nowSearch.date = this.date
-    }
-    if (this.organizeId) {
-      this.downDisabled = false
-      // 获取列表数据
-      this.getListData()
-    }
+    this.search.date = [nowDate, nowDate]
+    this.nowSearch.date = [nowDate, nowDate]
   },
   components: {
     orgModule
@@ -159,8 +148,8 @@ export default{
       // 获取列表数据
       this.getListData()
       // 设置报表时间
-      const date = this.search.date
-      this.setReportDate(date)
+      // const date = this.search.date
+      // this.setReportDate(date)
     },
     // 获取列表数据
     getListData () {

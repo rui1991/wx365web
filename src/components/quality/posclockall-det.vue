@@ -2,7 +2,7 @@
   <el-dialog title="位置打卡详情" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
     <el-table class="select-table" :data="tableData" style="width: 100%" max-height="360">
       <el-table-column type="index" fixed width="50" label="序号"></el-table-column>
-      <el-table-column prop="user_name" width="80" label="人员"></el-table-column>
+      <el-table-column prop="user_name" width="80" :show-overflow-tooltip="true" label="人员"></el-table-column>
       <el-table-column prop="in_time" width="180" label="进入时间"></el-table-column>
       <el-table-column prop="out_time" width="180" label="离开时间"></el-table-column>
       <el-table-column prop="wait_time" label="停留时长(分)"></el-table-column>

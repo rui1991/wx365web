@@ -4,6 +4,7 @@ const state = {
   organizeType: 0,
   projectId: 0,
   sectionId: 0,
+  parentId: 0,
   date: []
 }
 
@@ -18,6 +19,7 @@ const mutations = {
     state.organizeType = obj.type
     state.projectId = obj.proId
     state.sectionId = obj.secId
+    state.parentId = obj.parId
   },
   // 设置当前项目
   SET_REPORT_DATE (state, arr) {

@@ -27,9 +27,9 @@ export default{
 
   },
   mounted () {
-    if (this.organizeId) {
-      this.$refs.tree.setCheckedKeys([this.organizeId])
-    }
+    // if (this.organizeId) {
+    //   this.$refs.tree.setCheckedKeys([this.organizeId])
+    // }
   },
   computed: {
     ...mapState('other', [
@@ -57,21 +57,24 @@ export default{
             id: data.id,
             type: type,
             proId: data.base_id,
-            secId: 0
+            secId: 0,
+            parId: data.parent_id
           }
         } else if (type === 4) {
           obj = {
             id: data.id,
             type: type,
             proId: 0,
-            secId: data.base_id
+            secId: data.base_id,
+            parId: data.parent_id
           }
         } else {
           obj = {
             id: data.id,
             type: type,
             proId: 0,
-            secId: 0
+            secId: 0,
+            parId: data.parent_id
           }
         }
         // 设置组织参数
@@ -93,21 +96,24 @@ export default{
           id: data.id,
           type: type,
           proId: data.base_id,
-          secId: 0
+          secId: 0,
+          parId: data.parent_id
         }
       } else if (type === 4) {
         obj = {
           id: data.id,
           type: type,
           proId: 0,
-          secId: data.base_id
+          secId: data.base_id,
+          parId: data.parent_id
         }
       } else {
         obj = {
           id: data.id,
           type: type,
           proId: 0,
-          secId: 0
+          secId: 0,
+          parId: data.parent_id
         }
       }
       // 设置组织参数

@@ -5,8 +5,8 @@
         <el-form-item label="组名称" prop="name">
           <el-input v-model.trim="formData.name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="部门" prop="role">
-          <el-select v-model="formData.sector" clearable placeholder="请选择部门" @change="sectionChang" @clear="sectionChang">
+        <el-form-item label="部门" prop="sector">
+          <el-select v-model="formData.sector" :disabled="sectorDisabled" placeholder="请选择部门" @change="sectionChang">
             <el-option
               v-for="item in sectorOptions"
               :key="item.base_id"
@@ -17,7 +17,7 @@
         </el-form-item>
         <el-form-item label="人员" prop="crewName">
           <el-input :disabled="true" type="textarea" v-model="formData.crewName"></el-input>
-          <el-button type="primary" @click="crewClick">选择人员</el-button>
+          <el-button type="primary" :disabled="crewDisabled" @click="crewClick">选择人员</el-button>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -50,6 +50,9 @@ export default{
         name: [
           { required: true, message: '请输入组名称', trigger: 'blur' }
         ],
+        sector: [
+          { required: true, message: '请选择部门', trigger: 'change' }
+        ],
         crewName: [
           { required: true, message: '请选择组人员', trigger: 'change' }
         ]
@@ -60,6 +63,8 @@ export default{
         crewName: '',
         crewId: []
       },
+      sectorDisabled: true,
+      crewDisabled: true,
       disabled: false,
       orgId: 0,
       crewDialog: false
@@ -82,6 +87,12 @@ export default{
     // 初始化数据
     comInit () {
       this.formData = JSON.parse(JSON.stringify(this.parentForm))
+      const sector = this.formData.sector
+      if (sector) {
+        this.sectorDisabled = true
+      } else {
+        this.sectorDisabled = false
+      }
       if (this.sectorOptions.length === 0) {
         // 获取部门
         this.getSectorOptions()
@@ -140,26 +151,14 @@ export default{
       let crewId = this.formData.crewId
       crewId = crewId.join(',')
       let sector = this.formData.sector
-      let params = {}
-      if (sector) {
-        params = {
-          company_id: this.companyId,
-          user_id: this.userId,
-          project_id: this.projectId,
-          group_id: this.parentId,
-          group_name: this.formData.name,
-          ogz_id: sector,
-          userN_ids: crewId
-        }
-      } else {
-        params = {
-          company_id: this.companyId,
-          user_id: this.userId,
-          project_id: this.projectId,
-          group_id: this.parentId,
-          group_name: this.formData.name,
-          userN_ids: crewId
-        }
+      let params = {
+        company_id: this.companyId,
+        user_id: this.userId,
+        project_id: this.projectId,
+        group_id: this.parentId,
+        group_name: this.formData.name,
+        ogz_id: sector,
+        userN_ids: crewId
       }
       params = this.$qs.stringify(params)
       this.disabled = true
@@ -201,14 +200,10 @@ export default{
     crewClick () {
       // 组织ID
       const sector = this.formData.sector
-      if (sector) {
-        const nowSector = this.sectorOptions.find(item => {
-          return item.base_id === sector
-        })
-        this.orgId = nowSector.id
-      } else {
-        this.orgId = this.projectOrgId
-      }
+      const nowSector = this.sectorOptions.find(item => {
+        return item.base_id === sector
+      })
+      this.orgId = nowSector.id
       this.crewDialog = true
     },
     crewUpdata (data) {
@@ -224,6 +219,13 @@ export default{
     parentDialog (val, oldVal) {
       if (val) {
         this.comInit()
+      }
+    },
+    'formData.sector' (val, oldVal) {
+      if (val) {
+        this.crewDisabled = false
+      } else {
+        this.crewDisabled = true
       }
     }
   }
