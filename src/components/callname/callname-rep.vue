@@ -8,13 +8,44 @@
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>人员位置管理</el-breadcrumb-item>
           <el-breadcrumb-item>点名管理</el-breadcrumb-item>
+          <el-breadcrumb-item>点名报表</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
       <el-main class="module-main">
         <div class="search">
           <div class="search-input" style="margin-bottom: 10px;">
+            <div class="item">
+              <span>执行部门</span>
+              <el-select v-model="nowSearch.sector" style="width: 160px;" clearable filterable placeholder="请选择执行部门">
+                <el-option
+                  v-for="item in sectorOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+            <div class="item date">
+              <span>选择时段</span>
+              <el-date-picker
+                style="width: 280px;"
+                v-model="nowSearch.date"
+                type="daterange"
+                value-format="yyyy-MM-dd"
+                :clearable="false"
+                :picker-options="pickerOptions"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+            </div>
+            <div class="operate">
+              <el-button type="primary" @click="searchList">搜索</el-button>
+              <!--<el-button type="primary" @click="setClick">设置</el-button>-->
+            </div>
+          </div>
+          <div class="search-input">
             <div class="item">
               <span>人员名称</span>
               <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
@@ -29,26 +60,6 @@
                   :value="item.value">
                 </el-option>
               </el-select>
-            </div>
-            <div class="operate">
-              <el-button type="primary" @click="searchList">搜索</el-button>
-              <!--<el-button type="primary" @click="setClick">设置</el-button>-->
-            </div>
-          </div>
-          <div class="search-input">
-            <div class="item date">
-              <span>选择时段</span>
-              <el-date-picker
-                style="width: 280px;"
-                v-model="nowSearch.date"
-                type="daterange"
-                value-format="yyyy-MM-dd"
-                :clearable="false"
-                :picker-options="pickerOptions"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期">
-              </el-date-picker>
             </div>
             <div class="operate">
               <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
@@ -111,20 +122,24 @@ export default{
   data () {
     return {
       search: {
+        sector: '',
+        date: [],
         name: '',
-        result: '',
-        date: []
+        result: ''
       },
       nowSearch: {
+        sector: '',
+        date: [],
         name: '',
-        result: '',
-        date: []
+        result: ''
       },
       pickerOptions: {
         disabledDate (time) {
           return time.getTime() > Date.now() - 8.64e7
         }
       },
+      sectorOptions: [],
+      orgids: 0,
       resultOptions: [
         {
           label: '成功',
@@ -154,8 +169,31 @@ export default{
     const nowDate = this.$common.getBeforeDate()
     this.search.date = [nowDate, nowDate]
     this.nowSearch.date = [nowDate, nowDate]
-    // 获取列表数据
-    this.getListData()
+    // 全部项目
+    const allProject = this.allProject
+    const projectId = this.projectId
+    const nowProject = allProject.find(item => {
+      return item.project_id === projectId
+    })
+    if (nowProject.ogzs === undefined) {
+      // 获取项目所有部门
+      this.getProAllSector()
+    } else {
+      let sectorOptions = []
+      let ids = []
+      nowProject.ogzs.forEach(item => {
+        sectorOptions.push({
+          id: item.ogz_id,
+          name: item.organize_name
+        })
+        ids.push(item.ogz_id)
+      })
+      ids = ids.join(',')
+      this.orgids = ids
+      this.sectorOptions = sectorOptions
+      // 获取列表数据
+      this.getListData()
+    }
   },
   components: {
     detModule
@@ -166,7 +204,9 @@ export default{
     ]),
     ...mapState('other', [
       'companyId',
-      'projectId'
+      'allProject',
+      'projectId',
+      'projectOrgId'
     ])
   },
   methods: {
@@ -193,14 +233,17 @@ export default{
     // 获取列表数据
     getListData () {
       let date = this.search.date || []
+      // 部门ID
+      const orgids = this.orgids
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
         project_id: this.projectId,
-        user_name: this.search.name,
-        over: this.search.result,
+        ogz_ids: this.search.sector || orgids,
         start_date: date[0] || '',
         end_date: date[1] || '',
+        user_name: this.search.name,
+        over: this.search.result,
         page: this.nowPage,
         limit1: this.limit
       }
@@ -273,16 +316,62 @@ export default{
         return false
       }
     },
+    /* 项目所有部门 */
+    getProAllSector () {
+      let params = {
+        organize_id: this.projectOrgId
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.2/selOrganizeTree',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          const nodeData = res.data.data1[0].children
+          let sectorOptions = []
+          let ids = []
+          nodeData.forEach(item => {
+            ids.push(item.base_id)
+            sectorOptions.push({
+              id: item.base_id,
+              name: item.name
+            })
+          })
+          ids = ids.join(',')
+          this.orgids = ids
+          this.sectorOptions = sectorOptions
+          // 获取列表数据
+          this.getListData()
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
     /* 导出 */
     downFile () {
       let date = this.search.date || []
+      const orgids = this.orgids
       let params = {
         company_id: this.companyId,
+        user_id: this.userId,
         project_id: this.projectId,
-        user_name: this.search.name,
-        over: this.search.result,
+        ogz_ids: this.search.sector || orgids,
         start_date: date[0] || '',
-        end_date: date[1] || ''
+        end_date: date[1] || '',
+        user_name: this.search.name,
+        over: this.search.result
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true

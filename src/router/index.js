@@ -11,6 +11,9 @@ const Authcode = () => import(/* webpackChunkName: "group-login" */ '@/component
 /* 展会环境监控管理 */
 const Monitfull = () => import(/* webpackChunkName: "group-login" */ '@/components/monitfull')
 
+/* 位置打卡记录汇总 */
+const OldPosclockall = () => import(/* webpackChunkName: "group-posclock" */ '@/components/quality/old-posclockall')
+
 /* 找回密码 */
 const Findpwd = () => import(/* webpackChunkName: "group-findpwd" */ '@/components/findpwd')
 
@@ -201,6 +204,11 @@ export default new Router({
       path: '/monitfull',
       name: 'monitfull',
       component: Monitfull
+    },
+    {
+      path: '/old-posclockall',
+      name: 'oldPosclockall',
+      component: OldPosclockall
     },
     {
       path: '/main',

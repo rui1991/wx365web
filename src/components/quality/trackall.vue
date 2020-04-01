@@ -143,6 +143,8 @@ export default{
         }
       ],
       logData: [],
+      whetherProject: true,
+      sectionIds: 0,
       tableData: [],
       total: 0,
       nowPage: 1,
@@ -155,7 +157,24 @@ export default{
     const nowDate = this.$common.getNowDate()
     this.search.date = [nowDate, nowDate]
     this.nowSearch.date = [nowDate, nowDate]
-    // 获取列表数据
+    // 判断组织
+    const allProject = this.allProject
+    const projectId = Number.parseInt(this.projectId)
+    const nowProject = allProject.find(item => {
+      return item.project_id === projectId
+    })
+    if (nowProject.ogzs === undefined) {
+      this.whetherProject = true
+    } else {
+      this.whetherProject = false
+      let ids = []
+      nowProject.ogzs.forEach(item => {
+        ids.push(item.ogz_id)
+      })
+      ids = ids.join(',')
+      this.sectionIds = ids
+    }
+    // 获取列表
     this.getListData()
   },
   computed: {
@@ -164,6 +183,7 @@ export default{
     ]),
     ...mapState('other', [
       'companyId',
+      'allProject',
       'projectId'
     ])
   },
@@ -179,14 +199,28 @@ export default{
     // 获取列表数据
     getListData () {
       let date = this.search.date || []
-      let params = {
-        company_id: this.companyId,
-        user_id: this.userId,
-        project_id: this.projectId,
-        area_type: this.search.type || 0,
-        user_name: this.search.crew,
-        start_date: date[0] || '',
-        end_date: date[1] || ''
+      let params = {}
+      if (this.whetherProject) {
+        params = {
+          company_id: this.companyId,
+          user_id: this.userId,
+          project_id: this.projectId,
+          area_type: this.search.type,
+          user_name: this.search.crew,
+          start_date: date[0] || '',
+          end_date: date[1] || ''
+        }
+      } else {
+        params = {
+          company_id: this.companyId,
+          user_id: this.userId,
+          project_id: this.projectId,
+          ogz_ids: this.sectionIds,
+          area_type: this.search.type,
+          user_name: this.search.crew,
+          start_date: date[0] || '',
+          end_date: date[1] || ''
+        }
       }
       params = this.$qs.stringify(params)
       this.loading = true
@@ -247,13 +281,28 @@ export default{
     /* 导出 */
     downFile () {
       let date = this.search.date || []
-      let params = {
-        company_id: this.companyId,
-        project_id: this.projectId,
-        area_type: this.search.type || 0,
-        user_name: this.search.crew,
-        start_date: date[0] || '',
-        end_date: date[1] || ''
+      let params = {}
+      if (this.whetherProject) {
+        params = {
+          company_id: this.companyId,
+          user_id: this.userId,
+          project_id: this.projectId,
+          area_type: this.search.type,
+          user_name: this.search.crew,
+          start_date: date[0] || '',
+          end_date: date[1] || ''
+        }
+      } else {
+        params = {
+          company_id: this.companyId,
+          user_id: this.userId,
+          project_id: this.projectId,
+          ogz_ids: this.sectionIds,
+          area_type: this.search.type,
+          user_name: this.search.crew,
+          start_date: date[0] || '',
+          end_date: date[1] || ''
+        }
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true

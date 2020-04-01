@@ -15,7 +15,9 @@
       <el-container class="module-content">
         <el-aside width="280px" class="module-aside">
           <!-- 组织树 -->
-          <org-module></org-module>
+          <org-module
+            @parentUpOrg="updateOrgan">
+          </org-module>
         </el-aside>
         <el-main class="module-main">
           <div class="search">
@@ -109,7 +111,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 // 引入组织树组件
-import orgModule from '@/components/report/report-org'
+import orgModule from '@/components/report/report-org2'
 export default{
   name: 'reportWorksta',
   data () {
@@ -127,6 +129,7 @@ export default{
           return time.getTime() > Date.now()
         }
       },
+      organizeId: 0,
       tableData: [],
       total: 0,
       nowPage: 1,
@@ -141,19 +144,8 @@ export default{
   mounted () {
     // 时段
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
-    if (this.date.length === 0) {
-      this.search.date = [nowDate, nowDate]
-      this.nowSearch.date = [nowDate, nowDate]
-      this.setReportDate([nowDate, nowDate])
-    } else {
-      this.search.date = this.date
-      this.nowSearch.date = this.date
-    }
-    if (this.organizeId) {
-      this.downDisabled = false
-      // 获取列表数据
-      this.getListData()
-    }
+    this.search.date = [nowDate, nowDate]
+    this.nowSearch.date = [nowDate, nowDate]
   },
   components: {
     orgModule
@@ -161,16 +153,21 @@ export default{
   computed: {
     ...mapState('user', [
       'userId'
-    ]),
-    ...mapState('report', [
-      'organizeId',
-      'date'
     ])
   },
   methods: {
     ...mapActions('report', [
       'setReportDate'
     ]),
+    // 更新组织
+    updateOrgan (data) {
+      // 可导出
+      this.downDisabled = false
+      // 保存参数
+      this.organizeId = data.id
+      // 更新列表
+      this.updateList()
+    },
     // 更新列表
     updateList () {
       // 清空搜索框
@@ -190,9 +187,6 @@ export default{
       this.nowPage = 1
       // 获取列表数据
       this.getListData()
-      // 设置报表时间
-      const date = this.search.date
-      this.setReportDate(date)
     },
     // 获取列表数据
     getListData () {
@@ -411,17 +405,6 @@ export default{
         this.downDisabled = false
       }, 5000)
       window.location.href = this.reportApi() + '/v3.4/selUserWorkorderReportEO?' + params
-    }
-  },
-  watch: {
-    organizeId (val, oldVal) {
-      if (val) {
-        // 更新列表
-        this.updateList()
-        this.downDisabled = false
-      } else {
-        this.downDisabled = true
-      }
     }
   }
 }

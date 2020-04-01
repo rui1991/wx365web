@@ -15,7 +15,9 @@
       <el-container class="module-content">
         <el-aside width="280px" class="module-aside">
           <!-- 组织树 -->
-          <org-module></org-module>
+          <org-module
+            @parentUpOrg="updateOrgan">
+          </org-module>
         </el-aside>
         <el-main class="module-main">
           <div class="search">
@@ -100,7 +102,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState } from 'vuex'
 // 引入组织树组件
 import orgModule from '@/components/report/report-org'
 export default{
@@ -122,6 +124,9 @@ export default{
           return time.getTime() > Date.now()
         }
       },
+      organizeId: 0,
+      organizeType: 0,
+      sectionId: 0,
       tableData: [],
       groupContent: '',
       total: 0,
@@ -137,19 +142,8 @@ export default{
   mounted () {
     // 时段
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
-    if (this.date.length === 0) {
-      this.search.date = [nowDate, nowDate]
-      this.nowSearch.date = [nowDate, nowDate]
-      this.setReportDate([nowDate, nowDate])
-    } else {
-      this.search.date = this.date
-      this.nowSearch.date = this.date
-    }
-    if (this.organizeId) {
-      this.downDisabled = false
-      // 获取列表数据
-      this.getListData()
-    }
+    this.search.date = [nowDate, nowDate]
+    this.nowSearch.date = [nowDate, nowDate]
   },
   components: {
     orgModule
@@ -158,16 +152,19 @@ export default{
     ...mapState('user', [
       'companyId',
       'userId'
-    ]),
-    ...mapState('report', [
-      'organizeId',
-      'date'
     ])
   },
   methods: {
-    ...mapActions('report', [
-      'setReportDate'
-    ]),
+    // 更新组织
+    updateOrgan (data) {
+      // 可导出
+      this.downDisabled = false
+      // 保存参数
+      this.organizeId = data.id
+      this.organizeType = data.type
+      this.sectionId = data.secId
+      this.updateList()
+    },
     // 更新列表
     updateList () {
       // 清空搜索框
@@ -189,23 +186,36 @@ export default{
       this.nowPage = 1
       // 获取列表数据
       this.getListData()
-      // 设置报表时间
-      const date = this.search.date
-      this.setReportDate(date)
     },
     // 获取列表数据
     getListData () {
       if (!this.organizeId) return
       const date = this.search.date
-      let params = {
-        organize_id: this.organizeId,
-        project_name: '',
-        user_name: this.search.name,
-        plan_name: this.search.task,
-        start_date: date[0],
-        end_date: date[1],
-        page: this.nowPage,
-        limit1: this.limit
+      const type = this.organizeType
+      let params = {}
+      if (type === 4) {
+        params = {
+          organize_id: this.organizeId,
+          ogz_id: this.sectionId,
+          project_name: '',
+          user_name: this.search.name,
+          plan_name: this.search.task,
+          start_date: date[0],
+          end_date: date[1],
+          page: this.nowPage,
+          limit1: this.limit
+        }
+      } else {
+        params = {
+          organize_id: this.organizeId,
+          project_name: '',
+          user_name: this.search.name,
+          plan_name: this.search.task,
+          start_date: date[0],
+          end_date: date[1],
+          page: this.nowPage,
+          limit1: this.limit
+        }
       }
       params = this.$qs.stringify(params)
       this.loading = true
@@ -379,13 +389,27 @@ export default{
     /* 导出文件 */
     downFile () {
       const date = this.search.date
-      let params = {
-        organize_id: this.organizeId,
-        project_name: '',
-        user_name: this.search.name,
-        plan_name: this.search.task,
-        start_date: date[0],
-        end_date: date[1]
+      const type = this.organizeType
+      let params = {}
+      if (type === 4) {
+        params = {
+          organize_id: this.organizeId,
+          ogz_id: this.sectionId,
+          project_name: '',
+          user_name: this.search.name,
+          plan_name: this.search.task,
+          start_date: date[0],
+          end_date: date[1]
+        }
+      } else {
+        params = {
+          organize_id: this.organizeId,
+          project_name: '',
+          user_name: this.search.name,
+          plan_name: this.search.task,
+          start_date: date[0],
+          end_date: date[1]
+        }
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true
@@ -393,17 +417,6 @@ export default{
         this.downDisabled = false
       }, 5000)
       window.location.href = this.reportApi() + '/v3.4/selUserInspectTaskEO?' + params
-    }
-  },
-  watch: {
-    organizeId (val, oldVal) {
-      if (val) {
-        // 更新列表
-        this.updateList()
-        this.downDisabled = false
-      } else {
-        this.downDisabled = true
-      }
     }
   }
 }

@@ -116,7 +116,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.2/login',
+        url: this.sysetApi() + '/v3.3/login',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -340,7 +340,7 @@ export default{
           const orgTree = loginData.trees
           this.setOrganTree(orgTree)
           // 处理部门
-          const orgData = this.initDisSecTree(orgTree)
+          let orgData = this.initDisSecTree(JSON.parse(JSON.stringify(orgTree)))
           this.setOrganData(orgData)
           // 路由跳转
           this.$router.push({ path: '/main/home' })

@@ -1,6 +1,6 @@
 <template>
   <el-tree
-    :data="orgTree"
+    :data="orgData"
     ref="tree"
     show-checkbox
     default-expand-all
@@ -26,7 +26,7 @@ export default{
   },
   computed: {
     ...mapState('other', [
-      'orgTree'
+      'orgData'
     ])
   },
   methods: {

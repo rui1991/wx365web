@@ -6,7 +6,7 @@
         <router-view />
       </div>
     </div>
-    <p class="copy">深圳市黑卡科技有限公司&nbsp;&nbsp;粤ICP备17024484号</p>
+    <p class="copy">深圳市黑卡科技有限公司&nbsp;&nbsp;<a href="http://www.beian.miit.gov.cn" target="_blank">粤ICP备17024484号</a></p>
   </div>
 </template>
 
@@ -20,11 +20,11 @@ export default{
   },
   created () {
     // 判断网址是否合法
-    // const nowHref = window.location.href
-    // if (nowHref.indexOf('www.') === -1) {
-    //   const skipHref = 'http://www.' + nowHref.replace(/http:\/\//, '')
-    //   window.location.href = skipHref
-    // }
+    const nowHref = window.location.href
+    if (nowHref.indexOf('www.') === -1) {
+      const skipHref = 'http://www.' + nowHref.replace(/http:\/\//, '')
+      window.location.href = skipHref
+    }
   },
   methods: {
 
@@ -67,6 +67,9 @@ export default{
       position: absolute;
       left: 50%;
       bottom: 20px;
+      a:hover{
+        color: #4fa5f2;
+      }
     }
   }
 </style>

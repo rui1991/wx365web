@@ -1,6 +1,6 @@
 <template>
   <el-tree
-    :data="orgTree"
+    :data="orgData"
     ref="tree"
     show-checkbox
     default-expand-all
@@ -31,7 +31,7 @@ export default{
   },
   computed: {
     ...mapState('other', [
-      'orgTree'
+      'orgData'
     ])
   },
   methods: {
@@ -68,7 +68,6 @@ export default{
           }
         }
         // 设置组织参数
-        // 刷新列表
         this.$emit('parentUpOrg', obj)
       } else {
         if (this.orgId === data.id) {

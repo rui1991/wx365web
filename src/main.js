@@ -107,7 +107,7 @@ router.beforeEach((to, from, next) => {
   if (token) {
     next()
   } else {
-    if (to.path === '/login/cipher' || to.path === '/login/authcode' || to.path === '/findpwd' || to.path === '/monitfull') {
+    if (to.path === '/login/cipher' || to.path === '/login/authcode' || to.path === '/findpwd' || to.path === '/monitfull' || to.path === '/old-posclockall') {
       next()
     } else {
       next({path: '/login/cipher'})

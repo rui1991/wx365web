@@ -7,17 +7,6 @@
     element-loading-background="rgba(255, 255, 255, 0.6)">
     <div class="search">
       <div class="item">
-        <span>执行部门</span>
-        <el-select v-model="searchSector" style="width: 160px;" clearable placeholder="请选择执行部门" @change="sectorChange" @clear="sectorChange">
-          <el-option
-            v-for="item in sectorOptions"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id">
-          </el-option>
-        </el-select>
-      </div>
-      <div class="item">
         <el-date-picker
           v-model="searchDate"
           type="month"
@@ -29,7 +18,6 @@
         </el-date-picker>
       </div>
       <div class="operate">
-        <el-button type="primary" @click="oldSkip">历史数据</el-button>
         <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
       </div>
     </div>
@@ -76,17 +64,13 @@ export default{
   name: 'posclockall',
   data () {
     return {
-      nowMonth: this.$common.getNowDate('yyyy-mm'),
-      nowDay: 0,
-      searchSector: '',
-      searchDate: this.$common.getNowDate('yyyy-mm'),
+      nowMonth: '2020-03',
+      searchDate: '2020-03',
       pickerOptions: {
         disabledDate (time) {
-          return time.getTime() > Date.now() || time.getTime() < new Date('2020/3/1')
+          return time.getTime() > new Date('2020/3/1')
         }
       },
-      sectorOptions: [],
-      sectorIds: '',
       days: [],
       tableData: [],
       total: 0,
@@ -103,55 +87,23 @@ export default{
 
   },
   mounted () {
-    const myDate = new Date()
-    const year = myDate.getFullYear()
-    const month = myDate.getMonth() + 1
-    const nowDay = myDate.getDate()
-    this.nowDay = nowDay
     // 本月天数
-    let daysCount = new Date(year, month, 0).getDate()
+    let daysCount = new Date(2020, 3, 0).getDate()
     let days = []
     for (let i = 0; i < daysCount; i++) {
       let date = i + 1 + '日'
       let value = 'size' + (i + 1)
-      let state = true
-      if (nowDay <= i + 1) {
-        state = false
-      }
       days.push(
         {
           date: date,
           value: value,
-          state: state
+          state: true
         }
       )
     }
     this.days = days
-    // 全部项目
-    const allProject = this.allProject
-    const projectId = this.projectId
-    const nowProject = allProject.find(item => {
-      return item.project_id === projectId
-    })
-    if (nowProject.ogzs === undefined) {
-      // 获取项目所有部门
-      this.getProAllSector()
-    } else {
-      let ids = []
-      let sectorOptions = []
-      nowProject.ogzs.forEach(item => {
-        ids.push(item.ogz_id)
-        sectorOptions.push({
-          id: item.ogz_id,
-          name: item.organize_name
-        })
-      })
-      ids = ids.join(',')
-      this.sectorIds = ids
-      this.sectorOptions = sectorOptions
-      // 获取列表数据
-      this.getListData()
-    }
+    // 获取列表
+    this.getListData()
   },
   components: {
     detModule
@@ -161,18 +113,14 @@ export default{
       'userId'
     ]),
     ...mapState('other', [
-      'allProject',
-      'projectId',
-      'projectOrgId'
+      'projectId'
     ])
   },
   methods: {
     // 获取列表数据
     getListData () {
-      // 部门ID
       let params = {
-        project_id: this.projectId,
-        ogz_ids: this.searchSector || this.sectorIds,
+        project_id: this.$route.query.projectId,
         month: this.searchDate,
         page: this.nowPage,
         limit1: this.limit
@@ -181,7 +129,7 @@ export default{
       this.loading = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.8/selOgzUserRecordMessage',
+        url: this.sysetApi() + '/v3.8/selUserRecordMessage',
         data: params
       }).then((res) => {
         this.loading = false
@@ -220,19 +168,8 @@ export default{
       // 获取列表数据
       this.getListData()
     },
-    // 选择部门
-    sectorChange () {
-      // 初始化页码
-      this.nowPage = 1
-      // 获取列表数据
-      this.getListData()
-    },
     // 选择时间
     dateChange (date) {
-      let whether = false
-      if (this.nowMonth === date) {
-        whether = true
-      }
       const dateArr = date.split('-')
       const year = dateArr[0]
       const month = dateArr[1]
@@ -242,16 +179,10 @@ export default{
       for (let i = 0; i < daysCount; i++) {
         let date = i + 1 + '日'
         let value = 'size' + (i + 1)
-        let state = true
-        if (whether) {
-          if (this.nowDay <= i + 1) {
-            state = false
-          }
-        }
         let item = {
           date: date,
           value: value,
-          state: state
+          state: true
         }
         days.push(item)
       }
@@ -272,54 +203,10 @@ export default{
     detClose () {
       this.detDialog = false
     },
-    /* 项目所有部门 */
-    getProAllSector () {
-      let params = {
-        organize_id: this.projectOrgId
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.2/selOrganizeTree',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const nodeData = res.data.data1[0].children
-          let ids = []
-          let sectorOptions = []
-          nodeData.forEach(item => {
-            ids.push(item.base_id)
-            sectorOptions.push({
-              id: item.base_id,
-              name: item.name
-            })
-          })
-          ids = ids.join(',')
-          this.sectorIds = ids
-          this.sectorOptions = sectorOptions
-          // 获取列表数据
-          this.getListData()
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
     /* 导出 */
     downFile () {
       let params = {
-        project_id: this.projectId,
-        ogz_ids: this.searchSector || this.sectorIds,
+        project_id: this.$route.query.projectId,
         month: this.searchDate
       }
       params = this.$qs.stringify(params)
@@ -327,12 +214,7 @@ export default{
       setTimeout(() => {
         this.downDisabled = false
       }, 5000)
-      window.location.href = this.sysetApi() + '/v3.8/selOgzUserRecordMessageEO?' + params
-    },
-    /* 历史数据 */
-    oldSkip () {
-      const openUrl = this.baseUrl() + '/wx365web/#/old-posclockall?projectId=' + this.projectId
-      window.open(openUrl)
+      window.location.href = this.sysetApi() + '/v3.8/selUserRecordMessageEO?' + params
     }
   },
   filters: {
@@ -353,16 +235,18 @@ export default{
 
 <style lang="less" scoped>
 .posclockall{
+  padding: 20px;
   .search{
-    display: flex;
-    align-items: center;
+    display: table;
     width: 100%;
     height: 60px;
     .item{
-      margin-right: 20px;
+      display: table-cell;
+      vertical-align: middle;
     }
     .operate{
-      flex-grow: 1;
+      display: table-cell;
+      vertical-align: middle;
       text-align: right;
     }
   }

@@ -1,12 +1,14 @@
 <template>
   <el-dialog title="选择授权范围" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+    <p class="hint">提示：授权范围不可选直属企业或分公司总部部门，否则登录将无项目权限无权登录进入系统！</p>
     <el-tree
       :data="treeData"
       show-checkbox
       default-expand-all
-      check-strictly
+      :check-strictly="true"
       node-key="id"
       ref="tree"
+      @check-change="orgCheckChange"
       :props="defaultProps">
     </el-tree>
     <div slot="footer" class="dialog-footer">
@@ -68,14 +70,8 @@ export default{
             orgTree[0].children = sectorData
             this.treeData = orgTree
           } else {
-            const sectorData = this.initDisTree(orgTree)
-            this.treeData = sectorData
+            this.treeData = orgTree
           }
-          // 选择已选中
-          console.log(this.parentId)
-          setTimeout(() => {
-            this.$refs.tree.setCheckedKeys(this.parentId)
-          }, 100)
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -92,25 +88,53 @@ export default{
         })
       })
     },
-    // 处理树
-    initDisTree (treeData) {
-      treeData.forEach(item => {
-        if (item.organize_type === 4) {
-          item.disabled = true
+    // 选择组织树
+    orgCheckChange (data, checked, self) {
+      if (data.disabled) {
+        return
+      }
+      if (data.children) {
+        let inNode = JSON.parse(JSON.stringify(data.children))
+        let node = this.disDisTree(inNode, checked)
+        data.children = node
+        this.$refs.tree.updateKeyChildren(data.id, data)
+        if (checked) {
+          this.disCheTree(data.children)
         }
+      }
+    },
+    // 下级不可选
+    disDisTree (treeData, b) {
+      treeData.forEach((item, index, array) => {
+        item.disabled = b
         if (item.children) {
-          this.initRecTree(item.children)
+          this.recDisTree(item.children, b)
         }
       })
       return treeData
     },
-    initRecTree (data) {
-      data.forEach(item => {
-        if (item.organize_type === 4) {
-          item.disabled = true
-        }
+    recDisTree (data, b) {
+      data.forEach((item, index, array) => {
+        item.disabled = b
         if (item.children) {
-          this.initRecTree(item.children)
+          this.recDisTree(item.children, b)
+        }
+      })
+    },
+    // 取消下级选中
+    disCheTree (treeData) {
+      treeData.forEach((item, index, array) => {
+        this.$refs.tree.setChecked(item.id, false)
+        if (item.children) {
+          this.recCheTree(item.children)
+        }
+      })
+    },
+    recCheTree (data) {
+      data.forEach((item, index, array) => {
+        this.$refs.tree.setChecked(item.id, false)
+        if (item.children) {
+          this.recCheTree(item.children)
         }
       })
     },
@@ -130,39 +154,10 @@ export default{
       }
       let ids = []
       let names = []
-      if (this.parentOrgId === 1) {
-        const firmNode = nodesData.find(item => {
-          return item.organize_type === 0
-        })
-        if (firmNode) {
-          ids.push(firmNode.id)
-          names.push(firmNode.name)
-        } else {
-          nodesData.forEach(node => {
-            ids.push(node.id)
-            names.push(node.name)
-          })
-        }
-      } else {
-        const firmNode = nodesData.find(item => {
-          return item.organize_type === 1
-        })
-        if (firmNode) {
-          ids.push(firmNode.id)
-          names.push(firmNode.name)
-        } else {
-          nodesData.forEach(node => {
-            const parentId = node.parent_id
-            const state = keysData.find(id => {
-              return id === parentId
-            })
-            if (state === undefined) {
-              ids.push(node.id)
-              names.push(node.name)
-            }
-          })
-        }
-      }
+      nodesData.forEach(item => {
+        ids.push(item.id)
+        names.push(item.name)
+      })
       names = names.join('、')
       const obj = {
         ids,
@@ -186,5 +181,8 @@ export default{
 </script>
 
 <style lang="less" scoped>
-
+.hint{
+  color: red;
+  margin-bottom: 5px;
+}
 </style>
