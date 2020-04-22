@@ -13,7 +13,6 @@
           <el-steps :active="titleActive" align-center>
             <el-step title="填写基础信息"></el-step>
             <el-step title="选择地址"></el-step>
-            <el-step title="调整标准"></el-step>
             <el-step title="顺序调整"></el-step>
           </el-steps>
         </div>
@@ -29,18 +28,13 @@
             @parentActiveFun="activeFun"
             @parentCancelFun="cancelSkip"
             v-else-if="titleActive === 1"></plan-site>
-          <plan-norm
-            :parentSite="siteForm"
-            @parentActiveFun="activeFun"
-            @parentCancelFun="cancelSkip"
-            v-else-if="titleActive === 2"></plan-norm>
           <plan-order
             :parentSite="siteForm"
             :parentBtnState="btnState"
             @parentActiveFun="activeFun"
             @parentSaveFun="saveFun"
             @parentCancelFun="cancelSkip"
-            v-else-if="titleActive === 3"></plan-order>
+            v-else-if="titleActive === 2"></plan-order>
         </div>
       </el-main>
     </el-container>
@@ -53,8 +47,6 @@ import { mapState, mapActions } from 'vuex'
 import planBasics from '@/components/polling/plan-basics'
 // 引入选择地址
 import planSite from '@/components/polling/plan-site'
-// 引入调整标准
-import planNorm from '@/components/polling/plan-norm'
 // 引入顺序调整
 import planOrder from '@/components/polling/plan-order'
 export default{
@@ -93,7 +85,6 @@ export default{
   components: {
     planBasics,
     planSite,
-    planNorm,
     planOrder
   },
   computed: {

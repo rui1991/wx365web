@@ -1,6 +1,6 @@
 <template>
   <el-dialog title="提示" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="hint-dialog">
-    <p class="hint-text"><i class="el-icon-warning"></i>是否要删除该巡检标准？</p>
+    <p class="hint-text"><i class="el-icon-warning"></i>是否要删除该标准？</p>
     <div slot="footer" class="dialog-footer">
       <el-button @click="cancelClick">取 消</el-button>
       <el-button type="primary" :disabled="disabled" @click="submitForm">确 定</el-button>
@@ -11,34 +11,33 @@
 <script>
 import { mapState } from 'vuex'
 export default{
-  props: ['parentDialog', 'parentId'],
+  props: ['parentDialog'],
   data () {
     return {
       disabled: false
     }
   },
   computed: {
-    ...mapState('user', [
-      'userId'
-    ]),
-    ...mapState('other', [
-      'companyId',
-      'projectId'
-    ])
+    ...mapState('other', {
+      orgType: state => state.normOrgan.type,
+      companyId: state => state.normOrgan.companyId,
+      projectId: state => state.normOrgan.projectId,
+      id: state => state.normData.id
+    })
   },
   methods: {
     submitForm () {
       let params = {
+        ascription_type: this.orgType,
         company_id: this.companyId,
-        user_id: this.userId,
         project_id: this.projectId,
-        template_id: this.parentId
+        sdt_id: this.id
       }
       params = this.$qs.stringify(params)
       this.disabled = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/delTemplate',
+        url: this.sysetApi() + '/delStandardsTree',
         data: params
       }).then((res) => {
         this.disabled = false

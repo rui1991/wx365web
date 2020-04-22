@@ -7,15 +7,17 @@
       <el-form-item label="模板类型">
         <el-input :disabled="true" v-model="formData.type"></el-input>
       </el-form-item>
+      <el-form-item label="执行部门">
+        <el-input :disabled="true" v-model="formData.sector"></el-input>
+      </el-form-item>
       <el-form-item label="备注">
         <el-input :disabled="true" type="textarea" v-model="formData.remark"></el-input>
       </el-form-item>
     </el-form>
-    <el-table class="select-table" :data="formData.temData" style="width: 100%" v-show="formData.temData.length > 0">
-      <el-table-column prop="ins_name" label="检查项" width="80"></el-table-column>
-      <el-table-column prop="ins_method" class-name="multi-row" label="检查方法"></el-table-column>
-      <el-table-column prop="check_content" label="检查内容及要求" class-name="multi-row"></el-table-column>
-      <el-table-column prop="alarm_level" label="报警等级" width="80"></el-table-column>
+    <el-table class="select-table" :data="itemTable" style="width: 100%" v-show="itemTable.length > 0">
+      <el-table-column prop="path" :show-overflow-tooltip="true" label="路径"></el-table-column>
+      <el-table-column prop="inspect_name" :show-overflow-tooltip="true" label="检查项"></el-table-column>
+      <el-table-column prop="inspect_contents" :show-overflow-tooltip="true" label="检查内容及要求"></el-table-column>
     </el-table>
     <div slot="footer" class="dialog-footer">
       <el-button @click="closeClick">关 闭</el-button>
@@ -33,9 +35,10 @@ export default{
       formData: {
         name: '',
         type: '',
-        remark: '',
-        temData: []
-      }
+        sector: '',
+        remark: ''
+      },
+      itemTable: []
     }
   },
   computed: {
@@ -52,42 +55,45 @@ export default{
       this.formData = {
         name: '',
         type: '',
-        remark: '',
-        temData: []
+        sector: '',
+        remark: ''
       }
+      this.itemTable = []
       // 获取详情
       this.getDetails()
     },
     // 获取详情
     getDetails () {
       let params = {
-        company_id: this.companyId,
-        user_id: this.userId,
         project_id: this.projectId,
-        template_id: this.parentId
+        os_ids: this.parentId
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/selTemplateByID',
+        url: this.sysetApi() + '/selStandardsByIds',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          const itemData = res.data.data1
+          const itemData = res.data.data1[0]
           // 名称
-          this.formData.name = itemData.template_name
+          this.formData.name = itemData.standard_name
           // 类型
-          this.formData.type = itemData.template_type
+          const typeState = itemData.standard_type
+          let type = ''
+          if (typeState === 1) {
+            type = '设备标准类'
+          } else if (typeState === 2) {
+            type = '巡检标准类'
+          }
+          this.formData.type = type
+          // 执行部门
+          this.formData.sector = itemData.ogz_name
           // 描述
-          this.formData.remark = itemData.describe
-          // 模板id
-          const temData = itemData.Ins
-          let temIds = []
-          temData.forEach(item => {
-            temIds.push(item.ins_id)
-          })
-          temIds = temIds.join(',')
-          this.getTemContent(temIds)
+          this.formData.remark = itemData.remarks
+
+          // 检查项列表
+          this.itemTable = itemData.details
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -104,6 +110,7 @@ export default{
         })
       })
     },
+    // 获取检查项详情
     getTemContent (ids) {
       let params = {
         company_id: this.companyId,

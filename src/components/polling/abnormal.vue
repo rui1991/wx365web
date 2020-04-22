@@ -15,13 +15,18 @@
               <el-input style="width: 160px;" v-model.trim="nowSearch.site"></el-input>
             </div>
             <div class="item">
-              <span>执行人员</span>
-              <el-input style="width: 160px;" v-model.trim="nowSearch.crew"></el-input>
+              <span>检查项名称</span>
+              <el-input style="width: 160px;" v-model.trim="nowSearch.checkItem"></el-input>
             </div>
             <div class="item">
-              <span>工单状态</span>
-              <el-select v-model="nowSearch.state" clearable style="width: 160px;" placeholder="请选择工单状态">
-                <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+              <span>执行部门</span>
+              <el-select v-model="nowSearch.sector" style="width: 160px;" clearable filterable placeholder="请选择执行部门">
+                <el-option
+                  v-for="item in sectorOptions"
+                  :key="item.base_id"
+                  :label="item.name"
+                  :value="item.base_id">
+                </el-option>
               </el-select>
             </div>
             <div class="operate"></div>
@@ -43,62 +48,35 @@
             </div>
             <div class="operate">
               <el-button type="primary" @click="searchList">搜索</el-button>
+              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
             </div>
           </div>
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column label="巡检地址" :show-overflow-tooltip="true">
+          <el-table-column label="提交时间" :show-overflow-tooltip="true">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row.isd_id)">{{ scope.row.position_name }}</a>
+              <span>{{ scope.row.handle_time | formatDate }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="ins_name" label="检查项" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="inspect_name" label="检查项" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="position_name" label="检查地址" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="standard_name" label="所属标准" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="duty_name" label="所属任务" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="任务执行时间" :show-overflow-tooltip="true">
+            <template slot-scope="scope">
+              <span>{{ scope.row.start_time | formatDate }} ~ {{ scope.row.end_time | formatDate }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="ogz_name" label="执行部门" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column label="执行人">
             <template slot-scope="scope">
               <span v-if="scope.row.user_name">{{ scope.row.user_name }}</span>
               <span v-else>-</span>
             </template>
           </el-table-column>
-          <el-table-column label="执行时间" :show-overflow-tooltip="true">
-            <template slot-scope="scope">
-              <span>{{ scope.row.modification_time | formatDate }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="执行结果"  width="100">
-            <template slot-scope="scope">
-              <span v-if="scope.row.task_state === 0">未巡查</span>
-              <span v-else-if="scope.row.task_state === 1">正常</span>
-              <span v-else-if="scope.row.task_state === 2">异常</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="检查备注" :show-overflow-tooltip="true">
-            <template slot-scope="scope">
-              <span v-if="scope.row.note">{{ scope.row.note }}</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="工单状态"  width="100">
-            <template slot-scope="scope">
-              <span v-if="scope.row.wo_state === 0">待处理</span>
-              <span v-else-if="scope.row.wo_state === 1">跟进中</span>
-              <span v-else-if="scope.row.wo_state === 2">结单</span>
-              <span v-else>未生成</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="当前处理人">
-            <template slot-scope="scope">
-              <span v-if="scope.row.accept_user_name">{{ scope.row.accept_user_name }}</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="160">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="addClick(scope.row.isd_id, scope.row.position_name)" v-if="scope.row.wo_state === undefined">提单</a>
-              <span class="operate forbid" v-else-if="scope.row.wo_state !== undefined">提单</span>
-              <a href="javascript:void(0);" class="operate com" @click="historyClick(scope.row)">历史记录</a>
-            </template>
-          </el-table-column>
+          <el-table-column prop="inspect_contents" label="检查内容及要求" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="ending_type" label="异常检查结果" :show-overflow-tooltip="true"></el-table-column>
         </el-table>
         <el-pagination
           background
@@ -114,43 +92,25 @@
         </el-pagination>
       </el-main>
     </el-container>
-    <!-- 新增 -->
-    <add-module
-      :parentDialog="addDialog"
-      :parentId="itemId"
-      :parentPos="posName"
-      @parentUpdata="addUpdata"
-      @parentCancel="addCancel">
-    </add-module>
-    <!-- 详情 -->
-    <det-module
-      :parentDialog="detDialog"
-      :parentId="itemId"
-      @parentClose="detClose">
-    </det-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-// 引入新增组件
-import addModule from '@/components/polling/abnormal-add'
-// 引入详情组件
-import detModule from '@/components/polling/abnormal-det'
 export default{
   name: 'abnormal',
   data () {
     return {
       search: {
         site: '',
-        crew: '',
-        state: '',
+        checkItem: '',
+        sector: '',
         date: []
       },
       nowSearch: {
         site: '',
-        crew: '',
-        state: '',
+        checkItem: '',
+        sector: '',
         date: []
       },
       pickerOptions: {
@@ -158,49 +118,24 @@ export default{
           return time.getTime() > Date.now()
         }
       },
-      stateOptions: [
-        {
-          label: '未生成',
-          value: 9
-        },
-        {
-          label: '待处理',
-          value: 0
-        },
-        {
-          label: '跟进中',
-          value: 1
-        },
-        {
-          label: '结单',
-          value: 2
-        }
-      ],
+      sectorOptions: [],
       tableData: [],
       total: 0,
       nowPage: 1,
       limit: 10,
-      addDialog: false,
-      posName: '',
-      itemId: 0,
-      detDialog: false
+      downDisabled: false
     }
   },
   created () {
     // 获取列表数据
     this.getListData()
-  },
-  components: {
-    addModule,
-    detModule
+    // 获取部门
+    this.getSectorOptions()
   },
   computed: {
-    ...mapState('user', [
-      'userId'
-    ]),
     ...mapState('other', [
-      'companyId',
-      'projectId'
+      'projectId',
+      'projectOrgId'
     ])
   },
   methods: {
@@ -216,26 +151,24 @@ export default{
     getListData () {
       let date = this.search.date
       let params = {
-        company_id: this.companyId,
-        user_id: this.userId,
-        projectN_id: this.projectId,
-        positionN_name: this.search.site,
-        startN_date: date[0] || '',
-        endN_date: date[1] || '',
-        userN_name: this.search.crew,
-        woN_state: this.search.state,
+        project_id: this.projectId,
+        position_name: this.search.site,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
+        inspect_name: this.search.checkItem,
+        ogz_id: this.search.sector,
         page: this.nowPage,
         limit1: this.limit
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/selInsAbnormalSearch',
+        url: this.sysetApi() + '/selInsHandleAbnormalMesList',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
-          this.tableData = res.data.data1.insAB
+          this.tableData = res.data.data1.mes
           // 检验是否列表为空
           if (this.tableData.length === 0 && this.nowPage > 1) {
             this.nowPage--
@@ -272,37 +205,52 @@ export default{
       // 获取列表数据
       this.getListData()
     },
-    /* 新增 */
-    addClick (id, pos) {
-      this.itemId = id
-      this.posName = pos
-      this.addDialog = true
-    },
-    addUpdata () {
-      this.addDialog = false
-      // 更新列表
-      this.getListData()
-    },
-    addCancel () {
-      this.addDialog = false
-    },
-    /* 详情 */
-    detClick (id) {
-      this.itemId = id
-      this.detDialog = true
-    },
-    detClose () {
-      this.detDialog = false
-    },
-    /* 历史记录 */
-    historyClick (data) {
-      this.$router.push({
-        path: '/main/abnormal-history',
-        query: {
-          pos: data.position_id,
-          tem: data.ins_id
+    /* 获取部门 */
+    getSectorOptions () {
+      let params = {
+        organize_id: this.projectOrgId
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.2/selOrganizeTree',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          this.sectorOptions = res.data.data1[0].children
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
         }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
       })
+    },
+    /* 导出 */
+    downFile () {
+      let date = this.search.date || []
+      let params = {
+        project_id: this.projectId,
+        position_name: this.search.site,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
+        inspect_name: this.search.checkItem,
+        ogz_id: this.search.sector
+      }
+      params = this.$qs.stringify(params)
+      this.downDisabled = true
+      setTimeout(() => {
+        this.downDisabled = false
+      }, 5000)
+      window.location.href = this.sysetApi() + '/selInsHandleAbnormalMesList?' + params
     }
   }
 }

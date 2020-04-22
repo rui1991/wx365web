@@ -39,31 +39,13 @@
           </el-form-item>
         </div>
       </el-form>
-      <el-collapse v-show="formData.posData.length > 0">
-        <div class="item" v-for="(item, index) in formData.posData" :key="item.position_id">
-          <p class="clearfix title">
-            <span class="site left">{{item.position_name}}</span>
-            <span class="time right">{{item.check_time | formatDate}}</span>
-          </p>
-          <el-collapse-item :title="item.template_name" :name="index" v-if="item.insPo">
-            <el-table class="show-table" :data="item.insPo" style="width: 100%">
-              <el-table-column prop="ins_name" label="检查项" width="80"></el-table-column>
-              <el-table-column prop="method" label="检查方法" class-name="multi-row"></el-table-column>
-              <el-table-column prop="check_content" label="检查内容及要求" class-name="multi-row"></el-table-column>
-              <el-table-column prop="alarm_level" label="报警等级" width="80"></el-table-column>
-              <el-table-column label="检查结果" width="80">
-                <template slot-scope="scope">
-                  <span v-if="scope.row.task_state === 0">未巡查</span>
-                  <span v-else-if="scope.row.task_state === 1">正常</span>
-                  <span v-else-if="scope.row.task_state === 2">异常</span>
-                  <span v-else></span>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-collapse-item>
-          <p class="norm-hint" v-else>无关联标准模板</p>
-        </div>
-      </el-collapse>
+      <ul class="list" v-show="postionData.length > 0">
+        <li class="list-item" v-for="item in postionData" :key="item.position_id">
+          <span class="name">{{ item.position_name }}</span>
+          <span class="price" v-if="item.template_id">{{ item.template_name }}</span>
+          <span class="hint" v-else>无关联标准模板</span>
+        </li>
+      </ul>
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeClick">关 闭</el-button>
       </div>
@@ -96,9 +78,9 @@ export default{
         person: '',
         taskDegree: '',
         desc: '',
-        posData: [],
         exaState: undefined
       },
+      postionData: [],
       downDisabled: false,
       appDialog: false
     }
@@ -120,6 +102,7 @@ export default{
   methods: {
     // 初始化数据
     detInit () {
+      this.postionData = []
       // 获取详情
       this.getDetails()
       // 可导出
@@ -135,7 +118,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/v3.7.3/all/sel/selInsTaskOnly',
+        url: this.sysetApi() + '/selInsTaskOnly',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -173,9 +156,9 @@ export default{
             person: itemData.user_name || '',
             taskDegree: taskDegree,
             desc: desc,
-            posData: itemData.pt_position,
             exaState: exaState
           }
+          this.postionData = itemData.pt_position
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -232,23 +215,35 @@ export default{
       height: 60px;
       text-align: right;
     }
-    .el-collapse{
+    .list{
       border: 1px solid #cecece;
       padding: 10px;
       border-radius: 4px;
-      .item{
+      .list-item{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 40px;
         border-bottom: 1px solid #cecece;
         &:last-of-type{
           border-bottom: none;
         }
-        .title{
-          height: 30px;
-          line-height: 30px;
+        .name{
+          max-width: 40%;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
           color: #272727;
         }
-        .norm-hint{
-          height: 35px;
-          line-height: 34px;
+        .price{
+          max-width: 60%;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          color: #272727;
+        }
+        .hint{
+          color: #999999;
         }
       }
     }

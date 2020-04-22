@@ -2,34 +2,53 @@
   <div>
     <el-dialog title="新增标准" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
       <el-form class="entirety-from" :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
-        <el-form-item label="模板名称" prop="name">
+        <el-form-item label="标准名称" prop="name">
           <el-input v-model.trim="formData.name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="模板类型" prop="type">
-          <el-input v-model.trim="formData.type"></el-input>
+        <el-form-item label="标准类型" prop="type">
+          <el-select v-model="formData.type" @change="typeChange" style="width: 160px;" placeholder="请选择标准类型">
+            <el-option
+              v-for="item in typeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="执行部门" prop="sector">
+          <el-select v-model="formData.sector" style="width: 160px;" placeholder="请选择执行部门">
+            <el-option
+              v-for="item in parentSectors"
+              :key="item.base_id"
+              :label="item.name"
+              :value="item.base_id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input type="textarea" maxlength="100" placeholder="文本长度不得超过100个字符" v-model.trim="formData.remark"></el-input>
         </el-form-item>
-        <el-form-item label="巡检标准" prop="temIds">
-          <el-input v-model="formData.temIds" v-show="false" style="width: 60%;"></el-input>
-          <el-button type="primary" @click="temDialog = true">选择巡检标准</el-button>
+        <el-form-item label="巡检标准" prop="itemIds">
+          <el-input v-model="formData.itemIds" v-show="false" style="width: 60%;"></el-input>
+          <el-button type="primary" @click="itemClick">选择巡检标准</el-button>
         </el-form-item>
       </el-form>
-      <el-table class="select-table" :data="formData.temData" style="width: 100%" v-show="formData.temData.length > 0">
-        <el-table-column prop="ins_name" label="检查项" width="80"></el-table-column>
-        <el-table-column prop="ins_method" label="检查方法" class-name="multi-row"></el-table-column>
-        <el-table-column prop="check_content" label="检查内容及要求" class-name="multi-row"></el-table-column>
-        <el-table-column prop="alarm_level" label="报警等级" width="80"></el-table-column>
+      <el-table class="select-table" :data="itemTable" style="width: 100%" v-show="itemTable.length > 0">
+        <el-table-column prop="path" :show-overflow-tooltip="true" label="路径"></el-table-column>
+        <el-table-column prop="inspect_name" :show-overflow-tooltip="true" label="检查项"></el-table-column>
+        <el-table-column prop="inspect_contents" :show-overflow-tooltip="true" label="检查内容及要求"></el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancelClick">取 消</el-button>
         <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 标准检查项 -->
     <tem-module
-      :parentDialog="temDialog"
-      :parentIds="formData.temIds"
+      :parentDialog="itemDialog"
+      :parentId="sdtId"
+      :parentType="sdtType"
+      :parentIds="itemSelection"
       @parentUpdata="temUpdata"
       @parentCancel="temCancel">
     </tem-module>
@@ -39,12 +58,16 @@
 <script>
 import { mapState } from 'vuex'
 // 引入模板组件
-import temModule from '@/components/polling/norm-tem'
+import temModule from '@/components/polling/normoam-item'
 export default{
-  props: ['parentDialog'],
+  props: ['parentDialog', 'parentSectors'],
   data () {
     return {
       formLabelWidth: '100px',
+      typeOptions: [],
+      typeState: false,
+      sdtId: 0,
+      sdtType: 0,
       rules: {
         name: [
           { required: true, message: '请输入模板名称', trigger: 'blur' }
@@ -52,19 +75,24 @@ export default{
         type: [
           { required: true, message: '请输入模板类型', trigger: 'blur' }
         ],
-        temIds: [
+        sector: [
+          { required: true, message: '请选择执行部门', trigger: 'change' }
+        ],
+        itemIds: [
           { required: true, message: '请选择巡检标准', trigger: 'input' }
         ]
       },
       formData: {
         name: '',
-        type: '',
+        type: 2,
+        sector: '',
         remark: '',
-        temIds: '',
-        temData: []
+        itemIds: ''
       },
+      itemTable: [],
       disabled: false,
-      temDialog: false
+      itemDialog: false,
+      itemSelection: []
     }
   },
   components: {
@@ -83,11 +111,22 @@ export default{
     addInit () {
       this.formData = {
         name: '',
-        type: '',
+        type: 2,
+        sector: '',
         remark: '',
-        temIds: '',
-        temData: []
+        itemIds: ''
       }
+      this.itemTable = []
+      // 获取标准类型
+      if (this.typeState) {
+        return
+      }
+      this.getNormType()
+    },
+    // 切换类型
+    typeChange () {
+      this.formData.itemIds = ''
+      this.itemTable = []
     },
     // 验证表单
     submitForm (formName) {
@@ -106,19 +145,19 @@ export default{
     // 提交
     sendRequest () {
       let params = {
-        company_id: this.companyId,
-        user_id: this.userId,
         project_id: this.projectId,
-        template_name: this.formData.name,
-        template_type: this.formData.type,
-        describe: this.formData.remark,
-        ins_ids: this.formData.temIds
+        user_id: this.userId,
+        standard_name: this.formData.name,
+        standard_type: this.formData.type,
+        ogz_id: this.formData.sector,
+        remarks: this.formData.remark,
+        sdd_ids: this.formData.itemIds
       }
       params = this.$qs.stringify(params)
       this.disabled = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/addTemplate',
+        url: this.sysetApi() + '/addStandardsOgz',
         data: params
       }).then((res) => {
         this.disabled = false
@@ -150,28 +189,35 @@ export default{
       this.resetForm('ruleForm')
       this.$emit('parentCancel')
     },
-    /* 模板 */
-    temUpdata (ids) {
-      this.formData.temIds = ids
-      this.getTemContent(ids)
-    },
-    getTemContent (ids) {
+    /* 标准类型 */
+    getNormType () {
       let params = {
+        ascription_type: 2,
         company_id: this.companyId,
-        user_id: this.userId,
-        project_id: 0,
-        ins_ids: ids
+        project_id: this.projectId
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/selInsByIds',
+        url: this.sysetApi() + '/selStandardsTree',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          let temData = res.data.data1
-          this.formData.temData = temData
-          this.temDialog = false
+          this.typeState = true
+          // 组织树
+          const treeData = res.data.data1
+          let typeOptions = []
+          treeData.forEach(item => {
+            typeOptions.push(
+              {
+                label: item.name,
+                value: item.s_type,
+                sdt_id: item.sdt_id,
+                sdt_type: item.id
+              }
+            )
+          })
+          this.typeOptions = typeOptions
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -188,8 +234,31 @@ export default{
         })
       })
     },
+    /* 模板 */
+    itemClick () {
+      const typeOptions = this.typeOptions
+      const type = this.formData.type
+      const nowType = typeOptions.find(item => {
+        return item.value === type
+      })
+      this.sdtId = nowType.sdt_id
+      this.sdtType = nowType.sdt_type
+      let itemIds = this.formData.itemIds
+      if (itemIds) {
+        this.itemSelection = itemIds.split(',')
+      } else {
+        this.itemSelection = []
+      }
+      this.itemDialog = true
+    },
+    temUpdata (obj) {
+      const itemIds = obj.ids.join(',')
+      this.formData.itemIds = itemIds
+      this.itemTable = obj.itemData
+      this.itemDialog = false
+    },
     temCancel () {
-      this.temDialog = false
+      this.itemDialog = false
     }
   },
   watch: {

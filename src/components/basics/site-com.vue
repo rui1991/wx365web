@@ -31,12 +31,14 @@
         <el-input v-model.trim="formData.mac" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="关联标准" prop="norm">
-        <el-select style="width: 100%;" v-model="formData.norm" clearable filterable placeholder="请选择标准">
+        <el-select style="width: 100%;" v-model="formData.norm" multiple collapse-tags  clearable filterable placeholder="请选择标准">
           <el-option
             v-for="item in normOptions"
-            :key="item.template_id"
-            :label="item.template_name"
-            :value="item.template_id">
+            :key="item.os_id"
+            :label="item.standard_name"
+            :value="item.os_id">
+            <span style="float: left">{{ item.standard_name }}</span>
+            <span style="float: right; color: #8492a6; font-size: 13px">{{ item.ogz_name }}</span>
           </el-option>
         </el-select>
       </el-form-item>
@@ -119,6 +121,10 @@ export default{
           value: 0
         },
         {
+          label: '设备地址',
+          value: 7
+        },
+        {
           label: '固定岗位',
           value: 6
         }
@@ -132,6 +138,9 @@ export default{
         areaType: [
           { required: true, message: '请选择区域类型', trigger: 'change' }
         ],
+        type: [
+          { required: true, message: '请选择地址类型', trigger: 'change' }
+        ],
         mac: [
           { validator: checkMac, trigger: 'blur' }
         ]
@@ -143,7 +152,7 @@ export default{
         areaType: 0,
         type: 0,
         mac: '',
-        norm: '',
+        norm: [],
         remark: ''
       },
       disabled: false
@@ -167,15 +176,11 @@ export default{
         areaType: 0,
         type: 0,
         mac: '',
-        norm: '',
+        norm: [],
         remark: ''
       }
       // 获取详情
       this.getDetails()
-      if (!this.normState) {
-        // 获取标准选项
-        this.getNormOptions()
-      }
     },
     // 获取详情
     getDetails () {
@@ -193,16 +198,29 @@ export default{
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           const itemData = res.data.data1
+          const type = itemData.position_type
+          const normIds = itemData.os_ids
+          let norm = []
+          if (normIds) {
+            norm = normIds.split(',')
+          }
           // Mac地址
           this.formData = {
             parent: itemData.parent_po_id,
             parentPath: itemData.parent_address || '',
             name: itemData.position_name,
             areaType: itemData.area_type,
-            type: itemData.position_type,
+            type: type,
             mac: itemData.position_mac || '',
-            norm: itemData.template_id || '',
+            norm: norm,
             remark: itemData.instructions
+          }
+          // 获取标准
+          this.normOptions = []
+          if (type === 0) {
+            this.getNormOptions(2)
+          } else if (type === 7) {
+            this.getNormOptions(1)
           }
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
@@ -220,6 +238,15 @@ export default{
         })
       })
     },
+    // 切换地址类型
+    typeChange (value) {
+      this.normOptions = []
+      if (value === 0) {
+        this.getNormOptions(2)
+      } else if (value === 7) {
+        this.getNormOptions(1)
+      }
+    },
     // 验证表单
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
@@ -236,8 +263,12 @@ export default{
     },
     // 提交
     sendRequest () {
+      // MAC地址
       let mac = this.formData.mac
       mac = this.formatSetMac(mac)
+      // 标准
+      let norm = this.formData.norm
+      norm = norm.join(',')
       let params = {
         company_id: this.companyId,
         user_id: this.userId,
@@ -248,14 +279,14 @@ export default{
         area_type: this.formData.areaType,
         position_type: this.formData.type,
         position_mac: mac,
-        template_id: this.formData.norm || 0,
+        os_ids: norm,
         instructions: this.formData.remark
       }
       params = this.$qs.stringify(params)
       this.disabled = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/alterPosition',
+        url: this.sysetApi() + '/standard/alterPosition',
         data: params
       }).then((res) => {
         this.disabled = false
@@ -294,26 +325,24 @@ export default{
       this.resetForm('ruleForm')
       this.$emit('parentCancel')
     },
-    // 获取标准
-    getNormOptions () {
+    /* 获取标准 */
+    getNormOptions (type = '') {
       let params = {
-        company_id: this.companyId,
-        user_id: this.userId,
         project_id: this.projectId,
-        projectN_id: this.projectId,
+        standard_type: type,
+        standard_name: '',
+        ogz_id: '',
         page: 1,
-        limit1: 1000
+        limit1: 10000
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/selTemplateBySearch',
+        url: this.sysetApi() + '/selStandardsOgz',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          let normData = res.data.data1.templates || []
-          this.normOptions = normData
-          this.normState = true
+          this.normOptions = res.data.data1.mes
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({

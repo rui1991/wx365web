@@ -127,14 +127,16 @@
               <el-menu-item-group>
                 <el-menu-item index="/main/calendar">巡检日历</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.norm">
-                <el-menu-item index="/main/norm">巡检标准维护</el-menu-item>
+              <el-menu-item-group>
+                <el-menu-item index="/main/normoam">标准维护管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.abnormal">
                 <el-menu-item index="/main/abnormal">异常检查项</el-menu-item>
               </el-menu-item-group>
+              <el-menu-item-group v-if="authority.abnormal">
+                <el-menu-item index="/main/normexecute">巡检标准执行汇总</el-menu-item>
+              </el-menu-item-group>
             </el-submenu>
-
             <el-submenu index="5" class="submenu-item" v-if="authority.plan">
               <template slot="title"><i class="iconfont icon-guding"></i>固定岗管理</template>
               <el-menu-item-group>
@@ -222,7 +224,19 @@
                 <el-menu-item index="/main/event">事件列表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="14" class="submenu-item" v-if="deviceUid.indexOf(userId) !== -1">
+            <el-submenu index="14" class="submenu-item" v-if="authority.event">
+              <template slot="title"><i class="iconfont icon-ic_biaozhunkuguanli"></i>标准库管理</template>
+              <el-menu-item-group>
+                <el-menu-item index="/main/planorm">平台标准维护</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/comnorm">企业标准维护</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/pronorm">项目标准维护</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="15" class="submenu-item" v-if="deviceUid.indexOf(userId) !== -1">
               <template slot="title"><i class="iconfont icon-duijie"></i>硬件对接</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/hardcon">硬件管控</el-menu-item>
@@ -502,6 +516,7 @@ export default{
       }
     }
     .main-container{
+      overflow-y: auto;
       .main-menu{
         height: 100%;
         padding-bottom: 20px;

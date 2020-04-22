@@ -83,12 +83,12 @@ const TaskCom = () => import(/* webpackChunkName: "group-task" */ '@/components/
 const Calendar = () => import(/* webpackChunkName: "group-calendar" */ '@/components/polling/calendar')
 // 巡检日历详情
 const CalendarItem = () => import(/* webpackChunkName: "group-calendar" */ '@/components/polling/calendar-item')
-// 巡检标准维护
-const Norm = () => import(/* webpackChunkName: "group-norm" */ '@/components/polling/norm')
+// 标准维护管理
+const Normoam = () => import(/* webpackChunkName: "group-norm" */ '@/components/polling/normoam')
 // 巡检异常
 const Abnormal = () => import(/* webpackChunkName: "group-abnormal" */ '@/components/polling/abnormal')
-// 巡检异常历史记录
-const AbnormalHistory = () => import(/* webpackChunkName: "group-abnormal" */ '@/components/polling/abnormal-history')
+// 巡检异常
+const Normexecute = () => import(/* webpackChunkName: "group-normexecute" */ '@/components/polling/normexecute')
 
 /* 固定岗管理 */
 // 固定岗打卡报表
@@ -160,13 +160,23 @@ const VideoLiveroom = () => import(/* webpackChunkName: "group-video" */ '@/comp
 // 事件列表
 const Event = () => import(/* webpackChunkName: "group-event" */ '@/components/event/event')
 
+/* 标准维护 */
+// 平台标准维护
+const Planorm = () => import(/* webpackChunkName: "group-norm" */ '@/components/norm/planorm')
+// 企业标准维护
+const Comnorm = () => import(/* webpackChunkName: "group-norm" */ '@/components/norm/comnorm')
+// 项目标准维护
+const Pronorm = () => import(/* webpackChunkName: "group-norm" */ '@/components/norm/pronorm')
+// 标准检查项
+const Normitem = () => import(/* webpackChunkName: "group-norm" */ '@/components/norm/normitem')
+
 /* 硬件对接 */
 // 硬件管控
-const Hardcon = () => import(/* webpackChunkName: "group-event" */ '@/components/external/hardcon')
+const Hardcon = () => import(/* webpackChunkName: "group-external" */ '@/components/external/hardcon')
 // 打卡数据查询
-const Cardcon = () => import(/* webpackChunkName: "group-event" */ '@/components/external/cardcon')
+const Cardcon = () => import(/* webpackChunkName: "group-external" */ '@/components/external/cardcon')
 // lora数据查询
-const Loracon = () => import(/* webpackChunkName: "group-event" */ '@/components/external/loracon')
+const Loracon = () => import(/* webpackChunkName: "group-external" */ '@/components/external/loracon')
 
 Vue.use(Router)
 
@@ -452,9 +462,9 @@ export default new Router({
           }
         },
         {
-          path: 'norm',
-          name: 'norm',
-          component: Norm,
+          path: 'normoam',
+          name: 'normoam',
+          component: Normoam,
           meta: {
             keepAlive: false
           }
@@ -468,9 +478,9 @@ export default new Router({
           }
         },
         {
-          path: 'abnormal-history',
-          name: 'abnormalHistory',
-          component: AbnormalHistory,
+          path: 'normexecute',
+          name: 'normexecute',
+          component: Normexecute,
           meta: {
             keepAlive: false
           }
@@ -684,6 +694,38 @@ export default new Router({
           component: Event,
           meta: {
             keepAlive: true
+          }
+        },
+        {
+          path: 'planorm',
+          name: 'planorm',
+          component: Planorm,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'comnorm',
+          name: 'comnorm',
+          component: Comnorm,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'pronorm',
+          name: 'pronorm',
+          component: Pronorm,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'normitem',
+          name: 'normitem',
+          component: Normitem,
+          meta: {
+            keepAlive: false
           }
         },
         {
