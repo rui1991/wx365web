@@ -2,7 +2,7 @@
   <div>
     <el-dialog title="检查项详情" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
       <el-form class="entirety-from" :model="formData" :label-width="formLabelWidth">
-        <el-form-item label="标准项名称">
+        <el-form-item label="检查项名称">
           <el-input v-model.trim="formData.name" disabled auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="表达方式">

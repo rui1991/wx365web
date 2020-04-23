@@ -18,7 +18,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="地址类型" prop="type">
-        <el-select style="width: 100%;" v-model="formData.type" placeholder="请选择地址类型">
+        <el-select style="width: 100%;" v-model="formData.type" @change="typeChange" placeholder="请选择地址类型">
           <el-option
             v-for="item in typeOptions"
             :key="item.value"
@@ -193,7 +193,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/apk/selPositionOnly',
+        url: this.sysetApi() + '/selApkPositionOnly',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -202,7 +202,10 @@ export default{
           const normIds = itemData.os_ids
           let norm = []
           if (normIds) {
-            norm = normIds.split(',')
+            let ids = normIds.split(',')
+            norm = ids.map(item => {
+              return Number.parseInt(item)
+            })
           }
           // Mac地址
           this.formData = {
@@ -241,6 +244,7 @@ export default{
     // 切换地址类型
     typeChange (value) {
       this.normOptions = []
+      this.formData.norm = []
       if (value === 0) {
         this.getNormOptions(2)
       } else if (value === 7) {

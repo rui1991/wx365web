@@ -112,7 +112,7 @@ export default{
   },
   created () {
     // 获取标准树
-    this.getNormTree()
+    this.getNormData()
   },
   mounted () {
     // 保存组织
@@ -134,6 +134,18 @@ export default{
     ])
   },
   methods: {
+    /*
+    * 数据说明：
+    * ascription_type：Number  组织类型； 0：平台，1：企业， 2：项目
+    * company_id：Number  所属企业ID
+    * project_id：Number  所属项目ID
+    * sdt_type：Number  标准树id
+    * 树形  =>  列表
+    * id   =>  sdt_type
+    * sdt_id => sdt_id
+    * s_type: 1设备标准类; 2巡检标准类
+    * */
+
     // 定义保存标准数据
     ...mapActions('other', [
       'setNormOrgan',
@@ -141,6 +153,43 @@ export default{
       'setNormData'
     ]),
     // 获取标准树
+    getNormData () {
+      let params = {
+        ascription_type: this.orgType,
+        company_id: 0,
+        project_id: 0
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/selPlatformStandardsTree',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          // 组织树
+          const treeData = res.data.data1 || []
+          if (treeData.length === 0) {
+            // 初始化项目标准树
+            this.initNormTree()
+          } else {
+            this.treeData = treeData
+          }
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
     getNormTree (b = false) {
       let params = {
         ascription_type: this.orgType,
@@ -155,12 +204,44 @@ export default{
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           // 组织树
-          const treeData = res.data.data1
+          const treeData = res.data.data1 || []
           this.treeData = treeData
           if (b) {
             // 标记当前选中
             this.$refs.tree.setCheckedKeys([this.id])
           }
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
+    // 初始化项目标准树
+    initNormTree () {
+      let params = {
+        this_type: this.orgType,
+        company_id: 0,
+        project_id: 0
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/initializationStandardsTree',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          // 重新获取标准树
+          this.getNormTree()
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -201,7 +282,7 @@ export default{
         }
         this.setNormTree(obj)
       } else {
-        if (this.siteId === data.id) {
+        if (this.id === data.id) {
           this.$refs.tree.setCheckedKeys([data.id])
         }
       }

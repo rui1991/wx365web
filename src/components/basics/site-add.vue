@@ -184,6 +184,7 @@ export default{
     // 切换地址类型
     typeChange (value) {
       this.normOptions = []
+      this.formData.norm = []
       if (value === 0) {
         this.getNormOptions(2)
       } else if (value === 7) {

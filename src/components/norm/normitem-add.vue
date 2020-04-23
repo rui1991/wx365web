@@ -2,7 +2,7 @@
   <div>
     <el-dialog title="新增检查项" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
       <el-form class="entirety-from" :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
-        <el-form-item label="标准项名称" prop="name">
+        <el-form-item label="检查项名称" prop="name">
           <el-input v-model.trim="formData.name" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="表达方式" prop="way">
@@ -34,7 +34,7 @@
             @blur="handleInputConfirm"
           >
           </el-input>
-          <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New value</el-button>
+          <el-button v-else class="button-new-tag" size="small" @click="showInput">+添加</el-button>
         </el-form-item>
         <el-form-item label="表达值" prop="valueText" v-else>
           <el-input v-model.trim="formData.valueText" disabled auto-complete="off"></el-input>
@@ -145,6 +145,22 @@ export default{
     })
   },
   methods: {
+    /*
+    * 参数说明：
+    * ascription_type：Number  组织类型； 0：平台，1：企业， 2：项目
+    * company_id：Number  所属企业ID
+    * project_id：Number  所属项目ID
+    * sdt_id：Number  检查项上级的sdt_id
+    * sdt_type：String  检查项上级的sdt_type
+    * path：String  检查项上级的路径
+    * inspect_name：String  检查项名称
+    * expression：Number  表达方式
+    * expression_value：Array => String(',')  表达值
+    * default_value：String  默认值
+    * abnormal_value：Array => String(',')   异常值
+    * inspect_contents：String   要求
+    * */
+
     handleClose (tag) {
       this.formData.values.splice(this.formData.values.indexOf(tag), 1)
       // 默认值
@@ -162,6 +178,7 @@ export default{
 
     handleInputConfirm () {
       let inputValue = this.inputValue
+      inputValue = inputValue.replace(/,/g, '')
       let temp = this.formData.values.find(item => {
         return item === inputValue
       })

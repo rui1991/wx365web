@@ -151,6 +151,18 @@ export default{
     ])
   },
   methods: {
+    /*
+    * 数据说明：
+    * ascription_type：Number  组织类型； 0：平台，1：企业， 2：项目
+    * company_id：Number  所属企业ID
+    * project_id：Number  所属项目ID
+    * sdt_type：Number  标准树id
+    * 树形  =>  列表
+    * id   =>  sdt_type
+    * sdt_id => sdt_id
+    * s_type: 1设备标准类; 2巡检标准类
+    * */
+
     // 定义保存标准数据
     ...mapActions('other', [
       'setNormOrgan',
@@ -287,7 +299,7 @@ export default{
         }
         this.setNormTree(obj)
       } else {
-        if (this.siteId === data.id) {
+        if (this.id === data.id) {
           this.$refs.tree.setCheckedKeys([data.id])
         }
       }

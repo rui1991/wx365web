@@ -41,6 +41,7 @@
               <span>{{ scope.row.standard_type | filterType }}</span>
             </template>
           </el-table-column>
+          <el-table-column prop="ogz_name" label="执行部门"></el-table-column>
           <el-table-column prop="osize" label="标准数量"></el-table-column>
           <!--<el-table-column label="创建时间">-->
             <!--<template slot-scope="scope">-->

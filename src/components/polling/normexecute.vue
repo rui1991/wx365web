@@ -65,6 +65,11 @@
               <span>{{ scope.row.start_time | formatDate }} ~ {{ scope.row.end_time | formatDate }}</span>
             </template>
           </el-table-column>
+          <el-table-column label="执行标准" :show-overflow-tooltip="true">
+            <template slot-scope="scope">
+              <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row.os_id)">{{ scope.row.standard_name }}</a>
+            </template>
+          </el-table-column>
           <el-table-column prop="count" label="检查项数量" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="sum" label="异常检查项" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="ogz_name" label="执行部门" :show-overflow-tooltip="true"></el-table-column>
@@ -119,7 +124,8 @@ export default{
       tableData: [],
       total: 0,
       nowPage: 1,
-      limit: 10
+      limit: 10,
+      itemId: 0
     }
   },
   created () {
@@ -229,6 +235,10 @@ export default{
           type: 'error'
         })
       })
+    },
+    /* 详情 */
+    detClick (id) {
+      this.itemId = id
     }
   }
 }

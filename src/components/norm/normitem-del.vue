@@ -25,6 +25,15 @@ export default{
     })
   },
   methods: {
+    /*
+    * 参数说明：
+    * ascription_type：Number  组织类型； 0：平台，1：企业， 2：项目
+    * company_id：Number  所属企业ID
+    * project_id：Number  所属项目ID
+    * sdd_id: Number  检查项的sdd_id
+    * */
+
+    // 确定
     submitForm () {
       let params = {
         ascription_type: this.orgType,

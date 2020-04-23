@@ -30,6 +30,12 @@
               <a href="javascript:void(0);" class="name" @click="detClick(scope.row)">{{ scope.row.inspect_name }}</a>
             </template>
           </el-table-column>
+          <el-table-column label="默认值" :show-overflow-tooltip="true">
+            <template slot-scope="scope">
+              <span v-if="scope.row.default_value">{{ scope.row.default_value }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
           <el-table-column label="检查内容及要求" :show-overflow-tooltip="true">
             <template slot-scope="scope">
               <span v-if="scope.row.inspect_contents">{{ scope.row.inspect_contents }}</span>
@@ -150,6 +156,13 @@ export default{
     })
   },
   methods: {
+    /*
+    * 参数说明：
+    * ascription_type：Number  组织类型； 0：平台，1：企业， 2：项目
+    * sdt_id：Number  检查项上级的sdt_id
+    * sdt_type：String  检查项上级的sdt_type
+    * path：String  检查项上级的路径
+    * */
     ...mapActions('other', [
       'setProDisabled'
     ]),

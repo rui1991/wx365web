@@ -6,7 +6,7 @@
           <el-input v-model.trim="formData.name" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="标准类型" prop="type">
-          <el-select v-model="formData.type" @change="typeChange" style="width: 160px;" placeholder="请选择标准类型">
+          <el-select v-model="formData.type" disabled @change="typeChange" style="width: 160px;" placeholder="请选择标准类型">
             <el-option
               v-for="item in typeOptions"
               :key="item.value"
@@ -16,7 +16,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="执行部门" prop="sector">
-          <el-select v-model="formData.sector" style="width: 160px;" placeholder="请选择执行部门">
+          <el-select v-model="formData.sector" disabled style="width: 160px;" placeholder="请选择执行部门">
             <el-option
               v-for="item in parentSectors"
               :key="item.base_id"
@@ -30,7 +30,7 @@
         </el-form-item>
         <el-form-item label="巡检标准" prop="itemIds">
           <el-input v-model="formData.itemIds" v-show="false" style="width: 60%;"></el-input>
-          <el-button type="primary" @click="itemClick">选择巡检标准</el-button>
+          <el-button type="primary" @click="itemClick">选择标准</el-button>
         </el-form-item>
       </el-form>
       <el-table class="select-table" :data="itemTable" style="width: 100%" v-show="itemTable.length > 0">
@@ -261,8 +261,8 @@ export default{
               {
                 label: item.name,
                 value: item.s_type,
-                type: item.id,
-                id: item.sdt_id
+                sdt_id: item.sdt_id,
+                sdt_type: item.id
               }
             )
           })
@@ -288,7 +288,7 @@ export default{
       const typeOptions = this.typeOptions
       const type = this.formData.type
       const nowType = typeOptions.find(item => {
-        return item.value === type
+        return item.value === Number.parseInt(type)
       })
       this.sdtId = nowType.sdt_id
       this.sdtType = nowType.sdt_type

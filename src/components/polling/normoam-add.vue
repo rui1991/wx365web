@@ -30,7 +30,7 @@
         </el-form-item>
         <el-form-item label="巡检标准" prop="itemIds">
           <el-input v-model="formData.itemIds" v-show="false" style="width: 60%;"></el-input>
-          <el-button type="primary" @click="itemClick">选择巡检标准</el-button>
+          <el-button type="primary" @click="itemClick">选择标准</el-button>
         </el-form-item>
       </el-form>
       <el-table class="select-table" :data="itemTable" style="width: 100%" v-show="itemTable.length > 0">
@@ -239,7 +239,7 @@ export default{
       const typeOptions = this.typeOptions
       const type = this.formData.type
       const nowType = typeOptions.find(item => {
-        return item.value === type
+        return item.value === Number.parseInt(type)
       })
       this.sdtId = nowType.sdt_id
       this.sdtType = nowType.sdt_type

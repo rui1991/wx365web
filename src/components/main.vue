@@ -226,13 +226,13 @@
             </el-submenu>
             <el-submenu index="14" class="submenu-item" v-if="authority.event">
               <template slot="title"><i class="iconfont icon-ic_biaozhunkuguanli"></i>标准库管理</template>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="companyId === 1">
                 <el-menu-item index="/main/planorm">平台标准维护</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="roleId === 500">
                 <el-menu-item index="/main/comnorm">企业标准维护</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="authority.plan">
                 <el-menu-item index="/main/pronorm">项目标准维护</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
@@ -315,6 +315,7 @@ export default{
     ...mapState('user', [
       'companyName',
       'companyId',
+      'roleId',
       'userId',
       'userName',
       'userPhoto',

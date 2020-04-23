@@ -48,6 +48,20 @@ export default{
     })
   },
   methods: {
+    /*
+    * 参数说明：
+    * ascription_type：Number  组织类型； 0：平台，1：企业， 2：项目
+    * company_id：Number  所属企业ID
+    * project_id：Number  所属项目ID
+    * parent_id：Number  上级的id
+    * sdt_type：Number  上级的id
+    * depth: Number  第几层
+    * s_type：Number  标准类型，1：设备标准类，2：巡检标准类；
+    * path：String  路径，上级的路径 + 标准名称
+    * sdt_name：String  标准名称
+    * remarks：Number  备注
+    * */
+
     addInit () {
       this.formData = {
         name: '',

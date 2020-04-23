@@ -15,7 +15,7 @@
               <el-input style="width: 160px;" v-model.trim="nowSearch.site"></el-input>
             </div>
             <div class="item">
-              <span>检查项名称</span>
+              <span>检查项</span>
               <el-input style="width: 160px;" v-model.trim="nowSearch.checkItem"></el-input>
             </div>
             <div class="item">

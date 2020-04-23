@@ -130,7 +130,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/apk/selPositionOnly',
+        url: this.sysetApi() + '/selApkPositionOnly',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -150,7 +150,7 @@ export default{
             areaType: itemData.area_type,
             type: type,
             mac: itemData.position_mac,
-            norm: itemData.template_name || '',
+            norm: itemData.standard_names || '',
             remark: itemData.instructions
           }
         } else {
