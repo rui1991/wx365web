@@ -20,9 +20,9 @@
             show-checkbox
             default-expand-all
             check-strictly
+            check-on-click-node
             node-key="id"
             @check-change="siteCheckChange"
-            @node-click="siteNodeClick"
             :props="defaultProps">
           </el-tree>
         </el-aside>
@@ -305,28 +305,6 @@ export default{
           this.$refs.siteTree.setCheckedKeys([data.id])
         }
       }
-    },
-    siteNodeClick (data, node, self) {
-      if (node.checked) return
-      this.$refs.siteTree.setCheckedKeys([data.id])
-      // 设置当前id和name
-      this.siteId = data.id
-      this.siteName = data.name
-      // 清空搜索框
-      this.search = {
-        name: '',
-        mac: '',
-        type: ''
-      }
-      this.nowSearch = {
-        name: '',
-        coding: '',
-        type: ''
-      }
-      // 当前页码初始化
-      this.nowPage = 1
-      // 获取列表数据
-      this.getListData()
     },
     // 搜索
     searchList () {

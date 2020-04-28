@@ -221,7 +221,6 @@ export default{
   },
   methods: {
     getDetails () {
-      console.log('详情')
       let params = {
         organize_id: this.parentOrgId,
         organize_type: this.parentOrgType,

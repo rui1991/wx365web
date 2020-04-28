@@ -3,11 +3,12 @@
     <p class="hint">提示：授权范围不可选直属企业或分公司总部部门，否则登录将无项目权限无权登录进入系统！</p>
     <el-tree
       :data="treeData"
+      ref="tree"
       show-checkbox
       default-expand-all
-      :check-strictly="true"
+      check-strictly
+      check-on-click-node
       node-key="id"
-      ref="tree"
       @check-change="orgCheckChange"
       :props="defaultProps">
     </el-tree>
@@ -86,9 +87,6 @@ export default{
     },
     // 选择组织树
     orgCheckChange (data, checked, self) {
-      if (data.disabled) {
-        return
-      }
       if (data.children) {
         let inNode = JSON.parse(JSON.stringify(data.children))
         let node = this.disDisTree(inNode, checked)

@@ -6,6 +6,7 @@
       show-checkbox
       default-expand-all
       check-strictly
+      check-on-click-node
       node-key="id"
       :props="defaultProps">
     </el-tree>
@@ -41,6 +42,15 @@ export default{
     })
   },
   methods: {
+    /*
+    * 参数说明：
+    * ascription_type：：Number  组织类型； 0：平台，1：企业， 2：项目
+    * company_id：Number  所属企业ID
+    * project_id：Number  所属项目ID
+    * sdt_type：Number  标准树id
+    * path：String  标准树的路径
+    * ids: 要引入的标准树的sdt_id
+    * */
     // 获取平台标准树
     getPlaNormTree () {
       let params = {
@@ -128,8 +138,8 @@ export default{
     },
     // 确定
     submitForm () {
-      let ids = this.$refs.tree.getCheckedKeys()
-      if (ids.length === 0) {
+      let nodes = this.$refs.tree.getCheckedNodes()
+      if (nodes.length === 0) {
         this.$message({
           showClose: true,
           message: '请选择要引入的标准！',
@@ -137,6 +147,10 @@ export default{
         })
         return
       }
+      let ids = []
+      nodes.forEach(item => {
+        ids.push(item.sdt_id)
+      })
       ids = ids.join(',')
       let params = {
         ascription_type: this.orgType,

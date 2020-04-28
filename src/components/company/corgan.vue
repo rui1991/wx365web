@@ -22,10 +22,10 @@
             show-checkbox
             default-expand-all
             check-strictly
+            check-on-click-node
             node-key="id"
-            @check-change="orgCheckChange"
-            @node-click="orgNodeClick"
-            :props="defaultProps">
+            :props="defaultProps"
+            @check-change="orgCheckChange">
           </el-tree>
         </el-aside>
         <el-main class="module-main">
@@ -177,18 +177,6 @@ export default{
           this.$refs.tree.setCheckedKeys([data.id])
         }
       }
-    },
-    orgNodeClick (data, node, self) {
-      if (node.checked) return
-      this.$refs.tree.setCheckedKeys([data.id])
-      // 机构类型
-      this.orgType = data.organize_type
-      // id
-      this.orgId = data.id
-      // name
-      this.orgName = data.name
-      // baseId
-      this.baseId = data.base_id
     },
     /* 新增类型 */
     setAddType (type) {

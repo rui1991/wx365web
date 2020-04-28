@@ -15,10 +15,10 @@
             show-checkbox
             default-expand-all
             check-strictly
+            check-on-click-node
             node-key="id"
             :props="defaultProps"
-            @check-change="checkChange"
-            @node-click="handleNodeClick">
+            @check-change="checkChange">
           </el-tree>
         </el-aside>
         <el-main class="module-main">
@@ -184,11 +184,16 @@ export default{
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           // 组织树
-          const treeData = res.data.data1 || []
+          let treeData = res.data.data1 || []
           if (treeData.length === 0) {
             // 初始化项目标准树
             this.initNormTree()
           } else {
+            treeData.forEach(item => {
+              if (item.s_type === 1) {
+                item.disabled = true
+              }
+            })
             this.treeData = treeData
           }
         } else {
@@ -221,7 +226,12 @@ export default{
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           // 组织树
-          const treeData = res.data.data1 || []
+          let treeData = res.data.data1 || []
+          treeData.forEach(item => {
+            if (item.s_type === 1) {
+              item.disabled = true
+            }
+          })
           this.treeData = treeData
           if (b) {
             // 标记当前选中
@@ -303,26 +313,6 @@ export default{
           this.$refs.tree.setCheckedKeys([data.id])
         }
       }
-    },
-    handleNodeClick (data, node, self) {
-      if (node.checked) return
-      this.$refs.tree.setCheckedKeys([data.id])
-      // 设置当前id
-      this.id = data.id
-      this.depth = data.depth
-      // 当前页码初始化
-      this.nowPage = 1
-      // 获取列表数据
-      this.getListData()
-      // 保存标准树数据
-      // 参数 id:树ID; depth:第几层；type:标准类型，1：设备标准类，2：巡检标准类；
-      let obj = {
-        id: data.id,
-        depth: data.depth,
-        type: data.s_type,
-        path: data.path
-      }
-      this.setNormTree(obj)
     },
     // 获取列表数据
     getListData () {

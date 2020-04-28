@@ -186,6 +186,11 @@ export default{
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
           this.tableData = res.data.data1.mes
+          // 检验是否列表为空
+          if (this.tableData.length === 0 && this.nowPage > 1) {
+            this.nowPage--
+            this.getListData()
+          }
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({

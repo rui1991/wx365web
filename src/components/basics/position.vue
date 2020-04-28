@@ -23,10 +23,10 @@
             show-checkbox
             default-expand-all
             check-strictly
+            check-on-click-node
             node-key="id"
             :props="defaultProps"
-            @check-change="posCheckChange"
-            @node-click="posNodeClick">
+            @check-change="posCheckChange">
           </el-tree>
         </el-aside>
         <el-main class="module-main">
@@ -172,19 +172,6 @@ export default{
         if (this.posId === data.id) {
           this.$refs.tree.setCheckedKeys([data.id])
         }
-      }
-    },
-    posNodeClick (data, node, self) {
-      if (node.checked) return
-      this.$refs.tree.setCheckedKeys([data.id])
-      // 存储当前id
-      this.posId = data.id
-      if (data.id === 0) {
-        this.posName = ''
-        this.modType = 0
-      } else {
-        this.posName = data.name
-        this.modType = 1
       }
     },
     /* 新增组织 */

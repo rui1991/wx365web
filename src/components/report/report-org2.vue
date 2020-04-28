@@ -5,9 +5,9 @@
     show-checkbox
     default-expand-all
     check-strictly
+    check-on-click-node
     node-key="id"
     @check-change="orgCheckChange"
-    @node-click="orgNodeClick"
     :props="defaultProps">
   </el-tree>
 </template>
@@ -74,40 +74,6 @@ export default{
           this.$refs.tree.setCheckedKeys([data.id])
         }
       }
-    },
-    orgNodeClick (data, node, self) {
-      if (data.disabled) return
-      if (node.checked) return
-      this.$refs.tree.setCheckedKeys([data.id])
-      const type = data.organize_type
-      let obj = {}
-      if (type === 3) {
-        obj = {
-          id: data.id,
-          type: type,
-          proId: data.base_id,
-          secId: 0,
-          parId: data.parent_id
-        }
-      } else if (type === 4) {
-        obj = {
-          id: data.id,
-          type: type,
-          proId: 0,
-          secId: data.base_id,
-          parId: data.parent_id
-        }
-      } else {
-        obj = {
-          id: data.id,
-          type: type,
-          proId: 0,
-          secId: 0,
-          parId: data.parent_id
-        }
-      }
-      // 设置组织参数
-      this.$emit('parentUpOrg', obj)
     }
   }
 }

@@ -5,6 +5,7 @@
       show-checkbox
       default-expand-all
       check-strictly
+      check-on-click-node
       node-key="id"
       ref="tree"
       @check-change="checkChange"
@@ -118,6 +119,9 @@ export default{
     // 选择
     checkChange (data, checked, self) {
       if (checked === true) {
+        if (this.checkedOrgId === data.id) {
+          return
+        }
         this.checkedOrgId = data.id
         this.checkedId = data.base_id
         this.checkedName = data.name
