@@ -422,6 +422,9 @@ export default{
         case 9:
           areaType = '岗亭'
           break
+        case 10:
+          areaType = '设备机房'
+          break
         default:
           areaType = ''
       }

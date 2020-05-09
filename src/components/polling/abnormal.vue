@@ -39,7 +39,7 @@
                 v-model="nowSearch.date"
                 type="daterange"
                 value-format="yyyy-MM-dd"
-                :clearable="true"
+                :clearable="false"
                 :picker-options="pickerOptions"
                 range-separator="至"
                 start-placeholder="开始日期"
@@ -76,7 +76,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="inspect_contents" label="检查内容及要求" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column prop="ending_type" label="异常检查结果" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="abnormal_value" label="异常检查结果" :show-overflow-tooltip="true"></el-table-column>
         </el-table>
         <el-pagination
           background
@@ -127,6 +127,10 @@ export default{
     }
   },
   created () {
+    // 获取当天日期
+    const nowDate = this.$common.getNowDate('yyyy-mm-dd')
+    this.search.date = [nowDate, nowDate]
+    this.nowSearch.date = [nowDate, nowDate]
     // 获取列表数据
     this.getListData()
     // 获取部门
@@ -236,12 +240,12 @@ export default{
     },
     /* 导出 */
     downFile () {
-      let date = this.search.date || []
+      let date = this.search.date
       let params = {
         project_id: this.projectId,
         position_name: this.search.site,
-        start_date: date[0] || '',
-        end_date: date[1] || '',
+        start_date: date[0],
+        end_date: date[1],
         inspect_name: this.search.checkItem,
         ogz_id: this.search.sector
       }
@@ -250,7 +254,7 @@ export default{
       setTimeout(() => {
         this.downDisabled = false
       }, 5000)
-      window.location.href = this.sysetApi() + '/selInsHandleAbnormalMesList?' + params
+      window.location.href = this.sysetApi() + '/selInsHandleAbnormalMesListEO?' + params
     }
   }
 }

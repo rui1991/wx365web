@@ -323,6 +323,7 @@ export default{
         this.loading = false
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
+          // 当前时间
           let nowTime = new Date().getTime()
           const nowSector = this.sectorId + ''
           let tableData = res.data.data1.insTask
@@ -354,7 +355,7 @@ export default{
             // 换人
             if (item.continue_state === 0 || item.continue_state === 2) {
               if (!item.group_id) {
-                if (item.end_time >= this.todayStartTime && parseFloat(item.continue_process) !== 1) {
+                if (item.end_time >= nowTime && parseFloat(item.continue_process) !== 1) {
                   item.trade = 1
                 } else {
                   item.trade = 2

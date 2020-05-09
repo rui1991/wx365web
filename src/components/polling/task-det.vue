@@ -39,13 +39,22 @@
           </el-form-item>
         </div>
       </el-form>
-      <ul class="list" v-show="postionData.length > 0">
-        <li class="list-item" v-for="item in postionData" :key="item.position_id">
-          <span class="name">{{ item.position_name }}</span>
-          <span class="price" v-if="item.template_id">{{ item.template_name }}</span>
-          <span class="hint" v-else>无关联标准模板</span>
-        </li>
-      </ul>
+      <el-table class="select-table" :data="postionData" style="width: 100%;" v-show="postionData.length > 0">
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column prop="position_name" width="100" label="地址名称" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="user_name" width="80" label="执行人" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column label="执行时间" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <span>{{ scope.row.check_time | formatDate }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="关联标准" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <span class="price" v-if="scope.row.template_id">{{ scope.row.template_name }}</span>
+            <span class="hint" v-else>无</span>
+          </template>
+        </el-table-column>
+      </el-table>
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeClick">关 闭</el-button>
       </div>
@@ -158,7 +167,7 @@ export default{
             desc: desc,
             exaState: exaState
           }
-          this.postionData = itemData.pt_position
+          this.postionData = itemData.must_pt_position || []
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({

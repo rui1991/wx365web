@@ -1,17 +1,28 @@
 <template>
-  <el-dialog title="打卡详情" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-    <el-table class="select-table" :data="tableData" style="width: 100%" max-height="450">
-      <el-table-column type="index" width="50" label="序号"></el-table-column>
-      <el-table-column prop="times" label="时间"></el-table-column>
-      <el-table-column label="打卡结果">
-        <template slot-scope="scope">
-          <span v-if="parentType === 1">{{ scope.row.sucess_record }}</span>
-          <span v-else-if="parentType === 2">{{ scope.row.failed_record }}</span>
-          <span v-else-if="parentType === 3">{{ scope.row.abnormal_record }}</span>
-        </template>
-      </el-table-column>
-    </el-table>
-    <p style="font-size: 12px; color: red; line-height: 30px;" v-show="parentType === 3">*规定时间段内打卡次数超过10次为异常</p>
+  <el-dialog title="打卡详情" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog" class="fixedpost-rep">
+    <div
+      style="min-height: 120px;"
+      v-loading="loading"
+      element-loading-text="拼命加载中"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(255, 255, 255, 0.6)">
+      <el-table class="select-table" :data="tableData1" style="width: 100%" max-height="450" v-show="parentType === 1">
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column prop="times" label="时间"></el-table-column>
+        <el-table-column prop="user_name" label="当班人"></el-table-column>
+      </el-table>
+      <el-table class="select-table" :data="tableData2" style="width: 100%" max-height="450" v-show="parentType === 2">
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column prop="times" label="时间"></el-table-column>
+        <el-table-column prop="failed_record" label="打卡结果"></el-table-column>
+      </el-table>
+      <el-table class="select-table" :data="tableData3" style="width: 100%" max-height="450" v-show="parentType === 3">
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column prop="times" label="时间"></el-table-column>
+        <el-table-column prop="abnormal_record" label="打卡结果"></el-table-column>
+      </el-table>
+      <p style="font-size: 12px; color: red; line-height: 30px;" v-show="parentType === 3">*有感模式下固定岗在规定时间段内打卡次数超过10次为异常</p>
+    </div>
     <div slot="footer" class="dialog-footer">
       <el-button @click="closeClick">关 闭</el-button>
     </div>
@@ -24,7 +35,10 @@ export default{
   props: ['parentDialog', 'parentDate', 'parentPos', 'parentType'],
   data () {
     return {
-      tableData: []
+      loading: false,
+      tableData1: [],
+      tableData2: [],
+      tableData3: []
     }
   },
   created () {
@@ -40,15 +54,21 @@ export default{
     ])
   },
   methods: {
+    /*
+    * 参数说明：
+    *   parentType： 1.打卡成功   2.未打卡   3.打卡异常
+    * */
     // 初始化数据
     detInit () {
-      this.tableData = []
       const type = this.parentType
       if (type === 1) {
+        this.tableData1 = []
         this.getSucessDet()
       } else if (type === 2) {
+        this.tableData2 = []
         this.getFailedDet()
       } else if (type === 3) {
+        this.tableData3 = []
         this.getAbnormalDet()
       }
     },
@@ -62,13 +82,15 @@ export default{
         this_date: this.parentDate
       }
       params = this.$qs.stringify(params)
+      this.loading = true
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/v1.0/selSucessPermanent',
         data: params
       }).then((res) => {
+        this.loading = false
         if (res.data.result === 'Sucess') {
-          this.tableData = res.data.data1
+          this.tableData1 = res.data.data1
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -78,6 +100,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.loading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -95,14 +118,17 @@ export default{
         this_date: this.parentDate
       }
       params = this.$qs.stringify(params)
+      this.loading = true
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/v1.0/selFailedPermanent',
         data: params
       }).then((res) => {
+        this.loading = false
         if (res.data.result === 'Sucess') {
-          this.tableData = res.data.data1
+          this.tableData2 = res.data.data1
         } else {
+          this.loading = false
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
             showClose: true,
@@ -128,13 +154,15 @@ export default{
         this_date: this.parentDate
       }
       params = this.$qs.stringify(params)
+      this.loading = true
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/v1.0/selAbnormalPermanent',
         data: params
       }).then((res) => {
+        this.loading = false
         if (res.data.result === 'Sucess') {
-          this.tableData = res.data.data1
+          this.tableData3 = res.data.data1
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -144,6 +172,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.loading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -167,52 +196,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.fixedpost{
-  height: 100%;
-  .module-container{
-    height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-main{
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-      .search{
-        padding: 5px 0;
-        .search-input{
-          display: table;
-          width: 100%;
-          .item{
-            display: table-cell;
-            vertical-align: middle;
-            width: 280px;
-            font-size: 0;
-            span{
-              width: 70px;
-              display: inline-block;
-              line-height: 34px;
-              font-size: 14px;
-            }
-          }
-          .operate{
-            display: table-cell;
-            vertical-align: middle;
-            text-align: right;
-          }
-        }
-      }
-    }
-  }
-}
+
 </style>

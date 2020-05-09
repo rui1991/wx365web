@@ -83,6 +83,10 @@ export default{
         {
           label: '岗亭',
           value: 9
+        },
+        {
+          label: '设备机房',
+          value: 10
         }
       ],
       formData: {

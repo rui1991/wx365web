@@ -1,7 +1,7 @@
 <template>
-  <el-dialog title="日志图片" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+  <el-dialog title="图片" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
     <div style="text-align: center; overflow-x: hidden;">
-      <img :src="parentImgurl" height="380" alt="">
+      <img :src="item.imgUrl" v-for="item in parentImgurl" :key="item.id" height="380" style="margin: 5px;" alt="">
     </div>
     <div slot="footer" class="dialog-footer">
       <el-button @click="closeClick">关 闭</el-button>

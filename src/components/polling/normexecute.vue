@@ -39,7 +39,7 @@
                 v-model="nowSearch.date"
                 type="daterange"
                 value-format="yyyy-MM-dd"
-                :clearable="true"
+                :clearable="false"
                 :picker-options="pickerOptions"
                 range-separator="至"
                 start-placeholder="开始日期"
@@ -60,18 +60,14 @@
           </el-table-column>
           <el-table-column prop="position_name" label="地址名称" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="duty_name" label="所属任务" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column label="任务执行时间" :show-overflow-tooltip="true">
-            <template slot-scope="scope">
-              <span>{{ scope.row.start_time | formatDate }} ~ {{ scope.row.end_time | formatDate }}</span>
-            </template>
-          </el-table-column>
+          <el-table-column prop="ins_time" label="任务执行时间" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column label="执行标准" :show-overflow-tooltip="true">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row.os_id)">{{ scope.row.standard_name }}</a>
+              <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row.pt_id, scope.row.os_id)">{{ scope.row.standard_name }}</a>
             </template>
           </el-table-column>
-          <el-table-column prop="count" label="检查项数量" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column prop="sum" label="异常检查项" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="sdd_size" label="检查项数量" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="abnormal_size" label="异常项数量" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="ogz_name" label="执行部门" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column label="执行人">
             <template slot-scope="scope">
@@ -94,11 +90,20 @@
         </el-pagination>
       </el-main>
     </el-container>
+    <!-- 详情 -->
+    <det-module
+      :parentDialog="detDialog"
+      :parentPt="ptId"
+      :parentOs="osId"
+      @parentClose="detClose">
+    </det-module>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+// 引入详情组件
+import detModule from '@/components/polling/normexecute-det'
 export default{
   name: 'normexecute',
   data () {
@@ -125,14 +130,23 @@ export default{
       total: 0,
       nowPage: 1,
       limit: 10,
-      itemId: 0
+      ptId: 0,
+      osId: 0,
+      detDialog: false
     }
   },
   created () {
+    // 获取当天日期
+    const nowDate = this.$common.getNowDate('yyyy-mm-dd')
+    this.search.date = [nowDate, nowDate]
+    this.nowSearch.date = [nowDate, nowDate]
     // 获取列表数据
     this.getListData()
     // 获取部门
     this.getSectorOptions()
+  },
+  components: {
+    detModule
   },
   computed: {
     ...mapState('other', [
@@ -157,8 +171,8 @@ export default{
         position_name: this.search.site,
         ogz_id: this.search.sector,
         user_name: this.search.person,
-        start_date: date[0] || '',
-        end_date: date[1] || '',
+        start_date: date[0],
+        end_date: date[1],
         page: this.nowPage,
         limit1: this.limit
       }
@@ -237,8 +251,13 @@ export default{
       })
     },
     /* 详情 */
-    detClick (id) {
-      this.itemId = id
+    detClick (ptId, osId) {
+      this.ptId = ptId
+      this.osId = osId
+      this.detDialog = true
+    },
+    detClose () {
+      this.detDialog = false
     }
   }
 }

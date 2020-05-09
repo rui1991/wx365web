@@ -77,7 +77,7 @@
     <!-- 显示图片 -->
     <img-module
       :parentDialog="imgDialog"
-      :parentImgurl="imgUrl"
+      :parentImgurl="imgsUrl"
       @parentClose="imgClose">
     </img-module>
   </div>
@@ -108,7 +108,7 @@ export default{
         logData: []
       },
       imgDialog: false,
-      imgUrl: ''
+      imgsUrl: []
     }
   },
   components: {
@@ -216,7 +216,13 @@ export default{
     },
     // 查看图片
     checkImg (url) {
-      this.imgUrl = this.sysetApi() + '/showImage?state=10&filename=' + url
+      const imgUrl = this.sysetApi() + '/showImage?state=10&filename=' + url
+      this.imgsUrl = [
+        {
+          id: 1,
+          imgUrl: imgUrl
+        }
+      ]
       this.imgDialog = true
     },
     imgClose () {

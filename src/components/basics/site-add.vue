@@ -113,6 +113,10 @@ export default{
         {
           label: '岗亭',
           value: 9
+        },
+        {
+          label: '设备机房',
+          value: 10
         }
       ],
       typeOptions: [
@@ -167,6 +171,17 @@ export default{
     ])
   },
   methods: {
+    /*
+    * 参数说明：
+    *   parent_po_id：父级ID
+    *   parent_address: 上级名称
+    *   position_name：地址名称
+    *   area_type：区域类型
+    *   position_type：地址类型； 0：巡检地址  7：设备地址    6：固定岗位
+    *   position_mac：地址标签
+    *   instructions：备注
+    *   depth：层级（已取消，默认1即可）
+    * */
     addInit () {
       this.formData = {
         parentPath: this.parentName,

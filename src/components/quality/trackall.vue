@@ -140,6 +140,10 @@ export default{
         {
           label: '岗亭',
           value: 9
+        },
+        {
+          label: '设备机房',
+          value: 10
         }
       ],
       logData: [],
@@ -345,6 +349,9 @@ export default{
           break
         case 9:
           areaType = '岗亭'
+          break
+        case 10:
+          areaType = '设备机房'
           break
         default:
           areaType = ''
