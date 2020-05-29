@@ -77,6 +77,7 @@ export default{
         order: ''
       },
       whetherMore: false,
+      sectorId: 0,
       postionData: []
     }
   },
@@ -105,6 +106,7 @@ export default{
         order: ''
       }
       this.whetherMore = false
+      this.sectorId = 0
       this.postionData = []
       this.getDetails()
     },
@@ -128,7 +130,7 @@ export default{
           this.formData.name = itemData.plan_name
           // 所属项目
           this.formData.project = this.nowProname
-          // 操作角色
+          // 执行部门
           this.formData.sector = itemData.ogz_name || ''
           // 操作组
           this.formData.group = itemData.group_name || ''
@@ -215,6 +217,8 @@ export default{
             order = '固定顺序'
           }
           this.formData.order = order
+          // 部门ID
+          this.sectorId = itemData.ogz_id || 0
           // 点位
           let position = itemData.positions
           position = position.join(',')
@@ -240,7 +244,8 @@ export default{
     getPosData (ids) {
       let params = {
         project_id: this.parentPro,
-        position_ids: ids
+        position_ids: ids,
+        ogz_id: this.sectorId
       }
       params = this.$qs.stringify(params)
       this.$axios({

@@ -72,7 +72,7 @@ export default{
         if (res.data.result === 'Sucess') {
           // 组织树
           const orgTree = res.data.data1
-          const sectorData = this.initDisTree(orgTree)
+          const sectorData = this.recOrganTree(orgTree)
           this.treeData = sectorData
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
@@ -91,26 +91,16 @@ export default{
       })
     },
     // 处理树
-    initDisTree (treeData) {
-      treeData.forEach(item => {
-        if (item.organize_type !== 4) {
-          item.disabled = true
-        }
-        if (item.children) {
-          this.initRecTree(item.children)
-        }
-      })
-      return treeData
-    },
-    initRecTree (data) {
+    recOrganTree (data) {
       data.forEach(item => {
         if (item.organize_type !== 4) {
           item.disabled = true
         }
         if (item.children) {
-          this.initRecTree(item.children)
+          this.recOrganTree(item.children)
         }
       })
+      return data
     },
     // 选择
     checkChange (data, checked, self) {

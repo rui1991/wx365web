@@ -65,7 +65,7 @@ export default{
         if (res.data.result === 'Sucess') {
           const siteData = res.data.data1
           // 处理地址树
-          const treeData = this.initDisSiteTree(siteData)
+          const treeData = this.recSiteData(siteData)
           this.treeData = treeData
           // 标记选中
           this.$refs.myTree.setCheckedKeys(this.parentIds)
@@ -86,24 +86,7 @@ export default{
       })
     },
     // 初始化处理地址树
-    initDisSiteTree (siteData) {
-      siteData.forEach(item => {
-        if (item.mac) {
-          if (item.mac.length === 12) {
-            item.disabled = false
-          } else {
-            item.disabled = true
-          }
-        } else {
-          item.disabled = true
-        }
-        if (item.children) {
-          this.initRecSiteTree(item.children)
-        }
-      })
-      return siteData
-    },
-    initRecSiteTree (data) {
+    recSiteData (data) {
       data.forEach(item => {
         if (item.mac) {
           if (item.mac.length === 12) {
@@ -115,9 +98,10 @@ export default{
           item.disabled = true
         }
         if (item.children) {
-          this.initRecSiteTree(item.children)
+          this.recSiteData(item.children)
         }
       })
+      return data
     },
     // 确定
     confirmClick () {

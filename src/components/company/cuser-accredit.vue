@@ -50,7 +50,7 @@ export default{
       }
       setTimeout(() => {
         let treeData = JSON.parse(JSON.stringify(this.treeData))
-        let newNode = this.disDisTree(treeData, false)
+        let newNode = this.subDisTree(treeData, false)
         this.treeData = newNode
       }, 100)
     },
@@ -88,49 +88,36 @@ export default{
     // 选择组织树
     orgCheckChange (data, checked, self) {
       if (data.children) {
+        // 下级不可选
         let inNode = JSON.parse(JSON.stringify(data.children))
-        let node = this.disDisTree(inNode, checked)
+        let node = this.subDisTree(inNode, checked)
         data.children = node
         this.$refs.tree.updateKeyChildren(data.id, data)
+        // 清除下级选中状态
         if (checked) {
-          this.disCheTree(data.children)
+          this.clearCheTree(data.children)
         }
       }
     },
     // 下级不可选
-    disDisTree (treeData, b) {
-      treeData.forEach((item, index, array) => {
-        item.disabled = b
-        if (item.children) {
-          this.recDisTree(item.children, b)
-        }
-      })
-      return treeData
-    },
-    recDisTree (data, b) {
+    subDisTree (data, b) {
       data.forEach((item, index, array) => {
         item.disabled = b
         if (item.children) {
-          this.recDisTree(item.children, b)
+          this.subDisTree(item.children, b)
         }
       })
+      return data
     },
-    // 取消下级选中
-    disCheTree (treeData) {
-      treeData.forEach((item, index, array) => {
-        this.$refs.tree.setChecked(item.id, false)
-        if (item.children) {
-          this.recCheTree(item.children)
-        }
-      })
-    },
-    recCheTree (data) {
+    // 清除下级选中状态
+    clearCheTree (data) {
       data.forEach((item, index, array) => {
         this.$refs.tree.setChecked(item.id, false)
         if (item.children) {
-          this.recCheTree(item.children)
+          this.clearCheTree(item.children)
         }
       })
+      return data
     },
     // 确定
     confirmClick () {

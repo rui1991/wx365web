@@ -78,6 +78,13 @@ export default{
     ])
   },
   methods: {
+    /*
+    *  说明：
+    *     exetype: 1 执行人员（有感）    2 执行组（无感）
+    *     执行人员：1.必须是巡检地址；  2.可以是有感（mac地址8位）和无感（mac地址12位）
+    *     执行组：1.必须是巡检地址；   2.只能是无感（mac地址12位）
+    * */
+
     // 获取地址树
     getSiteTree () {
       let params = {
@@ -97,11 +104,11 @@ export default{
           const siteType = this.parentSite.exetype
           if (siteType === 1) {
             // 处理地址树
-            const siteTree = this.initDisPerson(siteData)
+            const siteTree = this.initRecPerson(siteData)
             this.siteTree = siteTree
           } else if (siteType === 2) {
             // 处理地址树
-            const siteTree = this.initDisGroup(siteData)
+            const siteTree = this.initRecGroup(siteData)
             this.siteTree = siteTree
           }
           // 获取选中信息
@@ -125,23 +132,6 @@ export default{
       })
     },
     /* 初始化执行人处理地址树 */
-    initDisPerson (siteData) {
-      siteData.forEach(item => {
-        if (item.id.indexOf('w') !== -1) {
-          item.disabled = false
-        } else {
-          if (item.mac && Number.parseInt(item.type) === 0) {
-            item.disabled = false
-          } else {
-            item.disabled = true
-          }
-        }
-        if (item.children) {
-          this.initRecPerson(item.children)
-        }
-      })
-      return siteData
-    },
     initRecPerson (data) {
       data.forEach(item => {
         if (item.id.indexOf('w') !== -1) {
@@ -157,29 +147,9 @@ export default{
           this.initRecPerson(item.children)
         }
       })
+      return data
     },
     /* 初始化执行组处理地址树 */
-    initDisGroup (siteData) {
-      siteData.forEach(item => {
-        if (item.id.indexOf('w') !== -1) {
-          item.disabled = false
-        } else {
-          if (Number.parseInt(item.type) === 0) {
-            if (item.mac.length === 12) {
-              item.disabled = false
-            } else {
-              item.disabled = true
-            }
-          } else {
-            item.disabled = true
-          }
-        }
-        if (item.children) {
-          this.initRecGroup(item.children)
-        }
-      })
-      return siteData
-    },
     initRecGroup (data) {
       data.forEach(item => {
         if (item.id.indexOf('w') !== -1) {
@@ -199,6 +169,7 @@ export default{
           this.initRecGroup(item.children)
         }
       })
+      return data
     },
     // 获取选中项
     handleSelectionChange (data) {
@@ -289,20 +260,8 @@ export default{
     },
     // 操作处理地址树
     disposeSiteTree () {
-      let ids = this.operationIds
       let siteData = JSON.parse(JSON.stringify(this.siteTree))
-      siteData.forEach(item => {
-        for (let i = 0; i < ids.length; i++) {
-          if (item.id == ids[i]) {
-            item.disabled = !item.disabled
-            break
-          }
-        }
-        if (item.children) {
-          this.recursionSiteTree(item.children)
-        }
-      })
-      this.siteTree = siteData
+      this.siteTree = this.recursionSiteTree(siteData)
     },
     recursionSiteTree (data) {
       let ids = this.operationIds
@@ -317,6 +276,7 @@ export default{
           this.recursionSiteTree(item.children)
         }
       })
+      return data
     },
     // 上一步
     backClick () {
@@ -378,7 +338,7 @@ export default{
     .table{
       display: table-cell;
       vertical-align: top;
-      width: 50%;
+      width: 30%;
     }
   }
   .hint{

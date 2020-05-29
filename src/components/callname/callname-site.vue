@@ -66,7 +66,7 @@ export default{
         if (res.data.result === 'Sucess') {
           const siteData = res.data.data1
           // 处理地址树
-          const treeData = this.initDisTree(siteData)
+          const treeData = this.recSiteData(siteData)
           this.treeData = treeData
           this.treeState = true
           let ids = this.parentIds
@@ -90,28 +90,17 @@ export default{
       })
     },
     // 初始化处理地址树
-    initDisTree (siteData) {
-      siteData.forEach(item => {
-        let id = item.id
-        if (id.indexOf('w') !== -1) {
-          item.disabled = true
-        }
-        if (item.children) {
-          this.initRecTree(item.children)
-        }
-      })
-      return siteData
-    },
-    initRecTree (data) {
+    recSiteData (data) {
       data.forEach(item => {
         let id = item.id
         if (id.indexOf('w') !== -1) {
           item.disabled = true
         }
         if (item.children) {
-          this.initRecTree(item.children)
+          this.recSiteData(item.children)
         }
       })
+      return data
     },
     // 确定
     confirmClick () {

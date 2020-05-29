@@ -39,7 +39,7 @@
         <el-form-item label="表达值" prop="valueText" v-else>
           <el-input v-model.trim="formData.valueText" disabled auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="默认值" prop="defValue" v-show="wayType === 1">
+        <el-form-item label="默认值" prop="defValue" v-if="wayType === 1">
           <el-select v-model="formData.defValue" clearable placeholder="请选择默认值">
             <el-option
               v-for="item in valueOptions"
@@ -49,7 +49,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="异常值" prop="abnValue" v-show="wayType === 1">
+        <el-form-item label="异常值" prop="abnValue" v-if="wayType === 1">
           <el-select
             v-model="formData.abnValue"
             multiple
@@ -120,6 +120,9 @@ export default{
         ],
         valueText: [
           { required: true, message: '请输入表达值', trigger: 'blur' }
+        ],
+        abnValue: [
+          { required: true, message: '请选择异常值', trigger: 'change' }
         ]
       },
       formData: {

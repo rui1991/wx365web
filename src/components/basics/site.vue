@@ -12,8 +12,8 @@
           <el-breadcrumb-item>地址管理</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
-      <el-container class="module-content">
-        <el-aside width="280px" class="module-aside">
+      <el-main class="module-main">
+        <div class="module-aside">
           <el-tree
             :data="siteTree"
             ref="siteTree"
@@ -25,8 +25,8 @@
             @check-change="siteCheckChange"
             :props="defaultProps">
           </el-tree>
-        </el-aside>
-        <el-main class="module-main">
+        </div>
+        <div class="module-content">
           <div class="search">
             <div class="search-input" style="margin-bottom: 10px;">
               <div class="item">
@@ -97,8 +97,8 @@
             @current-change="pageChang"
             :total="total">
           </el-pagination>
-        </el-main>
-      </el-container>
+        </div>
+      </el-main>
     </el-container>
     <!-- 新增 -->
     <add-module
@@ -233,6 +233,23 @@ export default{
     ])
   },
   methods: {
+    /*
+    * 参数说明：
+    *     树参数：
+    *         id: 地址ID;   位置id开头加 "w" 用于区分位置和地址
+    *         name: 地址名称
+    *         mac: 地址mac;   有感: 8位；   无感：12位
+    *         type: 地址类型； 0：巡检地址  7：设备地址    6：固定岗位
+    *         depth：层级
+    *     列表参数：
+    *         position_id: 地址ID
+    *         position_name: 地址名称
+    *         position_mac： 地址标签
+    *         node_btpw： 设备电量
+    *         area_type：区域类型
+    *         parent_address：父级
+    * */
+
     // 获取地址树
     getSiteTree (b = false) {
       let params = {
@@ -566,27 +583,28 @@ export default{
         background: #ffffff;
       }
     }
-    .module-content{
-      height: 100%;
-      padding-top: 10px;
-      padding-right: 0;
-      padding-bottom: 10px;
-      padding-left: 10px;
+    .module-main{
+      display: flex;
+      padding: 10px;
       margin-left: 20px;
       margin-right: 20px;
       background: #ffffff;
       .module-aside{
         height: 100%;
+        width: 280px;
         padding: 5px;
         border-radius: 6px;
         border: 1px solid #cccccc;
+        overflow: auto;
       }
-      .module-main{
+      .module-content{
+        flex-grow: 1;
+        height: 100%;
         padding-top: 0;
         padding-right: 10px;
         padding-bottom: 0;
         padding-left: 20px;
-        overflow: scroll;
+        overflow: auto;
         .search{
           padding-top: 5px;
           padding-bottom: 5px;

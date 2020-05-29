@@ -391,7 +391,7 @@ export default{
           const orgTree = loginData.trees
           this.setOrganTree(orgTree)
           // 处理部门
-          let orgData = this.initDisSecTree(JSON.parse(JSON.stringify(orgTree)))
+          let orgData = this.recOrganData(JSON.parse(JSON.stringify(orgTree)))
           this.setOrganData(orgData)
           // 路由跳转
           this.$router.push({ path: '/main/home' })
@@ -412,26 +412,16 @@ export default{
       })
     },
     // 初始化处理部门
-    initDisSecTree (treeData) {
-      treeData.forEach((item, index, array) => {
-        if (item.organize_type === 4) {
-          item.disabled = true
-        }
-        if (item.children) {
-          this.initRecSecTree(item.children)
-        }
-      })
-      return treeData
-    },
-    initRecSecTree (data) {
+    recOrganData (data) {
       data.forEach((item, index, array) => {
         if (item.organize_type === 4) {
           item.disabled = true
         }
         if (item.children) {
-          this.initRecSecTree(item.children)
+          this.recOrganData(item.children)
         }
       })
+      return data
     }
   },
   watch: {

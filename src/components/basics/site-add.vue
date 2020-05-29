@@ -179,6 +179,7 @@ export default{
     *   area_type：区域类型
     *   position_type：地址类型； 0：巡检地址  7：设备地址    6：固定岗位
     *   position_mac：地址标签
+    *   os_ids：关联标准ID（可关联多个标准）
     *   instructions：备注
     *   depth：层级（已取消，默认1即可）
     * */

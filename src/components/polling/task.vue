@@ -110,7 +110,7 @@
           <el-table-column label="任务进度">
             <template slot-scope="scope">
               <span v-if="scope.row.continue_state === 1">未领取</span>
-              <span v-else>已完成{{ scope.row.continue_process | formatPercent }}</span>
+              <span v-else>已进行{{ scope.row.continue_process | formatPercent }}</span>
             </template>
           </el-table-column>
           <el-table-column label="审批状态">
