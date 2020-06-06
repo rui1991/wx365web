@@ -458,6 +458,7 @@ export default{
 <style lang="less">
 .message{
   height: 100%;
+  padding-bottom: 20px;
   .module-container{
     height: 100%;
     padding: 0;

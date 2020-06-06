@@ -559,7 +559,6 @@ export default{
         padding-top: 0;
         padding-left: 0;
         padding-right: 0;
-        padding-bottom: 20px;
         background: #f0f3f4;
       }
     }

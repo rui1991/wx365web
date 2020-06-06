@@ -21,7 +21,17 @@ const Findpwd = () => import(/* webpackChunkName: "group-findpwd" */ '@/componen
 const Main = () => import(/* webpackChunkName: "group-main" */ '@/components/main')
 
 // 首页
-const Home = () => import(/* webpackChunkName: "group-main" */ '@/components/profile/home')
+const Home = () => import(/* webpackChunkName: "group-home" */ '@/components/profile/home')
+// 首页概况
+const HomeSurvey = () => import(/* webpackChunkName: "group-home" */ '@/components/profile/home-survey')
+// 首页巡检巡查任务
+const HomeTask = () => import(/* webpackChunkName: "group-home" */ '@/components/profile/home-task')
+// 首页品质监控（人员/位置）
+const HomeQuality = () => import(/* webpackChunkName: "group-home" */ '@/components/profile/home-quality')
+// 首页点名管理
+const HomeCallname = () => import(/* webpackChunkName: "group-home" */ '@/components/profile/home-callname')
+// 首页固定岗管理
+const HomeFixation = () => import(/* webpackChunkName: "group-home" */ '@/components/profile/home-fixation')
 // 消息
 const Message = () => import(/* webpackChunkName: "group-message" */ '@/components/profile/message')
 // 日志管理
@@ -232,6 +242,46 @@ export default new Router({
           component: Home,
           meta: {
             keepAlive: true
+          }
+        },
+        {
+          path: 'home-survey',
+          name: 'homeSurvey',
+          component: HomeSurvey,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'home-task',
+          name: 'homeTask',
+          component: HomeTask,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'home-quality',
+          name: 'homeQuality',
+          component: HomeQuality,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'home-callname',
+          name: 'homeCallname',
+          component: HomeCallname,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'home-fixation',
+          name: 'homeFixation',
+          component: HomeFixation,
+          meta: {
+            keepAlive: false
           }
         },
         {

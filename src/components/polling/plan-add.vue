@@ -49,6 +49,28 @@ import planBasics from '@/components/polling/plan-basics'
 import planSite from '@/components/polling/plan-site'
 // 引入顺序调整
 import planOrder from '@/components/polling/plan-order'
+
+/*
+* 参数说明：
+*   company_id：企业ID
+*   user_id：用户ID
+*   projectN_id：项目ID
+*   plan_name：计划名称
+*   ogz_id：部门ID，不需选择时可传''
+*   group: 执行组ID，不需要选择时可传0
+*   start_date：开始日期
+*   end_date：结束日期
+*   plan_model：任务模式：1.单次任务   0.循环任务
+*   frequency：频率，不需选择时可传''
+*   unit：单位   天、周、月、年
+*   frequency1：频次
+*   cycle：周期   字符串之间用"/"隔开
+*   times：时间段  字符串之间用"/"隔开
+*   userids：执行人员ID，字符串之间用","隔开，每个执行人员不选默认id补充0，有选择则为用户ID
+*   po_desc：巡检顺序   0.随机顺序   1.固定顺序
+*   position_ids：巡检地址，用","隔开
+* */
+
 export default{
   name: 'planAdd',
   data () {
@@ -97,27 +119,6 @@ export default{
     ])
   },
   methods: {
-    /*
-    * 参数说明：
-    *   company_id：企业ID
-    *   user_id：用户ID
-    *   projectN_id：项目ID
-    *   plan_name：计划名称
-    *   ogz_id：部门ID，不需选择时可传''
-    *   group: 执行组ID，不需要选择时可传0
-    *   start_date：开始日期
-    *   end_date：结束日期
-    *   plan_model：任务模式：1.单次任务   0.循环任务
-    *   frequency：频率，不需选择时可传''
-    *   unit：单位   天、周、月、年
-    *   frequency1：频次
-    *   cycle：周期   字符串之间用"/"隔开
-    *   times：时间段  字符串之间用"/"隔开
-    *   userids：执行人员ID，字符串之间用","隔开，每个执行人员不选默认id补充0，有选择则为用户ID
-    *   po_desc：巡检顺序   0.随机顺序   1.固定顺序
-    *   position_ids：巡检地址，用","隔开
-    * */
-
     ...mapActions('other', [
       'setProDisabled'
     ]),
@@ -282,6 +283,7 @@ export default{
 <style lang="less" scoped>
 .plan-add{
   height: 100%;
+  padding-bottom: 20px;
   .module-container{
     height: 100%;
     padding: 0;

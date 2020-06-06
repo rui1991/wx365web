@@ -1,7 +1,7 @@
 // 保留小数
 const formatNum = (num, n = '') => {
   if (!num) return 0
-  let value = Number(num)
+  let value = Number.parseInt(num)
   if (n) {
     let square = Math.pow(10, n)
     return Math.round(value * square) / Math.pow(10, n)
@@ -15,19 +15,15 @@ const formatInteger = (num) => {
   if (!num) {
     return 0
   }
-  let value = Number(num)
+  let value = Number.parseFloat(num)
   return Math.round(value)
 }
 
 // 百分比
-const formatPercent = (num, n = '') => {
-  let value = Number(num) || 0
-  if (n) {
-    let square = Math.pow(10, n)
-    return Math.round(value * square) / Math.pow(10, n - 2) + '%'
-  } else {
-    return Math.round(value * 100) + '%'
-  }
+const formatPercent = (num, n = 0) => {
+  let value = Number.parseFloat(num) || 0
+  let square = Math.pow(10, n + 2)
+  return Math.round(value * square) / Math.pow(10, n) + '%'
 }
 
 // 格式化时间

@@ -565,6 +565,7 @@ export default{
 <style lang="less" scoped>
 .video-setting{
   height: 100%;
+  padding-bottom: 20px;
   .module-container{
     height: 100%;
     padding: 0;

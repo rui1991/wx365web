@@ -124,7 +124,7 @@ export default{
   },
   methods: {
     /*
-    *  parentModType参数说明：
+    * parentModType参数说明：
     *  1: 新增类型
     *  2：新增企业
     *  3：设置（企业、分公司、模块配置）
@@ -133,6 +133,13 @@ export default{
     *  3-1：设置企业
     *  3-2：设置分公司
     *  3-3：模块配置
+    *
+    * organize_type参数说明：
+    *   0：黑卡
+    *   1：企业
+    *   2：分公司
+    *   3：项目
+    *   4：部门
     * */
     // 获取机构树
     getOrganTree (b = false) {
@@ -263,6 +270,7 @@ export default{
 <style lang="less" scoped>
   .organ{
     height: 100%;
+    padding-bottom: 20px;
     .module-container{
       height: 100%;
       padding: 0;

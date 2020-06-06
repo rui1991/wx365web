@@ -69,20 +69,20 @@ Vue.prototype.$common = common
 // Vue.prototype.loraApi = () => 'http://szydak.eicp.net:8099'
 // Vue.prototype.deviceApi = () => 'http://szydak.eicp.net:8885'
 
-// Vue.prototype.loraApi = () => '/apiUrl'
-
-// Vue.prototype.baseUrl = () => 'http://192.168.1.199:8080'
-// Vue.prototype.sysetApi = () => 'http://192.168.1.199:8080/ezx_syset'
+Vue.prototype.baseUrl = () => 'http://192.168.1.199:82'
+Vue.prototype.sysetApi = () => 'http://192.168.1.199:82/ezx_syset'
 // Vue.prototype.reportApi = () => 'http://192.168.1.199:8089'
+Vue.prototype.loraApi = () => 'http://192.168.1.199:8099'
+Vue.prototype.deviceApi = () => 'http://192.168.1.199:8885'
 
-// Vue.prototype.deviceApi = () => 'http://192.168.1.177:8885'
+Vue.prototype.reportApi = () => '/apiUrl'
 
-Vue.prototype.baseUrl = () => 'http://www.allsps.com'
-Vue.prototype.sysetApi = () => 'http://www.allsps.com/ezx_syset'
-Vue.prototype.reportApi = () => 'http://www.allsps.com:8089'
-Vue.prototype.loraApi = () => 'http://www.bczdd.com:8099'
-Vue.prototype.deviceApi = () => 'http://www.bczdd.com:8885'
-Vue.prototype.videoApi = () => 'http://www.allsps.com:8083'
+// Vue.prototype.baseUrl = () => 'http://www.allsps.com'
+// Vue.prototype.sysetApi = () => 'http://www.allsps.com/ezx_syset'
+// Vue.prototype.reportApi = () => 'http://www.allsps.com:8089'
+// Vue.prototype.loraApi = () => 'http://www.bczdd.com:8099'
+// Vue.prototype.deviceApi = () => 'http://www.bczdd.com:8885'
+// Vue.prototype.videoApi = () => 'http://www.allsps.com:8083'
 
 Vue.config.productionTip = false
 

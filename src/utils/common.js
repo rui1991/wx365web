@@ -19,6 +19,26 @@ const ruleMac = str => {
   return mac
 }
 
+// 保留百分比
+const retainPercent = (num, n = 0) => {
+  let value = Number(num) || 0
+  let square = Math.pow(10, n + 2)
+  return Math.round(value * square) / Math.pow(10, n) + '%'
+}
+
+// 计算百分比
+const countPercent = (seed, mother, n = 0) => {
+  // seed : 被除数    mother： 除数     n: 保留几位小数
+  let dividend = Number.parseFloat(seed) || 0
+  let divisor = Number.parseFloat(mother) || 0
+  if (divisor === 0) {
+    return '0%'
+  }
+  let consult = dividend / divisor
+  let square = Math.pow(10, n + 2)
+  return Math.round(consult * square) / Math.pow(10, n) + '%'
+}
+
 // 转码
 const symbolEscape = content => {
   return content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;')
@@ -412,6 +432,8 @@ export default {
   trim: trim,
   checkPhone: checkPhone,
   ruleMac: ruleMac,
+  retainPercent: retainPercent,
+  countPercent: countPercent,
   symbolEscape: symbolEscape,
   symbolParse: symbolParse,
   formatNum: formatNum,

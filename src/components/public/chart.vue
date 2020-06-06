@@ -7,7 +7,7 @@ export default{
   props: ['parOption', 'id', 'domWidth'],
   data () {
     return {
-      chart: ''
+      chart: null
     }
   },
   created () {

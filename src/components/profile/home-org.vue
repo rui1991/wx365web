@@ -1,14 +1,14 @@
 <template>
   <el-dialog title="选择组织机构" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
     <el-tree
-      :data="orgData"
+      :data="orgTree"
       ref="tree"
       show-checkbox
       default-expand-all
       check-strictly
+      check-on-click-node
       node-key="id"
       @check-change="orgCheckChange"
-      @node-click="orgNodeClick"
       :props="defaultProps">
     </el-tree>
     <div slot="footer" class="dialog-footer">
@@ -21,7 +21,7 @@
 <script>
 import { mapState } from 'vuex'
 export default{
-  props: ['parentDialog', 'parentId', 'parentName'],
+  props: ['parentDialog', 'parentId'],
   data () {
     return {
       defaultProps: {
@@ -29,7 +29,6 @@ export default{
         label: 'name'
       },
       organizeId: 0,
-      organizeName: '',
       disabled: true
     }
   },
@@ -38,14 +37,13 @@ export default{
   },
   computed: {
     ...mapState('other', [
-      'orgData'
+      'orgTree'
     ])
   },
   methods: {
     // 初始化数据
     orgInit () {
       this.organizeId = this.parentId
-      this.organizeName = this.parentName
       setTimeout(() => {
         this.$refs.tree.setCheckedKeys([this.organizeId])
       }, 100)
@@ -56,27 +54,35 @@ export default{
         if (this.organizeId === data.id) return
         this.$refs.tree.setCheckedKeys([data.id])
         this.organizeId = data.id
-        this.organizeName = data.name
       } else {
         if (this.organizeId === data.id) {
           this.$refs.tree.setCheckedKeys([data.id])
         }
       }
     },
-    orgNodeClick (data, node, self) {
-      if (data.disabled) return
-      if (node.checked) return
-      this.$refs.tree.setCheckedKeys([data.id])
-      this.organizeId = data.id
-      this.organizeName = data.name
-    },
     // 确定
     confirmClick () {
-      const obj = {
-        id: this.organizeId,
-        name: this.organizeName
+      const checkNodes = this.$refs.tree.getCheckedNodes()
+      if (checkNodes.length === 0) {
+        this.$message({
+          showClose: true,
+          message: '请选择组织机构！',
+          type: 'warning'
+        })
+      } else {
+        const orgNode = checkNodes[0]
+        const id = orgNode.id
+        const name = orgNode.name
+        const type = orgNode.organize_type
+        const baseId = orgNode.base_id
+        const obj = {
+          id: id,
+          name: name,
+          type: type,
+          baseId: baseId
+        }
+        this.$emit('parentUpdata', obj)
       }
-      this.$emit('parentUpdata', obj)
     },
     // 取消
     cancelClick () {

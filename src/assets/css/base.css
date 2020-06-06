@@ -98,6 +98,9 @@ a:hover {
   background: #c9302c;
   text-decoration: none;
 }
+.green{
+  color: #13CE66;
+}
 
 /* 滚动条样式 */
 ::-webkit-scrollbar/*整体部分*/
