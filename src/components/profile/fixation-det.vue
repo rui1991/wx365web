@@ -1,5 +1,14 @@
 <template>
-  <el-dialog :title="modTitle" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+  <el-dialog
+    :title="modTitle"
+    :visible.sync="parentDialog"
+    :show-close="false"
+    :close-on-click-modal="false"
+    custom-class="medium-dialog"
+    v-loading="detLoading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.6)">
     <div class="list">
       <div class="item" v-for="item in listData" :key="item.date">
         <p class="item-title blue">{{ item.date }}</p>
@@ -26,7 +35,8 @@ export default{
   data () {
     return {
       modTitle: '',
-      listData: []
+      listData: [],
+      detLoading: false
     }
   },
   created () {
@@ -53,11 +63,13 @@ export default{
         type: this.parentNum
       }
       params = this.$qs.stringify(params)
+      this.detLoading = true
       this.$axios({
         method: 'post',
         url: this.reportApi() + '/proOperateDetailsPermanentRecordSucessMes',
         data: params
       }).then((res) => {
+        this.detLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1 || []
           let listData = []
@@ -77,6 +89,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.detLoading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -91,11 +104,13 @@ export default{
         type: this.parentNum
       }
       params = this.$qs.stringify(params)
+      this.detLoading = true
       this.$axios({
         method: 'post',
         url: this.reportApi() + '/proOperateDetailsPermanentNotRecordMes',
         data: params
       }).then((res) => {
+        this.detLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1 || []
           let listData = []
@@ -115,6 +130,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.detLoading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -129,11 +145,13 @@ export default{
         type: this.parentNum
       }
       params = this.$qs.stringify(params)
+      this.detLoading = true
       this.$axios({
         method: 'post',
         url: this.reportApi() + '/proOperateDetailsPermanentRecordAbnormalMes',
         data: params
       }).then((res) => {
+        this.detLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1 || []
           let listData = []
@@ -153,6 +171,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.detLoading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',

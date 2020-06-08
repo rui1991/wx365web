@@ -87,6 +87,9 @@ export default{
     },
     // 选择组织树
     orgCheckChange (data, checked, self) {
+      if (data.disabled) {
+        return
+      }
       if (data.children) {
         // 下级不可选
         let inNode = JSON.parse(JSON.stringify(data.children))
@@ -123,9 +126,7 @@ export default{
     confirmClick () {
       // 获取选中节点
       const nodesData = this.$refs.tree.getCheckedNodes()
-      // 获取选中id
-      const keysData = this.$refs.tree.getCheckedKeys()
-      if (keysData.length === 0) {
+      if (nodesData.length === 0) {
         this.$message({
           showClose: true,
           message: '请选择授权范围！',

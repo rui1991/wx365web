@@ -75,7 +75,7 @@ Vue.prototype.sysetApi = () => 'http://192.168.1.199:82/ezx_syset'
 Vue.prototype.loraApi = () => 'http://192.168.1.199:8099'
 Vue.prototype.deviceApi = () => 'http://192.168.1.199:8885'
 
-Vue.prototype.reportApi = () => '/apiUrl'
+Vue.prototype.reportApi = () => '/api'
 
 // Vue.prototype.baseUrl = () => 'http://www.allsps.com'
 // Vue.prototype.sysetApi = () => 'http://www.allsps.com/ezx_syset'

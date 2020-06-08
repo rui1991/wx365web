@@ -1,7 +1,7 @@
 <template>
   <el-dialog title="选择组织机构" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
     <el-tree
-      :data="orgTree"
+      :data="orgData"
       ref="tree"
       show-checkbox
       default-expand-all
@@ -24,6 +24,7 @@ export default{
   props: ['parentDialog', 'parentId'],
   data () {
     return {
+      orgData: [],
       defaultProps: {
         children: 'children',
         label: 'name'
@@ -39,6 +40,13 @@ export default{
     ...mapState('other', [
       'orgTree'
     ])
+  },
+  mounted () {
+    if (this.orgTree[0].organize_type === 0) {
+      this.orgData = this.orgTree[0].children
+    } else {
+      this.orgData = this.orgTree
+    }
   },
   methods: {
     // 初始化数据

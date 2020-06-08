@@ -482,17 +482,22 @@ export default{
       this.domWidth = domWidth
     }
     // 默认初始化显示最高权限
-    const orgNode = this.orgTree[0]
+    let orgNode = []
+    if (this.orgTree[0].organize_type === 0) {
+      orgNode = this.orgTree[0].children[0]
+    } else {
+      orgNode = this.orgTree[0]
+    }
     this.orgId = orgNode.id
     this.orgName = orgNode.name
     this.baseId = orgNode.base_id
     const orgType = orgNode.organize_type
     switch (orgType) {
-      case 0:
-        this.switchType = 1
-        this.pandectTitle = '企业/分公司信息'
-        this.getCompanyData()
-        break
+      // case 0:
+      //   this.switchType = 1
+      //   this.pandectTitle = '企业/分公司信息'
+      //   this.getCompanyData()
+      //   break
       case 1:
         this.switchType = 1
         this.pandectTitle = '企业/分公司信息'

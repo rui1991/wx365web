@@ -16,7 +16,12 @@
         <div class="search">
           <span>项目：{{ projectName }}</span>
         </div>
-        <div class="pandect">
+        <div
+          class="pandect"
+          v-loading="generalLoading"
+          element-loading-text="拼命加载中"
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(0, 0, 0, 0.6)">
           <div class="pandect-head">
             <h3 class="title">
               <span class="chunk"></span>
@@ -53,7 +58,13 @@
         <div class="graph">
           <el-row :gutter="10">
             <el-col :span=clockTrendSpan>
-              <div class="graph-item" v-resize="clockTrendRedraw">
+              <div
+                class="graph-item"
+                v-resize="clockTrendRedraw"
+                v-loading="clockTrendLoading"
+                element-loading-text="拼命加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.6)">
                 <div class="item-head">
                   <div class="title">
                     <span class="chunk"></span>
@@ -120,6 +131,7 @@ export default{
           label: '近一个月'
         }
       ],
+      generalLoading: false,
       generalType: 1,
       generalData: {
         allNum: 0,
@@ -137,6 +149,7 @@ export default{
           label: '近一个月'
         }
       ],
+      clockTrendLoading: false,
       clockTrendType: 7,
       clockTrendOption: {
         tooltip: {
@@ -318,11 +331,13 @@ export default{
         type: n
       }
       params = this.$qs.stringify(params)
+      this.generalLoading = true
       this.$axios({
         method: 'post',
         url: this.reportApi() + '/ogzFixedPostDetailsBaseMes',
         data: params
       }).then((res) => {
+        this.generalLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.fpBaseMes
           let generalData = {
@@ -351,6 +366,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.generalLoading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -384,11 +400,13 @@ export default{
         type: n
       }
       params = this.$qs.stringify(params)
+      this.clockTrendLoading = true
       this.$axios({
         method: 'post',
         url: this.reportApi() + '/ogzFixedPostDetailsRecordSizeMes',
         data: params
       }).then((res) => {
+        this.clockTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.fpRecordSizeTrend || []
           let clockTrendData = {
@@ -431,6 +449,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.clockTrendLoading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',

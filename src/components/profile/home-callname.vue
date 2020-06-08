@@ -27,7 +27,12 @@
         <div class="search" v-if="switchType === 3">
           <span>部门：{{ sectorName }}</span>
         </div>
-        <div class="pandect">
+        <div
+          class="pandect"
+          v-loading="generalLoading"
+          element-loading-text="拼命加载中"
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(0, 0, 0, 0.6)">
           <div class="pandect-head">
             <h3 class="title">
               <span class="chunk"></span>
@@ -64,7 +69,13 @@
         <div class="graph">
           <el-row :gutter="10">
             <el-col :span=perTrendSpan>
-              <div class="graph-item" v-resize="perTrendRedraw">
+              <div
+                class="graph-item"
+                v-resize="perTrendRedraw"
+                v-loading="perTrendLoading"
+                element-loading-text="拼命加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.6)">
                 <div class="item-head">
                   <div class="title">
                     <span class="chunk"></span>
@@ -85,7 +96,13 @@
               </div>
             </el-col>
             <el-col :span=clockTrendSpan>
-              <div class="graph-item" v-resize="clockTrendRedraw">
+              <div
+                class="graph-item"
+                v-resize="clockTrendRedraw"
+                v-loading="clockTrendLoading"
+                element-loading-text="拼命加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.6)">
                 <div class="item-head">
                   <div class="title">
                     <span class="chunk"></span>
@@ -106,7 +123,12 @@
               </div>
             </el-col>
             <el-col :span=12>
-              <div class="graph-item">
+              <div
+                class="graph-item"
+                v-loading="sucRankingLoading"
+                element-loading-text="拼命加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.6)">
                 <div class="item-head">
                   <div class="title">
                     <span class="chunk"></span>
@@ -198,6 +220,7 @@ export default{
           label: '近一个月'
         }
       ],
+      generalLoading: false,
       generalType: 1,
       generalData: {
         allNum: 0,
@@ -215,6 +238,7 @@ export default{
           label: '近一个月'
         }
       ],
+      perTrendLoading: false,
       perTrendType: 7,
       perTrendOption: {
         tooltip: {
@@ -244,6 +268,7 @@ export default{
         },
         series: []
       },
+      clockTrendLoading: false,
       clockTrendType: 7,
       clockTrendOption: {
         tooltip: {
@@ -273,6 +298,7 @@ export default{
         },
         series: []
       },
+      sucRankingLoading: false,
       sucRankingData: [],
       sucRankingType: 7,
       nowRankingData: [],
@@ -575,11 +601,13 @@ export default{
         type: n
       }
       params = this.$qs.stringify(params)
+      this.generalLoading = true
       this.$axios({
         method: 'post',
         url: this.reportApi() + '/proRollCallDetailsBaseMes',
         data: params
       }).then((res) => {
+        this.generalLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.rcBaseMes
           const generalAllNum = resData.rollcallUserSize || 0
@@ -611,6 +639,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.generalLoading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -624,11 +653,13 @@ export default{
         type: n
       }
       params = this.$qs.stringify(params)
+      this.generalLoading = true
       this.$axios({
         method: 'post',
         url: this.reportApi() + '/ogzRollCallDetailsBaseMes',
         data: params
       }).then((res) => {
+        this.generalLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.rcBaseMes
           const generalAllNum = resData.rollcallUserSize || 0
@@ -660,6 +691,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.generalLoading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -701,11 +733,13 @@ export default{
         type: n
       }
       params = this.$qs.stringify(params)
+      this.perTrendLoading = true
       this.$axios({
         method: 'post',
         url: this.reportApi() + '/proRollCallDetailsUserSizeMes',
         data: params
       }).then((res) => {
+        this.perTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.rcUserSizeTrend || []
           let perTrendData = {
@@ -748,6 +782,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.perTrendLoading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -761,11 +796,13 @@ export default{
         type: n
       }
       params = this.$qs.stringify(params)
+      this.perTrendLoading = true
       this.$axios({
         method: 'post',
         url: this.reportApi() + '/ogzRollCallDetailsUserSizeMes',
         data: params
       }).then((res) => {
+        this.perTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.rcUserSizeTrend || []
           let perTrendData = {
@@ -808,6 +845,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.perTrendLoading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -853,11 +891,13 @@ export default{
         type: n
       }
       params = this.$qs.stringify(params)
+      this.clockTrendLoading = true
       this.$axios({
         method: 'post',
         url: this.reportApi() + '/proRollCallDetailsUserRecordRateMes',
         data: params
       }).then((res) => {
+        this.clockTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.userRcRateTrend || []
           let clockTrendData = {
@@ -900,6 +940,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.clockTrendLoading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -913,11 +954,13 @@ export default{
         type: n
       }
       params = this.$qs.stringify(params)
+      this.clockTrendLoading = true
       this.$axios({
         method: 'post',
         url: this.reportApi() + '/ogzRollCallDetailsUserRecordRateMes',
         data: params
       }).then((res) => {
+        this.clockTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.userRcRateTrend || []
           let clockTrendData = {
@@ -960,6 +1003,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.clockTrendLoading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -1017,11 +1061,13 @@ export default{
         type: n
       }
       params = this.$qs.stringify(params)
+      this.sucRankingLoading = true
       this.$axios({
         method: 'post',
         url: this.reportApi() + '/proRollCallDetailsSucessDatesMes',
         data: params
       }).then((res) => {
+        this.sucRankingLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.userRcSucessDatesRanking || []
           this.sucRankingData = resData
@@ -1048,6 +1094,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.sucRankingLoading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -1061,11 +1108,13 @@ export default{
         type: n
       }
       params = this.$qs.stringify(params)
+      this.sucRankingLoading = true
       this.$axios({
         method: 'post',
         url: this.reportApi() + '/ogzRollCallDetailsSucessDatesMes',
         data: params
       }).then((res) => {
+        this.sucRankingLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.userRcSucessDatesRanking || []
           this.sucRankingData = resData
@@ -1092,6 +1141,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.sucRankingLoading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
