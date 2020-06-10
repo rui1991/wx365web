@@ -270,13 +270,14 @@ export default{
       }
       this.generalData = generalData
       // 固定岗打卡次数趋势
+      const clockTrendColors = ['#44bd8a', '#d8d8d8', '#fa6b67', '#62a8e8']
       let clockTrendData = {
         legendData: [],
         xAxisData: [],
         seriesData: []
       }
       const clockTrendArg = data.fpRecordSizeTrend || []
-      clockTrendArg.forEach(item => {
+      clockTrendArg.forEach((item, index) => {
         clockTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
@@ -286,6 +287,7 @@ export default{
         clockTrendData.seriesData.push({
           name: item.lable,
           type: 'line',
+          color: clockTrendColors[index],
           data: itemData
         })
       })
@@ -409,12 +411,13 @@ export default{
         this.clockTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.fpRecordSizeTrend || []
+          const clockTrendColors = ['#44bd8a', '#d8d8d8', '#fa6b67', '#62a8e8']
           let clockTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             clockTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -424,6 +427,7 @@ export default{
             clockTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: clockTrendColors[index],
               data: itemData
             })
           })
@@ -506,7 +510,6 @@ export default{
 <style lang="less" scoped>
   .home-fixation{
     height: 100%;
-    padding-bottom: 20px;
     .module-container{
       height: 100%;
       .module-header{

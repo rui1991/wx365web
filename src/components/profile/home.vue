@@ -34,8 +34,8 @@
             <p class="pandect-item" v-show="switchType !== 3">地址数量：{{ pandectData.siteNum }}个</p>
             <p class="pandect-item" v-show="switchType !== 3">网关设备：{{ pandectData.gatewayFac }}个</p>
             <p class="pandect-item green">在线人数：{{ pandectData.onlineCrew }}人</p>
-            <p class="pandect-item green">在线设备：{{ pandectData.onlineFac }}个</p>
             <p class="pandect-item red">离线人数：{{ pandectData.offlineCrew }}人</p>
+            <p class="pandect-item green">在线设备：{{ pandectData.onlineFac }}个</p>
             <p class="pandect-item red">离线设备：{{ pandectData.offlineFac }}个</p>
           </div>
         </div>
@@ -179,8 +179,8 @@ export default{
         siteNum: 0,
         gatewayFac: 0,
         onlineCrew: 0,
-        onlineFac: 0,
         offlineCrew: 0,
+        onlineFac: 0,
         offlineFac: 0
       },
       task: {
@@ -324,7 +324,7 @@ export default{
             data: []
           }
         ],
-        color: ['#62a8e8', '#d8d8d8']
+        color: ['#44bd8a', '#d8d8d8']
       },
       callname: {
         allNum: 0,
@@ -466,7 +466,7 @@ export default{
             data: []
           }
         ],
-        color: ['#62a8e8', '#44bd8a', '#d8d8d8']
+        color: ['#44bd8a', '#d8d8d8', '#fa6b67']
       },
       domWidth: this.$common.getDomClientSize().width,
       loading: false
@@ -544,11 +544,11 @@ export default{
       const type = data.type
       // 获取数据
       switch (type) {
-        case 0:
-          this.switchType = 1
-          this.pandectTitle = '企业/分公司信息'
-          this.getCompanyData()
-          break
+        // case 0:
+        //   this.switchType = 1
+        //   this.pandectTitle = '企业/分公司信息'
+        //   this.getCompanyData()
+        //   break
         case 1:
           this.switchType = 1
           this.pandectTitle = '企业/分公司信息'
@@ -600,9 +600,9 @@ export default{
             siteNum: homeData.comBaseMes.poSize || 0,
             gatewayFac: homeData.comBaseMes.gwSize || 0,
             onlineCrew: homeData.comBaseMes.onlineUserSize || 0,
-            onlineFac: homeData.comBaseMes.offlineDeviceSize || 0,
             offlineCrew: homeData.comBaseMes.offlineUserSize || 0,
-            offlineFac: homeData.comBaseMes.onlineDeviceSize || 0
+            onlineFac: homeData.comBaseMes.onlineDeviceSize || 0,
+            offlineFac: homeData.comBaseMes.offlineDeviceSize || 0
           }
           /* 巡检巡查任务 */
           const taskAll = homeData.comInsDutyMes.insDutySize || 0
@@ -630,11 +630,11 @@ export default{
           // 未打卡人数
           const qualityNoclock = homeData.comQualityMes.notRecordUserSize || 0
           // 已巡查位置数
-          const qualityExamine = homeData.comQualityMes.alreadyRecordUserSize || 0
+          const qualityExamine = homeData.comQualityMes.alreadyInsPoSize || 0
           // 未巡查位置数
-          const qualityNoexamine = homeData.comQualityMes.notRecordUserSize || 0
+          const qualityNoexamine = homeData.comQualityMes.notInsPoSize || 0
           // 打卡上传数量
-          const qualityUploading = homeData.comQualityMes.notRecordUserSize || 0
+          const qualityUploading = homeData.comQualityMes.recordSize || 0
           this.quality = {
             clock: qualityClock,
             noclock: qualityNoclock,
@@ -675,11 +675,11 @@ export default{
           // 需打卡次数
           const fixationAll = homeData.comPermanentMes.mustPerRecordSize || 0
           // 打卡成功次数
-          const fixationSucceed = homeData.comPermanentMes.mustPerRecordSize || 0
+          const fixationSucceed = homeData.comPermanentMes.sucessPerRecordSize || 0
           // 未打卡次数
-          const fixationNot = homeData.comPermanentMes.mustPerRecordSize || 0
+          const fixationNot = homeData.comPermanentMes.notPerRecordSize || 0
           // 打卡异常次数
-          const fixationAbnormal = homeData.comPermanentMes.mustPerRecordSize || 0
+          const fixationAbnormal = homeData.comPermanentMes.abnormalPerRecordSize || 0
           this.fixation = {
             allNum: fixationAll,
             sucNum: fixationSucceed,
@@ -735,9 +735,9 @@ export default{
             siteNum: homeData.proBaseMes.poSize || 0,
             gatewayFac: homeData.proBaseMes.gwSize || 0,
             onlineCrew: homeData.proBaseMes.onlineUserSize || 0,
-            onlineFac: homeData.proBaseMes.offlineDeviceSize || 0,
             offlineCrew: homeData.proBaseMes.offlineUserSize || 0,
-            offlineFac: homeData.proBaseMes.onlineDeviceSize || 0
+            onlineFac: homeData.proBaseMes.onlineDeviceSize || 0,
+            offlineFac: homeData.proBaseMes.offlineDeviceSize || 0
           }
           /* 巡检巡查任务 */
           const taskAll = homeData.proInsDutyMes.insDutySize || 0
@@ -765,11 +765,11 @@ export default{
           // 未打卡人数
           const qualityNoclock = homeData.proQualityMes.notRecordUserSize || 0
           // 已巡查位置数
-          const qualityExamine = homeData.proQualityMes.alreadyRecordUserSize || 0
+          const qualityExamine = homeData.proQualityMes.alreadyInsPoSize || 0
           // 未巡查位置数
-          const qualityNoexamine = homeData.proQualityMes.notRecordUserSize || 0
+          const qualityNoexamine = homeData.proQualityMes.notInsPoSize || 0
           // 打卡上传数量
-          const qualityUploading = homeData.proQualityMes.notRecordUserSize || 0
+          const qualityUploading = homeData.proQualityMes.recordSize || 0
           this.quality = {
             clock: qualityClock,
             noclock: qualityNoclock,
@@ -810,11 +810,11 @@ export default{
           // 需打卡次数
           const fixationAll = homeData.proPermanentMes.mustPerRecordSize || 0
           // 打卡成功次数
-          const fixationSucceed = homeData.proPermanentMes.mustPerRecordSize || 0
+          const fixationSucceed = homeData.proPermanentMes.sucessPerRecordSize || 0
           // 未打卡次数
-          const fixationNot = homeData.proPermanentMes.mustPerRecordSize || 0
+          const fixationNot = homeData.proPermanentMes.notPerRecordSize || 0
           // 打卡异常次数
-          const fixationAbnormal = homeData.proPermanentMes.mustPerRecordSize || 0
+          const fixationAbnormal = homeData.proPermanentMes.abnormalPerRecordSize || 0
           this.fixation = {
             allNum: fixationAll,
             sucNum: fixationSucceed,
@@ -870,9 +870,9 @@ export default{
             siteNum: 0,
             gatewayFac: 0,
             onlineCrew: homeData.ogzBaseMes.onlineUserSize || 0,
-            onlineFac: homeData.ogzBaseMes.offlineDeviceSize || 0,
             offlineCrew: homeData.ogzBaseMes.offlineUserSize || 0,
-            offlineFac: homeData.ogzBaseMes.onlineDeviceSize || 0
+            onlineFac: homeData.ogzBaseMes.onlineDeviceSize || 0,
+            offlineFac: homeData.ogzBaseMes.offlineDeviceSize || 0
           }
           /* 巡检巡查任务 */
           const taskAll = homeData.ogzInsDutyMes.insDutySize || 0
@@ -900,11 +900,11 @@ export default{
           // 未打卡人数
           const qualityNoclock = homeData.ogzQualityMes.notRecordUserSize || 0
           // 已巡查位置数
-          const qualityExamine = homeData.ogzQualityMes.alreadyRecordUserSize || 0
+          const qualityExamine = homeData.ogzQualityMes.alreadyInsPoSize || 0
           // 未巡查位置数
-          const qualityNoexamine = homeData.ogzQualityMes.notRecordUserSize || 0
+          const qualityNoexamine = homeData.ogzQualityMes.notInsPoSize || 0
           // 打卡上传数量
-          const qualityUploading = homeData.ogzQualityMes.notRecordUserSize || 0
+          const qualityUploading = homeData.ogzQualityMes.recordSize || 0
           this.quality = {
             clock: qualityClock,
             noclock: qualityNoclock,
@@ -1043,7 +1043,6 @@ export default{
 <style lang="less" scoped>
 .home{
   height: 100%;
-  padding-bottom: 20px;
   .module-container{
     height: 100%;
     .module-header{

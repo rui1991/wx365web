@@ -52,7 +52,7 @@
               <span class="price">{{ basicData.crewNum }}</span>
               <span class="name">人员数量(人)</span>
             </div>
-            <div class="pandect-item" v-if="switchType === 2">
+            <div class="pandect-item" v-show="orgType === 3">
               <span class="price">{{ basicData.siteNum }}</span>
               <span class="name">地址数量(个)</span>
             </div>
@@ -91,19 +91,19 @@
               <span class="price">{{ deviceData.cardNum }}</span>
               <span class="name">采集卡数量(张)</span>
             </div>
-            <div class="pandect-item" v-if="switchType === 2">
+            <div class="pandect-item" v-show="orgType === 3">
               <span class="price">{{ deviceData.siteDevNum }}</span>
               <span class="name">地址设备数量(个)</span>
             </div>
-            <div class="pandect-item" v-if="switchType === 2">
+            <div class="pandect-item" v-show="orgType === 3">
               <span class="price">{{ deviceData.swgNum }}</span>
               <span class="name">网关数量(台)</span>
             </div>
-            <div class="pandect-item" v-if="switchType === 2">
+            <div class="pandect-item" v-show="orgType === 3">
               <a href="javascript:void(0);" class="price vital" @click="offClick">{{ deviceData.swgOffNum }}</a>
               <span class="name">网关离线数量</span>
             </div>
-            <div class="pandect-item" v-if="switchType === 2">
+            <div class="pandect-item" v-show="orgType === 3">
               <a href="javascript:void(0);" class="price vital" @click="lowClick(1)">{{ deviceData.bsLowNum }}</a>
               <span class="name">基站低电量数量</span>
             </div>
@@ -111,7 +111,7 @@
               <a href="javascript:void(0);" class="price vital" @click="lowClick(2)">{{ deviceData.cardLowNum }}</a>
               <span class="name">采集卡低电量数量</span>
             </div>
-            <div class="pandect-item" v-if="switchType === 2">
+            <div class="pandect-item" v-show="orgType === 3">
               <span class="price">{{ deviceData.onlineNum }}</span>
               <span class="name">网关、采集卡在线数量</span>
             </div>
@@ -489,13 +489,14 @@ export default{
       }
       this.deviceData = deviceData
       // 人员在线人数趋势
+      const crewTrendColors = ['#44bd8a', '#d8d8d8', '#62a8e8', '#fa6b67']
       let crewTrendData = {
         legendData: [],
         xAxisData: [],
         seriesData: []
       }
       const crewTrendArg = data.proDetailsOnlineUserTrend || []
-      crewTrendArg.forEach(item => {
+      crewTrendArg.forEach((item, index) => {
         crewTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
@@ -505,6 +506,7 @@ export default{
         crewTrendData.seriesData.push({
           name: item.lable,
           type: 'line',
+          color: crewTrendColors[index],
           data: itemData
         })
       })
@@ -515,13 +517,14 @@ export default{
       this.crewTrendOption.xAxis.data = crewTrendData.xAxisData
       this.crewTrendOption.series = crewTrendData.seriesData
       // 采集卡、基站低电量数量趋势
+      const lowTrendColors = ['#fa6b67', '#62a8e8', '#d8d8d8', '#44bd8a']
       let lowTrendData = {
         legendData: [],
         xAxisData: [],
         seriesData: []
       }
       const lowTrendArg = data.proDetailsLowPowerDeviceTrend || []
-      lowTrendArg.forEach(item => {
+      lowTrendArg.forEach((item, index) => {
         lowTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
@@ -531,6 +534,7 @@ export default{
         lowTrendData.seriesData.push({
           name: item.lable,
           type: 'line',
+          color: lowTrendColors[index],
           data: itemData
         })
       })
@@ -574,13 +578,14 @@ export default{
       }
       this.deviceData = deviceData
       // 人员在线人数趋势
+      const crewTrendColors = ['#44bd8a', '#d8d8d8', '#62a8e8', '#fa6b67']
       let crewTrendData = {
         legendData: [],
         xAxisData: [],
         seriesData: []
       }
       const crewTrendArg = data.ogzDetailsOnlineUserTrend || []
-      crewTrendArg.forEach(item => {
+      crewTrendArg.forEach((item, index) => {
         crewTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
@@ -590,6 +595,7 @@ export default{
         crewTrendData.seriesData.push({
           name: item.lable,
           type: 'line',
+          color: crewTrendColors[index],
           data: itemData
         })
       })
@@ -600,13 +606,14 @@ export default{
       this.crewTrendOption.xAxis.data = crewTrendData.xAxisData
       this.crewTrendOption.series = crewTrendData.seriesData
       // 采集卡、基站低电量数量趋势
+      const lowTrendColors = ['#fa6b67', '#62a8e8', '#d8d8d8', '#44bd8a']
       let lowTrendData = {
         legendData: [],
         xAxisData: [],
         seriesData: []
       }
       const lowTrendArg = data.ogzDetailsLowPowerCardTrend || []
-      lowTrendArg.forEach(item => {
+      lowTrendArg.forEach((item, index) => {
         lowTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
@@ -616,6 +623,7 @@ export default{
         lowTrendData.seriesData.push({
           name: item.lable,
           type: 'line',
+          color: lowTrendColors[index],
           data: itemData
         })
       })
@@ -954,12 +962,13 @@ export default{
         this.crewTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.proDetailsOnlineUserTrend || []
+          const crewTrendColors = ['#44bd8a', '#d8d8d8', '#62a8e8', '#fa6b67']
           let crewTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             crewTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -969,6 +978,7 @@ export default{
             crewTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: crewTrendColors[index],
               data: itemData
             })
           })
@@ -1017,12 +1027,13 @@ export default{
         this.crewTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.ogzDetailsOnlineUserTrend || []
+          const crewTrendColors = ['#44bd8a', '#d8d8d8', '#62a8e8', '#fa6b67']
           let crewTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             crewTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -1032,6 +1043,7 @@ export default{
             crewTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: crewTrendColors[index],
               data: itemData
             })
           })
@@ -1112,12 +1124,13 @@ export default{
         this.lowTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.proDetailsLowPowerDeviceTrend || []
+          const lowTrendColors = ['#fa6b67', '#62a8e8', '#d8d8d8', '#44bd8a']
           let lowTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             lowTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -1127,6 +1140,7 @@ export default{
             lowTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: lowTrendColors[index],
               data: itemData
             })
           })
@@ -1175,12 +1189,13 @@ export default{
         this.lowTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.ogzDetailsLowPowerCardTrend || []
+          const lowTrendColors = ['#fa6b67', '#62a8e8', '#d8d8d8', '#44bd8a']
           let lowTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             lowTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -1190,6 +1205,7 @@ export default{
             lowTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: lowTrendColors[index],
               data: itemData
             })
           })
@@ -1269,7 +1285,7 @@ export default{
             id: proData.id,
             name: proData.name,
             type: proData.organize_type,
-            base_id: proData.base_id
+            baseId: proData.base_id
           })
           proData.children.forEach(item => {
             sectorOptions.push({
@@ -1341,7 +1357,6 @@ export default{
 <style lang="less" scoped>
   .home-survey{
     height: 100%;
-    padding-bottom: 20px;
     .module-container{
       height: 100%;
       .module-header{

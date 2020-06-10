@@ -60,11 +60,11 @@
               <span class="price">{{ generalData.patrolNum }}</span>
               <span class="name">已巡查位置数（个）</span>
             </div>
-            <div class="pandect-item">
+            <div class="pandect-item" v-show="orgType === 3">
               <a href="javascript:void(0);" class="price vital" @click="positionClick">{{ generalData.nopatrolNum }}</a>
               <span class="name">未巡查位置数（个）</span>
             </div>
-            <div class="pandect-item">
+            <div class="pandect-item" v-show="orgType === 3">
               <span class="price">{{ generalData.patrolRate }}</span>
               <span class="name">位置巡查率（%）</span>
             </div>
@@ -130,7 +130,7 @@
                 </div>
               </div>
             </el-col>
-            <el-col :span=patTrendSpan>
+            <el-col :span=patTrendSpan v-show="orgType === 3">
               <div
                 class="graph-item"
                 v-resize="patTrendRedraw"
@@ -157,7 +157,7 @@
                 </div>
               </div>
             </el-col>
-            <el-col :span=patRatioSpan>
+            <el-col :span=patRatioSpan v-show="orgType === 3">
               <div
                 class="graph-item"
                 v-resize="patRatioRedraw"
@@ -232,13 +232,13 @@ export default{
       typeName: '项目：',
       sectorOptions: [],
       orgid: 0,
-      orgType: 0,
+      orgType: 3,
       orgBase: 0,
       sectorName: '',
       pandectOptions: [
         {
           value: 1,
-          label: '昨天'
+          label: '今天'
         },
         {
           value: 7,
@@ -387,15 +387,15 @@ export default{
         series: [
           {
             type: 'bar',
-            barWidth: 20
+            barWidth: 20,
+            color: '#44bd8a',
+            barGap: '0%'
           },
           {
             type: 'bar',
-            barWidth: 20
-          },
-          {
-            type: 'bar',
-            barWidth: 20
+            barWidth: 20,
+            color: '#d8d8d8',
+            barGap: '0%'
           }
         ]
       },
@@ -548,18 +548,19 @@ export default{
         noclockNum: generalArg.notRecordUserSize || 0,
         patrolNum: generalArg.alreadyInsPoSize || 0,
         nopatrolNum: generalArg.notInsPoSize || 0,
-        patrolRate: this.$common.countPercent(generalArg.locationInsRate),
+        patrolRate: this.$common.retainPercent(generalArg.locationInsRate),
         dataUpNum: generalArg.recordSize || 0
       }
       this.generalData = generalData
       // 打卡人数趋势
+      const perTrendColors = ['#44bd8a', '#d8d8d8', '#fa6b67', '#62a8e8']
       let perTrendData = {
         legendData: [],
         xAxisData: [],
         seriesData: []
       }
       const perTrendArg = data.recordUserSizeQuality || []
-      perTrendArg.forEach(item => {
+      perTrendArg.forEach((item, index) => {
         perTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
@@ -569,6 +570,7 @@ export default{
         perTrendData.seriesData.push({
           name: item.lable,
           type: 'line',
+          color: perTrendColors[index],
           data: itemData
         })
       })
@@ -579,13 +581,14 @@ export default{
       this.perTrendOption.xAxis.data = perTrendData.xAxisData
       this.perTrendOption.series = perTrendData.seriesData
       // 打卡上传数量趋势
+      const upTrendColors = ['#62a8e8', '#44bd8a', '#d8d8d8', '#fa6b67']
       let upTrendData = {
         legendData: [],
         xAxisData: [],
         seriesData: []
       }
       const upTrendArg = data.recordUploadSizeQuality || []
-      upTrendArg.forEach(item => {
+      upTrendArg.forEach((item, index) => {
         upTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
@@ -595,6 +598,7 @@ export default{
         upTrendData.seriesData.push({
           name: item.lable,
           type: 'line',
+          color: upTrendColors[index],
           data: itemData
         })
       })
@@ -605,13 +609,14 @@ export default{
       this.upTrendOption.xAxis.data = upTrendData.xAxisData
       this.upTrendOption.series = upTrendData.seriesData
       // 位置巡查率趋势
+      const patTrendColors = ['#44bd8a', '#d8d8d8', '#62a8e8', '#fa6b67']
       let patTrendData = {
         legendData: [],
         xAxisData: [],
         seriesData: []
       }
       const patTrendArg = data.locationInsCoverRateTrend || []
-      patTrendArg.forEach(item => {
+      patTrendArg.forEach((item, index) => {
         patTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
@@ -621,6 +626,7 @@ export default{
         patTrendData.seriesData.push({
           name: item.lable,
           type: 'line',
+          color: patTrendColors[index],
           data: itemData
         })
       })
@@ -675,13 +681,14 @@ export default{
       }
       this.generalData = generalData
       // 打卡人数趋势
+      const perTrendColors = ['#44bd8a', '#d8d8d8', '#fa6b67', '#62a8e8']
       let perTrendData = {
         legendData: [],
         xAxisData: [],
         seriesData: []
       }
       const perTrendArg = data.recordUserSizeQuality || []
-      perTrendArg.forEach(item => {
+      perTrendArg.forEach((item, index) => {
         perTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
@@ -691,6 +698,7 @@ export default{
         perTrendData.seriesData.push({
           name: item.lable,
           type: 'line',
+          color: perTrendColors[index],
           data: itemData
         })
       })
@@ -701,13 +709,14 @@ export default{
       this.perTrendOption.xAxis.data = perTrendData.xAxisData
       this.perTrendOption.series = perTrendData.seriesData
       // 打卡上传数量趋势
+      const upTrendColors = ['#62a8e8', '#44bd8a', '#d8d8d8', '#fa6b67']
       let upTrendData = {
         legendData: [],
         xAxisData: [],
         seriesData: []
       }
       const upTrendArg = data.recordUploadSizeQuality || []
-      upTrendArg.forEach(item => {
+      upTrendArg.forEach((item, index) => {
         upTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
@@ -717,6 +726,7 @@ export default{
         upTrendData.seriesData.push({
           name: item.lable,
           type: 'line',
+          color: upTrendColors[index],
           data: itemData
         })
       })
@@ -848,7 +858,7 @@ export default{
             noclockNum: resData.notRecordUserSize || 0,
             patrolNum: resData.alreadyInsPoSize || 0,
             nopatrolNum: resData.notInsPoSize || 0,
-            patrolRate: this.$common.countPercent(resData.locationInsRate),
+            patrolRate: this.$common.retainPercent(resData.locationInsRate),
             dataUpNum: resData.recordSize || 0
           }
           this.generalData = generalData
@@ -973,12 +983,13 @@ export default{
         this.perTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.recordUserSizeQuality || []
+          const perTrendColors = ['#44bd8a', '#d8d8d8', '#fa6b67', '#62a8e8']
           let perTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             perTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -988,6 +999,7 @@ export default{
             perTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: perTrendColors[index],
               data: itemData
             })
           })
@@ -1036,12 +1048,13 @@ export default{
         this.perTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.recordUserSizeQuality || []
+          const perTrendColors = ['#44bd8a', '#d8d8d8', '#fa6b67', '#62a8e8']
           let perTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             perTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -1051,6 +1064,7 @@ export default{
             perTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: perTrendColors[index],
               data: itemData
             })
           })
@@ -1131,12 +1145,13 @@ export default{
         this.upTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.recordUploadSizeQuality || []
+          const upTrendColors = ['#62a8e8', '#44bd8a', '#d8d8d8', '#fa6b67']
           let upTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             upTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -1146,6 +1161,7 @@ export default{
             upTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: upTrendColors[index],
               data: itemData
             })
           })
@@ -1194,12 +1210,13 @@ export default{
         this.upTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.recordUploadSizeQuality || []
+          const upTrendColors = ['#62a8e8', '#44bd8a', '#d8d8d8', '#fa6b67']
           let upTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             upTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -1209,6 +1226,7 @@ export default{
             upTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: upTrendColors[index],
               data: itemData
             })
           })
@@ -1285,12 +1303,13 @@ export default{
         this.patTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.locationInsCoverRateTrend || []
+          const patTrendColors = ['#44bd8a', '#d8d8d8', '#62a8e8', '#fa6b67']
           let patTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             patTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -1300,6 +1319,7 @@ export default{
             patTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: patTrendColors[index],
               data: itemData
             })
           })
@@ -1446,7 +1466,7 @@ export default{
             id: proData.id,
             name: proData.name,
             type: proData.organize_type,
-            base_id: proData.base_id
+            baseId: proData.base_id
           })
           proData.children.forEach(item => {
             sectorOptions.push({
@@ -1532,7 +1552,6 @@ export default{
 <style lang="less" scoped>
   .home-quality{
     height: 100%;
-    padding-bottom: 20px;
     .module-container{
       height: 100%;
       .module-header{

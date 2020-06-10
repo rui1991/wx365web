@@ -11,8 +11,11 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "axios": "^0.19.2",
+    "echarts": "^4.8.0",
     "element-ui": "^2.4.6",
     "js-md5": "^0.7.3",
+    "qs": "^6.9.4",
     "sortablejs": "^1.7.0",
     "vue": "^2.5.2",
     "vue-qr": "^1.5.2",
@@ -22,7 +25,6 @@
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
-    "axios": "^0.18.0",
     "babel-core": "^6.22.1",
     "babel-eslint": "^8.2.1",
     "babel-helper-vue-jsx-merge-props": "^2.0.3",
@@ -36,8 +38,6 @@
     "chalk": "^2.0.1",
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.28.0",
-    "echarts": "^4.1.0",
-    "ele-calendar": "^1.1.2",
     "eslint": "^4.15.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-friendly-formatter": "^3.0.0",
@@ -60,7 +60,6 @@
     "postcss-import": "^11.0.0",
     "postcss-loader": "^2.0.8",
     "postcss-url": "^7.2.1",
-    "qs": "^6.5.2",
     "rimraf": "^2.6.0",
     "semver": "^5.3.0",
     "shelljs": "^0.7.6",

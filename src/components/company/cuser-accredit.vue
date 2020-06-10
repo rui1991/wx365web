@@ -87,9 +87,7 @@ export default{
     },
     // 选择组织树
     orgCheckChange (data, checked, self) {
-      if (data.disabled) {
-        return
-      }
+      if (data.disabled) return
       if (data.children) {
         // 下级不可选
         let inNode = JSON.parse(JSON.stringify(data.children))

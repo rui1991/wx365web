@@ -23,7 +23,13 @@
           <el-table-column :show-overflow-tooltip="true" label="执行人/执行组">
             <template slot-scope="scope">
               <span v-if="scope.row.group_id">{{ scope.row.group_name }}</span>
-              <span v-else>{{ scope.row.user_name }}</span>
+              <span v-else-if="scope.row.user_id">{{ scope.row.user_name }}</span>
+              <span class="red" v-else>无</span>
+            </template>
+          </el-table-column>
+          <el-table-column :show-overflow-tooltip="true" label="完成度" v-if="parentState !== 1">
+            <template slot-scope="scope">
+              <span>{{ scope.row.continue_process | formatPercent}}</span>
             </template>
           </el-table-column>
         </el-table>

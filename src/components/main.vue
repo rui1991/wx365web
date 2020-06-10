@@ -127,7 +127,7 @@
               <el-menu-item-group>
                 <el-menu-item index="/main/calendar">巡检日历</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="authority.plan">
                 <el-menu-item index="/main/normoam">标准维护管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.abnormal">
@@ -148,19 +148,19 @@
             </el-submenu>
             <el-submenu index="6" class="submenu-item" v-if="authority.plan">
               <template slot="title"><i class="iconfont icon-dianmin"></i>点名管理</template>
-              <el-menu-item-group v-if="authority.plan">
+              <el-menu-item-group>
                 <el-menu-item index="/main/callname-set">点名设置</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.plan">
+              <el-menu-item-group>
                 <el-menu-item index="/main/callname-rep">点名报表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="7" class="submenu-item" v-if="authority.shift">
               <template slot="title"><i class="iconfont icon-kaoqinguanli"></i>考勤管理</template>
-              <el-menu-item-group v-if="authority.shift">
+              <el-menu-item-group>
                 <el-menu-item index="/main/nosalary">无感考勤报表</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.shift">
+              <el-menu-item-group>
                 <el-menu-item index="/main/salary">设备考勤报表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
@@ -559,6 +559,7 @@ export default{
         padding-top: 0;
         padding-left: 0;
         padding-right: 0;
+        /*padding-bottom: 0;*/
         background: #f0f3f4;
       }
     }

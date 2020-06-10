@@ -339,15 +339,15 @@ export default{
         series: [
           {
             type: 'bar',
-            barWidth: 20
+            barWidth: 20,
+            color: '#44bd8a',
+            barGap: '0%'
           },
           {
             type: 'bar',
-            barWidth: 20
-          },
-          {
-            type: 'bar',
-            barWidth: 20
+            barWidth: 20,
+            color: '#d8d8d8',
+            barGap: '0%'
           }
         ]
       },
@@ -409,15 +409,15 @@ export default{
         series: [
           {
             type: 'bar',
-            barWidth: 20
+            barWidth: 20,
+            color: '#44bd8a',
+            barGap: '0%'
           },
           {
             type: 'bar',
-            barWidth: 20
-          },
-          {
-            type: 'bar',
-            barWidth: 20
+            barWidth: 20,
+            color: '#fa6b67',
+            barGap: '0%'
           }
         ]
       },
@@ -608,12 +608,12 @@ export default{
       let generalData = {
         allNum: generalArg.insDutySize || 0,
         fulfillNum: generalArg.insContinueSize || 0,
-        fulfillRate: this.$common.countPercent(generalArg.insContinueRate),
+        fulfillRate: this.$common.countPercent(generalArg.insContinueSize, generalArg.insDutySize),
         undoneNum: generalArg.insNotContinueSize || 0,
-        undoneRate: this.$common.countPercent(generalArg.insNotContinueRate),
+        undoneRate: this.$common.countPercent(generalArg.insNotContinueSize, generalArg.insDutySize),
         abnormalNum: generalArg.insAbnormalSize || 0,
-        timelyRate: this.$common.countPercent(generalArg.insContinueOntimeRate),
-        overtimeRate: this.$common.countPercent(generalArg.intContinueOuttimeRate)
+        timelyRate: this.$common.retainPercent(generalArg.insContinueOntimeRate),
+        overtimeRate: this.$common.retainPercent(generalArg.intContinueOuttimeRate)
       }
       this.generalData = generalData
       // 任务完成数量比
@@ -634,13 +634,14 @@ export default{
       })
       this.fulRatioOption.dataset.source = fulRatioData
       // 任务完成、未完成率趋势
+      const fulTrendColors = ['#44bd8a', '#d8d8d8', '#62a8e8', '#fa6b67']
       let fulTrendData = {
         legendData: [],
         xAxisData: [],
         seriesData: []
       }
       const fulTrendArg = data.insNotContinueTrend || []
-      fulTrendArg.forEach(item => {
+      fulTrendArg.forEach((item, index) => {
         fulTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
@@ -650,6 +651,7 @@ export default{
         fulTrendData.seriesData.push({
           name: item.lable,
           type: 'line',
+          color: fulTrendColors[index],
           data: itemData
         })
       })
@@ -677,13 +679,14 @@ export default{
       })
       this.timeRatioOption.dataset.source = timeRatioData
       // 任务完成及时率趋势
+      const timeTrendColors = ['#44bd8a', '#fa6b67', '#d8d8d8', '#62a8e8']
       let timeTrendData = {
         legendData: [],
         xAxisData: [],
         seriesData: []
       }
       const timeTrendArg = data.insContinueRateTrend || []
-      timeTrendArg.forEach(item => {
+      timeTrendArg.forEach((item, index) => {
         timeTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
@@ -693,6 +696,7 @@ export default{
         timeTrendData.seriesData.push({
           name: item.lable,
           type: 'line',
+          color: timeTrendColors[index],
           data: itemData
         })
       })
@@ -823,12 +827,12 @@ export default{
           let generalData = {
             allNum: resData.insDutySize || 0,
             fulfillNum: resData.insContinueSize || 0,
-            fulfillRate: this.$common.countPercent(resData.insContinueRate),
+            fulfillRate: this.$common.countPercent(resData.insContinueSize, resData.insDutySize),
             undoneNum: resData.insNotContinueSize || 0,
-            undoneRate: this.$common.countPercent(resData.insNotContinueRate),
+            undoneRate: this.$common.countPercent(resData.insNotContinueSize, resData.insDutySize),
             abnormalNum: resData.insAbnormalSize || 0,
-            timelyRate: this.$common.countPercent(resData.insContinueOntimeRate),
-            overtimeRate: this.$common.countPercent(resData.intContinueOuttimeRate)
+            timelyRate: this.$common.retainPercent(resData.insContinueOntimeRate),
+            overtimeRate: this.$common.retainPercent(resData.intContinueOuttimeRate)
           }
           this.generalData = generalData
           if (n === 1) {
@@ -876,12 +880,12 @@ export default{
           let generalData = {
             allNum: resData.insDutySize || 0,
             fulfillNum: resData.insContinueSize || 0,
-            fulfillRate: this.$common.countPercent(resData.insContinueRate),
+            fulfillRate: this.$common.countPercent(resData.insContinueSize, resData.insDutySize),
             undoneNum: resData.insNotContinueSize || 0,
-            undoneRate: this.$common.countPercent(resData.insNotContinueRate),
+            undoneRate: this.$common.countPercent(resData.insNotContinueSize, resData.insDutySize),
             abnormalNum: resData.insAbnormalSize || 0,
-            timelyRate: this.$common.countPercent(resData.insContinueOntimeRate),
-            overtimeRate: this.$common.countPercent(resData.intContinueOuttimeRate)
+            timelyRate: this.$common.retainPercent(resData.insContinueOntimeRate),
+            overtimeRate: this.$common.retainPercent(resData.intContinueOuttimeRate)
           }
           this.generalData = generalData
           if (n === 1) {
@@ -1090,12 +1094,13 @@ export default{
         this.fulTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.insNotContinueTrend || []
+          const fulTrendColors = ['#44bd8a', '#d8d8d8', '#62a8e8', '#fa6b67']
           let fulTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             fulTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -1105,6 +1110,7 @@ export default{
             fulTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: fulTrendColors[index],
               data: itemData
             })
           })
@@ -1153,12 +1159,13 @@ export default{
         this.fulTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.insNotContinueTrend || []
+          const fulTrendColors = ['#44bd8a', '#d8d8d8', '#62a8e8', '#fa6b67']
           let fulTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             fulTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -1168,6 +1175,7 @@ export default{
             fulTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: fulTrendColors[index],
               data: itemData
             })
           })
@@ -1384,12 +1392,13 @@ export default{
         this.timeTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.insContinueRateTrend || []
+          const timeTrendColors = ['#44bd8a', '#fa6b67', '#d8d8d8', '#62a8e8']
           let timeTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             timeTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -1399,6 +1408,7 @@ export default{
             timeTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: timeTrendColors[index],
               data: itemData
             })
           })
@@ -1447,12 +1457,13 @@ export default{
         this.timeTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.insContinueRateTrend || []
+          const timeTrendColors = ['#44bd8a', '#fa6b67', '#d8d8d8', '#62a8e8']
           let timeTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             timeTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -1462,6 +1473,7 @@ export default{
             timeTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: timeTrendColors[index],
               data: itemData
             })
           })
@@ -1677,7 +1689,7 @@ export default{
             id: proData.id,
             name: proData.name,
             type: proData.organize_type,
-            base_id: proData.base_id
+            baseId: proData.base_id
           })
           proData.children.forEach(item => {
             sectorOptions.push({
@@ -1763,7 +1775,6 @@ export default{
 <style lang="less" scoped>
   .home-task{
     height: 100%;
-    padding-bottom: 20px;
     .module-container{
       height: 100%;
       .module-header{

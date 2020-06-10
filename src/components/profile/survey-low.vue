@@ -18,9 +18,16 @@
           <el-table-column prop="card_name" label="名称" :show-overflow-tooltip="true" v-else-if="parentLowType === 2"></el-table-column>
           <el-table-column prop="position_mac" label="地址标签" :show-overflow-tooltip="true" v-if="parentLowType === 1"></el-table-column>
           <el-table-column prop="card_mac" label="采集卡mac" :show-overflow-tooltip="true" v-else-if="parentLowType === 2"></el-table-column>
-          <el-table-column width="60" label="电量">
+          <el-table-column width="60" label="电量" v-if="parentLowType === 1">
             <template slot-scope="scope">
-              <span>{{ scope.row.node_btpw | formatPercent }}</span>
+              <span v-if="scope.row.node_btpw">{{ scope.row.node_btpw }}%</span>
+              <span v-else>10%</span>
+            </template>
+          </el-table-column>
+          <el-table-column width="60" label="电量" v-if="parentLowType === 2">
+            <template slot-scope="scope">
+              <span v-if="scope.row.card_pw">{{ scope.row.card_pw }}%</span>
+              <span v-else>10%</span>
             </template>
           </el-table-column>
           <el-table-column prop="happen_time" :show-overflow-tooltip="true" label="低电量开始时间"></el-table-column>

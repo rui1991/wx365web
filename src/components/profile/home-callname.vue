@@ -106,7 +106,7 @@
                 <div class="item-head">
                   <div class="title">
                     <span class="chunk"></span>
-                    <p class="txt">任务完成、未完成率趋势</p>
+                    <p class="txt">人员打卡率趋势</p>
                   </div>
                   <el-select v-model="clockTrendType" class="operate" style="width: 160px;" @change="clockTrendChange">
                     <el-option
@@ -132,7 +132,7 @@
                 <div class="item-head">
                   <div class="title">
                     <span class="chunk"></span>
-                    <p class="txt">人员任务完成率排名</p>
+                    <p class="txt">人员点名成功天数排名</p>
                   </div>
                   <el-select v-model="sucRankingType" class="operate" style="width: 160px;" @change="sucRankingChange">
                     <el-option
@@ -451,13 +451,14 @@ export default{
       }
       this.generalData = generalData
       // 点名人数趋势
+      const perTrendColors = ['#44bd8a', '#fa6b67', '#d8d8d8', '#62a8e8']
       let perTrendData = {
         legendData: [],
         xAxisData: [],
         seriesData: []
       }
       const perTrendArg = data.rcUserSizeTrend || []
-      perTrendArg.forEach(item => {
+      perTrendArg.forEach((item, index) => {
         perTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
@@ -467,6 +468,7 @@ export default{
         perTrendData.seriesData.push({
           name: item.lable,
           type: 'line',
+          color: perTrendColors[index],
           data: itemData
         })
       })
@@ -477,13 +479,14 @@ export default{
       this.perTrendOption.xAxis.data = perTrendData.xAxisData
       this.perTrendOption.series = perTrendData.seriesData
       // 人员打卡率趋势
+      const clockTrendColors = ['#62a8e8', '#44bd8a', '#fa6b67', '#d8d8d8']
       let clockTrendData = {
         legendData: [],
         xAxisData: [],
         seriesData: []
       }
       const clockTrendArg = data.userRcRateTrend || []
-      clockTrendArg.forEach(item => {
+      clockTrendArg.forEach((item, index) => {
         clockTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
@@ -493,6 +496,7 @@ export default{
         clockTrendData.seriesData.push({
           name: item.lable,
           type: 'line',
+          color: clockTrendColors[index],
           data: itemData
         })
       })
@@ -742,12 +746,13 @@ export default{
         this.perTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.rcUserSizeTrend || []
+          const perTrendColors = ['#44bd8a', '#fa6b67', '#d8d8d8', '#62a8e8']
           let perTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             perTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -757,6 +762,7 @@ export default{
             perTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: perTrendColors[index],
               data: itemData
             })
           })
@@ -805,12 +811,13 @@ export default{
         this.perTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.rcUserSizeTrend || []
+          const perTrendColors = ['#44bd8a', '#fa6b67', '#d8d8d8', '#62a8e8']
           let perTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             perTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -820,6 +827,7 @@ export default{
             perTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: perTrendColors[index],
               data: itemData
             })
           })
@@ -900,12 +908,13 @@ export default{
         this.clockTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.userRcRateTrend || []
+          const clockTrendColors = ['#62a8e8', '#44bd8a', '#fa6b67', '#d8d8d8']
           let clockTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             clockTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -915,6 +924,7 @@ export default{
             clockTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: clockTrendColors[index],
               data: itemData
             })
           })
@@ -963,12 +973,13 @@ export default{
         this.clockTrendLoading = false
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1.userRcRateTrend || []
+          const clockTrendColors = ['#62a8e8', '#44bd8a', '#fa6b67', '#d8d8d8']
           let clockTrendData = {
             legendData: [],
             xAxisData: [],
             seriesData: []
           }
-          resData.forEach(item => {
+          resData.forEach((item, index) => {
             clockTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
@@ -978,6 +989,7 @@ export default{
             clockTrendData.seriesData.push({
               name: item.lable,
               type: 'line',
+              color: clockTrendColors[index],
               data: itemData
             })
           })
@@ -1194,7 +1206,7 @@ export default{
             id: proData.id,
             name: proData.name,
             type: proData.organize_type,
-            base_id: proData.base_id
+            baseId: proData.base_id
           })
           proData.children.forEach(item => {
             sectorOptions.push({
@@ -1266,7 +1278,6 @@ export default{
 <style lang="less" scoped>
   .home-callname{
     height: 100%;
-    padding-bottom: 20px;
     .module-container{
       height: 100%;
       .module-header{
