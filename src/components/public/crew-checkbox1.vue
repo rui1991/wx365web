@@ -18,9 +18,20 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+/*
+* 说明：
+*   适用范围于组织机构不变，人员列表不需要变化的多人员选择
+*   接收参数：
+*      parentOrgid： 组织id(用于获取人员列表)
+*      parentIds： 选中人员id； 格式 [1, 2]
+*   返回参数：
+*     obj {
+*           names: 选中人员名称； 格式 '张三、李四'
+*           ids: 选中人员id； 格式 [1, 2]
+*         }
+* */
 export default{
-  props: ['parentDialog', 'parentIds'],
+  props: ['parentDialog', 'parentOrgid', 'parentIds'],
   data () {
     return {
       crewData: [],
@@ -36,11 +47,6 @@ export default{
       disabled: true
     }
   },
-  computed: {
-    ...mapState('other', [
-      'projectOrgId'
-    ])
-  },
   methods: {
     crewInit () {
       this.checkCrew = this.parentIds
@@ -54,10 +60,10 @@ export default{
         this.$refs.myTransfer.$children['3']._data.query = ''
       }
     },
-    // 获取项目人员
+    // 获取组织人员
     getCrewData () {
       let params = {
-        organize_id: this.projectOrgId,
+        organize_id: this.parentOrgid,
         user_name: '',
         user_phone: '',
         role_id: '',

@@ -24,6 +24,7 @@
     <!-- 人员 -->
     <crew-module
       :parentDialog="crewDialog"
+      :parentOrgid="projectOrgId"
       :parentIds="formData.crewId"
       @parentUpdata="crewUpdata"
       @parentCancel="crewCancel">
@@ -41,7 +42,7 @@
 <script>
 import { mapState } from 'vuex'
 // 引入新增组件
-import crewModule from '@/components/public/crew-checkbox'
+import crewModule from '@/components/public/crew-checkbox1'
 // 引入编辑组件
 import siteModule from '@/components/callname/callname-site'
 export default{
@@ -79,7 +80,8 @@ export default{
     ]),
     ...mapState('other', [
       'companyId',
-      'projectId'
+      'projectId',
+      'projectOrgId'
     ])
   },
   methods: {

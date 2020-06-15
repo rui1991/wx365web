@@ -176,7 +176,7 @@
                 <div class="item-head">
                   <div class="title">
                     <span class="chunk"></span>
-                    <p class="txt">任务完成、未完成率趋势</p>
+                    <p class="txt">任务完成及时率趋势</p>
                   </div>
                   <el-select v-model="timeTrendType" class="operate" style="width: 160px;" @change="timeTrendChange">
                     <el-option
@@ -355,7 +355,17 @@ export default{
       fulTrendType: 7,
       fulTrendOption: {
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
+          formatter: function (params) {
+            let tip = ''
+            if (params != null && params.length > 0) {
+              tip += params[0].name + '<br/>'
+              for (let i = 0; i < params.length; i++) {
+                tip += params[i].marker + params[i].seriesName + ': ' + params[i].value + '%<br />'
+              }
+            }
+            return tip
+          }
         },
         legend: {
           data: []
@@ -425,7 +435,17 @@ export default{
       timeTrendType: 7,
       timeTrendOption: {
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
+          formatter: function (params) {
+            let tip = ''
+            if (params != null && params.length > 0) {
+              tip += params[0].name + '<br/>'
+              for (let i = 0; i < params.length; i++) {
+                tip += params[i].marker + params[i].seriesName + ': ' + params[i].value + '%<br />'
+              }
+            }
+            return tip
+          }
         },
         legend: {
           data: []
@@ -645,7 +665,8 @@ export default{
         fulTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
-          let itemValue = inItem.size || 0
+          let itemValue = this.switchInteger(inItem.size)
+          // let itemValue = inItem.size || 0
           itemData.push(itemValue)
         })
         fulTrendData.seriesData.push({
@@ -690,7 +711,8 @@ export default{
         timeTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
-          let itemValue = inItem.size || 0
+          let itemValue = this.switchInteger(inItem.size)
+          // let itemValue = inItem.size || 0
           itemData.push(itemValue)
         })
         timeTrendData.seriesData.push({
@@ -726,9 +748,13 @@ export default{
         fulRankingData: fulRankingData
       }
       this.generalState1 = true
+      this.fulRatioSpan = 12
       this.fulRatioState1 = true
+      this.fulTrendSpan = 12
       this.fulTrendState1 = true
+      this.timeRatioSpan = 12
       this.timeRatioState1 = true
+      this.timeTrendSpan = 12
       this.timeTrendState1 = true
       this.fulRankingState1 = true
     },
@@ -919,6 +945,7 @@ export default{
     fulRatioChange (val) {
       if (val === 7) {
         if (this.fulRatioState1) {
+          this.fulRatioSpan = 12
           this.fulRatioOption.dataset.source = this.resData1.fulRatioData
         } else {
           if (this.orgType === 3) {
@@ -929,6 +956,7 @@ export default{
         }
       } else if (val === 30) {
         if (this.fulRatioState2) {
+          this.fulRatioSpan = 24
           this.fulRatioOption.dataset.source = this.resData2.fulRatioData
         } else {
           if (this.orgType === 3) {
@@ -970,9 +998,11 @@ export default{
           })
           this.fulRatioOption.dataset.source = fulRatioData
           if (n === 7) {
+            this.fulRatioSpan = 12
             this.fulRatioState1 = true
             this.resData1.fulRatioData = fulRatioData
           } else if (n === 30) {
+            this.fulRatioSpan = 24
             this.fulRatioState2 = true
             this.resData2.fulRatioData = fulRatioData
           }
@@ -1024,9 +1054,11 @@ export default{
           })
           this.fulRatioOption.dataset.source = fulRatioData
           if (n === 7) {
+            this.fulRatioSpan = 12
             this.fulRatioState1 = true
             this.resData1.fulRatioData = fulRatioData
           } else if (n === 30) {
+            this.fulRatioSpan = 24
             this.fulRatioState2 = true
             this.resData2.fulRatioData = fulRatioData
           }
@@ -1055,6 +1087,7 @@ export default{
     fulTrendChange (val) {
       if (val === 7) {
         if (this.fulTrendState1) {
+          this.fulTrendSpan = 12
           this.fulTrendOption.legend.data = this.resData1.fulTrendData.legendData
           this.fulTrendOption.xAxis.data = this.resData1.fulTrendData.xAxisData
           this.fulTrendOption.series = this.resData1.fulTrendData.seriesData
@@ -1067,6 +1100,7 @@ export default{
         }
       } else if (val === 30) {
         if (this.fulTrendState2) {
+          this.fulTrendSpan = 24
           this.fulTrendOption.legend.data = this.resData2.fulTrendData.legendData
           this.fulTrendOption.xAxis.data = this.resData2.fulTrendData.xAxisData
           this.fulTrendOption.series = this.resData2.fulTrendData.seriesData
@@ -1104,7 +1138,8 @@ export default{
             fulTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
-              let itemValue = inItem.size || 0
+              let itemValue = this.switchInteger(inItem.size)
+              // let itemValue = inItem.size || 0
               itemData.push(itemValue)
             })
             fulTrendData.seriesData.push({
@@ -1121,9 +1156,11 @@ export default{
           this.fulTrendOption.xAxis.data = fulTrendData.xAxisData
           this.fulTrendOption.series = fulTrendData.seriesData
           if (n === 7) {
+            this.fulTrendSpan = 12
             this.fulTrendState1 = true
             this.resData1.fulTrendData = fulTrendData
           } else if (n === 30) {
+            this.fulTrendSpan = 24
             this.fulTrendState2 = true
             this.resData2.fulTrendData = fulTrendData
           }
@@ -1169,7 +1206,8 @@ export default{
             fulTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
-              let itemValue = inItem.size || 0
+              let itemValue = this.switchInteger(inItem.size)
+              // let itemValue = inItem.size || 0
               itemData.push(itemValue)
             })
             fulTrendData.seriesData.push({
@@ -1186,9 +1224,11 @@ export default{
           this.fulTrendOption.xAxis.data = fulTrendData.xAxisData
           this.fulTrendOption.series = fulTrendData.seriesData
           if (n === 7) {
+            this.fulTrendSpan = 12
             this.fulTrendState1 = true
             this.resData1.fulTrendData = fulTrendData
           } else if (n === 30) {
+            this.fulTrendSpan = 24
             this.fulTrendState2 = true
             this.resData2.fulTrendData = fulTrendData
           }
@@ -1217,6 +1257,7 @@ export default{
     timeRatioChange (val) {
       if (val === 7) {
         if (this.timeRatioState1) {
+          this.timeRatioSpan = 12
           this.timeRatioOption.dataset.source = this.resData1.timeRatioData
         } else {
           if (this.orgType === 3) {
@@ -1227,6 +1268,7 @@ export default{
         }
       } else if (val === 30) {
         if (this.timeRatioState2) {
+          this.timeRatioSpan = 24
           this.timeRatioOption.dataset.source = this.resData2.timeRatioData
         } else {
           if (this.orgType === 3) {
@@ -1268,10 +1310,12 @@ export default{
           })
           this.timeRatioOption.dataset.source = timeRatioData
           if (n === 7) {
-            this.crewTrendState1 = true
+            this.timeRatioSpan = 12
+            this.timeRatioState1 = true
             this.resData1.timeRatioData = timeRatioData
           } else if (n === 30) {
-            this.crewTrendState2 = true
+            this.timeRatioSpan = 24
+            this.timeRatioState2 = true
             this.resData2.timeRatioData = timeRatioData
           }
         } else {
@@ -1322,10 +1366,12 @@ export default{
           })
           this.timeRatioOption.dataset.source = timeRatioData
           if (n === 7) {
-            this.crewTrendState1 = true
+            this.timeRatioSpan = 12
+            this.timeRatioState1 = true
             this.resData1.timeRatioData = timeRatioData
           } else if (n === 30) {
-            this.crewTrendState2 = true
+            this.timeRatioSpan = 24
+            this.timeRatioState2 = true
             this.resData2.timeRatioData = timeRatioData
           }
         } else {
@@ -1353,6 +1399,7 @@ export default{
     timeTrendChange (val) {
       if (val === 7) {
         if (this.timeTrendState1) {
+          this.timeTrendSpan = 12
           this.timeTrendOption.legend.data = this.resData1.timeTrendData.legendData
           this.timeTrendOption.xAxis.data = this.resData1.timeTrendData.xAxisData
           this.timeTrendOption.series = this.resData1.timeTrendData.seriesData
@@ -1365,6 +1412,7 @@ export default{
         }
       } else if (val === 30) {
         if (this.timeTrendState2) {
+          this.timeTrendSpan = 24
           this.timeTrendOption.legend.data = this.resData2.timeTrendData.legendData
           this.timeTrendOption.xAxis.data = this.resData2.timeTrendData.xAxisData
           this.timeTrendOption.series = this.resData2.timeTrendData.seriesData
@@ -1402,7 +1450,8 @@ export default{
             timeTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
-              let itemValue = inItem.size || 0
+              let itemValue = this.switchInteger(inItem.size)
+              // let itemValue = inItem.size || 0
               itemData.push(itemValue)
             })
             timeTrendData.seriesData.push({
@@ -1419,9 +1468,11 @@ export default{
           this.timeTrendOption.xAxis.data = timeTrendData.xAxisData
           this.timeTrendOption.series = timeTrendData.seriesData
           if (n === 7) {
+            this.timeTrendSpan = 12
             this.timeTrendState1 = true
             this.resData1.timeTrendData = timeTrendData
           } else if (n === 30) {
+            this.timeTrendSpan = 24
             this.timeTrendState2 = true
             this.resData2.timeTrendData = timeTrendData
           }
@@ -1467,7 +1518,8 @@ export default{
             timeTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
-              let itemValue = inItem.size || 0
+              let itemValue = this.switchInteger(inItem.size)
+              // let itemValue = inItem.size || 0
               itemData.push(itemValue)
             })
             timeTrendData.seriesData.push({
@@ -1484,9 +1536,11 @@ export default{
           this.timeTrendOption.xAxis.data = timeTrendData.xAxisData
           this.timeTrendOption.series = timeTrendData.seriesData
           if (n === 7) {
+            this.timeTrendSpan = 12
             this.timeTrendState1 = true
             this.resData1.timeTrendData = timeTrendData
           } else if (n === 30) {
+            this.timeTrendSpan = 24
             this.timeTrendState2 = true
             this.resData2.timeTrendData = timeTrendData
           }
@@ -1740,34 +1794,7 @@ export default{
     }
   },
   watch: {
-    fulRatioType (val, oldVal) {
-      if (val === 7) {
-        this.fulRatioSpan = 12
-      } else if (val === 30) {
-        this.fulRatioSpan = 24
-      }
-    },
-    fulTrendType (val, oldVal) {
-      if (val === 7) {
-        this.fulTrendSpan = 12
-      } else if (val === 30) {
-        this.fulTrendSpan = 24
-      }
-    },
-    timeRatioType (val, oldVal) {
-      if (val === 7) {
-        this.timeRatioSpan = 12
-      } else if (val === 30) {
-        this.timeRatioSpan = 24
-      }
-    },
-    timeTrendType (val, oldVal) {
-      if (val === 7) {
-        this.timeTrendSpan = 12
-      } else if (val === 30) {
-        this.timeTrendSpan = 24
-      }
-    }
+
   }
 }
 </script>

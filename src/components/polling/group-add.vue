@@ -28,7 +28,7 @@
     <!-- 人员 -->
     <crew-module
       :parentDialog="crewDialog"
-      :parentOrgId="orgId"
+      :parentOrgid="orgId"
       :parentIds="formData.crewId"
       @parentUpdata="crewUpdata"
       @parentCancel="crewCancel">
@@ -39,7 +39,7 @@
 <script>
 import { mapState } from 'vuex'
 // 引入人员组件
-import crewModule from '@/components/polling/group-crew'
+import crewModule from '@/components/public/crew-checkbox2'
 export default{
   props: ['parentDialog'],
   data () {
@@ -109,40 +109,6 @@ export default{
     resetForm (formName) {
       this.$refs[formName].resetFields()
     },
-    /* 部门 */
-    getSectorOptions () {
-      let params = {
-        organize_id: this.projectOrgId
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.2/selOrganizeTree',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          this.sectorOptions = res.data.data1[0].children
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 选择部门
-    sectionChang () {
-      this.formData.crewName = ''
-      this.formData.crewId = []
-    },
     // 提交
     sendRequest () {
       let crewId = this.formData.crewId
@@ -191,6 +157,40 @@ export default{
       // 重置表单
       this.resetForm('ruleForm')
       this.$emit('parentCancel')
+    },
+    /* 部门 */
+    getSectorOptions () {
+      let params = {
+        organize_id: this.projectOrgId
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.2/selOrganizeTree',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          this.sectorOptions = res.data.data1[0].children
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
+    // 选择部门
+    sectionChang () {
+      this.formData.crewName = ''
+      this.formData.crewId = []
     },
     /* 人员 */
     crewClick () {

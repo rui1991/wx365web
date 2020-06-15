@@ -3,6 +3,14 @@
 </template>
 
 <script>
+/*
+* 说明：
+*   使用范围：所有图表的显示
+*   接收参数：
+*     parOption：图表的option
+*     id: 图表的id
+*     domWidth: 设定一个变量，用于监听图表模块大小是否发生变化，图表组件进行相应的更新
+* */
 export default{
   props: ['parOption', 'id', 'domWidth'],
   data () {

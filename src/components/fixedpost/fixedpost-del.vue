@@ -1,6 +1,6 @@
 <template>
   <el-dialog title="提示" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="hint-dialog">
-    <p class="hint-text"><i class="el-icon-warning"></i>是否要删除固定岗位设置？</p>
+    <p class="hint-text"><i class="el-icon-warning"></i>是否要清除固定岗位设置？</p>
     <div slot="footer" class="dialog-footer">
         <el-button @click="cancelClick">取 消</el-button>
         <el-button type="primary" :disabled="disabled" @click="submitClick">确 定</el-button>

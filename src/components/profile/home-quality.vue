@@ -333,7 +333,17 @@ export default{
       patTrendType: 7,
       patTrendOption: {
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
+          formatter: function (params) {
+            let tip = ''
+            if (params != null && params.length > 0) {
+              tip += params[0].name + '<br/>'
+              for (let i = 0; i < params.length; i++) {
+                tip += params[i].marker + params[i].seriesName + ': ' + params[i].value + '%<br />'
+              }
+            }
+            return tip
+          }
         },
         legend: {
           data: []
@@ -620,7 +630,8 @@ export default{
         patTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
-          let itemValue = inItem.size || 0
+          let itemValue = this.switchInteger(inItem.size)
+          // let itemValue = inItem.size || 0
           itemData.push(itemValue)
         })
         patTrendData.seriesData.push({
@@ -662,9 +673,13 @@ export default{
         patRatioData: patRatioData
       }
       this.generalState1 = true
+      this.perTrendSpan = 12
       this.perTrendState1 = true
+      this.upTrendSpan = 12
       this.upTrendState1 = true
+      this.patTrendSpan = 12
       this.patTrendState1 = true
+      this.patRatioSpan = 12
       this.patRatioState1 = true
     },
     // 部门结果处理
@@ -759,9 +774,13 @@ export default{
         patRatioData: patRatioData
       }
       this.generalState1 = true
+      this.perTrendSpan = 12
       this.perTrendState1 = true
+      this.upTrendSpan = 12
       this.upTrendState1 = true
+      this.patTrendSpan = 12
       this.patTrendState1 = true
+      this.patRatioSpan = 12
       this.patRatioState1 = true
     },
     /* 切换部门 */
@@ -944,6 +963,7 @@ export default{
     perTrendChange (val) {
       if (val === 7) {
         if (this.perTrendState1) {
+          this.perTrendSpan = 12
           this.perTrendOption.legend.data = this.resData1.perTrendData.legendData
           this.perTrendOption.xAxis.data = this.resData1.perTrendData.xAxisData
           this.perTrendOption.series = this.resData1.perTrendData.seriesData
@@ -956,6 +976,7 @@ export default{
         }
       } else if (val === 30) {
         if (this.perTrendState2) {
+          this.perTrendSpan = 24
           this.perTrendOption.legend.data = this.resData2.perTrendData.legendData
           this.perTrendOption.xAxis.data = this.resData2.perTrendData.xAxisData
           this.perTrendOption.series = this.resData2.perTrendData.seriesData
@@ -1010,9 +1031,11 @@ export default{
           this.perTrendOption.xAxis.data = perTrendData.xAxisData
           this.perTrendOption.series = perTrendData.seriesData
           if (n === 7) {
+            this.perTrendSpan = 12
             this.perTrendState1 = true
             this.resData1.perTrendData = perTrendData
           } else if (n === 30) {
+            this.perTrendSpan = 24
             this.perTrendState2 = true
             this.resData2.perTrendData = perTrendData
           }
@@ -1075,9 +1098,11 @@ export default{
           this.perTrendOption.xAxis.data = perTrendData.xAxisData
           this.perTrendOption.series = perTrendData.seriesData
           if (n === 7) {
+            this.perTrendSpan = 12
             this.perTrendState1 = true
             this.resData1.perTrendData = perTrendData
           } else if (n === 30) {
+            this.perTrendSpan = 24
             this.perTrendState2 = true
             this.resData2.perTrendData = perTrendData
           }
@@ -1106,6 +1131,7 @@ export default{
     upTrendChange (val) {
       if (val === 7) {
         if (this.upTrendState1) {
+          this.upTrendSpan = 12
           this.upTrendOption.legend.data = this.resData1.upTrendData.legendData
           this.upTrendOption.xAxis.data = this.resData1.upTrendData.xAxisData
           this.upTrendOption.series = this.resData1.upTrendData.seriesData
@@ -1118,6 +1144,7 @@ export default{
         }
       } else if (val === 30) {
         if (this.upTrendState2) {
+          this.upTrendSpan = 24
           this.upTrendOption.legend.data = this.resData2.upTrendData.legendData
           this.upTrendOption.xAxis.data = this.resData2.upTrendData.xAxisData
           this.upTrendOption.series = this.resData2.upTrendData.seriesData
@@ -1172,9 +1199,11 @@ export default{
           this.upTrendOption.xAxis.data = upTrendData.xAxisData
           this.upTrendOption.series = upTrendData.seriesData
           if (n === 7) {
+            this.upTrendSpan = 12
             this.upTrendState1 = true
             this.resData1.upTrendData = upTrendData
           } else if (n === 30) {
+            this.upTrendSpan = 24
             this.upTrendState2 = true
             this.resData2.upTrendData = upTrendData
           }
@@ -1237,9 +1266,11 @@ export default{
           this.upTrendOption.xAxis.data = upTrendData.xAxisData
           this.upTrendOption.series = upTrendData.seriesData
           if (n === 7) {
+            this.upTrendSpan = 12
             this.upTrendState1 = true
             this.resData1.upTrendData = upTrendData
           } else if (n === 30) {
+            this.upTrendSpan = 24
             this.upTrendState2 = true
             this.resData2.upTrendData = upTrendData
           }
@@ -1268,6 +1299,7 @@ export default{
     patTrendChange (val) {
       if (val === 7) {
         if (this.patTrendState1) {
+          this.patTrendSpan = 12
           this.patTrendOption.legend.data = this.resData1.patTrendData.legendData
           this.patTrendOption.xAxis.data = this.resData1.patTrendData.xAxisData
           this.patTrendOption.series = this.resData1.patTrendData.seriesData
@@ -1278,6 +1310,7 @@ export default{
         }
       } else if (val === 30) {
         if (this.patTrendState2) {
+          this.patTrendSpan = 24
           this.patTrendOption.legend.data = this.resData2.patTrendData.legendData
           this.patTrendOption.xAxis.data = this.resData2.patTrendData.xAxisData
           this.patTrendOption.series = this.resData2.patTrendData.seriesData
@@ -1313,7 +1346,8 @@ export default{
             patTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
-              let itemValue = inItem.size || 0
+              let itemValue = this.switchInteger(inItem.size)
+              // let itemValue = inItem.size || 0
               itemData.push(itemValue)
             })
             patTrendData.seriesData.push({
@@ -1330,9 +1364,11 @@ export default{
           this.patTrendOption.xAxis.data = patTrendData.xAxisData
           this.patTrendOption.series = patTrendData.seriesData
           if (n === 7) {
+            this.patTrendSpan = 12
             this.patTrendState1 = true
             this.resData1.patTrendData = patTrendData
           } else if (n === 30) {
+            this.patTrendSpan = 24
             this.patTrendState2 = true
             this.resData2.patTrendData = patTrendData
           }
@@ -1361,6 +1397,7 @@ export default{
     patRatioChange (val) {
       if (val === 7) {
         if (this.patRatioState1) {
+          this.patRatioSpan = 12
           this.patRatioOption.dataset.source = this.resData1.patRatioData
         } else {
           if (this.orgType === 3) {
@@ -1369,6 +1406,7 @@ export default{
         }
       } else if (val === 30) {
         if (this.patRatioState2) {
+          this.patRatioSpan = 24
           this.patRatioOption.dataset.source = this.resData2.patRatioData
         } else {
           if (this.orgType === 3) {
@@ -1408,9 +1446,11 @@ export default{
           })
           this.patRatioOption.dataset.source = patRatioData
           if (n === 7) {
+            this.patRatioSpan = 12
             this.crewTrendState1 = true
             this.resData1.patRatioData = patRatioData
           } else if (n === 30) {
+            this.patRatioSpan = 24
             this.crewTrendState2 = true
             this.resData2.patRatioData = patRatioData
           }
@@ -1434,6 +1474,11 @@ export default{
     // 监控模块变化
     patRatioRedraw (val) {
       this.patRatioWidth = val.width
+    },
+    // 转换整数
+    switchInteger (n) {
+      const value = Number.parseFloat(n) || 0
+      return Math.round(value * 100)
     },
     /* 详情 */
     personClick () {
@@ -1517,34 +1562,7 @@ export default{
     }
   },
   watch: {
-    perTrendType (val, oldVal) {
-      if (val === 7) {
-        this.perTrendSpan = 12
-      } else if (val === 30) {
-        this.perTrendSpan = 24
-      }
-    },
-    upTrendType (val, oldVal) {
-      if (val === 7) {
-        this.upTrendSpan = 12
-      } else if (val === 30) {
-        this.upTrendSpan = 24
-      }
-    },
-    patTrendType (val, oldVal) {
-      if (val === 7) {
-        this.patTrendSpan = 12
-      } else if (val === 30) {
-        this.patTrendSpan = 24
-      }
-    },
-    patRatioType (val, oldVal) {
-      if (val === 7) {
-        this.patRatioSpan = 12
-      } else if (val === 30) {
-        this.patRatioSpan = 24
-      }
-    }
+
   }
 }
 </script>

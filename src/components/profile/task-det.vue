@@ -109,7 +109,7 @@ export default{
               mes: item.mes
             })
           })
-          this.listData = resData
+          this.listData = listData
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({

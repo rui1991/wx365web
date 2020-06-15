@@ -16,15 +16,17 @@
               <a href="javascript:void(0);" class="name" @click="detClick(scope.row.message)">{{ scope.row.position_name }}</a>
             </template>
           </el-table-column>
-          <el-table-column label="时间段" class-name="multi-row">
+          <el-table-column label="部门" width="120" prop="ogz_name" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="人员" prop="user_names" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="时间段" :show-overflow-tooltip="true">
             <template slot-scope="scope">
               <span>{{ scope.row.message | filterTimeFrame }}</span>
             </template>
           </el-table-column>
           <el-table-column label="操作" width="160">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.position_id, scope.row.message)">编辑</a>
-              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.position_id)">删除</a>
+              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">设置</a>
+              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.position_id)">清除</a>
             </template>
           </el-table-column>
         </el-table>
@@ -52,6 +54,7 @@
     <com-module
       :parentDialog="comDialog"
       :parentId="itemId"
+      :parentForm="itemForm"
       :parentTimes="times"
       @parentUpdata="comUpdata"
       @parentCancel="comCancel">
@@ -85,6 +88,11 @@ export default{
       nowPage: 1,
       limit: 10,
       itemId: '',
+      itemForm: {
+        sector: '',
+        crewName: '',
+        crewId: []
+      },
       times: '',
       detDialog: false,
       comDialog: false,
@@ -181,10 +189,31 @@ export default{
     detClose () {
       this.detDialog = false
     },
-    /* 编辑 */
-    comClick (id, timeStr) {
-      this.itemId = id
+    /* 设置 */
+    comClick (data) {
+      // 地址id
+      this.itemId = data.position_id
+      // 人员
+      let names = data.user_names
+      let crewName = ''
+      if (names) {
+        crewName = names.replace(/,/g, '、')
+      }
+      let uids = []
+      if (data.user_ids) {
+        uids = data.user_ids.split(',')
+      }
+      let crewId = uids.map(item => {
+        return Number.parseInt(item)
+      })
+      this.itemForm = {
+        sector: data.ogz_id || '',
+        crewName: crewName,
+        crewId: crewId
+      }
+      // 时段
       let times = []
+      const timeStr = data.message
       if (timeStr) {
         times = JSON.parse(timeStr)
       }

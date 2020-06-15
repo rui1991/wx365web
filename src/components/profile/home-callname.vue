@@ -272,7 +272,17 @@ export default{
       clockTrendType: 7,
       clockTrendOption: {
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
+          formatter: function (params) {
+            let tip = ''
+            if (params != null && params.length > 0) {
+              tip += params[0].name + '<br/>'
+              for (let i = 0; i < params.length; i++) {
+                tip += params[i].marker + params[i].seriesName + ': ' + params[i].value + '%<br />'
+              }
+            }
+            return tip
+          }
         },
         legend: {
           data: []
@@ -490,7 +500,8 @@ export default{
         clockTrendData.legendData.push(item.lable)
         let itemData = []
         item.data.forEach(inItem => {
-          let itemValue = inItem.size || 0
+          let itemValue = this.switchInteger(inItem.size)
+          // let itemValue = inItem.size || 0
           itemData.push(itemValue)
         })
         clockTrendData.seriesData.push({
@@ -512,7 +523,7 @@ export default{
       this.total = sucRankingData.length
       let nowRankingData = JSON.parse(JSON.stringify(sucRankingData)).slice(0, this.limit)
       nowRankingData.forEach(item => {
-        item.rate = this.switchInteger(item.size)
+        item.rate = this.switchRatio(item.size)
       })
       this.nowRankingData = nowRankingData
       this.page = 1
@@ -524,7 +535,9 @@ export default{
         sucRankingData: sucRankingData
       }
       this.generalState1 = true
+      this.perTrendSpan = 12
       this.perTrendState1 = true
+      this.clockTrendSpan = 12
       this.clockTrendState1 = true
       this.sucRankingState1 = true
     },
@@ -707,6 +720,7 @@ export default{
     perTrendChange (val) {
       if (val === 7) {
         if (this.perTrendState1) {
+          this.perTrendSpan = 12
           this.perTrendOption.legend.data = this.resData1.perTrendData.legendData
           this.perTrendOption.xAxis.data = this.resData1.perTrendData.xAxisData
           this.perTrendOption.series = this.resData1.perTrendData.seriesData
@@ -719,6 +733,7 @@ export default{
         }
       } else if (val === 30) {
         if (this.perTrendState2) {
+          this.perTrendSpan = 24
           this.perTrendOption.legend.data = this.resData2.perTrendData.legendData
           this.perTrendOption.xAxis.data = this.resData2.perTrendData.xAxisData
           this.perTrendOption.series = this.resData2.perTrendData.seriesData
@@ -773,9 +788,11 @@ export default{
           this.perTrendOption.xAxis.data = perTrendData.xAxisData
           this.perTrendOption.series = perTrendData.seriesData
           if (n === 7) {
+            this.perTrendSpan = 12
             this.perTrendState1 = true
             this.resData1.perTrendData = perTrendData
           } else if (n === 30) {
+            this.perTrendSpan = 24
             this.perTrendState2 = true
             this.resData2.perTrendData = perTrendData
           }
@@ -838,9 +855,11 @@ export default{
           this.perTrendOption.xAxis.data = perTrendData.xAxisData
           this.perTrendOption.series = perTrendData.seriesData
           if (n === 7) {
+            this.perTrendSpan = 12
             this.perTrendState1 = true
             this.resData1.perTrendData = perTrendData
           } else if (n === 30) {
+            this.perTrendSpan = 24
             this.perTrendState2 = true
             this.resData2.perTrendData = perTrendData
           }
@@ -869,6 +888,7 @@ export default{
     clockTrendChange (val) {
       if (val === 7) {
         if (this.clockTrendState1) {
+          this.clockTrendSpan = 12
           this.clockTrendOption.legend.data = this.resData1.clockTrendData.legendData
           this.clockTrendOption.xAxis.data = this.resData1.clockTrendData.xAxisData
           this.clockTrendOption.series = this.resData1.clockTrendData.seriesData
@@ -881,6 +901,7 @@ export default{
         }
       } else if (val === 30) {
         if (this.clockTrendState2) {
+          this.clockTrendSpan = 24
           this.clockTrendOption.legend.data = this.resData2.clockTrendData.legendData
           this.clockTrendOption.xAxis.data = this.resData2.clockTrendData.xAxisData
           this.clockTrendOption.series = this.resData2.clockTrendData.seriesData
@@ -918,7 +939,8 @@ export default{
             clockTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
-              let itemValue = inItem.size || 0
+              let itemValue = this.switchInteger(inItem.size)
+              // let itemValue = inItem.size || 0
               itemData.push(itemValue)
             })
             clockTrendData.seriesData.push({
@@ -935,9 +957,11 @@ export default{
           this.clockTrendOption.xAxis.data = clockTrendData.xAxisData
           this.clockTrendOption.series = clockTrendData.seriesData
           if (n === 7) {
+            this.clockTrendSpan = 12
             this.clockTrendState1 = true
             this.resData1.clockTrendData = clockTrendData
           } else if (n === 30) {
+            this.clockTrendSpan = 24
             this.clockTrendState2 = true
             this.resData2.clockTrendData = clockTrendData
           }
@@ -983,7 +1007,8 @@ export default{
             clockTrendData.legendData.push(item.lable)
             let itemData = []
             item.data.forEach(inItem => {
-              let itemValue = inItem.size || 0
+              let itemValue = this.switchInteger(inItem.size)
+              // let itemValue = inItem.size || 0
               itemData.push(itemValue)
             })
             clockTrendData.seriesData.push({
@@ -1000,9 +1025,11 @@ export default{
           this.clockTrendOption.xAxis.data = clockTrendData.xAxisData
           this.clockTrendOption.series = clockTrendData.seriesData
           if (n === 7) {
+            this.clockTrendSpan = 12
             this.clockTrendState1 = true
             this.resData1.clockTrendData = clockTrendData
           } else if (n === 30) {
+            this.clockTrendSpan = 24
             this.clockTrendState2 = true
             this.resData2.clockTrendData = clockTrendData
           }
@@ -1036,7 +1063,7 @@ export default{
           this.total = sucRankingData.length
           let nowRankingData = JSON.parse(JSON.stringify(sucRankingData)).slice(0, this.limit)
           nowRankingData.forEach(item => {
-            item.rate = this.switchInteger(item.size)
+            item.rate = this.switchRatio(item.size)
           })
           this.nowRankingData = nowRankingData
           this.page = 1
@@ -1054,7 +1081,7 @@ export default{
           this.total = sucRankingData.length
           let nowRankingData = JSON.parse(JSON.stringify(sucRankingData)).slice(0, this.limit)
           nowRankingData.forEach(item => {
-            item.rate = this.switchInteger(item.size)
+            item.rate = this.switchRatio(item.size)
           })
           this.nowRankingData = nowRankingData
           this.page = 1
@@ -1086,7 +1113,7 @@ export default{
           this.total = resData.length
           let nowRankingData = JSON.parse(JSON.stringify(resData)).slice(0, this.limit)
           nowRankingData.forEach(item => {
-            item.rate = this.switchInteger(item.size)
+            item.rate = this.switchRatio(item.size)
           })
           this.nowRankingData = nowRankingData
           this.page = 1
@@ -1133,7 +1160,7 @@ export default{
           this.total = resData.length
           let nowRankingData = JSON.parse(JSON.stringify(resData)).slice(0, this.limit)
           nowRankingData.forEach(item => {
-            item.rate = this.switchInteger(item.size)
+            item.rate = this.switchRatio(item.size)
           })
           this.nowRankingData = nowRankingData
           this.page = 1
@@ -1169,13 +1196,18 @@ export default{
       const sucRankingData = JSON.parse(JSON.stringify(this.sucRankingData))
       let nowRankingData = sucRankingData.slice((nowPage - 1) * this.limit, nowPage * this.limit)
       nowRankingData.forEach(item => {
-        item.rate = this.switchInteger(item.size)
+        item.rate = this.switchRatio(item.size)
       })
       this.nowRankingData = nowRankingData
       this.page = nowPage
     },
     // 转换整数
     switchInteger (n) {
+      const value = Number.parseFloat(n) || 0
+      return Math.round(value * 100)
+    },
+    // 转换比例
+    switchRatio (n) {
       const divisor = this.sucRankingType
       const value = Number.parseFloat(n) || 0
       return Math.round((value / divisor) * 100)
@@ -1257,20 +1289,7 @@ export default{
     }
   },
   watch: {
-    perTrendType (val, oldVal) {
-      if (val === 7) {
-        this.perTrendSpan = 12
-      } else if (val === 30) {
-        this.perTrendSpan = 24
-      }
-    },
-    clockTrendType (val, oldVal) {
-      if (val === 7) {
-        this.clockTrendSpan = 12
-      } else if (val === 30) {
-        this.clockTrendSpan = 24
-      }
-    }
+
   }
 }
 </script>

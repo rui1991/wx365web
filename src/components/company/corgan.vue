@@ -67,6 +67,25 @@
 </template>
 
 <script>
+/*
+*  parentModType参数说明：
+*  1: 新增类型
+*  2：新增企业
+*  3：设置（企业、分公司、模块配置）
+*     3-1：设置企业
+*     3-2：设置分公司
+*     3-3：模块配置
+*  4：新增组织（分公司、项目、部门）
+*  5：编辑组织（项目、部门）
+*  6:编辑企业
+*
+* organize_type参数说明：
+*   0：黑卡
+*   1：企业
+*   2：分公司
+*   3：项目
+*   4：部门
+* */
 import { mapState } from 'vuex'
 // 引入编辑企业组件
 import comModule1 from '@/components/company/corgan-com'
@@ -112,18 +131,6 @@ export default{
     ])
   },
   methods: {
-    /*
-    *  parentModType参数说明：
-    *  1: 新增类型
-    *  2：新增企业
-    *  3：设置（企业、分公司、模块配置）
-    *     3-1：设置企业
-    *     3-2：设置分公司
-    *     3-3：模块配置
-    *  4：新增组织（分公司、项目、部门）
-    *  5：编辑组织（项目、部门）
-    *  6:编辑企业
-    * */
     // 获取机构树
     getOrganTree (b = false) {
       let params = {

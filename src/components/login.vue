@@ -20,11 +20,11 @@ export default{
   },
   created () {
     // 判断网址是否合法
-    // const nowHref = window.location.href
-    // if (nowHref.indexOf('www.') === -1) {
-    //   const skipHref = 'http://www.' + nowHref.replace(/http:\/\//, '')
-    //   window.location.href = skipHref
-    // }
+    const nowHref = window.location.href
+    if (nowHref.indexOf('www.') === -1) {
+      const skipHref = 'http://www.' + nowHref.replace(/http:\/\//, '')
+      window.location.href = skipHref
+    }
   },
   methods: {
 

@@ -28,7 +28,7 @@
     <!-- 人员 -->
     <crew-module
       :parentDialog="crewDialog"
-      :parentOrgId="orgId"
+      :parentOrgid="orgId"
       :parentIds="formData.crewId"
       @parentUpdata="crewUpdata"
       @parentCancel="crewCancel">
@@ -39,7 +39,7 @@
 <script>
 import { mapState } from 'vuex'
 // 引入人员组件
-import crewModule from '@/components/polling/group-crew'
+import crewModule from '@/components/public/crew-checkbox2'
 export default{
   props: ['parentDialog', 'parentId', 'parentForm'],
   data () {

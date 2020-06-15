@@ -141,6 +141,12 @@ input:-webkit-autofill {
   background: #e2e2e2;
 }
 
+/* 解决线形进度条100%时换行问题 */
+.el-progress .el-progress-bar{
+  padding-right: 60px;
+  margin-right: -65px;
+}
+
 /*消息提示*/
 .main-header .mes-hint .el-badge__content.is-fixed{
   top: 3px;

@@ -27,6 +27,7 @@
     <!-- 人员 -->
     <crew-module
       :parentDialog="crewDialog"
+      :parentOrgid="projectOrgId"
       :parentIds="formData.crewId"
       @parentUpdata="crewUpdata"
       @parentCancel="crewCancel">
@@ -39,7 +40,7 @@ import { mapState } from 'vuex'
 // 引入位置组件
 import ccdModule from '@/components/envmon/envalarm-ccd'
 // 引入人员组件
-import crewModule from '@/components/public/crew-checkbox'
+import crewModule from '@/components/public/crew-checkbox1'
 export default{
   props: ['parentDialog'],
   data () {
@@ -77,7 +78,8 @@ export default{
     ]),
     ...mapState('other', [
       'companyId',
-      'projectId'
+      'projectId',
+      'projectOrgId'
     ])
   },
   methods: {

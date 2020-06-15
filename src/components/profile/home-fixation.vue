@@ -68,7 +68,7 @@
                 <div class="item-head">
                   <div class="title">
                     <span class="chunk"></span>
-                    <p class="txt">任务完成、未完成率趋势</p>
+                    <p class="txt">固定岗打卡次数趋势</p>
                   </div>
                   <el-select v-model="clockTrendType" class="operate" style="width: 160px;" @change="clockTrendChange">
                     <el-option
@@ -303,6 +303,7 @@ export default{
         clockTrendData: clockTrendData
       }
       this.generalState1 = true
+      this.clockTrendSpan = 12
       this.clockTrendState1 = true
     },
     /* 点名概况 */
@@ -380,6 +381,7 @@ export default{
     clockTrendChange (val) {
       if (val === 7) {
         if (this.clockTrendState1) {
+          this.clockTrendSpan = 12
           this.clockTrendOption.legend.data = this.resData1.clockTrendData.legendData
           this.clockTrendOption.xAxis.data = this.resData1.clockTrendData.xAxisData
           this.clockTrendOption.series = this.resData1.clockTrendData.seriesData
@@ -388,6 +390,7 @@ export default{
         }
       } else if (val === 30) {
         if (this.clockTrendState2) {
+          this.clockTrendSpan = 24
           this.clockTrendOption.legend.data = this.resData2.clockTrendData.legendData
           this.clockTrendOption.xAxis.data = this.resData2.clockTrendData.xAxisData
           this.clockTrendOption.series = this.resData2.clockTrendData.seriesData
@@ -438,9 +441,11 @@ export default{
           this.clockTrendOption.xAxis.data = clockTrendData.xAxisData
           this.clockTrendOption.series = clockTrendData.seriesData
           if (n === 7) {
+            this.clockTrendSpan = 12
             this.clockTrendState1 = true
             this.resData1.clockTrendData = clockTrendData
           } else if (n === 30) {
+            this.clockTrendSpan = 24
             this.clockTrendState2 = true
             this.resData2.clockTrendData = clockTrendData
           }
@@ -496,13 +501,7 @@ export default{
     }
   },
   watch: {
-    clockTrendType (val, oldVal) {
-      if (val === 7) {
-        this.clockTrendSpan = 12
-      } else if (val === 30) {
-        this.clockTrendSpan = 24
-      }
-    }
+
   }
 }
 </script>

@@ -553,7 +553,9 @@ export default{
       }
       this.basicState1 = true
       this.deviceState1 = true
+      this.crewTrendSpan = 12
       this.crewTrendState1 = true
+      this.lowTrendSpan = 12
       this.lowTrendState1 = true
     },
     // 部门结果处理
@@ -642,7 +644,9 @@ export default{
       }
       this.basicState1 = true
       this.deviceState1 = true
+      this.crewTrendSpan = 12
       this.crewTrendState1 = true
+      this.lowTrendSpan = 12
       this.lowTrendState1 = true
     },
     /* 切换部门 */
@@ -923,6 +927,7 @@ export default{
     crewTrendChange (val) {
       if (val === 7) {
         if (this.crewTrendState1) {
+          this.crewTrendSpan = 12
           this.crewTrendOption.legend.data = this.resData1.crewTrendData.legendData
           this.crewTrendOption.xAxis.data = this.resData1.crewTrendData.xAxisData
           this.crewTrendOption.series = this.resData1.crewTrendData.seriesData
@@ -935,6 +940,7 @@ export default{
         }
       } else if (val === 30) {
         if (this.crewTrendState2) {
+          this.crewTrendSpan = 24
           this.crewTrendOption.legend.data = this.resData2.crewTrendData.legendData
           this.crewTrendOption.xAxis.data = this.resData2.crewTrendData.xAxisData
           this.crewTrendOption.series = this.resData2.crewTrendData.seriesData
@@ -989,9 +995,11 @@ export default{
           this.crewTrendOption.xAxis.data = crewTrendData.xAxisData
           this.crewTrendOption.series = crewTrendData.seriesData
           if (n === 7) {
+            this.crewTrendSpan = 12
             this.crewTrendState1 = true
             this.resData1.crewTrendData = crewTrendData
           } else if (n === 30) {
+            this.crewTrendSpan = 24
             this.crewTrendState2 = true
             this.resData2.crewTrendData = crewTrendData
           }
@@ -1054,9 +1062,11 @@ export default{
           this.crewTrendOption.xAxis.data = crewTrendData.xAxisData
           this.crewTrendOption.series = crewTrendData.seriesData
           if (n === 7) {
+            this.crewTrendSpan = 12
             this.crewTrendState1 = true
             this.resData1.crewTrendData = crewTrendData
           } else if (n === 30) {
+            this.crewTrendSpan = 24
             this.crewTrendState2 = true
             this.resData2.crewTrendData = crewTrendData
           }
@@ -1085,6 +1095,7 @@ export default{
     lowTrendChange (val) {
       if (val === 7) {
         if (this.lowTrendState1) {
+          this.lowTrendSpan = 12
           this.lowTrendOption.legend.data = this.resData1.lowTrendData.legendData
           this.lowTrendOption.xAxis.data = this.resData1.lowTrendData.xAxisData
           this.lowTrendOption.series = this.resData1.lowTrendData.seriesData
@@ -1097,6 +1108,7 @@ export default{
         }
       } else if (val === 30) {
         if (this.lowTrendState2) {
+          this.lowTrendSpan = 24
           this.lowTrendOption.legend.data = this.resData2.lowTrendData.legendData
           this.lowTrendOption.xAxis.data = this.resData2.lowTrendData.xAxisData
           this.lowTrendOption.series = this.resData2.lowTrendData.seriesData
@@ -1151,9 +1163,11 @@ export default{
           this.lowTrendOption.xAxis.data = lowTrendData.xAxisData
           this.lowTrendOption.series = lowTrendData.seriesData
           if (n === 7) {
+            this.lowTrendSpan = 12
             this.lowTrendState1 = true
             this.resData1.lowTrendData = lowTrendData
           } else if (n === 30) {
+            this.lowTrendSpan = 24
             this.lowTrendState2 = true
             this.resData2.lowTrendData = lowTrendData
           }
@@ -1216,9 +1230,11 @@ export default{
           this.lowTrendOption.xAxis.data = lowTrendData.xAxisData
           this.lowTrendOption.series = lowTrendData.seriesData
           if (n === 7) {
+            this.lowTrendSpan = 12
             this.lowTrendState1 = true
             this.resData1.lowTrendData = lowTrendData
           } else if (n === 30) {
+            this.lowTrendSpan = 24
             this.lowTrendState2 = true
             this.resData2.lowTrendData = lowTrendData
           }
@@ -1336,20 +1352,7 @@ export default{
     }
   },
   watch: {
-    crewTrendType (val, oldVal) {
-      if (val === 7) {
-        this.crewTrendSpan = 12
-      } else if (val === 30) {
-        this.crewTrendSpan = 24
-      }
-    },
-    lowTrendType (val, oldVal) {
-      if (val === 7) {
-        this.lowTrendSpan = 12
-      } else if (val === 30) {
-        this.lowTrendSpan = 24
-      }
-    }
+
   }
 }
 </script>

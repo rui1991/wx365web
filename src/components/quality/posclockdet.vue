@@ -81,6 +81,7 @@
     <!-- 设置 -->
     <crew-module
       :parentDialog="crewDialog"
+      :parentOrgid="projectOrgId"
       :parentIds="crewId"
       @parentUpdata="crewUpdata"
       @parentCancel="crewCancel">
@@ -93,7 +94,7 @@ import { mapState } from 'vuex'
 // 引入详情组件
 import detModule from '@/components/quality/posclockdet-det'
 // 引入设置组件
-import crewModule from '@/components/public/crew-checkbox'
+import crewModule from '@/components/public/crew-checkbox1'
 export default{
   name: 'posclockdet',
   data () {

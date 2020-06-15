@@ -338,10 +338,12 @@ export default{
           this.setDetAuthority(autDet)
           // 保存机构树
           const orgTree = loginData.trees
-          this.setOrganTree(orgTree)
+          // 处理公司部门
+          let orgData1 = this.disCompanyDep(JSON.parse(JSON.stringify(orgTree)))
+          this.setOrganTree(orgData1)
           // 处理部门
-          let orgData = this.recOrganData(JSON.parse(JSON.stringify(orgTree)))
-          this.setOrganData(orgData)
+          let orgData2 = this.recOrganData(JSON.parse(JSON.stringify(orgTree)))
+          this.setOrganData(orgData2)
           // 路由跳转
           this.$router.push({ path: '/main/home' })
         } else {
@@ -371,6 +373,27 @@ export default{
         }
       })
       return data
+    },
+    // 初始化处理企业分公司部门
+    disCompanyDep  (data) {
+      data.forEach((item, index, array) => {
+        if (item.children) {
+          this.recCompanyDep(item.children, item.organize_type)
+        }
+      })
+      return data
+    },
+    recCompanyDep  (data, type) {
+      data.forEach((item, index, array) => {
+        if (type === 0 || type === 1 || type === 2) {
+          if (item.organize_type === 4) {
+            item.disabled = true
+          }
+        }
+        if (item.children) {
+          this.recCompanyDep(item.children, item.organize_type)
+        }
+      })
     },
     // 跳转找回密码
     skipFindpwd () {
