@@ -78,7 +78,7 @@
                     <div class="details">
                       <p class="single green">已打卡人数：{{ quality.clock }}人</p>
                       <p class="single red">未打卡人数：{{ quality.noclock }}人</p>
-                      <p class="single">已巡查位置数：{{ quality.examine }}个</p>
+                      <p class="single green">已巡查位置数：{{ quality.examine }}个</p>
                       <p class="single red">未巡查位置数：{{ quality.noexamine }}个</p>
                       <p class="single">打卡上传数量：{{ quality.uploading }}条</p>
                     </div>
@@ -126,7 +126,7 @@
                       <p class="single">需打卡次数：{{ fixation.allNum }}次</p>
                       <p class="single green">打卡成功次数：{{ fixation.sucNum }}次</p>
                       <p class="single red">未打卡次数：{{ fixation.notNum }}次</p>
-                      <p class="single red">打卡异常数：{{ fixation.abnNum }}次</p>
+                      <p class="single orange">打卡异常数：{{ fixation.abnNum }}次</p>
                     </div>
                   </div>
                 </div>

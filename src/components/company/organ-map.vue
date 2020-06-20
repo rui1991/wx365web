@@ -13,6 +13,9 @@
 </template>
 
 <script>
+/*
+* 地图坐标
+* */
 import BMap from 'BMap'
 export default{
   props: ['parentDialog', 'parentCoord'],

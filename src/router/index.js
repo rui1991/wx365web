@@ -39,13 +39,13 @@ const Log = () => import(/* webpackChunkName: "group-log" */ '@/components/profi
 
 /* 企业配置 */
 // 组织管理（黑卡）
-const Oorgan = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/oorgan')
+const OrganBC = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/organBC')
 // 组织管理（客户）
-const Corgan = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/corgan')
+const OrganKH = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/organKH')
 // 用户管理（黑卡）
-const Ouser = () => import(/* webpackChunkName: "group-user" */ '@/components/company/ouser')
+const UserBC = () => import(/* webpackChunkName: "group-user" */ '@/components/company/userBC')
 // 用户管理（客户）
-const Cuser = () => import(/* webpackChunkName: "group-user" */ '@/components/company/cuser')
+const UserKH = () => import(/* webpackChunkName: "group-user" */ '@/components/company/userKH')
 // 审批列表
 const Approval = () => import(/* webpackChunkName: "group-approval" */ '@/components/company/approval')
 // 考勤排班
@@ -293,17 +293,17 @@ export default new Router({
           }
         },
         {
-          path: 'oorgan',
-          name: 'oorgan',
-          component: Oorgan,
+          path: 'organBC',
+          name: 'organBC',
+          component: OrganBC,
           meta: {
             keepAlive: false
           }
         },
         {
-          path: 'corgan',
-          name: 'corgan',
-          component: Corgan,
+          path: 'organKH',
+          name: 'organKH',
+          component: OrganKH,
           meta: {
             keepAlive: false
           }
@@ -317,17 +317,17 @@ export default new Router({
           }
         },
         {
-          path: 'ouser',
-          name: 'ouser',
-          component: Ouser,
+          path: 'userBC',
+          name: 'userBC',
+          component: UserBC,
           meta: {
             keepAlive: false
           }
         },
         {
-          path: 'cuser',
-          name: 'cuser',
-          component: Cuser,
+          path: 'userKH',
+          name: 'userKH',
+          component: UserKH,
           meta: {
             keepAlive: false
           }

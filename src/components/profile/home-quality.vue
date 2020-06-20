@@ -463,7 +463,7 @@ export default{
       this.typeName = '项目：'
       this.orgType = 3
       // 获取项目数据
-      this.getProjectData(1)
+      this.getProjectData()
       // 获取部门列表
       this.getSectorOptions()
     } else if (type === 3) {
@@ -472,7 +472,7 @@ export default{
       this.sectorName = this.$route.query.name
       this.orgType = 4
       // 获取部门数据
-      this.getSectorData(1)
+      this.getSectorData()
     }
   },
   components: {
@@ -482,326 +482,35 @@ export default{
   },
   methods: {
     // 项目数据
-    getProjectData (n) {
-      let params = {
-        project_id: this.orgBase,
-        type: n
-      }
-      params = this.$qs.stringify(params)
-      this.loading = true
-      this.$axios({
-        method: 'post',
-        url: this.reportApi() + '/proOperateQualityMonitor',
-        data: params
-      }).then((res) => {
-        this.loading = false
-        if (res.data.result === 'Sucess') {
-          const resData = res.data.data1
-          this.proResultDispose(resData)
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.loading = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    getProjectData () {
+      this.getGeneralProData(1)
+      this.getPerTrendProData(7)
+      this.getUpTrendProData(7)
+      this.getPatTrendProData(7)
+      this.getPatRatioProData(7)
     },
     // 部门数据
-    getSectorData (n) {
-      let params = {
-        ogz_id: this.orgBase,
-        type: n
-      }
-      params = this.$qs.stringify(params)
-      this.loading = true
-      this.$axios({
-        method: 'post',
-        url: this.reportApi() + '/ogzOperateQualityMonitor',
-        data: params
-      }).then((res) => {
-        this.loading = false
-        if (res.data.result === 'Sucess') {
-          const resData = res.data.data1
-          this.secResultDispose(resData)
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.loading = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 项目结果处理
-    proResultDispose (data) {
-      // 人员品质监控概况
-      const generalArg = data.qltBaseMes
-      let generalData = {
-        clockNum: generalArg.alreadyRecordUserSize || 0,
-        noclockNum: generalArg.notRecordUserSize || 0,
-        patrolNum: generalArg.alreadyInsPoSize || 0,
-        nopatrolNum: generalArg.notInsPoSize || 0,
-        patrolRate: this.$common.retainPercent(generalArg.locationInsRate),
-        dataUpNum: generalArg.recordSize || 0
-      }
-      this.generalData = generalData
-      // 打卡人数趋势
-      const perTrendColors = ['#44bd8a', '#d8d8d8', '#fa6b67', '#62a8e8']
-      let perTrendData = {
-        legendData: [],
-        xAxisData: [],
-        seriesData: []
-      }
-      const perTrendArg = data.recordUserSizeQuality || []
-      perTrendArg.forEach((item, index) => {
-        perTrendData.legendData.push(item.lable)
-        let itemData = []
-        item.data.forEach(inItem => {
-          let itemValue = inItem.size || 0
-          itemData.push(itemValue)
-        })
-        perTrendData.seriesData.push({
-          name: item.lable,
-          type: 'line',
-          color: perTrendColors[index],
-          data: itemData
-        })
-      })
-      perTrendArg[0].data.forEach(inItem => {
-        perTrendData.xAxisData.push(inItem.date)
-      })
-      this.perTrendOption.legend.data = perTrendData.legendData
-      this.perTrendOption.xAxis.data = perTrendData.xAxisData
-      this.perTrendOption.series = perTrendData.seriesData
-      // 打卡上传数量趋势
-      const upTrendColors = ['#62a8e8', '#44bd8a', '#d8d8d8', '#fa6b67']
-      let upTrendData = {
-        legendData: [],
-        xAxisData: [],
-        seriesData: []
-      }
-      const upTrendArg = data.recordUploadSizeQuality || []
-      upTrendArg.forEach((item, index) => {
-        upTrendData.legendData.push(item.lable)
-        let itemData = []
-        item.data.forEach(inItem => {
-          let itemValue = inItem.size || 0
-          itemData.push(itemValue)
-        })
-        upTrendData.seriesData.push({
-          name: item.lable,
-          type: 'line',
-          color: upTrendColors[index],
-          data: itemData
-        })
-      })
-      upTrendArg[0].data.forEach(inItem => {
-        upTrendData.xAxisData.push(inItem.date)
-      })
-      this.upTrendOption.legend.data = upTrendData.legendData
-      this.upTrendOption.xAxis.data = upTrendData.xAxisData
-      this.upTrendOption.series = upTrendData.seriesData
-      // 位置巡查率趋势
-      const patTrendColors = ['#44bd8a', '#d8d8d8', '#62a8e8', '#fa6b67']
-      let patTrendData = {
-        legendData: [],
-        xAxisData: [],
-        seriesData: []
-      }
-      const patTrendArg = data.locationInsCoverRateTrend || []
-      patTrendArg.forEach((item, index) => {
-        patTrendData.legendData.push(item.lable)
-        let itemData = []
-        item.data.forEach(inItem => {
-          let itemValue = this.switchInteger(inItem.size)
-          // let itemValue = inItem.size || 0
-          itemData.push(itemValue)
-        })
-        patTrendData.seriesData.push({
-          name: item.lable,
-          type: 'line',
-          color: patTrendColors[index],
-          data: itemData
-        })
-      })
-      patTrendArg[0].data.forEach(inItem => {
-        patTrendData.xAxisData.push(inItem.date)
-      })
-      this.patTrendOption.legend.data = patTrendData.legendData
-      this.patTrendOption.xAxis.data = patTrendData.xAxisData
-      this.patTrendOption.series = patTrendData.seriesData
-      // 位置巡查数量比
-      const patRatioArg = data.locationInsSizeCompare || []
-      const patRatioGroup = ['product', patRatioArg[0].lable, patRatioArg[1].lable]
-      let patRatioData = []
-      patRatioData.push(patRatioGroup)
-      const patRatioAry1 = patRatioArg[0].data
-      const patRatioAry2 = patRatioArg[1].data
-      patRatioAry1.forEach((item, index) => {
-        let ary = []
-        ary.push(item.date)
-        let num1 = item.size || 0
-        ary.push(num1)
-        let num2 = patRatioAry2[index].size || 0
-        ary.push(num2)
-        patRatioData.push(ary)
-      })
-      this.patRatioOption.dataset.source = patRatioData
-      // 存储数据
-      this.resData1 = {
-        generalData: generalData,
-        perTrendData: perTrendData,
-        upTrendData: upTrendData,
-        patTrendData: patTrendData,
-        patRatioData: patRatioData
-      }
-      this.generalState1 = true
-      this.perTrendSpan = 12
-      this.perTrendState1 = true
-      this.upTrendSpan = 12
-      this.upTrendState1 = true
-      this.patTrendSpan = 12
-      this.patTrendState1 = true
-      this.patRatioSpan = 12
-      this.patRatioState1 = true
-    },
-    // 部门结果处理
-    secResultDispose (data) {
-      // 人员品质监控概况
-      const generalArg = data.qltBaseMes
-      let generalData = {
-        clockNum: generalArg.alreadyRecordUserSize || 0,
-        noclockNum: generalArg.notRecordUserSize || 0,
-        patrolNum: generalArg.alreadyInsPoSize || 0,
-        nopatrolNum: 0,
-        patrolRate: '0%',
-        dataUpNum: generalArg.recordSize || 0
-      }
-      this.generalData = generalData
-      // 打卡人数趋势
-      const perTrendColors = ['#44bd8a', '#d8d8d8', '#fa6b67', '#62a8e8']
-      let perTrendData = {
-        legendData: [],
-        xAxisData: [],
-        seriesData: []
-      }
-      const perTrendArg = data.recordUserSizeQuality || []
-      perTrendArg.forEach((item, index) => {
-        perTrendData.legendData.push(item.lable)
-        let itemData = []
-        item.data.forEach(inItem => {
-          let itemValue = inItem.size || 0
-          itemData.push(itemValue)
-        })
-        perTrendData.seriesData.push({
-          name: item.lable,
-          type: 'line',
-          color: perTrendColors[index],
-          data: itemData
-        })
-      })
-      perTrendArg[0].data.forEach(inItem => {
-        perTrendData.xAxisData.push(inItem.date)
-      })
-      this.perTrendOption.legend.data = perTrendData.legendData
-      this.perTrendOption.xAxis.data = perTrendData.xAxisData
-      this.perTrendOption.series = perTrendData.seriesData
-      // 打卡上传数量趋势
-      const upTrendColors = ['#62a8e8', '#44bd8a', '#d8d8d8', '#fa6b67']
-      let upTrendData = {
-        legendData: [],
-        xAxisData: [],
-        seriesData: []
-      }
-      const upTrendArg = data.recordUploadSizeQuality || []
-      upTrendArg.forEach((item, index) => {
-        upTrendData.legendData.push(item.lable)
-        let itemData = []
-        item.data.forEach(inItem => {
-          let itemValue = inItem.size || 0
-          itemData.push(itemValue)
-        })
-        upTrendData.seriesData.push({
-          name: item.lable,
-          type: 'line',
-          color: upTrendColors[index],
-          data: itemData
-        })
-      })
-      upTrendArg[0].data.forEach(inItem => {
-        upTrendData.xAxisData.push(inItem.date)
-      })
-      this.upTrendOption.legend.data = upTrendData.legendData
-      this.upTrendOption.xAxis.data = upTrendData.xAxisData
-      this.upTrendOption.series = upTrendData.seriesData
-      // 位置巡查率趋势
-      let patTrendData = {
-        legendData: [],
-        xAxisData: [],
-        seriesData: []
-      }
-      this.patTrendOption.legend.data = patTrendData.legendData
-      this.patTrendOption.xAxis.data = patTrendData.xAxisData
-      this.patTrendOption.series = patTrendData.seriesData
-      // 位置巡查数量比
-      const patRatioGroup = ['product']
-      let patRatioData = []
-      patRatioData.push(patRatioGroup)
-      this.patRatioOption.dataset.source = patRatioData
-      // 存储数据
-      this.resData1 = {
-        generalData: generalData,
-        perTrendData: perTrendData,
-        upTrendData: upTrendData,
-        patTrendData: patTrendData,
-        patRatioData: patRatioData
-      }
-      this.generalState1 = true
-      this.perTrendSpan = 12
-      this.perTrendState1 = true
-      this.upTrendSpan = 12
-      this.upTrendState1 = true
-      this.patTrendSpan = 12
-      this.patTrendState1 = true
-      this.patRatioSpan = 12
-      this.patRatioState1 = true
+    getSectorData () {
+      this.getGeneralSecData(1)
+      this.getPerTrendSecData(7)
+      this.getUpTrendSecData(7)
     },
     /* 切换部门 */
     sectorChange (val) {
       const orgNode = this.sectorOptions.find(item => {
         return item.id === val
       })
-      this.orgType = orgNode.type
-      this.orgBase = orgNode.baseId
-      if (this.orgType === 3) {
-        this.typeName = '项目：'
-      } else if (this.orgType === 4) {
-        this.typeName = '部门：'
-      }
       // 初始化数据
       this.initData()
+      this.orgType = orgNode.type
+      this.orgBase = orgNode.baseId
       // 重新请求数据
       if (this.orgType === 3) {
-        this.getProjectData(1)
+        this.typeName = '项目：'
+        this.getProjectData()
       } else if (this.orgType === 4) {
-        this.getSectorData(1)
+        this.typeName = '部门：'
+        this.getSectorData()
       }
     },
     // 初始化数据

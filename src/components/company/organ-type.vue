@@ -23,6 +23,9 @@
 </template>
 
 <script>
+/*
+* 新增组织机构类型选择
+* */
 export default{
   props: ['parentOrgType'],
   data () {

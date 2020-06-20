@@ -6,38 +6,41 @@
       <!--<el-tab-pane label="角色管理" name="role"></el-tab-pane>-->
     </el-tabs>
     <div class="content">
-      <com-module1
+      <comkh-module1
         v-if="parentOrgType === 1"
         v-show="modType === 1"
         :parentOrgId= "parentOrgId"
         :parentOrgType= "parentOrgType"
         :parentBaseId= "parentBaseId"
         @parentUpdata="upData">
-      </com-module1>
-      <com-module2
+      </comkh-module1>
+      <comkh-module2
         v-if="parentOrgType === 2"
         v-show="modType === 2"
         :parentOrgId= "parentOrgId"
         :parentOrgType= "parentOrgType"
         :parentBaseId= "parentBaseId"
         @parentUpdata="upData">
-      </com-module2>
-      <config-module
+      </comkh-module2>
+      <configkh-module
         v-show="modType === 3"
         :parentOrgId= "parentOrgId"
         :parentBaseId= "parentBaseId">
-      </config-module>
+      </configkh-module>
     </div>
   </div>
 </template>
 
 <script>
+/*
+* 企业和分公司设置（编辑和模块配置）
+* */
 // 引入编辑企业组件
-import comModule1 from '@/components/company/oorgan-com1'
+import comkhModule1 from '@/components/company/organ-comkh1'
 // 引入编辑分公司组件
-import comModule2 from '@/components/company/oorgan-com2'
+import comkhModule2 from '@/components/company/organ-comkh2'
 // 引入新增类型组件
-import configModule from '@/components/company/oorgan-config'
+import configkhModule from '@/components/company/organ-configkh'
 export default{
   props: ['parentOrgId', 'parentOrgType', 'parentBaseId'],
   data () {
@@ -58,9 +61,9 @@ export default{
     }
   },
   components: {
-    comModule1,
-    comModule2,
-    configModule
+    comkhModule1,
+    comkhModule2,
+    configkhModule
   },
   methods: {
     // 点击导航
@@ -94,7 +97,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
- .orange-module {
 
- }
 </style>

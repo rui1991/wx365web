@@ -15,7 +15,9 @@
       <el-container class="module-content">
         <el-aside width="280px" class="module-aside">
           <!-- 组织树 -->
-          <org-module @parentUpdata="orgUpdata"></org-module>
+          <org-module
+            @parentUpOrg="updateOrgan">
+          </org-module>
         </el-aside>
         <el-main class="module-main">
           <div class="search">
@@ -110,7 +112,7 @@
 <script>
 import { mapState } from 'vuex'
 // 引入组织树组件
-import orgModule from '@/components/public/org-radio2'
+import orgModule from '@/components/public/report-org2'
 // 引入详情组件
 import detModule from '@/components/quality/poscover-det'
 export default{
@@ -161,11 +163,11 @@ export default{
   },
   methods: {
     // 组织树
-    orgUpdata (data) {
+    updateOrgan (data) {
       this.orgId = data.id
       this.orgType = data.type
-      this.proId = data.projectId
-      this.secId = data.sectionId
+      this.proId = data.proId
+      this.secId = data.secId
       // 清空搜索框
       this.search.name = ''
       this.nowSearch.name = ''

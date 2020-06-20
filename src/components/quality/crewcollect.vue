@@ -16,7 +16,7 @@
         <div class="search">
           <div class="item">
             <span>选择项目</span>
-            <el-select v-model="nowSearch.project" style="width: 160px;"  multiple collapse-tags placeholder="请选择项目">
+            <el-select v-model="nowSearch.project" style="width: 260px;" filterable multiple collapse-tags placeholder="请选择项目">
               <el-option
                 v-for="item in allProject"
                 :key="item.project_id"
@@ -262,18 +262,16 @@ export default{
       margin-right: 20px;
       background: #ffffff;
       .search{
-        display: table;
         width: 100%;
         height: 60px;
+        display: flex;
+        align-items: center;
         .item{
-          display: table-cell;
-          vertical-align: middle;
-          width: 280px;
-          font-size: 0;
+          width: 380px;
+          display: flex;
+          align-items: center;
           span{
             width: 70px;
-            display: inline-block;
-            line-height: 34px;
             font-size: 14px;
           }
         }
@@ -281,9 +279,9 @@ export default{
           width: 420px;
         }
         .operate{
-          display: table-cell;
-          vertical-align: middle;
-          text-align: right;
+          display: flex;
+          justify-content: flex-end;
+          flex-grow: 1;
         }
       }
     }

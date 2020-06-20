@@ -95,7 +95,7 @@ export default{
       detDialog: false,
       itemId: 0,
       itemDate: '',
-      downDisabled: false,
+      downDisabled: true,
       loading: false
     }
   },
@@ -346,6 +346,15 @@ export default{
       let seconds = value.getSeconds() + ''
       seconds = seconds.padStart(2, '0')
       return `${hour}:${minutes}:${seconds}`
+    }
+  },
+  watch: {
+    sectorIds (val, oldVal) {
+      if (val) {
+        this.downDisabled = false
+      } else {
+        this.downDisabled = true
+      }
     }
   }
 }

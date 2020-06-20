@@ -1,66 +1,104 @@
 <template>
-  <div>
-    <el-dialog title="编辑用户" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <p style="height: 30px; color: #f04645;" v-show="sectorDisabled">提示：如需更换所属部门请先解绑卡片！</p>
-      <el-form class="divide-from" :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
-        <el-form-item label="用户姓名" prop="name">
-          <el-input v-model.trim="formData.name"></el-input>
-        </el-form-item>
-        <el-form-item label="工号" prop="worknum">
-          <el-input v-model.trim="formData.worknum"></el-input>
-        </el-form-item>
-        <el-form-item label="手机号码" prop="phone">
-          <el-input v-model.trim="formData.phone" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="所属部门" prop="sectorName">
-          <el-input :disabled="true" v-model="formData.sectorName"></el-input>
-          <el-button type="primary" :disabled="sectorDisabled" @click="sectorDialog = true">选择部门</el-button>
-        </el-form-item>
-        <el-form-item label="角色" prop="role">
-          <el-select v-model="formData.role" filterable placeholder="请选择用户角色">
-            <el-option
-              v-for="item in parentRoles"
-              :key="item.role_id"
-              :label="item.role_name"
-              :value="item.role_id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="授权范围" prop="accreditName">
-          <el-input type="textarea" :disabled="true" v-model="formData.accreditName"></el-input>
-          <el-button type="primary" @click="accreditDialog = true">选择范围</el-button>
-        </el-form-item>
-        <el-form-item label="技能" prop="skills">
-          <el-select v-model="formData.skills" multiple collapse-tags placeholder="请选择技能">
-            <el-option
-              v-for="item in skillOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="cancelClick">取 消</el-button>
-        <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
-      </div>
-    </el-dialog>
-    <!-- 部门 -->
-    <sector-module :parentDialog="sectorDialog" @parentUpdata="sectorUpdata" @parentCancel="sectorCancel"></sector-module>
-    <!-- 授权范围 -->
-    <accredit-module :parentDialog="accreditDialog" :parentId="formData.accreditId" @parentUpdata="accreditUpdata" @parentCancel="accreditCancel"></accredit-module>
-  </div>
+ <div>
+   <el-dialog title="新增用户" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+     <el-form class="divide-from" :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
+       <el-form-item label="用户姓名" prop="name">
+         <el-input v-model.trim="formData.name"></el-input>
+       </el-form-item>
+       <el-form-item label="工号" prop="worknum">
+         <el-input v-model.trim="formData.worknum"></el-input>
+       </el-form-item>
+       <el-form-item label="手机号码" prop="phone">
+         <el-input v-model.trim="formData.phone" auto-complete="off"></el-input>
+       </el-form-item>
+       <el-form-item label="所属部门" prop="sectorName">
+         <el-input :disabled="true" v-model="formData.sectorName"></el-input>
+         <el-button type="primary" @click="sectorDialog = true">选择部门</el-button>
+       </el-form-item>
+       <el-form-item label="角色" prop="role">
+         <el-select v-model="formData.role" filterable placeholder="请选择用户角色">
+           <el-option
+             v-for="item in parentRoles"
+             :key="item.role_id"
+             :label="item.role_name"
+             :value="item.role_id">
+           </el-option>
+         </el-select>
+       </el-form-item>
+       <el-form-item label="授权范围" prop="accreditName">
+         <el-input type="textarea" :disabled="true" v-model="formData.accreditName"></el-input>
+         <el-button type="primary" @click="accreditDialog = true">选择范围</el-button>
+       </el-form-item>
+       <el-form-item label="技能" prop="skills">
+         <el-select v-model="formData.skills" multiple collapse-tags placeholder="请选择技能">
+           <el-option
+             v-for="item in skillOptions"
+             :key="item.id"
+             :label="item.name"
+             :value="item.id">
+           </el-option>
+         </el-select>
+       </el-form-item>
+     </el-form>
+     <div slot="footer" class="dialog-footer">
+       <el-button @click="cancelClick">取 消</el-button>
+       <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
+     </div>
+   </el-dialog>
+   <!-- 黑卡部门 -->
+   <sectorbc-module
+     v-if="parentType === 1"
+     :parentDialog="sectorDialog"
+     :parentOrgId="parentOrgId"
+     @parentUpdata="sectorUpdata"
+     @parentCancel="sectorCancel">
+   </sectorbc-module>
+   <!-- 客户部门 -->
+   <sectorkh-module
+     v-else-if="parentType === 2"
+     :parentDialog="sectorDialog"
+     @parentUpdata="sectorUpdata"
+     @parentCancel="sectorCancel">
+   </sectorkh-module>
+   <!-- 黑卡授权范围 -->
+   <accreditbc-module
+     v-if="parentType === 1"
+     :parentDialog="accreditDialog"
+     :parentOrgId="parentOrgId"
+     :parentId="formData.accreditId"
+     @parentUpdata="accreditUpdata"
+     @parentCancel="accreditCancel">
+   </accreditbc-module>
+   <!-- 客户授权范围 -->
+   <accreditkh-module
+     v-else-if="parentType === 2"
+     :parentDialog="accreditDialog"
+     :parentId="formData.accreditId"
+     @parentUpdata="accreditUpdata"
+     @parentCancel="accreditCancel">
+   </accreditkh-module>
+ </div>
 </template>
 
 <script>
+/*
+* 说明：
+*   添加用户模块
+*   parentType：父级类型 1：黑卡   2：客户
+*   parentOrgId：组织id(用于黑卡获取组织树)
+*   parentOrgId：组织id(企业id)
+* */
 import { mapState } from 'vuex'
-// 引入部门组件
-import sectorModule from '@/components/company/cuser-sector'
-// 引入部门组件
-import accreditModule from '@/components/company/cuser-accredit'
+// 引入黑卡部门组件
+import sectorbcModule from '@/components/company/userBC-sector'
+// 引入客户部门组件
+import sectorkhModule from '@/components/company/userKH-sector'
+// 引入黑卡授权范围组件
+import accreditbcModule from '@/components/company/userBC-accredit'
+// 引入客户授权范围组件
+import accreditkhModule from '@/components/company/userKH-accredit'
 export default{
-  props: ['parentDialog', 'parentRoles', 'parentId'],
+  props: ['parentDialog', 'parentType', 'parentRoles', 'parentOrgId', 'parentComId'],
   data () {
     let checkWorknum = (rule, value, callback) => {
       let regex = /^[0-9a-zA-Z]+$/
@@ -112,7 +150,6 @@ export default{
       formData: {
         name: '',
         worknum: '',
-        ophone: '',
         phone: '',
         sectorName: '',
         sectorId: '',
@@ -123,30 +160,29 @@ export default{
       },
       disabled: false,
       sectorDialog: false,
-      accreditDialog: false,
-      sectorDisabled: false
+      accreditDialog: false
     }
   },
   created () {
 
   },
   components: {
-    sectorModule,
-    accreditModule
+    sectorbcModule,
+    sectorkhModule,
+    accreditbcModule,
+    accreditkhModule
   },
   computed: {
     ...mapState('user', [
-      'companyId',
       'userId'
     ])
   },
   methods: {
     // 初始化数据
-    comInit () {
+    addInit () {
       this.formData = {
         name: '',
         worknum: '',
-        ophone: '',
         phone: '',
         sectorName: '',
         sectorId: '',
@@ -155,74 +191,10 @@ export default{
         accreditId: [],
         skills: []
       }
-      this.getDetails()
       if (this.skillOptions.length === 0) {
         // 获取技能选项列表
         this.getSkillData()
       }
-    },
-    // 获取详情
-    getDetails () {
-      let params = {
-        userN_id: this.parentId
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.2/selUserOnly',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const itemData = res.data.data1
-          // 是否绑定卡片
-          const mac = itemData.card_mac || ''
-          if (mac) {
-            this.sectorDisabled = true
-          } else {
-            this.sectorDisabled = false
-          }
-          // 授权范围
-          const accredits = itemData.userOgzs || []
-          let accreditName = []
-          let accreditId = []
-          accredits.forEach(item => {
-            accreditName.push(item.organize_name)
-            accreditId.push(item.organize_id)
-          })
-          accreditName = accreditName.join('、')
-          // 技能
-          const userSkills = itemData.userSkls
-          let skills = []
-          userSkills.forEach(item => {
-            skills.push(item.skills_id)
-          })
-          this.formData = {
-            name: itemData.user_name,
-            worknum: itemData.pin || '',
-            ophone: itemData.user_phone,
-            phone: itemData.user_phone,
-            sectorName: itemData.organize_name,
-            sectorId: itemData.ogz_id,
-            role: itemData.role_id,
-            accreditName: accreditName,
-            accreditId: accreditId,
-            skills: skills
-          }
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
     },
     // 验证表单
     submitForm (formName) {
@@ -247,12 +219,10 @@ export default{
       let skills = this.formData.skills
       skills = skills.join(',')
       let params = {
-        company_id: this.companyId,
+        company_id: this.parentComId,
         user_id: this.userId,
-        userN_id: this.parentId,
         user_name: this.formData.name,
         pin: this.formData.worknum,
-        old_phone: this.formData.ophone,
         user_phone: this.formData.phone,
         ogz_id: this.formData.sectorId,
         role_id: this.formData.role,
@@ -263,7 +233,7 @@ export default{
       this.disabled = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.2/altUser',
+        url: this.sysetApi() + '/v3.2/addUser',
         data: params
       }).then((res) => {
         this.disabled = false
@@ -316,7 +286,7 @@ export default{
     /* 技能 */
     getSkillData (skills) {
       let params = {
-        company_id: this.companyId,
+        company_id: this.parentComId,
         user_id: this.userId,
         project_id: 0
       }
@@ -356,7 +326,7 @@ export default{
   watch: {
     parentDialog (val, oldVal) {
       if (val) {
-        this.comInit()
+        this.addInit()
       }
     }
   }

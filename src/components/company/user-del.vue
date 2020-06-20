@@ -9,6 +9,9 @@
 </template>
 
 <script>
+/*
+* 删除用户模块
+* */
 import { mapState } from 'vuex'
 export default{
   props: ['parentDialog', 'parentId'],

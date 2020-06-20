@@ -10,6 +10,17 @@
 </template>
 
 <script>
+/*
+* 说明：
+*   使用范围：图片的对话框形式展示
+*   接收参数：
+*           parentImgurl: [
+*                           {
+*                             id: 图片的标识
+*                             imgUrl：图片的链接
+*                           }
+*                         ]
+* */
 export default{
   props: ['parentDialog', 'parentImgurl'],
   data () {

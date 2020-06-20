@@ -36,6 +36,9 @@
 </template>
 
 <script>
+/*
+* 编辑企业（客户）
+* */
 import { mapState } from 'vuex'
 // 引入地图组件
 import mapModule from '@/components/company/organ-map'
@@ -247,14 +250,13 @@ export default{
     width: 600px;
     margin: 0 auto;
     .module-title{
-      height: 60px;
+      height: 40px;
       text-align: center;
-      line-height: 60px;
       font-size: 16px;
       font-weight: 600;
     }
     .module-operate {
-      margin-top: 50px;
+      margin-top: 30px;
       text-align: center;
     }
   }

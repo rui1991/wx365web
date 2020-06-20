@@ -3,6 +3,13 @@
 </template>
 
 <script>
+/*
+* 说明：
+*     使用范围：地图展示
+*     接收参数：
+*           parentLong：中心点经度
+*           parentLat：中心点纬度
+* */
 import BMap from 'BMap'
 export default{
   props: ['parentState', 'parentLong', 'parentLat'],

@@ -1,12 +1,12 @@
 <template>
   <div class="main">
     <el-container style="height: 100%">
-      <el-header class="main-header">
-        <div class="left main-header-title">
+      <el-header height="60px" class="main-header">
+        <div class="main-header-title">
           <img src="../assets/images/logo.png" height="42" alt="">
           <h2 class="title">{{ companyName }}</h2>
         </div>
-        <div class="right main-header-nav">
+        <div class="main-header-nav">
           <div class="nav-item">
             <el-select v-model="nowProjectId" filterable placeholder="请选择项目" :disabled="proDisabled" @change="projectChange">
               <el-option
@@ -62,16 +62,16 @@
             <el-submenu index="1" class="submenu-item" v-if="authority.organ || authority.user || authority.shift || authority.approval">
               <template slot="title"><i class="iconfont icon-qiye"></i>企业配置</template>
               <el-menu-item-group v-if="authority.organ && companyId === 1">
-                <el-menu-item index="/main/oorgan">组织管理</el-menu-item>
+                <el-menu-item index="/main/organBC">组织管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.organ && companyId !== 1">
-                <el-menu-item index="/main/corgan">组织管理</el-menu-item>
+                <el-menu-item index="/main/organKH">组织管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.user && companyId === 1">
-                <el-menu-item index="/main/ouser">用户管理</el-menu-item>
+                <el-menu-item index="/main/userBC">用户管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.user && companyId !== 1">
-                <el-menu-item index="/main/cuser">用户管理</el-menu-item>
+                <el-menu-item index="/main/userKH">用户管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group v-if="authority.approval">
                 <el-menu-item index="/main/approval">审批管理</el-menu-item>
@@ -437,8 +437,9 @@ export default{
   .main{
     height: 100%;
     .main-header {
-      height: 60px;
       padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
       background: #4e97d8;
       color: #fff;
       .main-header-title{
@@ -559,7 +560,7 @@ export default{
         padding-top: 0;
         padding-left: 0;
         padding-right: 0;
-        /*padding-bottom: 0;*/
+        padding-bottom: 0;
         background: #f0f3f4;
       }
     }

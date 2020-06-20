@@ -18,7 +18,7 @@
       <el-form-item label="分公司地址" prop="area" v-show="filiale">
         <el-input v-model.trim="formData.area" auto-complete="off"></el-input>
       </el-form-item>
-      <el-form-item label="坐标" prop="coord">
+      <el-form-item label="坐标" prop="coord" v-show="parentOrgType !== 4">
         <el-input :disabled="true" v-model="formData.coord" style="width: 360px; margin-right: 20px;"></el-input>
         <el-button type="primary" @click="mapDialog = true">选择坐标</el-button>
       </el-form-item>
@@ -32,14 +32,14 @@
         </el-radio-group>
       </el-form-item>
     </el-form>
-    <div style="text-align: center; overflow-x: hidden;" v-show="imgUrl">
+    <div style="text-align: center; overflow-x: hidden;" v-show="parentOrgType === 3">
       <img :src="imgUrl" height="240" alt="">
     </div>
     <div class="module-operate">
       <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
       <el-upload
         style="display: inline-block;"
-        v-show="imgBtn"
+        v-show="parentOrgType === 3"
         class="upload-demo"
         :headers="reqHead"
         :action="reqUrl"
@@ -72,6 +72,9 @@
 </template>
 
 <script>
+/*
+* 编辑分公司（客户模块）、项目、部门
+* */
 import { mapState } from 'vuex'
 // 引入地图组件
 import mapModule from '@/components/company/organ-map'
@@ -116,7 +119,6 @@ export default{
       },
       reqUrl: '',
       imgLimit: 1,
-      imgBtn: false,
       imgBtnTxt: '上传图片',
       fileList: []
     }
@@ -125,38 +127,8 @@ export default{
 
   },
   mounted () {
-    // 获取详情
-    this.getDetails()
-    const orgType = this.parentOrgType
-    if (orgType === 2) {
-      this.titleName = '编辑分公司'
-      this.name = '分公司名称'
-      this.mesHint = '分公司编辑成功！'
-      this.filiale = true
-      this.parentDisabled = true
-    } else if (orgType === 3) {
-      this.titleName = '编辑项目'
-      this.name = '项目名称'
-      this.mesHint = '项目编辑成功！'
-      this.filiale = false
-      this.parentDisabled = false
-      // 设置上传图片路径
-      let params = {
-        state: 18,
-        user_id: this.userId,
-        project_id: this.parentBaseId
-      }
-      params = this.$qs.stringify(params)
-      this.reqUrl = this.sysetApi() + '/upload?' + params
-      // 获取项目图片
-      this.getProjectImg()
-    } else if (orgType === 4) {
-      this.titleName = '编辑部门'
-      this.name = '部门名称'
-      this.mesHint = '部门编辑成功！'
-      this.filiale = false
-      this.parentDisabled = false
-    }
+    // 初始化数据
+    this.comInit()
     // 设置头部
     this.reqHead = {
       token: sessionStorage.getItem('wxWebToken'),
@@ -173,6 +145,41 @@ export default{
     ])
   },
   methods: {
+    // 初始化数据
+    comInit () {
+      // 获取详情
+      this.getDetails()
+      const orgType = this.parentOrgType
+      if (orgType === 2) {
+        this.titleName = '编辑分公司'
+        this.name = '分公司名称'
+        this.mesHint = '分公司编辑成功！'
+        this.filiale = true
+        this.parentDisabled = true
+      } else if (orgType === 3) {
+        this.titleName = '编辑项目'
+        this.name = '项目名称'
+        this.mesHint = '项目编辑成功！'
+        this.filiale = false
+        this.parentDisabled = false
+        // 设置上传图片路径
+        let params = {
+          state: 18,
+          user_id: this.userId,
+          project_id: this.parentBaseId
+        }
+        params = this.$qs.stringify(params)
+        this.reqUrl = this.sysetApi() + '/upload?' + params
+        // 获取项目图片
+        this.getProjectImg()
+      } else if (orgType === 4) {
+        this.titleName = '编辑部门'
+        this.name = '部门名称'
+        this.mesHint = '部门编辑成功！'
+        this.filiale = false
+        this.parentDisabled = false
+      }
+    },
     // 获取详情
     getDetails () {
       let params = {
@@ -368,8 +375,9 @@ export default{
     parentOrgId (val, old) {
       // 重置表单
       this.resetForm('ruleForm')
-      // 获取详情
-      this.getDetails()
+      // 初始化数据
+      this.comInit()
+      // 项目图片
       if (this.parentOrgType === 3) {
         // 设置上传图片路径
         let params = {
@@ -392,14 +400,13 @@ export default{
     width: 600px;
     margin: 0 auto;
     .module-title{
-      height: 60px;
+      height: 40px;
       text-align: center;
-      line-height: 60px;
       font-size: 16px;
       font-weight: 600;
     }
     .module-operate {
-      margin-top: 50px;
+      margin-top: 30px;
       text-align: center;
       button{
         margin: 0 10px;

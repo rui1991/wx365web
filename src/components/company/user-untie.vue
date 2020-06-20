@@ -9,6 +9,9 @@
 </template>
 
 <script>
+/*
+* 用户解绑模块
+* */
 import { mapState } from 'vuex'
 export default{
   props: ['parentDialog', 'parentId', 'parentComId', 'parentPro', 'parentMac'],

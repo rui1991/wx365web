@@ -46,32 +46,60 @@
         <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
-    <!-- 部门 -->
-    <sector-module
+    <!-- 黑卡部门 -->
+    <sectorbc-module
+      v-if="parentType === 1"
       :parentDialog="sectorDialog"
       :parentOrgId="parentOrgId"
       @parentUpdata="sectorUpdata"
       @parentCancel="sectorCancel">
-    </sector-module>
-    <!-- 授权范围 -->
-    <accredit-module
+    </sectorbc-module>
+    <!-- 客户部门 -->
+    <sectorkh-module
+      v-else-if="parentType === 2"
+      :parentDialog="sectorDialog"
+      @parentUpdata="sectorUpdata"
+      @parentCancel="sectorCancel">
+    </sectorkh-module>
+    <!-- 黑卡授权范围 -->
+    <accreditbc-module
+      v-if="parentType === 1"
       :parentDialog="accreditDialog"
       :parentOrgId="parentOrgId"
       :parentId="formData.accreditId"
       @parentUpdata="accreditUpdata"
       @parentCancel="accreditCancel">
-    </accredit-module>
+    </accreditbc-module>
+    <!-- 客户授权范围 -->
+    <accreditkh-module
+      v-if="parentType === 2"
+      :parentDialog="accreditDialog"
+      :parentId="formData.accreditId"
+      @parentUpdata="accreditUpdata"
+      @parentCancel="accreditCancel">
+    </accreditkh-module>
   </div>
 </template>
 
 <script>
+/*
+* 说明：
+*   编辑用户模块
+*   parentType：父级类型 1：黑卡   2：客户
+*   parentOrgId：组织id(用于黑卡获取组织树)
+*   parentOrgId：组织id(企业id)
+* */
 import { mapState } from 'vuex'
-// 引入部门组件
-import sectorModule from '@/components/company/ouser-sector'
-// 引入部门组件
-import accreditModule from '@/components/company/ouser-accredit'
+// 引入黑卡部门组件
+import sectorbcModule from '@/components/company/userBC-sector'
+// 引入客户部门组件
+import sectorkhModule from '@/components/company/userKH-sector'
+// 引入黑卡授权范围组件
+import accreditbcModule from '@/components/company/userBC-accredit'
+// 引入客户授权范围组件
+import accreditkhModule from '@/components/company/userKH-accredit'
 export default{
-  props: ['parentDialog', 'parentRoles', 'parentId', 'parentOrgId'],
+  props: ['parentDialog', 'parentType', 'parentRoles', 'parentOrgId', 'parentComId', 'parentId'],
   data () {
     let checkWorknum = (rule, value, callback) => {
       let regex = /^[0-9a-zA-Z]+$/
@@ -99,6 +127,7 @@ export default{
     }
     return {
       formLabelWidth: '100px',
+      companyId: 0,
       skillOptions: [],
       rules: {
         name: [
@@ -121,7 +150,6 @@ export default{
         ]
       },
       formData: {
-        firmId: '',
         name: '',
         worknum: '',
         ophone: '',
@@ -143,8 +171,10 @@ export default{
 
   },
   components: {
-    sectorModule,
-    accreditModule
+    sectorbcModule,
+    sectorkhModule,
+    accreditbcModule,
+    accreditkhModule
   },
   computed: {
     ...mapState('user', [
@@ -154,7 +184,28 @@ export default{
   methods: {
     // 初始化数据
     comInit () {
+      // 设置企业ID
+      this.companyId = this.parentComId
+      // 清空数据
+      this.formData = {
+        name: '',
+        worknum: '',
+        ophone: '',
+        phone: '',
+        sectorName: '',
+        sectorId: '',
+        role: '',
+        accreditName: '',
+        accreditId: [],
+        skills: []
+      }
+      // 获取详情
       this.getDetails()
+      // 判断是否要获取技能选项
+      if (this.skillOptions.length === 0) {
+        // 获取技能选项列表
+        this.getSkillData()
+      }
     },
     // 获取详情
     getDetails () {
@@ -169,6 +220,8 @@ export default{
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           const itemData = res.data.data1
+          // 企业ID
+          this.companyId = itemData.company_id
           // 是否绑定卡片
           const mac = itemData.card_mac || ''
           if (mac) {
@@ -192,7 +245,6 @@ export default{
             skills.push(item.skills_id)
           })
           this.formData = {
-            firmId: itemData.company_id,
             name: itemData.user_name,
             worknum: itemData.pin || '',
             ophone: itemData.user_phone,
@@ -204,8 +256,6 @@ export default{
             accreditId: accreditId,
             skills: skills
           }
-          // 获取技能选项列表
-          this.getSkillData()
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -245,7 +295,7 @@ export default{
       let skills = this.formData.skills
       skills = skills.join(',')
       let params = {
-        company_id: this.formData.firmId,
+        company_id: this.companyId,
         user_id: this.userId,
         userN_id: this.parentId,
         user_name: this.formData.name,
@@ -314,7 +364,7 @@ export default{
     /* 技能 */
     getSkillData (skills) {
       let params = {
-        company_id: this.formData.firmId,
+        company_id: this.companyId,
         user_id: this.userId,
         project_id: 0
       }

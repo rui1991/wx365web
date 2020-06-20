@@ -111,7 +111,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 // 引入组织树组件
-import orgModule from '@/components/report/report-org2'
+import orgModule from '@/components/public/report-org2'
 export default{
   name: 'reportWorksta',
   data () {

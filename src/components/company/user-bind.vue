@@ -13,6 +13,9 @@
 </template>
 
 <script>
+/*
+* 用户绑卡模块
+* */
 import { mapState } from 'vuex'
 export default{
   props: ['parentDialog', 'parentId', 'parentComId', 'parentPro'],

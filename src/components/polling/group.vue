@@ -1,73 +1,71 @@
 <template>
-  <div class="group">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>巡检巡查</el-breadcrumb-item>
-          <el-breadcrumb-item>组管理</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-main class="module-main">
-        <div class="search">
-          <div class="item">
-            <span>组名称</span>
-            <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
-          </div>
-          <div class="item date">
-            <span>创建时段</span>
-            <el-date-picker
-              style="width: 280px;"
-              v-model="nowSearch.date"
-              type="daterange"
-              value-format="yyyy-MM-dd"
-              :clearable="true"
-              :picker-options="pickerOptions"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
-          </div>
-          <div class="operate">
-            <el-button type="primary" @click="searchList">搜索</el-button>
-            <el-button type="primary" @click="addDialog = true">新增</el-button>
-          </div>
+  <div class="module-container">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>巡检巡查</el-breadcrumb-item>
+        <el-breadcrumb-item>组管理</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-main">
+      <div class="main-search main-search-single">
+        <div class="item">
+          <span>组名称</span>
+          <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
         </div>
-        <el-table class="list-table" :data="tableData" border style="width: 100%">
-          <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column width="180" :show-overflow-tooltip="true" prop="group_name" label="组名称"></el-table-column>
-          <el-table-column width="140" label="部门">
-            <template slot-scope="scope">
-              <span v-if="scope.row.ogz_id">{{ scope.row.ogz_name }}</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
-          <el-table-column width="200" label="创建时间">
-            <template slot-scope="scope">
-              <span>{{ scope.row.create_time | formatDate }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="user_names" :show-overflow-tooltip="true" label="人员名称"></el-table-column>
-          <el-table-column width="160" label="操作">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
-              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.group_id)">删除</a>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          prev-text="上一页"
-          next-text="下一页"
-          :current-page="nowPage"
-          layout="sizes, prev, pager, next, total"
-          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-          :page-size="limit"
-          @size-change="handleSizeChange"
-          @current-change="pageChang"
-          :total="total">
-        </el-pagination>
-      </el-main>
-    </el-container>
+        <div class="item date">
+          <span>创建时段</span>
+          <el-date-picker
+            style="width: 280px;"
+            v-model="nowSearch.date"
+            type="daterange"
+            value-format="yyyy-MM-dd"
+            :clearable="true"
+            :picker-options="pickerOptions"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期">
+          </el-date-picker>
+        </div>
+        <div class="operate">
+          <el-button type="primary" @click="searchList">搜索</el-button>
+          <el-button type="primary" @click="addDialog = true">新增</el-button>
+        </div>
+      </div>
+      <el-table class="list-table" :data="tableData" border style="width: 100%">
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column width="180" :show-overflow-tooltip="true" prop="group_name" label="组名称"></el-table-column>
+        <el-table-column width="140" label="部门">
+          <template slot-scope="scope">
+            <span v-if="scope.row.ogz_id">{{ scope.row.ogz_name }}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column width="200" label="创建时间">
+          <template slot-scope="scope">
+            <span>{{ scope.row.create_time | formatDate }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="user_names" :show-overflow-tooltip="true" label="人员名称"></el-table-column>
+        <el-table-column width="160" label="操作">
+          <template slot-scope="scope">
+            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
+            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.group_id)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        background
+        prev-text="上一页"
+        next-text="下一页"
+        :current-page="nowPage"
+        layout="sizes, prev, pager, next, total"
+        :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+        :page-size="limit"
+        @size-change="handleSizeChange"
+        @current-change="pageChang"
+        :total="total">
+      </el-pagination>
+    </div>
     <!-- 新增 -->
     <add-module
       :parentDialog="addDialog"
@@ -278,16 +276,16 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.group{
-  height: 100%;
-  padding-bottom: 20px;
   .module-container{
     height: 100%;
-    padding: 0;
+    padding-top: 65px;
+    padding-bottom: 20px;
+    position: relative;
     .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
+      width: 100%;
+      position: absolute;
+      left: 0;
+      top: 0;
       .el-breadcrumb{
         padding-top: 15px;
         padding-left: 20px;
@@ -296,23 +294,19 @@ export default{
       }
     }
     .module-main{
+      height: 100%;
       padding: 10px;
       margin-left: 20px;
       margin-right: 20px;
+      overflow: auto;
       background: #ffffff;
-      .search{
-        display: table;
-        width: 100%;
-        height: 60px;
+      .main-search{
         .item{
-          display: table-cell;
-          vertical-align: middle;
           width: 280px;
-          font-size: 0;
+          display: flex;
+          align-items: center;
           span{
             width: 70px;
-            display: inline-block;
-            line-height: 34px;
             font-size: 14px;
           }
         }
@@ -320,12 +314,17 @@ export default{
           width: 420px;
         }
         .operate{
-          display: table-cell;
-          vertical-align: middle;
-          text-align: right;
+          display: flex;
+          flex-grow: 1;
+          justify-content: flex-end;
         }
+      }
+      .main-search-single {
+        width: 100%;
+        height: 60px;
+        display: flex;
+        align-items: center;
       }
     }
   }
-}
 </style>

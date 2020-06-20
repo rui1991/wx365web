@@ -14,6 +14,9 @@
 </template>
 
 <script>
+/*
+* 企业、分公司模块配置
+* */
 import { mapState } from 'vuex'
 export default{
   props: ['parentOrgId', 'parentBaseId'],
@@ -118,11 +121,13 @@ export default{
         funs: autIds
       }
       params = this.$qs.stringify(params)
+      this.disabled = true
       this.$axios({
         method: 'post',
         url: this.sysetApi() + '/v3.2/setComFun',
         data: params
       }).then((res) => {
+        this.disabled = false
         if (res.data.result === 'Sucess') {
           this.$message({
             showClose: true,
@@ -138,6 +143,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.disabled = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -158,7 +164,7 @@ export default{
 <style lang="less" scoped>
   .config{
     .config-operate{
-      padding-top: 20px;
+      padding-top: 30px;
       text-align: center;
     }
   }

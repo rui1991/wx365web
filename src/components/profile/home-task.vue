@@ -536,7 +536,7 @@ export default{
       this.typeName = '项目：'
       this.orgType = 3
       // 获取项目数据
-      this.getProjectData(1)
+      this.getProjectData()
       // 获取部门列表
       this.getSectorOptions()
     } else if (type === 3) {
@@ -545,7 +545,7 @@ export default{
       this.sectorName = this.$route.query.name
       this.orgType = 4
       // 获取部门数据
-      this.getSectorData(1)
+      this.getSectorData()
     }
   },
   components: {
@@ -554,229 +554,39 @@ export default{
   },
   methods: {
     // 项目数据
-    getProjectData (n) {
-      let params = {
-        project_id: this.orgBase,
-        type: n
-      }
-      params = this.$qs.stringify(params)
-      this.loading = true
-      this.$axios({
-        method: 'post',
-        url: this.reportApi() + '/proOperateInsDetails',
-        data: params
-      }).then((res) => {
-        this.loading = false
-        if (res.data.result === 'Sucess') {
-          const resData = res.data.data1
-          this.resultDispose(resData)
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.loading = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
+    getProjectData () {
+      this.getGeneralProData(1)
+      this.getFulRatioProData(1)
+      this.getFulTrendProData(7)
+      this.getTimeRatioProData(7)
+      this.getTimeTrendProData(7)
+      this.getFulRankingProData(7)
     },
     // 部门数据
     getSectorData (n) {
-      let params = {
-        ogz_id: this.orgBase,
-        type: n
-      }
-      params = this.$qs.stringify(params)
-      this.loading = true
-      this.$axios({
-        method: 'post',
-        url: this.reportApi() + '/ogzOperateInsDetails',
-        data: params
-      }).then((res) => {
-        this.loading = false
-        if (res.data.result === 'Sucess') {
-          const resData = res.data.data1
-          this.resultDispose(resData)
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.loading = false
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-    // 结果处理
-    resultDispose (data) {
-      // 巡检巡查任务概况
-      const generalArg = data.insBaseMes
-      let generalData = {
-        allNum: generalArg.insDutySize || 0,
-        fulfillNum: generalArg.insContinueSize || 0,
-        fulfillRate: this.$common.countPercent(generalArg.insContinueSize, generalArg.insDutySize),
-        undoneNum: generalArg.insNotContinueSize || 0,
-        undoneRate: this.$common.countPercent(generalArg.insNotContinueSize, generalArg.insDutySize),
-        abnormalNum: generalArg.insAbnormalSize || 0,
-        timelyRate: this.$common.retainPercent(generalArg.insContinueOntimeRate),
-        overtimeRate: this.$common.retainPercent(generalArg.intContinueOuttimeRate)
-      }
-      this.generalData = generalData
-      // 任务完成数量比
-      const fulRatioArg = data.insContinueSizeCompare || []
-      const fulRatioGroup = ['product', fulRatioArg[0].lable, fulRatioArg[1].lable]
-      let fulRatioData = []
-      fulRatioData.push(fulRatioGroup)
-      const fulRatioAry1 = fulRatioArg[0].data
-      const fulRatioAry2 = fulRatioArg[1].data
-      fulRatioAry1.forEach((item, index) => {
-        let ary = []
-        ary.push(item.date)
-        let num1 = item.size || 0
-        ary.push(num1)
-        let num2 = fulRatioAry2[index].size || 0
-        ary.push(num2)
-        fulRatioData.push(ary)
-      })
-      this.fulRatioOption.dataset.source = fulRatioData
-      // 任务完成、未完成率趋势
-      const fulTrendColors = ['#44bd8a', '#d8d8d8', '#62a8e8', '#fa6b67']
-      let fulTrendData = {
-        legendData: [],
-        xAxisData: [],
-        seriesData: []
-      }
-      const fulTrendArg = data.insNotContinueTrend || []
-      fulTrendArg.forEach((item, index) => {
-        fulTrendData.legendData.push(item.lable)
-        let itemData = []
-        item.data.forEach(inItem => {
-          let itemValue = this.switchInteger(inItem.size)
-          // let itemValue = inItem.size || 0
-          itemData.push(itemValue)
-        })
-        fulTrendData.seriesData.push({
-          name: item.lable,
-          type: 'line',
-          color: fulTrendColors[index],
-          data: itemData
-        })
-      })
-      fulTrendArg[0].data.forEach(inItem => {
-        fulTrendData.xAxisData.push(inItem.date)
-      })
-      this.fulTrendOption.legend.data = fulTrendData.legendData
-      this.fulTrendOption.xAxis.data = fulTrendData.xAxisData
-      this.fulTrendOption.series = fulTrendData.seriesData
-      // 任务及时数量比
-      const timeRatioArg = data.insOntimeSizeCompare || []
-      const timeRatioGroup = ['product', timeRatioArg[0].lable, timeRatioArg[1].lable]
-      let timeRatioData = []
-      timeRatioData.push(timeRatioGroup)
-      const timeRatioAry1 = timeRatioArg[0].data
-      const timeRatioAry2 = timeRatioArg[1].data
-      timeRatioAry1.forEach((item, index) => {
-        let ary = []
-        ary.push(item.date)
-        let num1 = item.size || 0
-        ary.push(num1)
-        let num2 = timeRatioAry2[index].size || 0
-        ary.push(num2)
-        timeRatioData.push(ary)
-      })
-      this.timeRatioOption.dataset.source = timeRatioData
-      // 任务完成及时率趋势
-      const timeTrendColors = ['#44bd8a', '#fa6b67', '#d8d8d8', '#62a8e8']
-      let timeTrendData = {
-        legendData: [],
-        xAxisData: [],
-        seriesData: []
-      }
-      const timeTrendArg = data.insContinueRateTrend || []
-      timeTrendArg.forEach((item, index) => {
-        timeTrendData.legendData.push(item.lable)
-        let itemData = []
-        item.data.forEach(inItem => {
-          let itemValue = this.switchInteger(inItem.size)
-          // let itemValue = inItem.size || 0
-          itemData.push(itemValue)
-        })
-        timeTrendData.seriesData.push({
-          name: item.lable,
-          type: 'line',
-          color: timeTrendColors[index],
-          data: itemData
-        })
-      })
-      timeTrendArg[0].data.forEach(inItem => {
-        timeTrendData.xAxisData.push(inItem.date)
-      })
-      this.timeTrendOption.legend.data = timeTrendData.legendData
-      this.timeTrendOption.xAxis.data = timeTrendData.xAxisData
-      this.timeTrendOption.series = timeTrendData.seriesData
-      // 人员任务完成率排名
-      const fulRankingData = data.userInsContinueRateRanking || []
-      this.fulRankingData = fulRankingData
-      this.total = fulRankingData.length
-      let nowRankingData = JSON.parse(JSON.stringify(fulRankingData)).slice(0, this.limit)
-      nowRankingData.forEach(item => {
-        item.size = this.switchInteger(item.size)
-      })
-      this.nowRankingData = nowRankingData
-      this.page = 1
-      // 存储数据
-      this.resData1 = {
-        generalData: generalData,
-        fulRatioData: fulRatioData,
-        fulTrendData: fulTrendData,
-        timeRatioData: timeRatioData,
-        timeTrendData: timeTrendData,
-        fulRankingData: fulRankingData
-      }
-      this.generalState1 = true
-      this.fulRatioSpan = 12
-      this.fulRatioState1 = true
-      this.fulTrendSpan = 12
-      this.fulTrendState1 = true
-      this.timeRatioSpan = 12
-      this.timeRatioState1 = true
-      this.timeTrendSpan = 12
-      this.timeTrendState1 = true
-      this.fulRankingState1 = true
+      this.getGeneralSecData(1)
+      this.getFulRatioSecData(1)
+      this.getFulTrendSecData(7)
+      this.getTimeRatioSecData(7)
+      this.getTimeTrendSecData(7)
+      this.getFulRankingSecData(7)
     },
     /* 切换部门 */
     sectorChange (val) {
       const orgNode = this.sectorOptions.find(item => {
         return item.id === val
       })
-      this.orgType = orgNode.type
-      this.orgBase = orgNode.baseId
-      if (this.orgType === 3) {
-        this.typeName = '项目：'
-      } else if (this.orgType === 4) {
-        this.typeName = '部门：'
-      }
       // 初始化数据
       this.initData()
+      this.orgType = orgNode.type
+      this.orgBase = orgNode.baseId
       // 重新请求数据
       if (this.orgType === 3) {
-        this.getProjectData(1)
+        this.typeName = '项目：'
+        this.getProjectData()
       } else if (this.orgType === 4) {
-        this.getSectorData(1)
+        this.typeName = '部门：'
+        this.getSectorData()
       }
     },
     // 初始化数据

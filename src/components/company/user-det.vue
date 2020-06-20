@@ -33,6 +33,9 @@
 </template>
 
 <script>
+/*
+* 用户详情模块
+* */
 export default{
   props: ['parentDialog', 'parentId'],
   data () {

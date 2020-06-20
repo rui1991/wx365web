@@ -1,12 +1,12 @@
 <template>
-  <el-dialog title="选择组织机构" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+  <div class="organ-tree">
     <el-input
       placeholder="输入关键字进行过滤"
       clearable
       v-model="filterText">
     </el-input>
     <el-tree
-      :data="orgData"
+      :data="treeData"
       ref="tree"
       show-checkbox
       default-expand-all
@@ -17,51 +17,71 @@
       @check-change="orgCheckChange"
       :props="defaultProps">
     </el-tree>
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="cancelClick">取 消</el-button>
-      <el-button type="primary" :disabled="disabled" @click="confirmClick">确 定</el-button>
-    </div>
-  </el-dialog>
+  </div>
 </template>
 
 <script>
+/*
+* 左侧组织树
+* */
 import { mapState } from 'vuex'
 export default{
-  props: ['parentDialog', 'parentId'],
+  props: ['parentTreeState'],
   data () {
     return {
-      orgData: [],
+      treeData: [],
       filterText: '',
       defaultProps: {
         children: 'children',
         label: 'name'
       },
-      organizeId: 0,
-      disabled: true
+      organizeId: -1
     }
   },
   created () {
 
   },
+  mounted () {
+    this.getOrganTree()
+  },
   computed: {
-    ...mapState('other', [
-      'orgTree'
+    ...mapState('user', [
+      'userId'
     ])
   },
-  mounted () {
-    if (this.orgTree[0].organize_type === 0) {
-      this.orgData = this.orgTree[0].children
-    } else {
-      this.orgData = this.orgTree
-    }
-  },
   methods: {
-    // 初始化数据
-    orgInit () {
-      this.organizeId = this.parentId
-      setTimeout(() => {
-        this.$refs.tree.setCheckedKeys([this.organizeId])
-      }, 100)
+    // 获取机构树
+    getOrganTree (b = false) {
+      let params = {
+        user_id: this.userId
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.2/selOgzTrees',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          let treeData = res.data.data1 || []
+          this.treeData = treeData
+          if (b) {
+            this.$refs.tree.setCheckedKeys([this.orgId])
+          }
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
     },
     // 触发页面显示配置的筛选
     filterNode (value, data, node) {
@@ -97,63 +117,40 @@ export default{
     orgCheckChange (data, checked, self) {
       if (checked === true) {
         if (this.organizeId === data.id) return
-        this.$refs.tree.setCheckedKeys([data.id])
         this.organizeId = data.id
+        this.$refs.tree.setCheckedKeys([data.id])
+        let obj = {
+          type: data.organize_type,
+          id: data.id,
+          name: data.name,
+          baseId: data.base_id
+        }
+        // 设置组织参数
+        this.$emit('parentUpOrg', obj)
       } else {
         if (this.organizeId === data.id) {
           this.$refs.tree.setCheckedKeys([data.id])
         }
       }
-    },
-    // 确定
-    confirmClick () {
-      const checkNodes = this.$refs.tree.getCheckedNodes()
-      if (checkNodes.length === 0) {
-        this.$message({
-          showClose: true,
-          message: '请选择组织机构！',
-          type: 'warning'
-        })
-      } else {
-        const orgNode = checkNodes[0]
-        const id = orgNode.id
-        const name = orgNode.name
-        const type = orgNode.organize_type
-        const baseId = orgNode.base_id
-        const obj = {
-          id: id,
-          name: name,
-          type: type,
-          baseId: baseId
-        }
-        this.$emit('parentUpdata', obj)
-      }
-    },
-    // 取消
-    cancelClick () {
-      this.$emit('parentCancel')
     }
   },
   watch: {
-    parentDialog (val, oldVal) {
-      if (val) {
-        this.orgInit()
-      }
+    parentTreeState (val, oldVal) {
+      this.getOrganTree(true)
     },
     filterText (val, oldVal) {
       this.$refs.tree.filter(val)
-    },
-    organizeId (val, oldVal) {
-      if (val) {
-        this.disabled = false
-      } else {
-        this.disabled = true
-      }
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-
+.organ-tree{
+  height: 100%;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-bottom: 5px;
+  overflow: auto;
+}
 </style>

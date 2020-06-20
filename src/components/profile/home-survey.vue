@@ -654,19 +654,16 @@ export default{
       const orgNode = this.sectorOptions.find(item => {
         return item.id === val
       })
-      this.orgType = orgNode.type
-      this.orgBase = orgNode.baseId
-      if (this.orgType === 3) {
-        this.typeName = '项目：'
-      } else if (this.orgType === 4) {
-        this.typeName = '部门：'
-      }
       // 初始化数据
       this.initData()
+      this.orgType = orgNode.type
+      this.orgBase = orgNode.baseId
       // 重新请求数据
       if (this.orgType === 3) {
+        this.typeName = '项目：'
         this.getProjectData(1)
       } else if (this.orgType === 4) {
+        this.typeName = '部门：'
         this.getSectorData(1)
       }
     },

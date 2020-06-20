@@ -22,6 +22,9 @@
 </template>
 
 <script>
+/*
+* 用户导入模块
+* */
 import { mapState } from 'vuex'
 export default{
   props: ['parentDialog', 'parentOrgId', 'parentOrgName', 'parentOrgType', 'parentOrgBase'],
