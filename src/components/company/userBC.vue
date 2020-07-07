@@ -479,7 +479,4 @@ export default{
 
 <style lang="less" scoped>
   @import '../../assets/css/base-row.css';
-  .module-aside{
-    padding-top: 5px;
-  }
 </style>

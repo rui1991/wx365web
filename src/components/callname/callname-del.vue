@@ -72,38 +72,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.callname{
-  height: 100%;
-  .module-container{
-    height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-main{
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-      .search{
-        display: table;
-        width: 100%;
-        height: 60px;
-        .operate{
-          display: table-cell;
-          vertical-align: middle;
-          text-align: right;
-        }
-      }
-    }
-  }
-}
+
 </style>

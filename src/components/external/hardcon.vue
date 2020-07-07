@@ -1,97 +1,95 @@
 <template>
-  <div class="hardcon">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>硬件对接</el-breadcrumb-item>
-          <el-breadcrumb-item>硬件管控</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-container class="module-content">
-        <el-aside width="280px" class="module-aside">
-          <div class="tree-top">
-            <div class="operate">
-              <a href="javascript:;" style="margin-right: 5px;" class="blue" v-show="!downDisabled" @click="corgDialog = true">编辑组织</a>
-              <a href="javascript:;" class="blue" @click="aorgDialog = true">新建组织</a>
-            </div>
+  <div class="module-container">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>硬件对接</el-breadcrumb-item>
+        <el-breadcrumb-item>硬件管控</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-content">
+      <div class="module-aside">
+        <div class="aside-header">
+          <div class="operate">
+            <a href="javascript:;" style="margin-right: 5px;" class="blue" v-show="!downDisabled" @click="corgDialog = true">编辑组织</a>
+            <a href="javascript:;" class="blue" @click="aorgDialog = true">新建组织</a>
           </div>
-          <el-tree
-            style="padding: 5px;"
-            :data="orgData"
-            ref="tree"
-            show-checkbox
-            default-expand-all
-            check-strictly
-            node-key="id"
-            @check-change="orgCheckChange"
-            @node-click="orgNodeClick"
-            :props="defaultProps">
-          </el-tree>
-        </el-aside>
-        <el-main class="module-main">
-          <div class="search">
-            <div class="item">
-              <span>设备类型</span>
-              <el-select v-model="nowSearch.type" style="width: 160px;" clearable placeholder="请选择设备类型">
-                <el-option
-                  v-for="item in typeOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </div>
-            <div class="item">
-              <span>设备MAC</span>
-              <el-input style="width: 200px;" placeholder="请输入MAC" v-model.trim="nowSearch.mac"></el-input>
-            </div>
-            <div class="operate">
-              <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" :disabled="downDisabled" @click="addDialog = true">新增</el-button>
-              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
-            </div>
+        </div>
+        <el-tree
+          class="aside-tree"
+          :data="orgData"
+          ref="tree"
+          show-checkbox
+          default-expand-all
+          check-strictly
+          node-key="id"
+          @check-change="orgCheckChange"
+          @node-click="orgNodeClick"
+          :props="defaultProps">
+        </el-tree>
+      </div>
+      <div class="module-main">
+        <div class="main-search main-search-single">
+          <div class="item">
+            <span>设备类型</span>
+            <el-select v-model="nowSearch.type" style="width: 160px;" clearable placeholder="请选择设备类型">
+              <el-option
+                v-for="item in typeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
           </div>
-          <el-table class="list-table" :data="tableData" border style="width: 100%">
-            <el-table-column type="index" width="50" label="序号"></el-table-column>
-            <el-table-column prop="ogz_name" label="组织名称"></el-table-column>
-            <el-table-column label="设备类型" width="230">
-              <template slot-scope="scope">
-                <span v-if="scope.row.device_type === 'cjk'">采集器</span>
-                <span v-else-if="scope.row.device_type === 'sjwg'">数据网关</span>
-                <span v-else>{{ scope.row.device_type }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="设备mac/DevEui">
-              <template slot-scope="scope">
-                <span>{{scope.row.device_mac | filterMac}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="添加时间">
-              <template slot-scope="scope">
-                <span>{{scope.row.create_time | formatDate}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="178">
-              <template slot-scope="scope">
-                <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.device_mac, scope.row.device_type)">删除</a>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-pagination
-            background
-            prev-text="上一页"
-            next-text="下一页"
-            :current-page="nowPage"
-            layout="sizes, prev, pager, next, total"
-            :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-            :page-size="limit"
-            @size-change="handleSizeChange"
-            @current-change="pageChang"
-            :total="total">
-          </el-pagination>
-        </el-main>
-      </el-container>
-    </el-container>
+          <div class="item">
+            <span>设备MAC</span>
+            <el-input style="width: 200px;" placeholder="请输入MAC" v-model.trim="nowSearch.mac"></el-input>
+          </div>
+          <div class="operate">
+            <el-button type="primary" @click="searchList">搜索</el-button>
+            <el-button type="primary" :disabled="downDisabled" @click="addDialog = true">新增</el-button>
+            <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+          </div>
+        </div>
+        <el-table class="list-table" :data="tableData" border style="width: 100%">
+          <el-table-column type="index" width="50" label="序号"></el-table-column>
+          <el-table-column prop="ogz_name" label="组织名称"></el-table-column>
+          <el-table-column label="设备类型" width="230">
+            <template slot-scope="scope">
+              <span v-if="scope.row.device_type === 'cjk'">采集器</span>
+              <span v-else-if="scope.row.device_type === 'sjwg'">数据网关</span>
+              <span v-else>{{ scope.row.device_type }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="设备mac/DevEui">
+            <template slot-scope="scope">
+              <span>{{scope.row.device_mac | filterMac}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="添加时间">
+            <template slot-scope="scope">
+              <span>{{scope.row.create_time | formatDate}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="178">
+            <template slot-scope="scope">
+              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.device_mac, scope.row.device_type)">删除</a>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          background
+          prev-text="上一页"
+          next-text="下一页"
+          :current-page="nowPage"
+          layout="sizes, prev, pager, next, total"
+          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+          :page-size="limit"
+          @size-change="handleSizeChange"
+          @current-change="pageChang"
+          :total="total">
+        </el-pagination>
+      </div>
+    </div>
     <!-- 新增组织 -->
     <aorg-module
       :parentDialog="aorgDialog"
@@ -468,77 +466,31 @@ export default{
 </script>
 
 <style lang="less" scoped>
-  .hardcon{
-    height: 100%;
-    padding-bottom: 20px;
-    .module-container{
+  @import '../../assets/css/base-row.css';
+  .module-aside {
+    padding-top: 40px;
+    position: relative;
+    .aside-header{
+      width: 100%;
+      height: 40px;
+      padding: 0 10px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      background: #f1f1f1;
+      .operate{
+        a{
+          margin: 0 5px;
+        }
+      }
+    }
+    .aside-tree{
       height: 100%;
-      padding: 0;
-      .module-header{
-        padding-left: 0;
-        padding-right: 0;
-        padding-bottom: 20px;
-        .el-breadcrumb{
-          padding-top: 15px;
-          padding-left: 20px;
-          padding-bottom: 15px;
-          background: #ffffff;
-        }
-      }
-      .module-content{
-        height: 100%;
-        padding: 10px;
-        margin-left: 20px;
-        margin-right: 20px;
-        background: #ffffff;
-        .module-aside{
-          height: 100%;
-          border-radius: 6px;
-          border: 1px solid #cccccc;
-          .tree-top{
-            display: table;
-            width: 100%;
-            height: 40px;
-            padding: 0 10px;
-            background: #f1f1f1;
-            .operate{
-              display: table-cell;
-              vertical-align:middle;
-              text-align: right;
-              a{
-                margin-left: 20px;
-              }
-            }
-          }
-        }
-        .module-main{
-          padding-top: 0;
-          padding-right: 10px;
-          padding-bottom: 0;
-          padding-left: 20px;
-          overflow: scroll;
-          .search{
-            display: flex;
-            align-items: center;
-            height: 60px;
-            .item{
-              align-items: center;
-              width: 280px;
-              font-size: 0;
-              span{
-                width: 70px;
-                display: inline-block;
-                font-size: 14px;
-              }
-            }
-            .operate{
-              align-items: center;
-              flex-grow: 1;
-              text-align: right;
-            }
-          }
-        }
-      }
+      padding: 5px;
+      overflow: auto;
     }
   }
 </style>

@@ -1,7 +1,7 @@
-/* 用于aside类型文件 */
+/* 用于header aside main类型文件 */
 .module-container{
   height: 100%;
-  padding-top: 65px;
+  padding-top: 60px;
   padding-bottom: 20px;
   position: relative;
 }
@@ -30,7 +30,6 @@
   height: 100%;
   border-radius: 6px;
   border: 1px solid #cccccc;
-  overflow: auto;
 }
 .module-container .module-content .module-main{
   height: 100%;

@@ -58,6 +58,7 @@ export default{
   methods: {
     // 初始化数据
     orgInit () {
+      this.filterText = ''
       this.organizeId = this.parentId
       setTimeout(() => {
         this.$refs.tree.setCheckedKeys([this.organizeId])

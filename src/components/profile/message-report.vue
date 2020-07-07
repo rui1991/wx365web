@@ -271,7 +271,7 @@ export default{
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
   .large-dialog{
     .form-title{
       height: 45px;

@@ -55,6 +55,7 @@ export default{
   methods: {
     // 初始化数据
     parentInit () {
+      this.filterText = ''
       if (this.treeData.length === 0) {
         // 获取组织树
         this.getOrganTree()

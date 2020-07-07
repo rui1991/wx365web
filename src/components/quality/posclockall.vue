@@ -1,36 +1,46 @@
 <template>
   <div
-    class="posclockall"
+    class="main-seed"
     v-loading="loading"
     element-loading-text="拼命加载中"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(255, 255, 255, 0.6)">
-    <div class="search">
-      <div class="item">
-        <span>执行部门</span>
-        <el-select v-model="searchSector" style="width: 160px;" clearable placeholder="请选择执行部门" @change="sectorChange" @clear="sectorChange">
-          <el-option
-            v-for="item in sectorOptions"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id">
-          </el-option>
-        </el-select>
+    element-loading-background="rgba(0, 0, 0, 0.6)">
+    <div class="main-search main-search-multi">
+      <div class="search-row">
+        <div class="item">
+          <span>执行部门</span>
+          <el-select v-model="nowSearch.sector" style="width: 160px;" clearable placeholder="请选择执行部门">
+            <el-option
+              v-for="item in sectorOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </div>
+        <div class="item">
+          <span>位置名称</span>
+          <el-input style="width: 160px;" v-model.trim="nowSearch.position"></el-input>
+        </div>
+        <div class="operate">
+          <el-button type="primary" @click="searchList">搜索</el-button>
+          <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+        </div>
       </div>
-      <div class="item">
-        <el-date-picker
-          v-model="searchDate"
-          type="month"
-          value-format="yyyy-MM"
-          :clearable="false"
-          @change="dateChange"
-          :picker-options="pickerOptions"
-          placeholder="选择月">
-        </el-date-picker>
-      </div>
-      <div class="operate">
-        <el-button type="primary" @click="oldSkip">历史数据</el-button>
-        <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+      <div class="search-row">
+        <div class="item">
+          <el-date-picker
+            v-model="nowSearch.date"
+            type="month"
+            value-format="yyyy-MM"
+            :clearable="false"
+            :picker-options="pickerOptions"
+            placeholder="选择月">
+          </el-date-picker>
+        </div>
+        <div class="operate">
+          <el-button type="primary" @click="oldSkip">历史数据</el-button>
+        </div>
       </div>
     </div>
     <el-table class="list-table" :data="tableData" border style="width: 100%">
@@ -76,10 +86,18 @@ export default{
   name: 'posclockall',
   data () {
     return {
+      search: {
+        sector: '',
+        position: '',
+        date: this.$common.getNowDate('yyyy-mm')
+      },
+      nowSearch: {
+        sector: '',
+        position: '',
+        date: this.$common.getNowDate('yyyy-mm')
+      },
       nowMonth: this.$common.getNowDate('yyyy-mm'),
       nowDay: 0,
-      searchSector: '',
-      searchDate: this.$common.getNowDate('yyyy-mm'),
       pickerOptions: {
         disabledDate (time) {
           return time.getTime() > Date.now() || time.getTime() < new Date('2020/3/1')
@@ -167,13 +185,27 @@ export default{
     ])
   },
   methods: {
+    // 搜索
+    searchList () {
+      // 当前页码初始化
+      this.nowPage = 1
+      if (this.nowSearch.date === this.search.date) {
+        this.search.sector = this.nowSearch.sector
+        this.search.position = this.nowSearch.position
+        this.getListData()
+      } else {
+        this.search = JSON.parse(JSON.stringify(this.nowSearch))
+        this.dateChange()
+      }
+    },
     // 获取列表数据
     getListData () {
       // 部门ID
       let params = {
         project_id: this.projectId,
-        ogz_ids: this.searchSector || this.sectorIds,
-        month: this.searchDate,
+        ogz_ids: this.search.sector || this.sectorIds,
+        position_name: this.search.position,
+        month: this.search.date,
         page: this.nowPage,
         limit1: this.limit
       }
@@ -217,13 +249,6 @@ export default{
     // 点击分页
     pageChang (page) {
       this.nowPage = page
-      // 获取列表数据
-      this.getListData()
-    },
-    // 选择部门
-    sectorChange () {
-      // 初始化页码
-      this.nowPage = 1
       // 获取列表数据
       this.getListData()
     },
@@ -319,8 +344,9 @@ export default{
     downFile () {
       let params = {
         project_id: this.projectId,
-        ogz_ids: this.searchSector || this.sectorIds,
-        month: this.searchDate
+        ogz_ids: this.search.sector || this.sectorIds,
+        position_name: this.search.position,
+        month: this.search.date
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true
@@ -361,44 +387,32 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.posclockall{
-  .search{
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 60px;
-    .item{
-      margin-right: 20px;
+  .main-seed{
+    .main-search-multi {
+      .search-row{
+        display: flex;
+        height: 50px;
+        align-items: center;
+      }
     }
-    .operate{
-      flex-grow: 1;
-      text-align: right;
-    }
-  }
-  .medium-dialog{
-    .title{
-      height: 35px;
-      color: #4fa5f2;
-    }
-    .list{
+    .main-search{
       .item{
-        height: 35px;
-        line-height: 35px;
-        font-size: 0;
-        .name{
-          display: inline-block;
-          width: 50%;
-          color: #272727;
-          font-size: 14px;
-        }
-        .time{
-          display: inline-block;
-          width: 50%;
-          color: #4fa5f2;
+        width: 280px;
+        display: flex;
+        align-items: center;
+        span{
+          width: 70px;
           font-size: 14px;
         }
       }
+      .date{
+        width: 420px;
+      }
+      .operate{
+        display: flex;
+        flex-grow: 1;
+        justify-content: flex-end;
+      }
     }
   }
-}
 </style>

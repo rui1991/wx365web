@@ -1,49 +1,47 @@
 <template>
-  <div class="fixedpost-set">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>固定岗管理</el-breadcrumb-item>
-          <el-breadcrumb-item><router-link to="/main/fixedpost-rep">固定岗打卡报表</router-link></el-breadcrumb-item>
-          <el-breadcrumb-item>固定岗设置</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-main class="module-main">
-        <el-table class="list-table" :data="tableData" border style="width: 100%">
-          <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column label="岗位地址" width="160">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="name" @click="detClick(scope.row.message)">{{ scope.row.position_name }}</a>
-            </template>
-          </el-table-column>
-          <el-table-column label="部门" width="120" prop="ogz_name" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column label="人员" prop="user_names" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column label="时间段" :show-overflow-tooltip="true">
-            <template slot-scope="scope">
-              <span>{{ scope.row.message | filterTimeFrame }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="160">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">设置</a>
-              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.position_id)">清除</a>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          prev-text="上一页"
-          next-text="下一页"
-          :current-page="nowPage"
-          layout="sizes, prev, pager, next, total"
-          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-          :page-size="limit"
-          @size-change="handleSizeChange"
-          @current-change="pageChang"
-          :total="total">
-        </el-pagination>
-      </el-main>
-    </el-container>
+  <div class="module-container">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>固定岗管理</el-breadcrumb-item>
+        <el-breadcrumb-item><router-link to="/main/fixedpost-rep">固定岗打卡报表</router-link></el-breadcrumb-item>
+        <el-breadcrumb-item>固定岗设置</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-main">
+      <el-table class="list-table" :data="tableData" border style="width: 100%">
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column label="岗位地址" width="160">
+          <template slot-scope="scope">
+            <a href="javascript:void(0);" class="name" @click="detClick(scope.row.message)">{{ scope.row.position_name }}</a>
+          </template>
+        </el-table-column>
+        <el-table-column label="部门" width="120" prop="ogz_name" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column label="人员" prop="user_names" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column label="时间段" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <span>{{ scope.row.message | filterTimeFrame }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="160">
+          <template slot-scope="scope">
+            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">设置</a>
+            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.position_id)">清除</a>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        background
+        prev-text="上一页"
+        next-text="下一页"
+        :current-page="nowPage"
+        layout="sizes, prev, pager, next, total"
+        :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+        :page-size="limit"
+        @size-change="handleSizeChange"
+        @current-change="pageChang"
+        :total="total">
+      </el-pagination>
+    </div>
     <!-- 详情 -->
     <det-module
       :parentDialog="detDialog"
@@ -261,29 +259,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.fixedpost-set{
-  height: 100%;
-  padding-bottom: 20px;
-  .module-container{
-    height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-main{
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-    }
-  }
-}
+  @import '../../assets/css/base-column.css';
 </style>

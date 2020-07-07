@@ -1,139 +1,137 @@
 <template>
   <div
-    class="home"
+    class="module-container"
     v-loading="loading"
     element-loading-text="拼命加载中"
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.6)">
-    <div class="module-container">
-      <div class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>首页</el-breadcrumb-item>
-        </el-breadcrumb>
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>首页</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-main">
+      <div class="main-search main-search-single">
+        <span>组织机构</span>
+        <el-input style="width: 240px; margin-left: 10px; margin-right: 20px;" :disabled="true" v-model="orgName"></el-input>
+        <el-button type="primary" @click="orgDialog = true">选择组织</el-button>
+        <div class="operate">
+          <el-button type="primary" @click="clickTrack" v-if="roleId === 500">人员轨迹</el-button>
+        </div>
       </div>
-      <div class="module-main">
-        <div class="search">
-          <span>组织机构</span>
-          <el-input style="width: 240px; margin-left: 10px; margin-right: 20px;" :disabled="true" v-model="orgName"></el-input>
-          <el-button type="primary" @click="orgDialog = true">选择组织</el-button>
-          <div class="track">
-            <el-button type="primary" @click="clickTrack" v-if="roleId === 500">人员轨迹</el-button>
-          </div>
+      <div class="pandect" :class="{ clickable: switchType !== 1 }" @click="skipSurvey">
+        <h3 class="pandect-title">
+          <span class="chunk"></span>
+          <span class="txt">{{ pandectTitle }}</span>
+          <span class="sign">今天</span>
+        </h3>
+        <div class="pandect-content">
+          <p class="pandect-item" v-show="switchType === 1">上线项目：{{ pandectData.projectNum }}个</p>
+          <p class="pandect-item" v-show="switchType !== 3">地址设备：{{ pandectData.siteFac }}个</p>
+          <p class="pandect-item">人员数量：{{ pandectData.crewNum }}人</p>
+          <p class="pandect-item">采集设备：{{ pandectData.gatherFac }}个</p>
+          <p class="pandect-item" v-show="switchType !== 3">地址数量：{{ pandectData.siteNum }}个</p>
+          <p class="pandect-item" v-show="switchType !== 3">网关设备：{{ pandectData.gatewayFac }}个</p>
+          <p class="pandect-item green">在线人数：{{ pandectData.onlineCrew }}人</p>
+          <p class="pandect-item red">离线人数：{{ pandectData.offlineCrew }}人</p>
+          <p class="pandect-item green">在线设备：{{ pandectData.onlineFac }}个</p>
+          <p class="pandect-item red">离线设备：{{ pandectData.offlineFac }}个</p>
         </div>
-        <div class="pandect" :class="{ clickable: switchType !== 1 }" @click="skipSurvey">
-          <h3 class="pandect-title">
-            <span class="chunk"></span>
-            <span class="txt">{{ pandectTitle }}</span>
-            <span class="sign">今天</span>
-          </h3>
-          <div class="pandect-content">
-            <p class="pandect-item" v-show="switchType === 1">上线项目：{{ pandectData.projectNum }}个</p>
-            <p class="pandect-item" v-show="switchType !== 3">地址设备：{{ pandectData.siteFac }}个</p>
-            <p class="pandect-item">人员数量：{{ pandectData.crewNum }}人</p>
-            <p class="pandect-item">采集设备：{{ pandectData.gatherFac }}个</p>
-            <p class="pandect-item" v-show="switchType !== 3">地址数量：{{ pandectData.siteNum }}个</p>
-            <p class="pandect-item" v-show="switchType !== 3">网关设备：{{ pandectData.gatewayFac }}个</p>
-            <p class="pandect-item green">在线人数：{{ pandectData.onlineCrew }}人</p>
-            <p class="pandect-item red">离线人数：{{ pandectData.offlineCrew }}人</p>
-            <p class="pandect-item green">在线设备：{{ pandectData.onlineFac }}个</p>
-            <p class="pandect-item red">离线设备：{{ pandectData.offlineFac }}个</p>
-          </div>
-        </div>
-        <div class="survey">
-          <el-row :gutter="10" style="margin-bottom: 10px;">
-            <el-col :span="12">
-              <div class="item" :class="{ clickable: switchType !== 1 }" @click="skipTask">
-                <div class="item-title">
-                  <span class="chunk"></span>
-                  <p class="txt">巡检巡查任务</p>
-                  <span class="sign">今天</span>
+      </div>
+      <div class="survey">
+        <el-row :gutter="10" style="margin-bottom: 10px; margin-left: 0; margin-right: 0;">
+          <el-col :span="12">
+            <div class="item" :class="{ clickable: switchType !== 1 }" @click="skipTask">
+              <div class="item-title">
+                <span class="chunk"></span>
+                <p class="txt">巡检巡查任务</p>
+                <span class="sign">今天</span>
+              </div>
+              <div class="item-content">
+                <div class="chart">
+                  <Chart :parOption="taskOption" id="home_task" :domWidth="domWidth"></Chart>
                 </div>
-                <div class="item-content">
-                  <div class="chart">
-                    <Chart :parOption="taskOption" id="home_task" :domWidth="domWidth"></Chart>
-                  </div>
-                  <div class="describe">
-                    <div class="details">
-                      <p class="single">巡检任务数量：{{ task.taskAll }}条</p>
-                      <p class="single green">任务完成数：{{ task.finish }}条</p>
-                      <p class="single red">任务未完成数：{{ task.unfinished }}条</p>
-                      <p class="single">任务完成率：{{ task.finishRate }}</p>
-                    </div>
+                <div class="describe">
+                  <div class="details">
+                    <p class="single">巡检任务数量：{{ task.taskAll }}条</p>
+                    <p class="single green">任务完成数：{{ task.finish }}条</p>
+                    <p class="single red">任务未完成数：{{ task.unfinished }}条</p>
+                    <p class="single">任务完成率：{{ task.finishRate }}</p>
                   </div>
                 </div>
               </div>
-            </el-col>
-            <el-col :span="12">
-              <div class="item" :class="{ clickable: switchType !== 1 }" @click="skipQuality">
-                <div class="item-title">
-                  <span class="chunk"></span>
-                  <p class="txt">品质监控（人员/位置）</p>
-                  <span class="sign">今天</span>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="item" :class="{ clickable: switchType !== 1 }" @click="skipQuality">
+              <div class="item-title">
+                <span class="chunk"></span>
+                <p class="txt">品质监控（人员/位置）</p>
+                <span class="sign">今天</span>
+              </div>
+              <div class="item-content">
+                <div class="chart">
+                  <Chart :parOption="qualityOption" id="home_quality" :domWidth="domWidth"></Chart>
                 </div>
-                <div class="item-content">
-                  <div class="chart">
-                    <Chart :parOption="qualityOption" id="home_quality" :domWidth="domWidth"></Chart>
-                  </div>
-                  <div class="describe">
-                    <div class="details">
-                      <p class="single green">已打卡人数：{{ quality.clock }}人</p>
-                      <p class="single red">未打卡人数：{{ quality.noclock }}人</p>
-                      <p class="single green">已巡查位置数：{{ quality.examine }}个</p>
-                      <p class="single red">未巡查位置数：{{ quality.noexamine }}个</p>
-                      <p class="single">打卡上传数量：{{ quality.uploading }}条</p>
-                    </div>
+                <div class="describe">
+                  <div class="details">
+                    <p class="single green">已打卡人数：{{ quality.clock }}人</p>
+                    <p class="single red">未打卡人数：{{ quality.noclock }}人</p>
+                    <p class="single green">已巡查位置数：{{ quality.examine }}个</p>
+                    <p class="single red">未巡查位置数：{{ quality.noexamine }}个</p>
+                    <p class="single">打卡上传数量：{{ quality.uploading }}条</p>
                   </div>
                 </div>
               </div>
-            </el-col>
-          </el-row>
-          <el-row :gutter="10">
-            <el-col :span="12">
-              <div class="item" :class="{ clickable: switchType !== 1 }" @click="skipCallname">
-                <div class="item-title">
-                  <span class="chunk"></span>
-                  <p class="txt">点名管理</p>
-                  <span class="sign old">昨天</span>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="10" style="margin-left: 0; margin-right: 0;">
+          <el-col :span="12">
+            <div class="item" :class="{ clickable: switchType !== 1 }" @click="skipCallname">
+              <div class="item-title">
+                <span class="chunk"></span>
+                <p class="txt">点名管理</p>
+                <span class="sign old">昨天</span>
+              </div>
+              <div class="item-content">
+                <div class="chart">
+                  <Chart :parOption="callnameOption" id="home_callname" :domWidth="domWidth"></Chart>
                 </div>
-                <div class="item-content">
-                  <div class="chart">
-                    <Chart :parOption="callnameOption" id="home_callname" :domWidth="domWidth"></Chart>
-                  </div>
-                  <div class="describe">
-                    <div class="details">
-                      <p class="single">点名人数：{{ callname.allNum }}个</p>
-                      <p class="single green">点名成功人数：{{ callname.sucNum }}个</p>
-                      <p class="single red">点名失败人数：{{ callname.faiNum }}个</p>
-                      <p class="single">人员打卡率：{{ callname.clockRate }}</p>
-                    </div>
+                <div class="describe">
+                  <div class="details">
+                    <p class="single">点名人数：{{ callname.allNum }}个</p>
+                    <p class="single green">点名成功人数：{{ callname.sucNum }}个</p>
+                    <p class="single red">点名失败人数：{{ callname.faiNum }}个</p>
+                    <p class="single">人员打卡率：{{ callname.clockRate }}</p>
                   </div>
                 </div>
               </div>
-            </el-col>
-            <el-col :span="12" v-show="switchType !== 3">
-              <div class="item" :class="{ clickable: switchType !== 1 }" @click="skipFixation">
-                <div class="item-title">
-                  <span class="chunk"></span>
-                  <p class="txt">固定岗管理</p>
-                  <span class="sign">今天</span>
+            </div>
+          </el-col>
+          <el-col :span="12" v-show="switchType !== 3">
+            <div class="item" :class="{ clickable: switchType !== 1 }" @click="skipFixation">
+              <div class="item-title">
+                <span class="chunk"></span>
+                <p class="txt">固定岗管理</p>
+                <span class="sign">今天</span>
+              </div>
+              <div class="item-content">
+                <div class="chart">
+                  <Chart :parOption="fixationOption" id="home_fixation" :domWidth="domWidth"></Chart>
                 </div>
-                <div class="item-content">
-                  <div class="chart">
-                    <Chart :parOption="fixationOption" id="home_fixation" :domWidth="domWidth"></Chart>
-                  </div>
-                  <div class="describe">
-                    <div class="details">
-                      <p class="single">需打卡次数：{{ fixation.allNum }}次</p>
-                      <p class="single green">打卡成功次数：{{ fixation.sucNum }}次</p>
-                      <p class="single red">未打卡次数：{{ fixation.notNum }}次</p>
-                      <p class="single orange">打卡异常数：{{ fixation.abnNum }}次</p>
-                    </div>
+                <div class="describe">
+                  <div class="details">
+                    <p class="single">需打卡次数：{{ fixation.allNum }}次</p>
+                    <p class="single green">打卡成功次数：{{ fixation.sucNum }}次</p>
+                    <p class="single red">未打卡次数：{{ fixation.notNum }}次</p>
+                    <p class="single orange">打卡异常数：{{ fixation.abnNum }}次</p>
                   </div>
                 </div>
               </div>
-            </el-col>
-          </el-row>
-        </div>
+            </div>
+          </el-col>
+        </el-row>
       </div>
     </div>
     <!-- 选择组织机构 -->
@@ -1041,6 +1039,119 @@ export default{
 </script>
 
 <style lang="less" scoped>
+  @import '../../assets/css/base-column.css';
+  .module-container{
+    .module-main{
+      padding: 0;
+      background-color: transparent;
+      .main-search{
+        padding-left: 20px;
+        padding-right: 20px;
+        background: #ffffff;
+      }
+      .pandect{
+        margin-top: 10px;
+        padding-top: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-bottom: 10px;
+        background: #ffffff;
+        .pandect-title {
+          height: 30px;
+          display: flex;
+          align-items: center;
+          .chunk {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4e97d8;
+          }
+          .txt{
+            padding-left: 10px;
+            font-size: 18px;
+            color: #333;
+          }
+        }
+        .pandect-content{
+          display: flex;
+          flex-wrap: wrap;
+          .pandect-item{
+            width: 25%;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+          }
+        }
+      }
+      .survey{
+        margin-top: 10px;
+        .item{
+          display: flex;
+          flex-direction: column;
+          padding: 10px 20px;
+          background: #ffffff;
+          .item-title {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            height: 30px;
+            .chunk {
+              width: 12px;
+              height: 12px;
+              border-radius: 50%;
+              background: #4e97d8;
+            }
+            .txt {
+              padding-left: 10px;
+              font-size: 18px;
+              color: #333;
+            }
+          }
+          .item-content{
+            display: flex;
+            flex-direction: row;
+            height: 240px;
+            .chart {
+              flex-grow: 1;
+            }
+            .describe {
+              display: flex;
+              align-items: center;
+              width: 180px;
+              .details {
+                display: flex;
+                flex-wrap: wrap;
+                .single {
+                  display: flex;
+                  flex-direction: row;
+                  align-items: center;
+                  height: 35px;
+                  .txt {
+                    font-size: 14px;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      .sign{
+        margin-left: 10px;
+        padding: 3px 5px;
+        font-size: 12px;
+        color: #339933;
+        background: #E4E4E4;
+        border-radius: 2px;
+        &.old{
+          color: #0066CC;
+        }
+      }
+      .clickable{
+        cursor: pointer;
+      }
+    }
+  }
 .home{
   height: 100%;
   .module-container{

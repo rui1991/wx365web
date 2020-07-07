@@ -117,53 +117,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.approval{
-  height: 100%;
-  .module-container{
-    height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-main{
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-      .search{
-        padding-top: 5px;
-        padding-bottom: 5px;
-        .search-input{
-          display: table;
-          width: 100%;
-          .item{
-            display: table-cell;
-            vertical-align: middle;
-            width: 280px;
-            font-size: 0;
-            span{
-              width: 70px;
-              display: inline-block;
-              line-height: 34px;
-              font-size: 14px;
-            }
-          }
-          .operate{
-            display: table-cell;
-            vertical-align: middle;
-            text-align: right;
-          }
-        }
-      }
-    }
-  }
-}
+
 </style>

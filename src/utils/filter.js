@@ -47,6 +47,9 @@ const formatDate = (str, pattern = '') => {
   if (pattern.toLowerCase() === 'hh:mm:ss') {
     return `${hour}:${minutes}:${seconds}`
   }
+  if (pattern.toLowerCase() === 'mm-dd hh:mm') {
+    return `${month}-${day} ${hour}:${minutes}`
+  }
   return `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`
 }
 

@@ -1,154 +1,185 @@
 <template>
   <div
-    class="task"
+    class="module-container"
     v-loading="loading"
     element-loading-text="拼命加载中"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(255, 255, 255, 0.6)">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>巡检巡查</el-breadcrumb-item>
-          <el-breadcrumb-item>巡检任务</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-main class="module-main">
-        <div class="search">
-          <div class="search-input" style="margin-bottom: 10px;">
-            <div class="item">
-              <span>任务名称</span>
-              <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
-            </div>
-            <div class="item">
-              <span>执行部门</span>
-              <el-select v-model="nowSearch.sector" style="width: 160px;" clearable filterable placeholder="请选择执行部门">
-                <el-option
-                  v-for="item in sectorOptions"
-                  :key="item.base_id"
-                  :label="item.name"
-                  :value="item.base_id">
-                </el-option>
-              </el-select>
-            </div>
-            <div class="item">
-              <span>完成状态</span>
-              <el-select v-model="nowSearch.state" clearable style="width: 160px;" placeholder="请选择完成状态">
-                <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-              </el-select>
-            </div>
-            <div class="operate"></div>
+    element-loading-background="rgba(0, 0, 0, 0.6)">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>巡检巡查</el-breadcrumb-item>
+        <el-breadcrumb-item>巡检任务</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-main">
+      <div class="main-search main-search-multi">
+        <div class="search-row">
+          <div class="item">
+            <span>任务名称</span>
+            <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
           </div>
-          <div class="search-input">
-            <div class="item">
-              <span>执行人员</span>
-              <el-select v-model="nowSearch.crews" style="width: 160px;" multiple collapse-tags placeholder="请选择执行人员">
-                <el-option
-                  v-for="item in crewOptions"
-                  :key="item.user_id"
-                  :label="item.user_name"
-                  :value="item.user_id">
-                </el-option>
-              </el-select>
-            </div>
-            <div class="item date">
-              <span>选择时段</span>
-              <el-date-picker
-                style="width: 280px;"
-                v-model="nowSearch.date"
-                type="daterange"
-                value-format="yyyy-MM-dd"
-                :clearable="false"
-                :picker-options="pickerOptions"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期">
-              </el-date-picker>
-            </div>
-            <div class="operate">
-              <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" :disabled="downDisabled" v-if="authority.down" @click="downFile">导出</el-button>
-            </div>
+          <div class="item">
+            <span>执行部门</span>
+            <el-select v-model="nowSearch.sector" style="width: 160px;" clearable filterable placeholder="请选择执行部门">
+              <el-option
+                v-for="item in sectorOptions"
+                :key="item.base_id"
+                :label="item.name"
+                :value="item.base_id">
+              </el-option>
+            </el-select>
+          </div>
+          <div class="item">
+            <span>完成状态</span>
+            <el-select v-model="nowSearch.state" clearable style="width: 160px;" placeholder="请选择完成状态">
+              <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            </el-select>
+          </div>
+          <div class="operate"></div>
+        </div>
+        <div class="search-row">
+          <div class="item">
+            <span>执行人员</span>
+            <el-select v-model="nowSearch.crews" style="width: 160px;" multiple collapse-tags placeholder="请选择执行人员">
+              <el-option
+                v-for="item in crewOptions"
+                :key="item.user_id"
+                :label="item.user_name"
+                :value="item.user_id">
+              </el-option>
+            </el-select>
+          </div>
+          <div class="item date">
+            <span>选择时段</span>
+            <el-date-picker
+              style="width: 280px;"
+              v-model="nowSearch.date"
+              type="daterange"
+              value-format="yyyy-MM-dd"
+              :clearable="false"
+              :picker-options="pickerOptions"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
+            </el-date-picker>
+          </div>
+          <div class="operate">
+            <el-button type="primary" @click="searchList">搜索</el-button>
+            <el-button type="primary" :disabled="downDisabled" v-if="authority.down" @click="downFile">导出</el-button>
           </div>
         </div>
-        <el-table class="list-table" :data="tableData" border style="width: 100%">
-          <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column label="任务名称" :show-overflow-tooltip="true">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="name" @click="detClick(scope.row.id_id)">{{ scope.row.plan_name }}</a>
-            </template>
-          </el-table-column>
-          <el-table-column label="执行部门">
-            <template slot-scope="scope">
-              <span v-if="scope.row.ogz_id">{{ scope.row.ogz_name }}</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
-          <el-table-column width="200" label="开始时间">
-            <template slot-scope="scope">
-              <span>{{ scope.row.start_time | formatDate }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column width="200" label="结束时间">
-            <template slot-scope="scope">
-              <span>{{ scope.row.end_time | formatDate }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="执行组/执行人" :show-overflow-tooltip="true">
-            <template slot-scope="scope">
-              <el-popover
-                placement="top"
-                :title="scope.row.group_name"
-                trigger="click"
-                :content="groupContent"
-                v-if="scope.row.group_id">
-                <a href="javascript:void(0);" slot="reference" class="blue" @click="getGrouoCrew(scope.row.group_id)">{{ scope.row.group_name }}</a>
-              </el-popover>
-              <span v-else-if="scope.row.user_id">{{ scope.row.user_name }}</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="任务进度">
-            <template slot-scope="scope">
-              <span v-if="scope.row.continue_state === 1">未领取</span>
-              <span v-else>已进行{{ scope.row.continue_process | formatPercent }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="审批状态">
-            <template slot-scope="scope">
-              <span v-if="scope.row.approval_state === 1">审批中</span>
-              <span v-else-if="scope.row.approval_state === 2">通过</span>
-              <span v-else-if="scope.row.approval_state === 3">不通过</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
-          <el-table-column width="260" label="操作">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="drawClick(scope.row.id_id)" v-if="scope.row.draw === 1 && authority.draw">领取</a>
-              <span class="operate forbid" v-else-if="scope.row.draw === 2 && authority.draw">领取</span>
-              <span class="operate forbid" v-else-if="scope.row.draw === 3 && authority.draw">已领取</span>
-              <a href="javascript:void(0);" class="operate com" @click="dispatchClick(scope.row.id_id, scope.row.ogz_id)" v-if="scope.row.dispatch === 1 && authority.dispatch">派遣</a>
-              <span class="operate forbid" v-else-if="scope.row.dispatch === 2 && authority.dispatch">派遣</span>
-              <a href="javascript:void(0);" class="operate com" @click="tradeClick(scope.row.id_id, scope.row.ogz_id)" v-if="scope.row.trade === 1 && authority.dispatch">换人</a>
-              <span class="operate forbid" v-else-if="scope.row.trade === 2 && authority.dispatch">换人</span>
-              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.id_id)" v-if="scope.row.com === 1 && authority.com">维护</a>
-              <span class="operate forbid" v-if="scope.row.com === 2 && authority.com">维护</span>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          prev-text="上一页"
-          next-text="下一页"
-          :current-page="nowPage"
-          layout="sizes, prev, pager, next, total"
-          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-          :page-size="limit"
-          @size-change="handleSizeChange"
-          @current-change="pageChang"
-          :total="total">
-        </el-pagination>
-      </el-main>
-    </el-container>
+      </div>
+      <el-table class="list-table" :data="tableData" border style="width: 100%">
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column label="任务名称" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <a href="javascript:void(0);" class="name" @click="detClick(scope.row.id_id)">{{ scope.row.plan_name }}</a>
+          </template>
+        </el-table-column>
+        <el-table-column prop="po_size" width="80" label="点位数"></el-table-column>
+        <el-table-column label="执行部门">
+          <template slot-scope="scope">
+            <span v-if="scope.row.ogz_id">{{ scope.row.ogz_name }}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column width="200" label="开始时间">
+          <template slot-scope="scope">
+            <span>{{ scope.row.start_time | formatDate }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column width="200" label="结束时间">
+          <template slot-scope="scope">
+            <span>{{ scope.row.end_time | formatDate }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="已完成">
+          <template slot-scope="scope">
+            <span class="blue" v-if="scope.row.continue_size === 0">0</span>
+            <el-popover
+              v-else
+              placement="top"
+              title="已完成点位"
+              trigger="click"
+              :content="siteFinishContent">
+              <a href="javascript:void(0);" slot="reference" class="blue" @click="detFinishClick(scope.row.id_id)">{{ scope.row.continue_size }}</a>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column label="未完成">
+          <template slot-scope="scope">
+            <span class="red" v-if="scope.row.not_size === 0">0</span>
+            <el-popover
+              v-else
+              placement="top"
+              title="未完成点位"
+              trigger="click"
+              :content="siteUndoneContent">
+              <a href="javascript:void(0);" slot="reference" class="red" @click="detUndoneClick(scope.row.id_id)">{{ scope.row.not_size }}</a>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column label="执行组/执行人" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <el-popover
+              placement="top"
+              :title="scope.row.group_name"
+              trigger="click"
+              :content="groupContent"
+              v-if="scope.row.group_id">
+              <a href="javascript:void(0);" slot="reference" class="blue" @click="getGrouoCrew(scope.row.group_id)">{{ scope.row.group_name }}</a>
+            </el-popover>
+            <span v-else-if="scope.row.user_id">{{ scope.row.user_name }}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="任务进度">
+          <template slot-scope="scope">
+            <span v-if="scope.row.continue_state === 1">未领取</span>
+            <span v-else>已进行{{ scope.row.continue_process | formatPercent }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column width="80" label="是否及时完成">
+          <template slot-scope="scope">
+            <span v-if="scope.row.oo_time === 0">是</span>
+            <span v-else-if="scope.row.oo_time === 1">否</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="审批状态">
+          <template slot-scope="scope">
+            <span v-if="scope.row.approval_state === 1">审批中</span>
+            <span v-else-if="scope.row.approval_state === 2">通过</span>
+            <span v-else-if="scope.row.approval_state === 3">不通过</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column width="260" label="操作">
+          <template slot-scope="scope">
+            <a href="javascript:void(0);" class="operate com" @click="drawClick(scope.row.id_id)" v-if="scope.row.draw === 1 && authority.draw">领取</a>
+            <span class="operate forbid" v-else-if="scope.row.draw === 2 && authority.draw">领取</span>
+            <span class="operate forbid" v-else-if="scope.row.draw === 3 && authority.draw">已领取</span>
+            <a href="javascript:void(0);" class="operate com" @click="dispatchClick(scope.row.id_id, scope.row.ogz_id)" v-if="scope.row.dispatch === 1 && authority.dispatch">派遣</a>
+            <span class="operate forbid" v-else-if="scope.row.dispatch === 2 && authority.dispatch">派遣</span>
+            <a href="javascript:void(0);" class="operate com" @click="tradeClick(scope.row.id_id, scope.row.ogz_id)" v-if="scope.row.trade === 1 && authority.dispatch">换人</a>
+            <span class="operate forbid" v-else-if="scope.row.trade === 2 && authority.dispatch">换人</span>
+            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.id_id)" v-if="scope.row.com === 1 && authority.com">维护</a>
+            <span class="operate forbid" v-if="scope.row.com === 2 && authority.com">维护</span>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        background
+        prev-text="上一页"
+        next-text="下一页"
+        :current-page="nowPage"
+        layout="sizes, prev, pager, next, total"
+        :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+        :page-size="limit"
+        @size-change="handleSizeChange"
+        @current-change="pageChang"
+        :total="total">
+      </el-pagination>
+    </div>
     <!-- 详情 -->
     <det-module
       :parentDialog="detDialog"
@@ -169,6 +200,10 @@
 </template>
 
 <script>
+/*
+* continue_state:
+* */
+
 import { mapState } from 'vuex'
 // 引入详情组件
 import detModule from '@/components/polling/task-det'
@@ -219,6 +254,8 @@ export default{
       crewOptions: [],
       tableData: [],
       groupContent: '',
+      siteFinishContent: '',
+      siteUndoneContent: '',
       total: 0,
       nowPage: 1,
       limit: 10,
@@ -491,12 +528,10 @@ export default{
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1
-          let crewData = []
-          resData.forEach(item => {
-            crewData.push(item.user_name)
+          let names = resData.map(item => {
+            return item.user_name
           })
-          const groupContent = crewData.join('、')
-          this.groupContent = groupContent
+          this.groupContent = names.join('、')
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -627,12 +662,83 @@ export default{
           }
         }
       )
+    },
+    /* 地址详情 */
+    // 已完成
+    detFinishClick (id) {
+      this.siteFinishContent = ''
+      let params = {
+        user_id: this.userId,
+        id_id: id
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/inspection/selInsTaskContinuePo',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          const resData = res.data.data1.mes || []
+          let names = resData.map(item => {
+            return item.position_name
+          })
+          this.siteFinishContent = names.join('、')
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
+    // 未完成
+    detUndoneClick (id) {
+      this.siteUndoneContent = ''
+      let params = {
+        user_id: this.userId,
+        id_id: id
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/inspection/selInsTaskNotContinuePo',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          const resData = res.data.data1.mes || []
+          let names = resData.map(item => {
+            return item.position_name
+          })
+          this.siteUndoneContent = names.join('、')
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
     }
   },
   filters: {
     filterDate (str) {
       if (!str) { return '' }
-      let value = new Date(parseInt(str))
+      let value = new Date(str)
       let month = value.getMonth() + 1 + ''
       month = month.padStart(2, '0')
       let day = value.getDate() + ''
@@ -648,56 +754,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.task{
-  height: 100%;
-  padding-bottom: 20px;
-  .module-container{
-    height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-main{
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-      .search{
-        padding: 5px 0;
-        .search-input{
-          display: table;
-          width: 100%;
-          .item{
-            display: table-cell;
-            vertical-align: middle;
-            width: 280px;
-            font-size: 0;
-            span{
-              width: 70px;
-              display: inline-block;
-              line-height: 34px;
-              font-size: 14px;
-            }
-          }
-          .date{
-            width: 420px;
-          }
-          .operate{
-            display: table-cell;
-            vertical-align: middle;
-            text-align: right;
-          }
-        }
-      }
-    }
-  }
-}
+  @import '../../assets/css/base-column.css';
 </style>

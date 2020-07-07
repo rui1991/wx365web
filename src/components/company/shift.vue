@@ -1,38 +1,36 @@
 <template>
-  <div class="shift">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>企业配置</el-breadcrumb-item>
-          <el-breadcrumb-item>编制排班</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-main class="module-main">
-        <div class="search">
-          <div class="operate">
-            <el-button type="primary" @click="addDialog = true">新增</el-button>
-          </div>
+  <div class="module-container">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>企业配置</el-breadcrumb-item>
+        <el-breadcrumb-item>编制排班</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-main">
+      <div class="main-search main-search-single">
+        <div class="operate">
+          <el-button type="primary" @click="addDialog = true">新增</el-button>
         </div>
-        <el-table class="list-table" :data="tableData" border style="width: 100%">
-          <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column prop="work_name" label="班次名称"></el-table-column>
-          <el-table-column prop="start_time" label="开始时间"></el-table-column>
-          <el-table-column prop="end_time" label="结束时间"></el-table-column>
-          <el-table-column prop="user_name" label="创建人"></el-table-column>
-          <el-table-column label="创建时间">
-            <template slot-scope="scope">
-              <span>{{ scope.row.create_time | formatDate }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
-              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.work_id)">删除</a>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-main>
-    </el-container>
+      </div>
+      <el-table class="list-table" :data="tableData" border style="width: 100%">
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column prop="work_name" label="班次名称"></el-table-column>
+        <el-table-column prop="start_time" label="开始时间"></el-table-column>
+        <el-table-column prop="end_time" label="结束时间"></el-table-column>
+        <el-table-column prop="user_name" label="创建人"></el-table-column>
+        <el-table-column label="创建时间">
+          <template slot-scope="scope">
+            <span>{{ scope.row.create_time | formatDate }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
+            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.work_id)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
     <!-- 新增 -->
     <add-module
       :parentDialog="addDialog"
@@ -182,51 +180,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.shift{
-  height: 100%;
-  padding-bottom: 20px;
-  .module-container{
-    height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-main{
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-      .search{
-        display: table;
-        width: 100%;
-        height: 60px;
-        .item{
-          display: table-cell;
-          vertical-align: middle;
-          width: 280px;
-          font-size: 0;
-          span{
-            width: 70px;
-            display: inline-block;
-            line-height: 34px;
-            font-size: 14px;
-          }
-        }
-        .operate{
-          display: table-cell;
-          vertical-align: middle;
-          text-align: right;
-        }
-      }
-    }
-  }
-}
+  @import '../../assets/css/base-column.css';
 </style>

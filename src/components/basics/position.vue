@@ -1,62 +1,60 @@
 <template>
-  <div class="position">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>基础配置</el-breadcrumb-item>
-          <el-breadcrumb-item>位置管理</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-container class="module-content">
-        <el-aside width="280px" class="module-aside">
-          <div class="tree-top">
-            <p class="title">项目位置</p>
-            <div class="operate">
-              <a href="javascript:void(0);" class="blue" @click="modType = 2">新建</a>
-              <a href="javascript:void(0);" class="blue" @click="modType = 3">批量新建</a>
-            </div>
+  <div class="module-container">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>基础配置</el-breadcrumb-item>
+        <el-breadcrumb-item>位置管理</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-content">
+      <div class="module-aside">
+        <div class="aside-header">
+          <p class="title">项目位置</p>
+          <div class="operate">
+            <a href="javascript:void(0);" class="blue" @click="modType = 2">新建</a>
+            <a href="javascript:void(0);" class="blue" @click="modType = 3">批量新建</a>
           </div>
-          <el-tree
-            style="padding: 5px"
-            :data="treeData"
-            ref="tree"
-            show-checkbox
-            default-expand-all
-            check-strictly
-            check-on-click-node
-            node-key="id"
-            :props="defaultProps"
-            @check-change="posCheckChange">
-          </el-tree>
-        </el-aside>
-        <el-main class="module-main">
-          <!-- 编辑 -->
-          <com-module
-            v-show="modType === 1"
-            :parentId = "posId"
-            @parentUpdata="parentRefresh">
-          </com-module>
-          <!-- 单个新增 -->
-          <add-module1
-            v-show="modType === 2"
-            :parentId = "posId"
-            :parentName = "posName"
-            :parentType = "modType"
-            @parentUpdata="addUpdata"
-            @parentCancel="addCancel">
-          </add-module1>
-          <!-- 批量新增 -->
-          <add-module2
-            v-show="modType === 3"
-            :parentId = "posId"
-            :parentName = "posName"
-            :parentType = "modType"
-            @parentUpdata="addUpdata"
-            @parentCancel="addCancel">
-          </add-module2>
-        </el-main>
-      </el-container>
-    </el-container>
+        </div>
+        <el-tree
+          class="aside-tree"
+          :data="treeData"
+          ref="tree"
+          show-checkbox
+          default-expand-all
+          check-strictly
+          check-on-click-node
+          node-key="id"
+          :props="defaultProps"
+          @check-change="posCheckChange">
+        </el-tree>
+      </div>
+      <div class="module-main">
+        <!-- 编辑 -->
+        <com-module
+          v-show="modType === 1"
+          :parentId = "posId"
+          @parentUpdata="parentRefresh">
+        </com-module>
+        <!-- 单个新增 -->
+        <add-module1
+          v-show="modType === 2"
+          :parentId = "posId"
+          :parentName = "posName"
+          :parentType = "modType"
+          @parentUpdata="addUpdata"
+          @parentCancel="addCancel">
+        </add-module1>
+        <!-- 批量新增 -->
+        <add-module2
+          v-show="modType === 3"
+          :parentId = "posId"
+          :parentName = "posName"
+          :parentType = "modType"
+          @parentUpdata="addUpdata"
+          @parentCancel="addCancel">
+        </add-module2>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -200,60 +198,36 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.position{
-  height: 100%;
-  padding-bottom: 20px;
-  .module-container{
-    height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-content{
-      height: 100%;
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-      .module-aside{
-        height: 100%;
-        border-radius: 6px;
-        border: 1px solid #cccccc;
-        .tree-top{
-          display: table;
-          width: 100%;
-          height: 40px;
-          padding: 0 10px;
-          background: #f1f1f1;
-          .title{
-            display: table-cell;
-            vertical-align:middle;
-            font-size: 14px;
-          }
-          .operate{
-            display: table-cell;
-            vertical-align:middle;
-            text-align: right;
-            a{
-              margin-left: 20px;
-            }
-          }
+  @import '../../assets/css/base-row.css';
+  .module-aside {
+    padding-top: 40px;
+    position: relative;
+    .aside-header{
+      width: 100%;
+      height: 40px;
+      padding: 0 10px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f1f1f1;
+      .operate{
+        a{
+          margin: 0 5px;
         }
       }
-      .module-main{
-        margin-left: 20px;
-        border-radius: 6px;
-        border: 1px solid #cccccc;
-      }
+    }
+    .aside-tree{
+      height: 100%;
+      padding: 5px;
+      overflow: auto;
     }
   }
-}
+  .module-main{
+    padding: 20px;
+    border-radius: 6px;
+    border: 1px solid #cccccc;
+  }
 </style>

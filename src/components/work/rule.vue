@@ -1,134 +1,132 @@
 <template>
-  <div class="rule">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>工单管理</el-breadcrumb-item>
-          <el-breadcrumb-item>异常处理规则设置</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-main class="module-main">
-        <el-row :gutter="40">
-          <el-col :span="12">
-            <div class="grid-content bg-purple warning">
-              <div class="warning-title">
-                <h3 class="title-text"><i class="iconfont icon-gaojing"></i>通知与告警</h3>
-                <div class="operate">
-                  <el-button type="primary" @click="addWarning">添加</el-button>
-                </div>
+  <div class="module-container">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>工单管理</el-breadcrumb-item>
+        <el-breadcrumb-item>异常处理规则设置</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-main">
+      <el-row :gutter="40" style="margin-left: 0; margin-right: 0;">
+        <el-col :span="12">
+          <div class="grid-content bg-purple warning">
+            <div class="warning-title">
+              <h3 class="title-text"><i class="iconfont icon-gaojing"></i>通知与告警</h3>
+              <div class="operate">
+                <el-button type="primary" @click="addWarning">添加</el-button>
               </div>
-              <p class="warning-hint">最多可添加5个指定联系人</p>
-              <el-table class="list-table" :data="linkmanData" border style="width: 100%;">
-                <el-table-column type="index" width="50" label="序号"></el-table-column>
-                <el-table-column prop="user_name" label="姓名"></el-table-column>
-                <el-table-column prop="user_phone" label="联系方式"></el-table-column>
-                <el-table-column prop="role_name" label="角色"></el-table-column>
-                <el-table-column label="操作">
-                  <template slot-scope="scope">
-                    <i class="el-icon-delete" style="font-size: 18px; color: #fe4c51; cursor: pointer;" @click="delClick(scope.row.wp_id)"></i>
-                  </template>
-                </el-table-column>
-              </el-table>
             </div>
-          </el-col>
-          <el-col :span="12">
-            <div class="grid-content bg-purple rule-set">
-              <div class="rule-title">
-                <h3 class="title-text"><i class="iconfont icon-shezhi"></i>规则设置</h3>
-              </div>
-              <div class="rule-item top-radius">
-                <div class="item-title clearfix">
-                  <h4 class="title left">自动派单规则设置</h4>
-                  <div class="set right">
-                    <a href="javascript:void(0);" class="blue" v-show="sendWhether" @click="sendState = true">设置</a>
-                    <a href="javascript:void(0);" class="blue" v-show="!sendWhether" @click="sendState = true">未设置</a>
-                  </div>
-                </div>
-                <div class="item-content">
-                  <div class="item-content-show" v-show="!sendState">
-                    <div class="show-det" v-show="sendWhether">
-                      <h5 class="title">按用户技能分配</h5>
-                      <p class="text">根据工单业务类别，分配至拥有该技能的人员</p>
-                    </div>
-                    <p class="hint" v-show="!sendWhether">未设置自动派单规则</p>
-                  </div>
-                  <div class="item-content-set" v-show="sendState">
-                    <div class="set-det">
-                      <h5 class="title"><el-checkbox style="margin-right: 10px;" v-model="skillSelect">按用户技能分配</el-checkbox></h5>
-                      <p class="text">根据工单业务类别，分配至拥有该技能的人员</p>
-                    </div>
-                    <div class="operate">
-                      <el-button type="primary" :disabled="sendDisabled" @click="clickSend">保 存</el-button>
-                      <el-button @click="cancelSend">取 消</el-button>
-                    </div>
-                  </div>
+            <p class="warning-hint">最多可添加5个指定联系人</p>
+            <el-table class="list-table" :data="linkmanData" border style="width: 100%;">
+              <el-table-column type="index" width="50" label="序号"></el-table-column>
+              <el-table-column prop="user_name" label="姓名"></el-table-column>
+              <el-table-column prop="user_phone" label="联系方式"></el-table-column>
+              <el-table-column prop="role_name" label="角色"></el-table-column>
+              <el-table-column label="操作">
+                <template slot-scope="scope">
+                  <i class="el-icon-delete" style="font-size: 18px; color: #fe4c51; cursor: pointer;" @click="delClick(scope.row.wp_id)"></i>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="grid-content bg-purple rule-set">
+            <div class="rule-title">
+              <h3 class="title-text"><i class="iconfont icon-shezhi"></i>规则设置</h3>
+            </div>
+            <div class="rule-item top-radius">
+              <div class="item-title clearfix">
+                <h4 class="title left">自动派单规则设置</h4>
+                <div class="set right">
+                  <a href="javascript:void(0);" class="blue" v-show="sendWhether" @click="sendState = true">设置</a>
+                  <a href="javascript:void(0);" class="blue" v-show="!sendWhether" @click="sendState = true">未设置</a>
                 </div>
               </div>
-              <div class="rule-item">
-                <div class="item-title clearfix">
-                  <h4 class="title left">响应超时规则设置</h4>
-                  <div class="set right">
-                    <a href="javascript:void(0);" class="blue" v-show="responseWhether" @click="responseState = true">设置</a>
-                    <a href="javascript:void(0);" class="blue" v-show="!responseWhether" @click="responseState = true">未设置</a>
+              <div class="item-content">
+                <div class="item-content-show" v-show="!sendState">
+                  <div class="show-det" v-show="sendWhether">
+                    <h5 class="title">按用户技能分配</h5>
+                    <p class="text">根据工单业务类别，分配至拥有该技能的人员</p>
                   </div>
+                  <p class="hint" v-show="!sendWhether">未设置自动派单规则</p>
                 </div>
-                <div class="item-content">
-                  <div class="item-content-show" v-show="!responseState">
-                    <p class="text" v-show="responseWhether">生成工单后，第一次跟进处理时间不超过{{responseTime}}分钟</p>
-                    <p class="hint" v-show="!responseWhether">未设置响应超时规则</p>
+                <div class="item-content-set" v-show="sendState">
+                  <div class="set-det">
+                    <h5 class="title"><el-checkbox style="margin-right: 10px;" v-model="skillSelect">按用户技能分配</el-checkbox></h5>
+                    <p class="text">根据工单业务类别，分配至拥有该技能的人员</p>
                   </div>
-                  <div class="item-content-set" v-show="responseState">
-                    <div class="set-det">
-                      <h5 class="title"><el-checkbox style="margin-right: 10px;" v-model="responseSelect">设置响应超时</el-checkbox></h5>
-                      <div class="time">
-                        <span class="txt">生成工单后，第一次跟进处理时间</span>
-                        <el-input style="width: 180px;" placeholder="时间" type="number" value="0" v-model.number="responseTime">
-                          <template slot="append">分钟</template>
-                        </el-input>
-                      </div>
-                    </div>
-                    <div class="operate">
-                      <el-button type="primary" :disabled="resDisabled" @click="clickResponse">保 存</el-button>
-                      <el-button @click="cancelResponse">取 消</el-button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="rule-item bottom-radius">
-                <div class="item-title clearfix">
-                  <h4 class="title left">处理超时规则设置</h4>
-                  <div class="set right">
-                    <a href="javascript:void(0);" class="blue" v-show="disposeWhether" @click="disposeState = true">设置</a>
-                    <a href="javascript:void(0);" class="blue" v-show="!disposeWhether" @click="disposeState = true">未设置</a>
-                  </div>
-                </div>
-                <div class="item-content">
-                  <div class="item-content-show" v-show="!disposeState">
-                    <p class="text" v-show="disposeWhether">生成工单后，第一次跟进处理时间不超过{{disposeTime}}分钟</p>
-                    <p class="hint" v-show="!disposeWhether">未设置处理超时规则</p>
-                  </div>
-                  <div class="item-content-set" v-show="disposeState">
-                    <div class="set-det">
-                      <h5 class="title"><el-checkbox style="margin-right: 10px;" v-model="responseSelect">设置处理超时</el-checkbox></h5>
-                      <div class="time">
-                        <span class="txt">接收/派发工单后，第一次处理不超过</span>
-                        <el-input style="width: 180px;" placeholder="时间" type="number" value="0" v-model.number="disposeTime">
-                          <template slot="append">分钟</template>
-                        </el-input>
-                      </div>
-                    </div>
-                    <div class="operate">
-                      <el-button type="primary" :disabled="disDisabled" @click="clickDispose">保 存</el-button>
-                      <el-button @click="cancelDispose">取 消</el-button>
-                    </div>
+                  <div class="operate">
+                    <el-button type="primary" :disabled="sendDisabled" @click="clickSend">保 存</el-button>
+                    <el-button @click="cancelSend">取 消</el-button>
                   </div>
                 </div>
               </div>
             </div>
-          </el-col>
-        </el-row>
-      </el-main>
-    </el-container>
+            <div class="rule-item">
+              <div class="item-title clearfix">
+                <h4 class="title left">响应超时规则设置</h4>
+                <div class="set right">
+                  <a href="javascript:void(0);" class="blue" v-show="responseWhether" @click="responseState = true">设置</a>
+                  <a href="javascript:void(0);" class="blue" v-show="!responseWhether" @click="responseState = true">未设置</a>
+                </div>
+              </div>
+              <div class="item-content">
+                <div class="item-content-show" v-show="!responseState">
+                  <p class="text" v-show="responseWhether">生成工单后，第一次跟进处理时间不超过{{responseTime}}分钟</p>
+                  <p class="hint" v-show="!responseWhether">未设置响应超时规则</p>
+                </div>
+                <div class="item-content-set" v-show="responseState">
+                  <div class="set-det">
+                    <h5 class="title"><el-checkbox style="margin-right: 10px;" v-model="responseSelect">设置响应超时</el-checkbox></h5>
+                    <div class="time">
+                      <span class="txt">生成工单后，第一次跟进处理时间</span>
+                      <el-input style="width: 180px;" placeholder="时间" type="number" value="0" v-model.number="responseTime">
+                        <template slot="append">分钟</template>
+                      </el-input>
+                    </div>
+                  </div>
+                  <div class="operate">
+                    <el-button type="primary" :disabled="resDisabled" @click="clickResponse">保 存</el-button>
+                    <el-button @click="cancelResponse">取 消</el-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="rule-item bottom-radius">
+              <div class="item-title clearfix">
+                <h4 class="title left">处理超时规则设置</h4>
+                <div class="set right">
+                  <a href="javascript:void(0);" class="blue" v-show="disposeWhether" @click="disposeState = true">设置</a>
+                  <a href="javascript:void(0);" class="blue" v-show="!disposeWhether" @click="disposeState = true">未设置</a>
+                </div>
+              </div>
+              <div class="item-content">
+                <div class="item-content-show" v-show="!disposeState">
+                  <p class="text" v-show="disposeWhether">生成工单后，第一次跟进处理时间不超过{{disposeTime}}分钟</p>
+                  <p class="hint" v-show="!disposeWhether">未设置处理超时规则</p>
+                </div>
+                <div class="item-content-set" v-show="disposeState">
+                  <div class="set-det">
+                    <h5 class="title"><el-checkbox style="margin-right: 10px;" v-model="responseSelect">设置处理超时</el-checkbox></h5>
+                    <div class="time">
+                      <span class="txt">接收/派发工单后，第一次处理不超过</span>
+                      <el-input style="width: 180px;" placeholder="时间" type="number" value="0" v-model.number="disposeTime">
+                        <template slot="append">分钟</template>
+                      </el-input>
+                    </div>
+                  </div>
+                  <div class="operate">
+                    <el-button type="primary" :disabled="disDisabled" @click="clickDispose">保 存</el-button>
+                    <el-button @click="cancelDispose">取 消</el-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
     <!-- 人员 -->
     <el-dialog title="选择人员" :visible.sync="crewDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
       <el-input class="search" placeholder="请输入人员姓名" prefix-icon="el-icon-search" v-model.trim="crewfilter"></el-input>
@@ -746,134 +744,112 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.rule{
-  height: 100%;
-  padding-bottom: 20px;
-  .module-container{
-    height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
+  @import '../../assets/css/base-column.css';
+  .module-main{
+    .warning{
+      .warning-title{
+        display: table;
+        width: 100%;
+        height: 60px;
+        .title-text{
+          display: table-cell;
+          vertical-align: middle;
+          font-size: 18px;
+          color: #272727;
+          i{
+            margin-right: 10px;
+            font-size: 24px;
+            color: #fb7720;
+          }
+        }
+        .operate{
+          display: table-cell;
+          vertical-align: middle;
+          text-align: right;
+        }
+      }
+      .warning-hint{
+        color: #fe4c51;
       }
     }
-    .module-main{
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-      .warning{
-        .warning-title{
-          display: table;
-          width: 100%;
-          height: 60px;
-          .title-text{
-            display: table-cell;
-            vertical-align: middle;
-            font-size: 18px;
-            color: #272727;
-            i{
-              margin-right: 10px;
-              font-size: 24px;
-              color: #fb7720;
-            }
+    .rule-set{
+      .rule-title{
+        display: table;
+        width: 100%;
+        height: 60px;
+        .title-text{
+          display: table-cell;
+          vertical-align: middle;
+          font-size: 18px;
+          color: #272727;
+          i{
+            margin-right: 10px;
+            font-size: 24px;
+            color: #4e97d8;
           }
-          .operate{
-            display: table-cell;
-            vertical-align: middle;
-            text-align: right;
-          }
-        }
-        .warning-hint{
-          color: #fe4c51;
         }
       }
-      .rule-set{
-        .rule-title{
-          display: table;
-          width: 100%;
-          height: 60px;
-          .title-text{
-            display: table-cell;
-            vertical-align: middle;
-            font-size: 18px;
+      .rule-item{
+        padding: 10px;
+        border: 1px solid #e6e6e6;
+        .item-title{
+          height: 45px;
+          .title{
+            line-height: 45px;
+            font-size: 16px;
             color: #272727;
-            i{
+          }
+          .set{
+            line-height: 45px;
+            font-size: 16px;
+          }
+        }
+        .item-content{
+          .title{
+            height: 35px;
+            line-height: 35px;
+            font-size: 14px;
+            color: #272727;
+          }
+          .text{
+            height: 35px;
+            line-height: 35px;
+            font-size: 14px;
+            color: #666666;
+          }
+          .time{
+            height: 35px;
+            line-height: 35px;
+            font-size: 14px;
+            .txt{
               margin-right: 10px;
-              font-size: 24px;
-              color: #4e97d8;
+            }
+          }
+          .hint{
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+            font-size: 14px;
+            color: #fe4c51;
+          }
+          .operate{
+            padding-top: 20px;
+            padding-bottom: 10px;
+            text-align: center;
+            button{
+              margin: 0 20px;
             }
           }
         }
-        .rule-item{
-          padding: 10px;
-          border: 1px solid #e6e6e6;
-          .item-title{
-            height: 45px;
-            .title{
-              line-height: 45px;
-              font-size: 16px;
-              color: #272727;
-            }
-            .set{
-              line-height: 45px;
-              font-size: 16px;
-            }
-          }
-          .item-content{
-            .title{
-              height: 35px;
-              line-height: 35px;
-              font-size: 14px;
-              color: #272727;
-            }
-            .text{
-              height: 35px;
-              line-height: 35px;
-              font-size: 14px;
-              color: #666666;
-            }
-            .time{
-              height: 35px;
-              line-height: 35px;
-              font-size: 14px;
-              .txt{
-                margin-right: 10px;
-              }
-            }
-            .hint{
-              height: 35px;
-              line-height: 35px;
-              text-align: center;
-              font-size: 14px;
-              color: #fe4c51;
-            }
-            .operate{
-              padding-top: 20px;
-              padding-bottom: 10px;
-              text-align: center;
-              button{
-                margin: 0 20px;
-              }
-            }
-          }
-        }
-        .top-radius{
-          border-radius: 6px 6px 0 0;
-          border-bottom: none;
-        }
-        .bottom-radius{
-          border-radius: 0 0 6px 6px;
-          border-top: none;
-        }
+      }
+      .top-radius{
+        border-radius: 6px 6px 0 0;
+        border-bottom: none;
+      }
+      .bottom-radius{
+        border-radius: 0 0 6px 6px;
+        border-top: none;
       }
     }
   }
-}
 </style>

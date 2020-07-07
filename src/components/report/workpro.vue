@@ -1,82 +1,80 @@
 <template>
   <div
-    class="report-workpro"
+    class="module-container"
     v-loading="loading"
     element-loading-text="拼命加载中"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(255, 255, 255, 0.6)">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>报表管理</el-breadcrumb-item>
-          <el-breadcrumb-item>项目工单报表</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-container class="module-content">
-        <el-aside width="280px" class="module-aside">
-          <!-- 组织树 -->
-          <org-module
-            @parentUpOrg="updateOrgan">
-          </org-module>
-        </el-aside>
-        <el-main class="module-main">
-          <div class="search">
-            <div class="item date">
-              <span>选择时段</span>
-              <el-date-picker
-                style="width: 280px;"
-                v-model="nowSearch.date"
-                type="daterange"
-                value-format="yyyy-MM-dd"
-                :clearable="false"
-                :picker-options="pickerOptions"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期">
-              </el-date-picker>
-            </div>
-            <div class="operate">
-              <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
-            </div>
+    element-loading-background="rgba(0, 0, 0, 0.6)">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>报表管理</el-breadcrumb-item>
+        <el-breadcrumb-item>项目工单报表</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-content">
+      <div class="module-aside">
+        <!-- 组织树 -->
+        <org-module
+          @parentUpOrg="updateOrgan">
+        </org-module>
+      </div>
+      <div class="module-main">
+        <div class="main-search">
+          <div class="item date">
+            <span>选择时段</span>
+            <el-date-picker
+              style="width: 280px;"
+              v-model="nowSearch.date"
+              type="daterange"
+              value-format="yyyy-MM-dd"
+              :clearable="false"
+              :picker-options="pickerOptions"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
+            </el-date-picker>
           </div>
-          <el-table class="list-table" :data="tableData" border :summary-method="getSummaries" show-summary style="width: 100%">
-            <el-table-column fixed type="index" width="50" label="序号"></el-table-column>
-            <el-table-column fixed prop="organize_name" label="机构名称" width="160"></el-table-column>
-            <el-table-column prop="woSize" label="工单总数" width="110"></el-table-column>
-            <el-table-column prop="insSize" label="巡检工单" width="110"></el-table-column>
-            <el-table-column prop="repairSize" label="维修工单" width="110"></el-table-column>
-            <el-table-column prop="continueSize" label="已结单" width="100"></el-table-column>
-            <el-table-column prop="notContinueSize" label="未结单" width="100"></el-table-column>
-            <el-table-column prop="outtimeSize" label="超时工单" width="110"></el-table-column>
-            <el-table-column label="完成率" width="100">
-              <template slot-scope="scope">
-                <span>{{ scope.row.continueRate | formatPercent }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="continueOntimeSize" label="完成及时数" width="118"></el-table-column>
-            <el-table-column prop="ingOuttimeSize" label="处理超时数" width="120"></el-table-column>
-            <el-table-column label="完成及时率" width="120">
-              <template slot-scope="scope">
-                <span>{{ scope.row.continueOntimeRate | formatPercent }}</span>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-pagination
-            background
-            prev-text="上一页"
-            next-text="下一页"
-            :current-page="nowPage"
-            layout="sizes, prev, pager, next, total"
-            :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-            :page-size="limit"
-            @size-change="handleSizeChange"
-            @current-change="pageChang"
-            :total="total">
-          </el-pagination>
-        </el-main>
-      </el-container>
-    </el-container>
+          <div class="operate">
+            <el-button type="primary" @click="searchList">搜索</el-button>
+            <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+          </div>
+        </div>
+        <el-table class="list-table" :data="tableData" border :summary-method="getSummaries" show-summary style="width: 100%">
+          <el-table-column fixed type="index" width="50" label="序号"></el-table-column>
+          <el-table-column fixed prop="organize_name" label="机构名称" width="160"></el-table-column>
+          <el-table-column prop="woSize" label="工单总数" width="110"></el-table-column>
+          <el-table-column prop="insSize" label="巡检工单" width="110"></el-table-column>
+          <el-table-column prop="repairSize" label="维修工单" width="110"></el-table-column>
+          <el-table-column prop="continueSize" label="已结单" width="100"></el-table-column>
+          <el-table-column prop="notContinueSize" label="未结单" width="100"></el-table-column>
+          <el-table-column prop="outtimeSize" label="超时工单" width="110"></el-table-column>
+          <el-table-column label="完成率" width="100">
+            <template slot-scope="scope">
+              <span>{{ scope.row.continueRate | formatPercent }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="continueOntimeSize" label="完成及时数" width="118"></el-table-column>
+          <el-table-column prop="ingOuttimeSize" label="处理超时数" width="120"></el-table-column>
+          <el-table-column label="完成及时率" width="120">
+            <template slot-scope="scope">
+              <span>{{ scope.row.continueOntimeRate | formatPercent }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          background
+          prev-text="上一页"
+          next-text="下一页"
+          :current-page="nowPage"
+          layout="sizes, prev, pager, next, total"
+          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+          :page-size="limit"
+          @size-change="handleSizeChange"
+          @current-change="pageChang"
+          :total="total">
+        </el-pagination>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -328,71 +326,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-  .report-workpro{
-    height: 100%;
-    padding-bottom: 20px;
-    .module-container{
-      height: 100%;
-      padding: 0;
-      .module-header{
-        padding-left: 0;
-        padding-right: 0;
-        padding-bottom: 20px;
-        .el-breadcrumb{
-          padding-top: 15px;
-          padding-left: 20px;
-          padding-bottom: 15px;
-          background: #ffffff;
-        }
-      }
-      .module-content{
-        height: 100%;
-        padding-top: 10px;
-        padding-right: 0;
-        padding-bottom: 10px;
-        padding-left: 10px;
-        margin-left: 20px;
-        margin-right: 20px;
-        background: #ffffff;
-        .module-aside{
-          height: 100%;
-          padding: 5px;
-          border-radius: 6px;
-          border: 1px solid #cccccc;
-        }
-        .module-main{
-          padding-top: 0;
-          padding-right: 10px;
-          padding-bottom: 0;
-          padding-left: 20px;
-          overflow: scroll;
-          .search{
-            display: table;
-            width: 100%;
-            height: 60px;
-            .item{
-              display: table-cell;
-              vertical-align: middle;
-              width: 280px;
-              font-size: 0;
-              span{
-                width: 70px;
-                display: inline-block;
-                line-height: 34px;
-                font-size: 14px;
-              }
-            }
-            .date{
-              width: 420px;
-            }
-            .operate{
-              display: table-cell;
-              vertical-align: middle;
-              text-align: right;
-            }
-          }
-        }
-      }
-    }
-  }
+  @import '../../assets/css/base-row.css';
 </style>

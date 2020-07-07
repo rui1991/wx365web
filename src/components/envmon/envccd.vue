@@ -1,7 +1,7 @@
 <template>
-  <div class="envccd">
-    <div class="search">
-      <div class="search-input" style="margin-bottom: 10px;">
+  <div class="main-seed">
+    <div class="main-search main-search-multi">
+      <div class="search-row">
         <div class="item">
           <span>设备名称</span>
           <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
@@ -15,7 +15,7 @@
           <el-button type="primary" @click="addDialog = true">新增</el-button>
         </div>
       </div>
-      <div class="search-input">
+      <div class="search-row">
         <div class="item">
           <span>设备状态</span>
           <el-select v-model="nowSearch.state" clearable style="width: 160px;" placeholder="请选择设备状态">
@@ -430,29 +430,31 @@ export default{
 </script>
 
 <style lang="less" scoped>
-  .envccd{
-    .search{
-      padding: 5px 0;
-      .search-input{
-        display: table;
-        width: 100%;
-        .item{
-          display: table-cell;
-          vertical-align: middle;
-          width: 280px;
-          font-size: 0;
-          span{
-            width: 70px;
-            display: inline-block;
-            line-height: 34px;
-            font-size: 14px;
-          }
+  .main-seed{
+    .main-search-multi {
+      .search-row{
+        display: flex;
+        height: 50px;
+        align-items: center;
+      }
+    }
+    .main-search{
+      .item{
+        width: 280px;
+        display: flex;
+        align-items: center;
+        span{
+          width: 70px;
+          font-size: 14px;
         }
-        .operate{
-          display: table-cell;
-          vertical-align: middle;
-          text-align: right;
-        }
+      }
+      .date{
+        width: 420px;
+      }
+      .operate{
+        display: flex;
+        flex-grow: 1;
+        justify-content: flex-end;
       }
     }
   }

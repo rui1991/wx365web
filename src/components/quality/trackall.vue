@@ -1,81 +1,79 @@
 <template>
   <div
-    class="trackall"
+    class="module-container"
     v-loading="loading"
     element-loading-text="拼命加载中"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(255, 255, 255, 0.6)">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>品质过程管理</el-breadcrumb-item>
-          <el-breadcrumb-item>轨迹记录总览</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-main class="module-main">
-        <div class="search">
-          <div class="search-input" style="margin-bottom: 10px;">
-            <div class="item">
-              <span>区域类型</span>
-              <el-select v-model="nowSearch.type" clearable style="width: 160px;" placeholder="请选择区域类型">
-                <el-option
-                  v-for="item in typeOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </div>
-            <div class="item">
-              <span>人员名称</span>
-              <el-input style="width: 160px;" v-model.trim="nowSearch.crew"></el-input>
-            </div>
-            <div class="operate"></div>
+    element-loading-background="rgba(0, 0, 0, 0.6)">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>品质过程管理</el-breadcrumb-item>
+        <el-breadcrumb-item>轨迹记录总览</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-main">
+      <div class="main-search main-search-multi">
+        <div class="search-row">
+          <div class="item">
+            <span>区域类型</span>
+            <el-select v-model="nowSearch.type" clearable style="width: 160px;" placeholder="请选择区域类型">
+              <el-option
+                v-for="item in typeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
           </div>
-          <div class="search-input">
-            <div class="item date">
-              <span>选择时段</span>
-              <el-date-picker
-                style="width: 280px;"
-                v-model="nowSearch.date"
-                type="daterange"
-                value-format="yyyy-MM-dd"
-                :clearable="false"
-                :picker-options="pickerOptions"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期">
-              </el-date-picker>
-            </div>
-            <div class="operate">
-              <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
-            </div>
+          <div class="item">
+            <span>人员名称</span>
+            <el-input style="width: 160px;" v-model.trim="nowSearch.crew"></el-input>
+          </div>
+          <div class="operate"></div>
+        </div>
+        <div class="search-row">
+          <div class="item date">
+            <span>选择时段</span>
+            <el-date-picker
+              style="width: 280px;"
+              v-model="nowSearch.date"
+              type="daterange"
+              value-format="yyyy-MM-dd"
+              :clearable="false"
+              :picker-options="pickerOptions"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
+            </el-date-picker>
+          </div>
+          <div class="operate">
+            <el-button type="primary" @click="searchList">搜索</el-button>
+            <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
           </div>
         </div>
-        <el-table class="list-table" :data="tableData" border style="width: 100%">
-          <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column prop="user_name" label="姓名"></el-table-column>
-          <el-table-column prop="at_date" label="日期"></el-table-column>
-          <el-table-column prop="start_date" label="区域类型">
-            <template slot-scope="scope">{{ scope.row.area_type | filterType }}</template>
-          </el-table-column>
-          <el-table-column prop="wait_time" label="停留时长（min）"></el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          prev-text="上一页"
-          next-text="下一页"
-          :current-page="nowPage"
-          layout="sizes, prev, pager, next, total"
-          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-          :page-size="limit"
-          @size-change="handleSizeChange"
-          @current-change="pageChang"
-          :total="total">
-        </el-pagination>
-      </el-main>
-    </el-container>
+      </div>
+      <el-table class="list-table" :data="tableData" border style="width: 100%">
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column prop="user_name" label="姓名"></el-table-column>
+        <el-table-column prop="at_date" label="日期"></el-table-column>
+        <el-table-column prop="start_date" label="区域类型">
+          <template slot-scope="scope">{{ scope.row.area_type | filterType }}</template>
+        </el-table-column>
+        <el-table-column prop="wait_time" label="停留时长（min）"></el-table-column>
+      </el-table>
+      <el-pagination
+        background
+        prev-text="上一页"
+        next-text="下一页"
+        :current-page="nowPage"
+        layout="sizes, prev, pager, next, total"
+        :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+        :page-size="limit"
+        @size-change="handleSizeChange"
+        @current-change="pageChang"
+        :total="total">
+      </el-pagination>
+    </div>
   </div>
 </template>
 
@@ -363,56 +361,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.trackall{
-  height: 100%;
-  padding-bottom: 20px;
-  .module-container{
-    height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-main{
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-      .search{
-        padding: 5px 0;
-        .search-input{
-          display: table;
-          width: 100%;
-          .item{
-            display: table-cell;
-            vertical-align: middle;
-            width: 280px;
-            font-size: 0;
-            span{
-              width: 70px;
-              display: inline-block;
-              line-height: 34px;
-              font-size: 14px;
-            }
-          }
-          .date{
-            width: 420px;
-          }
-          .operate{
-            display: table-cell;
-            vertical-align: middle;
-            text-align: right;
-          }
-        }
-      }
-    }
-  }
-}
+  @import '../../assets/css/base-column.css';
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="organ-tree">
     <el-input
       placeholder="输入关键字进行过滤"
       clearable
@@ -142,5 +142,10 @@ export default{
 </script>
 
 <style lang="less" scoped>
-
+  .organ-tree{
+    width: 278px;
+    height: 100%;
+    padding: 5px;
+    overflow: auto;
+  }
 </style>

@@ -276,55 +276,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-  .module-container{
-    height: 100%;
-    padding-top: 65px;
-    padding-bottom: 20px;
-    position: relative;
-    .module-header{
-      width: 100%;
-      position: absolute;
-      left: 0;
-      top: 0;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-main{
-      height: 100%;
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      overflow: auto;
-      background: #ffffff;
-      .main-search{
-        .item{
-          width: 280px;
-          display: flex;
-          align-items: center;
-          span{
-            width: 70px;
-            font-size: 14px;
-          }
-        }
-        .date{
-          width: 420px;
-        }
-        .operate{
-          display: flex;
-          flex-grow: 1;
-          justify-content: flex-end;
-        }
-      }
-      .main-search-single {
-        width: 100%;
-        height: 60px;
-        display: flex;
-        align-items: center;
-      }
-    }
-  }
+  @import '../../assets/css/base-column.css';
 </style>

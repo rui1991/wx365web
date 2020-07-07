@@ -1,105 +1,104 @@
 <template>
   <div
-    class="site"
+    class="module-container"
     v-loading="loading"
     element-loading-text="拼命加载中"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(255, 255, 255, 0.6)">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>基础配置</el-breadcrumb-item>
-          <el-breadcrumb-item>地址管理</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-main class="module-main">
-        <div class="module-aside">
-          <el-tree
-            :data="siteTree"
-            ref="siteTree"
-            show-checkbox
-            default-expand-all
-            check-strictly
-            check-on-click-node
-            node-key="id"
-            @check-change="siteCheckChange"
-            :props="defaultProps">
-          </el-tree>
-        </div>
-        <div class="module-content">
-          <div class="search">
-            <div class="search-input" style="margin-bottom: 10px;">
-              <div class="item">
-                <span>地址名称</span>
-                <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
-              </div>
-              <div class="item">
-                <span>地址标签</span>
-                <el-input style="width: 160px;" v-model.trim="nowSearch.mac"></el-input>
-              </div>
-              <div class="operate">
-                <el-button type="danger" :disabled="handleDisabled" @click="delDialog = true">删除</el-button>
-                <el-button type="primary" @click="searchList">搜索</el-button>
-                <el-button type="primary" :disabled="addDisabled" @click="addDialog = true">新增</el-button>
-              </div>
+    element-loading-background="rgba(0, 0, 0, 0.6)">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>基础配置</el-breadcrumb-item>
+        <el-breadcrumb-item>地址管理</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-content">
+      <div class="module-aside">
+        <el-tree
+          class="aside-tree"
+          :data="siteTree"
+          ref="siteTree"
+          show-checkbox
+          default-expand-all
+          check-strictly
+          check-on-click-node
+          node-key="id"
+          @check-change="siteCheckChange"
+          :props="defaultProps">
+        </el-tree>
+      </div>
+      <div class="module-main">
+        <div class="main-search main-search-multi">
+          <div class="search-row">
+            <div class="item">
+              <span>地址名称</span>
+              <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
             </div>
-            <div class="search-input">
-              <div class="item">
-                <span>地址类型</span>
-                <el-select v-model="nowSearch.type" style="width: 160px;" clearable placeholder="请选择地址类型">
-                  <el-option
-                    v-for="item in typeOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
-              </div>
-              <div class="operate">
-                <el-button type="primary" :disabled="qrDisabled" @click="qrDialog = true">生成二维码</el-button>
-                <el-button type="primary" @click="upClick">导入</el-button>
-                <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
-              </div>
+            <div class="item">
+              <span>地址标签</span>
+              <el-input style="width: 160px;" v-model.trim="nowSearch.mac"></el-input>
+            </div>
+            <div class="operate">
+              <el-button type="danger" :disabled="handleDisabled" @click="delDialog = true">删除</el-button>
+              <el-button type="primary" @click="searchList">搜索</el-button>
+              <el-button type="primary" :disabled="addDisabled" @click="addDialog = true">新增</el-button>
             </div>
           </div>
-          <el-table class="list-table" :data="tableData" @selection-change="handleSelectionChange" border style="width: 100%">
-            <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column type="index" width="50" label="序号"></el-table-column>
-            <el-table-column prop="position_id" label="地址编号"></el-table-column>
-            <el-table-column :show-overflow-tooltip="true" label="地址名称">
-              <template slot-scope="scope">
-                <a href="javascript:void(0);" class="name" @click="detClick(scope.row.position_id)">{{ scope.row.position_name }}</a>
-              </template>
-            </el-table-column>
-            <el-table-column label="地址标签">
-              <template slot-scope="scope">
-                <span>{{ scope.row.position_mac | formatMac }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="node_btpw" :formatter="eleFormatter" label="设备电量"></el-table-column>
-            <el-table-column prop="area_type" :formatter="areaFormatter" label="区域类型"></el-table-column>
-            <el-table-column prop="parent_address" label="上级位置"></el-table-column>
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.position_id)">编辑</a>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-pagination
-            background
-            prev-text="上一页"
-            next-text="下一页"
-            :current-page="nowPage"
-            layout="sizes, prev, pager, next, total"
-            :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-            :page-size="limit"
-            @size-change="handleSizeChange"
-            @current-change="pageChang"
-            :total="total">
-          </el-pagination>
+          <div class="search-row">
+            <div class="item">
+              <span>地址类型</span>
+              <el-select v-model="nowSearch.type" style="width: 160px;" clearable placeholder="请选择地址类型">
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </div>
+            <div class="operate">
+              <el-button type="primary" :disabled="qrDisabled" @click="qrDialog = true">生成二维码</el-button>
+              <el-button type="primary" @click="upClick">导入</el-button>
+              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+            </div>
+          </div>
         </div>
-      </el-main>
-    </el-container>
+        <el-table class="list-table" :data="tableData" @selection-change="handleSelectionChange" border style="width: 100%">
+          <el-table-column type="selection" width="55"></el-table-column>
+          <el-table-column type="index" width="50" label="序号"></el-table-column>
+          <el-table-column prop="position_id" label="地址编号"></el-table-column>
+          <el-table-column :show-overflow-tooltip="true" label="地址名称">
+            <template slot-scope="scope">
+              <a href="javascript:void(0);" class="name" @click="detClick(scope.row.position_id)">{{ scope.row.position_name }}</a>
+            </template>
+          </el-table-column>
+          <el-table-column label="地址标签">
+            <template slot-scope="scope">
+              <span>{{ scope.row.position_mac | formatMac }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="node_btpw" :formatter="eleFormatter" label="设备电量"></el-table-column>
+          <el-table-column prop="area_type" :formatter="areaFormatter" label="区域类型"></el-table-column>
+          <el-table-column prop="parent_address" label="上级位置"></el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.position_id)">编辑</a>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          background
+          prev-text="上一页"
+          next-text="下一页"
+          :current-page="nowPage"
+          layout="sizes, prev, pager, next, total"
+          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+          :page-size="limit"
+          @size-change="handleSizeChange"
+          @current-change="pageChang"
+          :total="total">
+        </el-pagination>
+      </div>
+    </div>
     <!-- 新增 -->
     <add-module
       :parentDialog="addDialog"
@@ -567,77 +566,10 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.site{
-  height: 100%;
-  padding-bottom: 20px;
-  .module-container{
+  @import '../../assets/css/base-row.css';
+  .aside-tree{
     height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-main{
-      display: flex;
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-      .module-aside{
-        height: 100%;
-        width: 280px;
-        padding: 5px;
-        border-radius: 6px;
-        border: 1px solid #cccccc;
-        overflow: auto;
-      }
-      .module-content{
-        flex-grow: 1;
-        height: 100%;
-        padding-top: 0;
-        padding-right: 10px;
-        padding-bottom: 0;
-        padding-left: 20px;
-        overflow: auto;
-        .search{
-          padding-top: 5px;
-          padding-bottom: 5px;
-          .search-input{
-            display: table;
-            width: 100%;
-            .item{
-              display: table-cell;
-              vertical-align: middle;
-              width: 280px;
-              font-size: 0;
-              span{
-                width: 70px;
-                display: inline-block;
-                line-height: 34px;
-                font-size: 14px;
-              }
-            }
-            .operate{
-              display: table-cell;
-              vertical-align: middle;
-              text-align: right;
-            }
-          }
-        }
-      }
-    }
+    padding: 5px;
+    overflow: auto;
   }
-  .mult-dialog{
-    .el-dialog__header{
-      display: none;
-    }
-  }
-}
 </style>

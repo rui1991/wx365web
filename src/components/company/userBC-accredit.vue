@@ -51,6 +51,10 @@ export default{
     ])
   },
   methods: {
+    accreditInit () {
+      this.filterText = ''
+      this.getOrganTree()
+    },
     // 获取组织树
     getOrganTree () {
       let params = {
@@ -178,7 +182,7 @@ export default{
   watch: {
     parentDialog (val, oldVal) {
       if (val) {
-        this.getOrganTree()
+        this.accreditInit()
       }
     },
     filterText (val, oldVal) {

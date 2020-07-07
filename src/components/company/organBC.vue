@@ -231,7 +231,7 @@ export default{
 <style lang="less" scoped>
   @import '../../assets/css/base-row.css';
   .module-aside {
-    padding-top: 45px;
+    padding-top: 40px;
     position: relative;
     .aside-header{
       width: 100%;

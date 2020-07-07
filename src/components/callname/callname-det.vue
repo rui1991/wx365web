@@ -6,8 +6,7 @@
       <el-table-column prop="atime" label="点名时间段"></el-table-column>
       <el-table-column label="状态">
         <template slot-scope="scope">
-          <span v-if="scope.row.sf === 1">已打卡</span>
-          <span class="red" v-else-if="scope.row.sf === 0">未打卡</span>
+          <span>已打卡</span>
         </template>
       </el-table-column>
     </el-table>
@@ -18,6 +17,9 @@
 </template>
 
 <script>
+/*
+* sf: 打卡状态   1 已打卡；  2 未打卡
+* */
 import { mapState } from 'vuex'
 export default{
   props: ['parentDialog', 'parentUid', 'parentDate'],
@@ -55,7 +57,11 @@ export default{
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          this.tableData = res.data.data1
+          const resData = res.data.data1
+          const tableData = resData.filter(item => {
+            return item.sf === 1
+          })
+          this.tableData = tableData
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({

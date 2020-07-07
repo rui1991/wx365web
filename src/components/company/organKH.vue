@@ -183,60 +183,26 @@ export default{
 </script>
 
 <style lang="less" scoped>
-  .module-container{
-    height: 100%;
-    padding-top: 65px;
-    padding-bottom: 20px;
+  @import '../../assets/css/base-row.css';
+  .module-aside {
+    padding-top: 40px;
     position: relative;
-    .module-header{
+    .aside-header{
       width: 100%;
+      height: 40px;
+      padding: 0 10px;
       position: absolute;
       left: 0;
       top: 0;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-content{
-      height: 100%;
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
       display: flex;
-      background: #ffffff;
-      .module-aside{
-        width: 280px;
-        height: 100%;
-        padding-top: 45px;
-        position: relative;
-        border-radius: 6px;
-        border: 1px solid #cccccc;
-        overflow: auto;
-        .aside-header{
-          width: 100%;
-          height: 40px;
-          padding: 0 10px;
-          position: absolute;
-          left: 0;
-          top: 0;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          background: #f1f1f1;
-        }
-      }
-      .module-main{
-        height: 100%;
-        padding: 20px;
-        margin-left: 20px;
-        flex-grow: 1;
-        border-radius: 6px;
-        border: 1px solid #cccccc;
-        overflow: auto;
-      }
+      align-items: center;
+      justify-content: space-between;
+      background: #f1f1f1;
     }
+  }
+  .module-main{
+    padding: 20px;
+    border-radius: 6px;
+    border: 1px solid #cccccc;
   }
 </style>

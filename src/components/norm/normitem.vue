@@ -1,68 +1,68 @@
 <template>
-  <div class="normitem">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item v-for="item in pathArr" :key="item">{{ item }}</el-breadcrumb-item>
-          <el-breadcrumb-item>检查项</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-main class="module-main">
-        <div class="search">
+  <div class="module-container">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item v-for="item in pathArr" :key="item">{{ item }}</el-breadcrumb-item>
+        <el-breadcrumb-item>检查项</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-main">
+      <div class="main-search main-search-single">
+        <div class="operate">
           <el-button type="primary" @click="returnSuper">返回</el-button>
           <el-button type="primary" @click="addDialog = true">新增</el-button>
         </div>
-        <el-table class="list-table" :data="tableData" border style="width: 100%">
-          <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column label="表达方式" width="120">
-            <template slot-scope="scope">
-              <span>{{ scope.row.expression | filterWay }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="表达值" width="240" :show-overflow-tooltip="true">
-            <template slot-scope="scope">
-              <span v-if="scope.row.expression_value">{{ scope.row.expression_value }}</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="检查项名称" width="240" :show-overflow-tooltip="true">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="name" @click="detClick(scope.row)">{{ scope.row.inspect_name }}</a>
-            </template>
-          </el-table-column>
-          <el-table-column label="默认值" :show-overflow-tooltip="true">
-            <template slot-scope="scope">
-              <span v-if="scope.row.default_value">{{ scope.row.default_value }}</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="检查内容及要求" :show-overflow-tooltip="true">
-            <template slot-scope="scope">
-              <span v-if="scope.row.inspect_contents">{{ scope.row.inspect_contents }}</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="150">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
-              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.sdd_id)">删除</a>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          prev-text="上一页"
-          next-text="下一页"
-          :current-page="nowPage"
-          layout="sizes, prev, pager, next, total"
-          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-          :page-size="limit"
-          @size-change="handleSizeChange"
-          @current-change="pageChang"
-          :total="total">
-        </el-pagination>
-      </el-main>
-    </el-container>
+      </div>
+      <el-table class="list-table" :data="tableData" border style="width: 100%">
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column label="表达方式" width="120">
+          <template slot-scope="scope">
+            <span>{{ scope.row.expression | filterWay }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="表达值" width="240" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <span v-if="scope.row.expression_value">{{ scope.row.expression_value }}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="检查项名称" width="240" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <a href="javascript:void(0);" class="name" @click="detClick(scope.row)">{{ scope.row.inspect_name }}</a>
+          </template>
+        </el-table-column>
+        <el-table-column label="默认值" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <span v-if="scope.row.default_value">{{ scope.row.default_value }}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="检查内容及要求" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <span v-if="scope.row.inspect_contents">{{ scope.row.inspect_contents }}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="150">
+          <template slot-scope="scope">
+            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
+            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.sdd_id)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        background
+        prev-text="上一页"
+        next-text="下一页"
+        :current-page="nowPage"
+        layout="sizes, prev, pager, next, total"
+        :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+        :page-size="limit"
+        @size-change="handleSizeChange"
+        @current-change="pageChang"
+        :total="total">
+      </el-pagination>
+    </div>
     <!-- 新增标准项 -->
     <add-module
       :parentDialog="addDialog"
@@ -355,35 +355,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-  .normitem{
-    height: 100%;
-    padding-bottom: 20px;
-    .module-container{
-      height: 100%;
-      padding: 0;
-      .module-header{
-        padding-left: 0;
-        padding-right: 0;
-        padding-bottom: 20px;
-        .el-breadcrumb{
-          padding-top: 15px;
-          padding-left: 20px;
-          padding-bottom: 15px;
-          background: #ffffff;
-        }
-      }
-      .module-main{
-        padding: 10px;
-        margin-left: 20px;
-        margin-right: 20px;
-        background: #ffffff;
-        .search{
-          display: flex;
-          height: 60px;
-          align-items: center;
-          justify-content: flex-end;
-        }
-      }
-    }
-  }
+  @import '../../assets/css/base-column.css';
 </style>

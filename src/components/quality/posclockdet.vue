@@ -1,12 +1,12 @@
 <template>
   <div
-    class="posclockdet"
+    class="main-seed"
     v-loading="loading"
     element-loading-text="拼命加载中"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(255, 255, 255, 0.6)">
-    <div class="search">
-      <div class="search-input" style="margin-bottom: 10px;">
+    element-loading-background="rgba(0, 0, 0, 0.6)">
+    <div class="main-search main-search-multi">
+      <div class="search-row">
         <div class="item">
           <span>执行部门</span>
           <el-select v-model="nowSearch.sector" clearable style="width: 160px;" placeholder="请选择执行部门">
@@ -27,7 +27,7 @@
           <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
         </div>
       </div>
-      <div class="search-input">
+      <div class="search-row">
         <div class="item">
           <el-date-picker
             v-model="nowSearch.date"
@@ -469,21 +469,21 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.posclockdet{
-  .search{
-    padding: 5px 0;
-    .search-input{
-      display: table;
-      width: 100%;
+  .main-seed{
+    .main-search-multi {
+      .search-row{
+        display: flex;
+        height: 50px;
+        align-items: center;
+      }
+    }
+    .main-search{
       .item{
-        display: table-cell;
-        vertical-align: middle;
         width: 280px;
-        font-size: 0;
+        display: flex;
+        align-items: center;
         span{
           width: 70px;
-          display: inline-block;
-          line-height: 34px;
           font-size: 14px;
         }
       }
@@ -491,27 +491,10 @@ export default{
         width: 420px;
       }
       .operate{
-        display: table-cell;
-        vertical-align: middle;
-        text-align: right;
-      }
-    }
-  }
-
-  .search{
-    padding: 5px 0;
-    .search-input{
-      display: flex;
-      align-items: center;
-      width: 100%;
-      .item{
-        margin-right: 20px;
-      }
-      .operate{
+        display: flex;
         flex-grow: 1;
-        text-align: right;
+        justify-content: flex-end;
       }
     }
   }
-}
 </style>

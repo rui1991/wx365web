@@ -26,6 +26,7 @@
             <el-time-picker
               style="width: 240px;"
               is-range
+              :editable="false"
               arrow-control
               v-model="item.time"
               :clearable="false"

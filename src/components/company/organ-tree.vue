@@ -146,11 +146,9 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.organ-tree{
-  height: 100%;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-bottom: 5px;
-  overflow: auto;
-}
+  .organ-tree{
+    height: 100%;
+    padding: 5px;
+    overflow: auto;
+  }
 </style>

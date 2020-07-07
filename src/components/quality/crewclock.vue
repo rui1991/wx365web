@@ -1,147 +1,145 @@
 <template>
   <div
-    class="crewclock"
+    class="module-container"
     v-loading="loading"
     element-loading-text="拼命加载中"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(255, 255, 255, 0.6)">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>品质过程管理</el-breadcrumb-item>
-          <el-breadcrumb-item>人员打卡率报表</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-container class="module-content">
-        <el-aside width="280px" class="module-aside">
-          <!-- 组织树 -->
-          <org-module
-            @parentUpOrg="updateOrgan">
-          </org-module>
-        </el-aside>
-        <el-main class="module-main">
-          <div class="search">
-            <div class="search-input" style="margin-bottom: 10px;">
-              <div class="item date">
-                <span>选择时段</span>
-                <el-date-picker
-                  style="width: 280px;"
-                  v-model="nowSearch.date"
-                  type="daterange"
-                  value-format="yyyy-MM-dd"
-                  :clearable="false"
-                  :picker-options="pickerOptions"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期">
-                </el-date-picker>
-              </div>
-              <div class="item" v-show="tableDetails">
-                <span>胸牌编号</span>
-                <el-input style="width: 160px;" v-model="nowSearch.mac"></el-input>
-              </div>
-              <div class="operate">
-                <el-button type="primary" @click="searchList">搜索</el-button>
-                <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
-              </div>
+    element-loading-background="rgba(0, 0, 0, 0.6)">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>品质过程管理</el-breadcrumb-item>
+        <el-breadcrumb-item>人员打卡率报表</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-content">
+      <div class="module-aside">
+        <!-- 组织树 -->
+        <org-module
+          @parentUpOrg="updateOrgan">
+        </org-module>
+      </div>
+      <div class="module-main">
+        <div class="main-search main-search-multi">
+          <div class="search-row" style="margin-bottom: 10px;">
+            <div class="item date">
+              <span>选择时段</span>
+              <el-date-picker
+                style="width: 280px;"
+                v-model="nowSearch.date"
+                type="daterange"
+                value-format="yyyy-MM-dd"
+                :clearable="false"
+                :picker-options="pickerOptions"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
             </div>
-            <div class="search-input">
-              <div class="item" v-show="tableDetails">
-                <span>员工姓名</span>
-                <el-input style="width: 160px;" v-model="nowSearch.name"></el-input>
-              </div>
-              <div class="operate"></div>
+            <div class="item" v-show="tableDetails">
+              <span>胸牌编号</span>
+              <el-input style="width: 160px;" v-model="nowSearch.mac"></el-input>
+            </div>
+            <div class="operate">
+              <el-button type="primary" @click="searchList">搜索</el-button>
+              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
             </div>
           </div>
-          <el-table class="list-table" :data="tableData1" border :summary-method="getSummaries1" show-summary style="width: 100%" v-show="!tableDetails">
-            <el-table-column type="index" width="50" label="序号"></el-table-column>
-            <el-table-column width="200" :show-overflow-tooltip="true" prop="organize_name" label="组织机构"></el-table-column>
-            <el-table-column prop="all_po_size" label="地址总数"></el-table-column>
-            <el-table-column prop="all_set_user" label="打卡人数"></el-table-column>
-            <el-table-column label="打卡点位数">
-              <template slot-scope="scope">
-                <span class="red" v-if="scope.row.position_size < scope.row.po_size">{{ scope.row.position_size }}</span>
-                <span v-else>{{ scope.row.position_size }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="未打卡点位数">
-              <template slot-scope="scope">
-                <span class="red" v-if="scope.row.notRecordSize > 0">{{ scope.row.notRecordSize  }}</span>
-                <span v-else>0</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="打卡率">
-              <template slot-scope="scope">
-                <span>{{ scope.row.recordRate | formatPercent }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="in_out_size" label="进入次数"></el-table-column>
-            <el-table-column label="点位平均停留时长（分）">
-              <template slot-scope="scope">
-                <span>{{ scope.row.avwaittime | formatNum }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="点位之间间隔时长（分）">
-              <template slot-scope="scope">
-                <span>{{ scope.row.avrecord | formatNum }}</span>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-table class="list-table" :data="tableData2" border :summary-method="getSummaries2" show-summary style="width: 100%" v-show="tableDetails">
-            <el-table-column type="index" width="50" label="序号"></el-table-column>
-            <el-table-column width="180" :show-overflow-tooltip="true" label="胸牌编号">
-              <template slot-scope="scope">
-                <span v-if="scope.row.card_mac">{{ scope.row.card_mac }}</span>
-                <span v-else>-</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="user_name" label="姓名"></el-table-column>
-            <el-table-column width="200" :show-overflow-tooltip="true" prop="positions" label="点名地址"></el-table-column>
-            <el-table-column prop="po_size" label="负责点位数"></el-table-column>
-            <el-table-column label="打卡点位数">
-              <template slot-scope="scope">
-                <span class="red" v-if="scope.row.position_size < scope.row.po_size">{{ scope.row.position_size }}</span>
-                <span v-else>{{ scope.row.position_size }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="未打卡点位数">
-              <template slot-scope="scope">
-                <a href="javascript:;" class="red" v-if="scope.row.notRecordSize > 0" @click="detClick(scope.row.user_id, scope.row.positions)">{{ scope.row.notRecordSize  }}</a>
-                <span v-else>0</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="打卡率">
-              <template slot-scope="scope">
-                <span>{{ scope.row.recordRate | formatPercent }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="in_out_size" label="进入次数"></el-table-column>
-            <el-table-column label="点位平均停留时长（分）">
-              <template slot-scope="scope">
-                <span>{{ scope.row.avwaittime | formatNum }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="点位之间间隔时长（分）">
-              <template slot-scope="scope">
-                <span>{{ scope.row.avrecord | formatNum }}</span>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-pagination
-            background
-            prev-text="上一页"
-            next-text="下一页"
-            :current-page="nowPage"
-            layout="sizes, prev, pager, next, total"
-            :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-            :page-size="limit"
-            @size-change="handleSizeChange"
-            @current-change="pageChang"
-            :total="total">
-          </el-pagination>
-        </el-main>
-      </el-container>
-    </el-container>
+          <div class="search-row">
+            <div class="item" v-show="tableDetails">
+              <span>员工姓名</span>
+              <el-input style="width: 160px;" v-model="nowSearch.name"></el-input>
+            </div>
+            <div class="operate"></div>
+          </div>
+        </div>
+        <el-table class="list-table" :data="tableData1" border :summary-method="getSummaries1" show-summary style="width: 100%" v-show="!tableDetails">
+          <el-table-column type="index" width="50" label="序号"></el-table-column>
+          <el-table-column width="200" :show-overflow-tooltip="true" prop="organize_name" label="组织机构"></el-table-column>
+          <el-table-column prop="all_po_size" label="地址总数"></el-table-column>
+          <el-table-column prop="all_set_user" label="打卡人数"></el-table-column>
+          <el-table-column label="打卡点位数">
+            <template slot-scope="scope">
+              <span class="red" v-if="scope.row.position_size < scope.row.po_size">{{ scope.row.position_size }}</span>
+              <span v-else>{{ scope.row.position_size }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="未打卡点位数">
+            <template slot-scope="scope">
+              <span class="red" v-if="scope.row.notRecordSize > 0">{{ scope.row.notRecordSize  }}</span>
+              <span v-else>0</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="打卡率">
+            <template slot-scope="scope">
+              <span>{{ scope.row.recordRate | formatPercent }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="in_out_size" label="进入次数"></el-table-column>
+          <el-table-column label="点位平均停留时长（分）">
+            <template slot-scope="scope">
+              <span>{{ scope.row.avwaittime | formatNum }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="点位之间间隔时长（分）">
+            <template slot-scope="scope">
+              <span>{{ scope.row.avrecord | formatNum }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-table class="list-table" :data="tableData2" border :summary-method="getSummaries2" show-summary style="width: 100%" v-show="tableDetails">
+          <el-table-column type="index" width="50" label="序号"></el-table-column>
+          <el-table-column width="180" :show-overflow-tooltip="true" label="胸牌编号">
+            <template slot-scope="scope">
+              <span v-if="scope.row.card_mac">{{ scope.row.card_mac }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="user_name" label="姓名"></el-table-column>
+          <el-table-column width="200" :show-overflow-tooltip="true" prop="positions" label="点名地址"></el-table-column>
+          <el-table-column prop="po_size" label="负责点位数"></el-table-column>
+          <el-table-column label="打卡点位数">
+            <template slot-scope="scope">
+              <span class="red" v-if="scope.row.position_size < scope.row.po_size">{{ scope.row.position_size }}</span>
+              <span v-else>{{ scope.row.position_size }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="未打卡点位数">
+            <template slot-scope="scope">
+              <a href="javascript:;" class="red" v-if="scope.row.notRecordSize > 0" @click="detClick(scope.row.user_id, scope.row.positions)">{{ scope.row.notRecordSize  }}</a>
+              <span v-else>0</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="打卡率">
+            <template slot-scope="scope">
+              <span>{{ scope.row.recordRate | formatPercent }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="in_out_size" label="进入次数"></el-table-column>
+          <el-table-column label="点位平均停留时长（分）">
+            <template slot-scope="scope">
+              <span>{{ scope.row.avwaittime | formatNum }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="点位之间间隔时长（分）">
+            <template slot-scope="scope">
+              <span>{{ scope.row.avrecord | formatNum }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          background
+          prev-text="上一页"
+          next-text="下一页"
+          :current-page="nowPage"
+          layout="sizes, prev, pager, next, total"
+          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+          :page-size="limit"
+          @size-change="handleSizeChange"
+          @current-change="pageChang"
+          :total="total">
+        </el-pagination>
+      </div>
+    </div>
     <!-- 详情 -->
     <det-module
       :parentDialog="detDialog"
@@ -784,74 +782,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.crewclock{
-  height: 100%;
-  padding-bottom: 20px;
-  .module-container{
-    height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-content{
-      height: 100%;
-      padding-top: 10px;
-      padding-right: 0;
-      padding-bottom: 10px;
-      padding-left: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-      .module-aside{
-        height: 100%;
-        padding: 5px;
-        border-radius: 6px;
-        border: 1px solid #cccccc;
-      }
-      .module-main{
-        padding-top: 0;
-        padding-right: 10px;
-        padding-bottom: 0;
-        padding-left: 20px;
-        overflow: scroll;
-        .search{
-          padding-top: 5px;
-          padding-bottom: 5px;
-          .search-input{
-            display: table;
-            width: 100%;
-            .item{
-              display: table-cell;
-              vertical-align: middle;
-              width: 280px;
-              font-size: 0;
-              span{
-                width: 70px;
-                display: inline-block;
-                line-height: 34px;
-                font-size: 14px;
-              }
-            }
-            .date{
-              width: 420px;
-            }
-            .operate{
-              display: table-cell;
-              vertical-align: middle;
-              text-align: right;
-            }
-          }
-        }
-      }
-    }
-  }
-}
+  @import '../../assets/css/base-row.css';
 </style>

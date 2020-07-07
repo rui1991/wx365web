@@ -50,6 +50,7 @@ export default{
   methods: {
     // 初始化数据
     sectorInit () {
+      this.filterText = ''
       this.checkedOrgId = ''
       this.checkedId = ''
       this.checkedName = ''

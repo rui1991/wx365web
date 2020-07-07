@@ -1,59 +1,60 @@
 <template>
-  <div class="comnorm">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>标准维护</el-breadcrumb-item>
-          <el-breadcrumb-item>企业标准维护</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-container class="module-content">
-        <el-aside width="280px" class="module-aside">
-          <el-tree
-            :data="treeData"
-            ref="tree"
-            show-checkbox
-            default-expand-all
-            check-strictly
-            check-on-click-node
-            node-key="id"
-            :props="defaultProps"
-            @check-change="checkChange">
-          </el-tree>
-        </el-aside>
-        <el-main class="module-main">
-          <div class="search">
+  <div class="module-container">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>标准维护</el-breadcrumb-item>
+        <el-breadcrumb-item>企业标准维护</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-content">
+      <div class="module-aside">
+        <el-tree
+          class="aside-tree"
+          :data="treeData"
+          ref="tree"
+          show-checkbox
+          default-expand-all
+          check-strictly
+          check-on-click-node
+          node-key="id"
+          :props="defaultProps"
+          @check-change="checkChange">
+        </el-tree>
+      </div>
+      <div class="module-main">
+        <div class="main-search main-search-single">
+          <div class="operate">
             <el-button type="primary" :disabled="impDisabled" @click="importPlatform(0)">引入平台标准库</el-button>
             <el-button type="primary" :disabled="addDisabled" @click="addDialog = true">新增</el-button>
           </div>
-          <el-table class="list-table" :data="tableData" border style="width: 100%">
-            <el-table-column type="index" width="50" label="序号"></el-table-column>
-            <el-table-column prop="sdt_name" label="标准名称"></el-table-column>
-            <el-table-column prop="path" label="标准分类路径"></el-table-column>
-            <el-table-column prop="csize" width="120" label="检查项数量"></el-table-column>
-            <el-table-column label="操作" width="200">
-              <template slot-scope="scope">
-                <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
-                <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row)">删除</a>
-                <a href="javascript:void(0);" class="operate com" @click="skipClick(scope.row)" v-if="scope.row.depth === 3">检查项</a>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-pagination
-            background
-            prev-text="上一页"
-            next-text="下一页"
-            :current-page="nowPage"
-            layout="sizes, prev, pager, next, total"
-            :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-            :page-size="limit"
-            @size-change="handleSizeChange"
-            @current-change="pageChang"
-            :total="total">
-          </el-pagination>
-        </el-main>
-      </el-container>
-    </el-container>
+        </div>
+        <el-table class="list-table" :data="tableData" border style="width: 100%">
+          <el-table-column type="index" width="50" label="序号"></el-table-column>
+          <el-table-column prop="sdt_name" label="标准名称"></el-table-column>
+          <el-table-column prop="path" label="标准分类路径"></el-table-column>
+          <el-table-column prop="csize" width="120" label="检查项数量"></el-table-column>
+          <el-table-column label="操作" width="200">
+            <template slot-scope="scope">
+              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
+              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row)">删除</a>
+              <a href="javascript:void(0);" class="operate com" @click="skipClick(scope.row)" v-if="scope.row.depth === 3">检查项</a>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          background
+          prev-text="上一页"
+          next-text="下一页"
+          :current-page="nowPage"
+          layout="sizes, prev, pager, next, total"
+          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+          :page-size="limit"
+          @size-change="handleSizeChange"
+          @current-change="pageChang"
+          :total="total">
+        </el-pagination>
+      </div>
+    </div>
     <!-- 新增标准 -->
     <add-module
       :parentDialog="addDialog"
@@ -486,53 +487,10 @@ export default{
 </script>
 
 <style lang="less" scoped>
- .comnorm{
-   height: 100%;
-   padding-bottom: 20px;
-   .module-container{
-     height: 100%;
-     padding: 0;
-     .module-header{
-       padding-left: 0;
-       padding-right: 0;
-       padding-bottom: 20px;
-       .el-breadcrumb{
-         padding-top: 15px;
-         padding-left: 20px;
-         padding-bottom: 15px;
-         background: #ffffff;
-       }
-     }
-     .module-content{
-       height: 100%;
-       padding-top: 10px;
-       padding-right: 0;
-       padding-bottom: 10px;
-       padding-left: 10px;
-       margin-left: 20px;
-       margin-right: 20px;
-       background: #ffffff;
-       .module-aside{
-         height: 100%;
-         padding: 5px;
-         border-radius: 6px;
-         border: 1px solid #cccccc;
-       }
-       .module-main{
-         padding-top: 0;
-         padding-right: 10px;
-         padding-bottom: 0;
-         padding-left: 20px;
-         overflow: scroll;
-         .search{
-           display: flex;
-           height: 60px;
-           align-items: center;
-           justify-content: flex-end;
-
-         }
-       }
-     }
-   }
- }
+  @import '../../assets/css/base-row.css';
+  .module-aside .aside-tree{
+    height: 100%;
+    padding: 5px;
+    overflow: auto;
+  }
 </style>

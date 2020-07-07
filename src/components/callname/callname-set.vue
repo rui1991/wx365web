@@ -1,49 +1,47 @@
 <template>
-  <div class="callname">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>点名管理</el-breadcrumb-item>
-          <el-breadcrumb-item>点名设置</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-main class="module-main">
-        <div class="search">
-          <div class="operate">
-            <el-button type="primary" @click="addDialog = true">新增</el-button>
-          </div>
+  <div class="module-container">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>点名管理</el-breadcrumb-item>
+        <el-breadcrumb-item>点名设置</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-main">
+      <div class="main-search main-search-single">
+        <div class="operate">
+          <el-button type="primary" @click="addDialog = true">新增</el-button>
         </div>
-        <el-table class="list-table" :data="tableData" border style="width: 100%">
-          <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column prop="user_names" :show-overflow-tooltip="true" label="点名人员"></el-table-column>
-          <el-table-column :show-overflow-tooltip="true" label="点名地址">
-            <template slot-scope="scope">
-              <span v-if="scope.row.position_names">{{ scope.row.position_names }}</span>
-              <span v-else>全部</span>
-            </template>
-          </el-table-column>
-          <el-table-column width="120" prop="urc_size" label="点名次数"></el-table-column>
-          <el-table-column width="160" label="操作">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
-              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.rcs_id)">删除</a>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          prev-text="上一页"
-          next-text="下一页"
-          :current-page="nowPage"
-          layout="sizes, prev, pager, next, total"
-          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-          :page-size="limit"
-          @size-change="handleSizeChange"
-          @current-change="pageChang"
-          :total="total">
-        </el-pagination>
-      </el-main>
-    </el-container>
+      </div>
+      <el-table class="list-table" :data="tableData" border style="width: 100%">
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column prop="user_names" :show-overflow-tooltip="true" label="点名人员"></el-table-column>
+        <el-table-column :show-overflow-tooltip="true" label="点名地址">
+          <template slot-scope="scope">
+            <span v-if="scope.row.position_names">{{ scope.row.position_names }}</span>
+            <span v-else>全部</span>
+          </template>
+        </el-table-column>
+        <el-table-column width="120" prop="urc_size" label="点名次数"></el-table-column>
+        <el-table-column width="160" label="操作">
+          <template slot-scope="scope">
+            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
+            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.rcs_id)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        background
+        prev-text="上一页"
+        next-text="下一页"
+        :current-page="nowPage"
+        layout="sizes, prev, pager, next, total"
+        :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+        :page-size="limit"
+        @size-change="handleSizeChange"
+        @current-change="pageChang"
+        :total="total">
+      </el-pagination>
+    </div>
     <!-- 新增 -->
     <add-module
       :parentDialog="addDialog"
@@ -227,39 +225,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.callname{
-  height: 100%;
-  padding-bottom: 20px;
-  .module-container{
-    height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-main{
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-      .search{
-        display: table;
-        width: 100%;
-        height: 60px;
-        .operate{
-          display: table-cell;
-          vertical-align: middle;
-          text-align: right;
-        }
-      }
-    }
-  }
-}
+  @import '../../assets/css/base-column.css';
 </style>

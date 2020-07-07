@@ -1,94 +1,92 @@
 <template>
-  <div class="fixedpost">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>固定岗管理</el-breadcrumb-item>
-          <el-breadcrumb-item>固定岗打卡记录</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-main class="module-main">
-        <div class="search">
-          <div class="search-input" style="margin-bottom: 10px;">
-            <div class="item">
-              <span>岗位名称</span>
-              <el-select v-model="nowSearch.station" clearable filterable style="width: 160px;" placeholder="请选择岗位名称">
-                <el-option v-for="item in stationOptions" :key="item.position_id" :label="item.position_name" :value="item.position_id"></el-option>
-              </el-select>
-            </div>
-            <div class="item">
-              <span>人员姓名</span>
-              <el-input style="width: 160px;" v-model.trim="nowSearch.crew"></el-input>
-            </div>
-            <div class="item">
-              <span>打卡状态</span>
-              <el-select v-model="nowSearch.state" clearable style="width: 160px;" placeholder="请选择打卡状态">
-                <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-              </el-select>
-            </div>
-            <div class="operate">
-              <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
-            </div>
+  <div class="module-container">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>固定岗管理</el-breadcrumb-item>
+        <el-breadcrumb-item>固定岗打卡记录</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-main">
+      <div class="main-search main-search-multi">
+        <div class="search-row">
+          <div class="item">
+            <span>岗位名称</span>
+            <el-select v-model="nowSearch.station" clearable filterable style="width: 160px;" placeholder="请选择岗位名称">
+              <el-option v-for="item in stationOptions" :key="item.position_id" :label="item.position_name" :value="item.position_id"></el-option>
+            </el-select>
           </div>
-          <div class="search-input" style="margin-bottom: 10px;">
-            <div class="item date">
-              <span>选择时段</span>
-              <el-date-picker
-                style="width: 280px;"
-                v-model="nowSearch.date"
-                type="daterange"
-                value-format="yyyy-MM-dd"
-                :clearable="false"
-                :picker-options="pickerOptions"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期">
-              </el-date-picker>
-            </div>
-            <div class="operate"></div>
+          <div class="item">
+            <span>人员姓名</span>
+            <el-input style="width: 160px;" v-model.trim="nowSearch.crew"></el-input>
+          </div>
+          <div class="item">
+            <span>打卡状态</span>
+            <el-select v-model="nowSearch.state" clearable style="width: 160px;" placeholder="请选择打卡状态">
+              <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            </el-select>
+          </div>
+          <div class="operate">
+            <el-button type="primary" @click="searchList">搜索</el-button>
+            <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
           </div>
         </div>
-        <el-table class="list-table" :data="tableData" border style="width: 100%">
-          <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column prop="this_date" label="日期"></el-table-column>
-          <el-table-column label="当班人姓名">
-            <template slot-scope="scope">
-              <span v-if="scope.row.user_name">{{ scope.row.user_name }}</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="position_name" label="岗位名称"></el-table-column>
-          <el-table-column prop="start_time" label="当班开始时间"></el-table-column>
-          <el-table-column prop="end_time" label="当班结束时间"></el-table-column>
-          <el-table-column label="打卡时间">
-            <template slot-scope="scope">
-              <span v-if="scope.row.record_time">{{ scope.row.record_time | formatDate }}</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="打卡状态">
-            <template slot-scope="scope">
-              <span v-if="scope.row.record_state === 0">已打卡</span>
-              <span class="red" v-else-if="scope.row.record_state === 1">未打卡</span>
-              <span class="red" v-else-if="scope.row.record_state === 2">异常</span>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          prev-text="上一页"
-          next-text="下一页"
-          :current-page="nowPage"
-          layout="sizes, prev, pager, next, total"
-          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-          :page-size="limit"
-          @size-change="handleSizeChange"
-          @current-change="pageChang"
-          :total="total">
-        </el-pagination>
-      </el-main>
-    </el-container>
+        <div class="search-row">
+          <div class="item date">
+            <span>选择时段</span>
+            <el-date-picker
+              style="width: 280px;"
+              v-model="nowSearch.date"
+              type="daterange"
+              value-format="yyyy-MM-dd"
+              :clearable="false"
+              :picker-options="pickerOptions"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
+            </el-date-picker>
+          </div>
+          <div class="operate"></div>
+        </div>
+      </div>
+      <el-table class="list-table" :data="tableData" border style="width: 100%">
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column prop="this_date" label="日期"></el-table-column>
+        <el-table-column label="当班人姓名">
+          <template slot-scope="scope">
+            <span v-if="scope.row.user_name">{{ scope.row.user_name }}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="position_name" label="岗位名称"></el-table-column>
+        <el-table-column prop="start_time" label="当班开始时间"></el-table-column>
+        <el-table-column prop="end_time" label="当班结束时间"></el-table-column>
+        <el-table-column label="打卡时间">
+          <template slot-scope="scope">
+            <span v-if="scope.row.record_time">{{ scope.row.record_time | formatDate }}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="打卡状态">
+          <template slot-scope="scope">
+            <span v-if="scope.row.record_state === 0">已打卡</span>
+            <span class="red" v-else-if="scope.row.record_state === 1">未打卡</span>
+            <span class="red" v-else-if="scope.row.record_state === 2">异常</span>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        background
+        prev-text="上一页"
+        next-text="下一页"
+        :current-page="nowPage"
+        layout="sizes, prev, pager, next, total"
+        :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+        :page-size="limit"
+        @size-change="handleSizeChange"
+        @current-change="pageChang"
+        :total="total">
+      </el-pagination>
+    </div>
   </div>
 </template>
 
@@ -277,56 +275,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.fixedpost{
-  height: 100%;
-  padding-bottom: 20px;
-  .module-container{
-    height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-main{
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-      .search{
-        padding: 5px 0;
-        .search-input{
-          display: table;
-          width: 100%;
-          .item{
-            display: table-cell;
-            vertical-align: middle;
-            width: 280px;
-            font-size: 0;
-            span{
-              width: 70px;
-              display: inline-block;
-              line-height: 34px;
-              font-size: 14px;
-            }
-          }
-          .date{
-            width: 420px;
-          }
-          .operate{
-            display: table-cell;
-            vertical-align: middle;
-            text-align: right;
-          }
-        }
-      }
-    }
-  }
-}
+  @import '../../assets/css/base-column.css';
 </style>

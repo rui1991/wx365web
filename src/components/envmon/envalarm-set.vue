@@ -1,50 +1,43 @@
 <template>
-  <div class="envalarm">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>环境监控管理</el-breadcrumb-item>
-          <el-breadcrumb-item><router-link to="/main/envalarm">告警记录</router-link></el-breadcrumb-item>
-          <el-breadcrumb-item>告警设置</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-main class="module-main">
-        <div class="search">
-          <p class="hint">*当设备发生告警时，将推送消息到设置的相关人员！</p>
+  <div class="module-container">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>环境监控管理</el-breadcrumb-item>
+        <el-breadcrumb-item><router-link to="/main/envalarm">告警记录</router-link></el-breadcrumb-item>
+        <el-breadcrumb-item>告警设置</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-main">
+      <div class="main-search main-search-single">
+        <p class="red">*当设备发生告警时，将推送消息到设置的相关人员！</p>
+        <div class="operate">
           <el-button type="primary" @click="addDialog = true">新增</el-button>
         </div>
-        <el-table class="list-table" :data="tableData" border style="width: 100%">
-          <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column prop="alarm_node" :show-overflow-tooltip="true" label="告警设备"></el-table-column>
-          <!--<el-table-column prop="alarm_condition" :show-overflow-tooltip="true" label="告警条件"></el-table-column>-->
-          <!--<el-table-column prop="alarm_condition" :show-overflow-tooltip="true" label="告警条件">-->
-            <!--<template slot-scope="scope">-->
-              <!--<span v-if="scope.row.alarm_condition">{{ scope.row.alarm_condition }}</span>-->
-              <!--<span v-else>-</span>-->
-            <!--</template>-->
-          <!--</el-table-column>-->
-          <el-table-column prop="push_user" :show-overflow-tooltip="true" label="推送人"></el-table-column>
-          <el-table-column width="160" label="操作">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
-              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.las_id)">删除</a>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          prev-text="上一页"
-          next-text="下一页"
-          :current-page="nowPage"
-          layout="sizes, prev, pager, next, total"
-          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-          :page-size="limit"
-          @size-change="handleSizeChange"
-          @current-change="pageChang"
-          :total="total">
-        </el-pagination>
-      </el-main>
-    </el-container>
+      </div>
+      <el-table class="list-table" :data="tableData" border style="width: 100%">
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column prop="alarm_node" :show-overflow-tooltip="true" label="告警设备"></el-table-column>
+        <el-table-column prop="push_user" :show-overflow-tooltip="true" label="推送人"></el-table-column>
+        <el-table-column width="160" label="操作">
+          <template slot-scope="scope">
+            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
+            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.las_id)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        background
+        prev-text="上一页"
+        next-text="下一页"
+        :current-page="nowPage"
+        layout="sizes, prev, pager, next, total"
+        :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+        :page-size="limit"
+        @size-change="handleSizeChange"
+        @current-change="pageChang"
+        :total="total">
+      </el-pagination>
+    </div>
     <!-- 新增 -->
     <add-module
       :parentDialog="addDialog"
@@ -259,38 +252,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.envalarm{
-  height: 100%;
-  padding-bottom: 20px;
-  .module-container{
-    height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-main{
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-      .search{
-        height: 60px;
-        display: flex;
-        align-items: center;
-        .hint{
-          flex-grow: 1;
-          color: red;
-        }
-      }
-    }
-  }
-}
+  @import '../../assets/css/base-column.css';
 </style>

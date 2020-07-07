@@ -1,25 +1,23 @@
 <template>
-  <div class="envmonit">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>环境监控管理</el-breadcrumb-item>
-          <el-breadcrumb-item>环境监控设置</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-main class="module-main">
-        <div class="nav">
-          <el-radio-group v-model="navActive">
-            <el-radio-button :label="1">环境监控传感器</el-radio-button>
-            <el-radio-button :label="2">环境监控网关</el-radio-button>
-          </el-radio-group>
-        </div>
-        <keep-alive>
-          <router-view v-if="$route.meta.keepAlive"/>
-        </keep-alive>
-        <router-view v-if="!$route.meta.keepAlive"/>
-      </el-main>
-    </el-container>
+  <div class="module-container">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>环境监控管理</el-breadcrumb-item>
+        <el-breadcrumb-item>环境监控设置</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-main">
+      <div class="nav">
+        <el-radio-group v-model="navActive">
+          <el-radio-button :label="1">环境监控传感器</el-radio-button>
+          <el-radio-button :label="2">环境监控网关</el-radio-button>
+        </el-radio-group>
+      </div>
+      <keep-alive>
+        <router-view v-if="$route.meta.keepAlive"/>
+      </keep-alive>
+      <router-view v-if="!$route.meta.keepAlive"/>
+    </div>
   </div>
 </template>
 
@@ -52,32 +50,8 @@ export default{
 </script>
 
 <style lang="less" scoped>
- .envmonit{
-   height: 100%;
-   padding-bottom: 20px;
-   .module-container{
-     height: 100%;
-     padding: 0;
-     .module-header{
-       padding-left: 0;
-       padding-right: 0;
-       padding-bottom: 20px;
-       .el-breadcrumb{
-         padding-top: 15px;
-         padding-left: 20px;
-         padding-bottom: 15px;
-         background: #ffffff;
-       }
-     }
-     .module-main{
-       padding: 10px;
-       margin-left: 20px;
-       margin-right: 20px;
-       background: #ffffff;
-       .nav{
-         padding-bottom: 20px;
-       }
-     }
-   }
- }
+  @import '../../assets/css/base-column.css';
+  .module-main .nav{
+    padding-bottom: 20px;
+  }
 </style>

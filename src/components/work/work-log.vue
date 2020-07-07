@@ -173,9 +173,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.work-item{
-  .paging{
-    margin-top: 20px;
-  }
-}
+
 </style>

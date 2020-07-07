@@ -149,6 +149,8 @@ const Hardfac = () => import(/* webpackChunkName: "group-hardfac" */ '@/componen
 /* 报表管理 */
 // 巡检任务执行报表
 const ReportTask = () => import(/* webpackChunkName: "group-report" */ '@/components/report/task')
+// 任务报表详情
+const ReportTaskItem = () => import(/* webpackChunkName: "group-calendar" */ '@/components/report/task-item')
 // 巡检地址信息报表
 const ReportSite = () => import(/* webpackChunkName: "group-report" */ '@/components/report/site')
 // 个人巡检执行报表
@@ -679,6 +681,14 @@ export default new Router({
           name: 'reportTask',
           component: ReportTask,
           meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: 'report-task-item',
+          name: 'reportTaskItem',
+          component: ReportTaskItem,
+          meta: {
             keepAlive: false
           }
         },
@@ -687,7 +697,7 @@ export default new Router({
           name: 'reportSite',
           component: ReportSite,
           meta: {
-            keepAlive: false
+            keepAlive: true
           }
         },
         {
@@ -695,7 +705,7 @@ export default new Router({
           name: 'reportStaff',
           component: ReportStaff,
           meta: {
-            keepAlive: false
+            keepAlive: true
           }
         },
         {
@@ -703,7 +713,7 @@ export default new Router({
           name: 'reportWorkpro',
           component: ReportWorkpro,
           meta: {
-            keepAlive: false
+            keepAlive: true
           }
         },
         {
@@ -711,7 +721,7 @@ export default new Router({
           name: 'reportWorksta',
           component: ReportWorksta,
           meta: {
-            keepAlive: false
+            keepAlive: true
           }
         },
         {

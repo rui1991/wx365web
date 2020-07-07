@@ -2,9 +2,9 @@
   <div class="module-container">
     <div class="module-header">
       <el-breadcrumb separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item>巡检巡查</el-breadcrumb-item>
-        <el-breadcrumb-item><router-link to="/main/calendar">巡检日历</router-link></el-breadcrumb-item>
-        <el-breadcrumb-item>巡检日历详情</el-breadcrumb-item>
+        <el-breadcrumb-item>报表管理</el-breadcrumb-item>
+        <el-breadcrumb-item><router-link to="/main/report-task">巡检任务执行报表</router-link></el-breadcrumb-item>
+        <el-breadcrumb-item>巡检任务执行报表详情</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="module-main">
@@ -113,7 +113,7 @@
     <!-- 详情 -->
     <det-module
       :parentDialog="detDialog"
-      :parentPro="projectId"
+      :parentPro="this.$route.query.project_id"
       :parentId="itemId"
       @parentClose="detClose">
     </det-module>
@@ -140,6 +140,9 @@ export default{
     }
   },
   created () {
+
+  },
+  mounted () {
     // 设置全局项目禁用
     this.setProDisabled(true)
     // 获取列表数据
@@ -151,13 +154,6 @@ export default{
   computed: {
     ...mapState('user', [
       'userId'
-    ]),
-    ...mapState('user', {
-      authority: state => state.authority.calendar
-    }),
-    ...mapState('other', [
-      'companyId',
-      'projectId'
     ])
   },
   methods: {
@@ -165,34 +161,27 @@ export default{
       'setProDisabled'
     ]),
     getListData () {
+      const type = this.$route.query.organizeType
+      const date = this.$route.query.date
       let params = {}
-      if (this.authority) {
+      if (Number.parseInt(type) === 3) {
         params = {
-          company_id: this.companyId,
-          user_id: this.userId,
-          project_id: this.projectId,
-          projectN_id: this.projectId,
-          planN_name: '',
-          startN_date: this.$route.query.date,
-          endN_date: this.$route.query.date,
-          ogz_id: '',
-          continueN_state: this.$route.query.state,
-          userN_id: 0,
+          project_id: this.$route.query.project_id,
+          plan_id: this.$route.query.plan_id,
+          continue_state: this.$route.query.state,
+          start_date: date[0],
+          end_date: date[1],
           page: this.nowPage,
           limit1: this.limit
         }
       } else {
         params = {
-          company_id: this.companyId,
-          user_id: this.userId,
-          project_id: this.projectId,
-          projectN_id: this.projectId,
-          planN_name: '',
-          startN_date: this.$route.query.date,
-          endN_date: this.$route.query.date,
-          ogz_id: '',
-          continueN_state: this.$route.query.state,
-          userN_id: this.userId,
+          project_id: this.$route.query.project_id,
+          ogz_id: this.$route.query.ogz_id,
+          plan_id: this.$route.query.plan_id,
+          continue_state: this.$route.query.state,
+          start_date: date[0],
+          end_date: date[1],
           page: this.nowPage,
           limit1: this.limit
         }
@@ -200,12 +189,12 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/inspection/v3.7.3/all/sel/selInsTaskSearch',
+        url: this.reportApi() + '/v3.4/selInspectTaskConAndNotConMes',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           this.total = res.data.data1.total
-          this.tableData = res.data.data1.insTask
+          this.tableData = res.data.data1.mes
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -240,7 +229,6 @@ export default{
     /* 获取组人员 */
     getGrouoCrew (id) {
       let params = {
-        company_id: this.companyId,
         user_id: this.userId,
         group_id: id
       }

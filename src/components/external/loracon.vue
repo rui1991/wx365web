@@ -1,104 +1,102 @@
 <template>
-  <div class="loracon">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>硬件对接</el-breadcrumb-item>
-          <el-breadcrumb-item>lora数据查询</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-container class="module-content">
-        <el-aside width="280px" class="module-aside">
-          <el-tree
-            style="padding: 5px;"
-            :data="orgData"
-            ref="tree"
-            show-checkbox
-            default-expand-all
-            check-strictly
-            node-key="id"
-            @check-change="orgCheckChange"
-            @node-click="orgNodeClick"
-            :props="defaultProps">
-          </el-tree>
-        </el-aside>
-        <el-main class="module-main">
-          <div class="search">
-            <div class="search-input" style="margin-bottom: 10px;">
-              <div class="item">
-                <span>设备类型</span>
-                <el-select v-model="nowSearch.type" style="width: 160px;" clearable placeholder="请选择设备类型">
-                  <el-option
-                    v-for="item in typeOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
-              </div>
-              <div class="item">
-                <span>设备MAC</span>
-                <el-input style="width: 200px;" placeholder="请输入MAC" v-model.trim="nowSearch.mac"></el-input>
-              </div>
-              <div class="operate"></div>
+  <div class="module-container">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>硬件对接</el-breadcrumb-item>
+        <el-breadcrumb-item>lora数据查询</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-content">
+      <div class="module-aside">
+        <el-tree
+          class="aside-tree"
+          :data="orgData"
+          ref="tree"
+          show-checkbox
+          default-expand-all
+          check-strictly
+          node-key="id"
+          @check-change="orgCheckChange"
+          @node-click="orgNodeClick"
+          :props="defaultProps">
+        </el-tree>
+      </div>
+      <div class="module-main">
+        <div class="main-search main-search-multi">
+          <div class="search-row">
+            <div class="item">
+              <span>设备类型</span>
+              <el-select v-model="nowSearch.type" style="width: 160px;" clearable placeholder="请选择设备类型">
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
             </div>
-            <div class="search-input">
-              <div class="item date">
-                <span>上报时段</span>
-                <el-date-picker
-                  style="width: 320px;"
-                  v-model="nowSearch.date"
-                  :clearable="false"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                  format="yyyy-MM-dd HH:mm"
-                  :time-arrow-control="true"
-                  type="datetimerange"
-                  range-separator="至"
-                  start-placeholder="开始时间"
-                  end-placeholder="结束时间">
-                </el-date-picker>
-              </div>
-              <div class="operate">
-                <el-button type="primary" @click="searchList">搜索</el-button>
-              </div>
+            <div class="item">
+              <span>设备MAC</span>
+              <el-input style="width: 200px;" placeholder="请输入MAC" v-model.trim="nowSearch.mac"></el-input>
+            </div>
+            <div class="operate"></div>
+          </div>
+          <div class="search-row">
+            <div class="item date">
+              <span>上报时段</span>
+              <el-date-picker
+                style="width: 320px;"
+                v-model="nowSearch.date"
+                :clearable="false"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                format="yyyy-MM-dd HH:mm"
+                :time-arrow-control="true"
+                type="datetimerange"
+                range-separator="至"
+                start-placeholder="开始时间"
+                end-placeholder="结束时间">
+              </el-date-picker>
+            </div>
+            <div class="operate">
+              <el-button type="primary" @click="searchList">搜索</el-button>
             </div>
           </div>
-          <el-table class="list-table" :data="tableData" border style="width: 100%">
-            <el-table-column type="index" width="50" label="序号"></el-table-column>
-            <el-table-column prop="ogz_name" label="组织名称"></el-table-column>
-            <el-table-column prop="lora_type" label="设备类型"></el-table-column>
-            <el-table-column label="设备DevEui">
-              <template slot-scope="scope">
-                <span>{{scope.row.dev_eui | filterMac}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="上报时间">
-              <template slot-scope="scope">
-                <span>{{scope.row.check_in | formatDate}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="178">
-              <template slot-scope="scope">
-                <a href="javascript:void(0);" class="operate det">数据上报</a>
-                <!--<a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.device_mac, scope.row.device_type)">删除</a>-->
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-pagination
-            background
-            prev-text="上一页"
-            next-text="下一页"
-            :current-page="nowPage"
-            layout="sizes, prev, pager, next, total"
-            :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-            :page-size="limit"
-            @size-change="handleSizeChange"
-            @current-change="pageChang"
-            :total="total">
-          </el-pagination>
-        </el-main>
-      </el-container>
-    </el-container>
+        </div>
+        <el-table class="list-table" :data="tableData" border style="width: 100%">
+          <el-table-column type="index" width="50" label="序号"></el-table-column>
+          <el-table-column prop="ogz_name" label="组织名称"></el-table-column>
+          <el-table-column prop="lora_type" label="设备类型"></el-table-column>
+          <el-table-column label="设备DevEui">
+            <template slot-scope="scope">
+              <span>{{scope.row.dev_eui | filterMac}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="上报时间">
+            <template slot-scope="scope">
+              <span>{{scope.row.check_in | formatDate}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="178">
+            <template slot-scope="scope">
+              <a href="javascript:void(0);" class="operate det">数据上报</a>
+              <!--<a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.device_mac, scope.row.device_type)">删除</a>-->
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          background
+          prev-text="上一页"
+          next-text="下一页"
+          :current-page="nowPage"
+          layout="sizes, prev, pager, next, total"
+          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+          :page-size="limit"
+          @size-change="handleSizeChange"
+          @current-change="pageChang"
+          :total="total">
+        </el-pagination>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -345,65 +343,10 @@ export default{
 </script>
 
 <style lang="less" scoped>
-  .loracon{
+  @import '../../assets/css/base-row.css';
+  .module-aside .aside-tree{
     height: 100%;
-    padding-bottom: 20px;
-    .module-container{
-      height: 100%;
-      padding: 0;
-      .module-header{
-        padding-left: 0;
-        padding-right: 0;
-        padding-bottom: 20px;
-        .el-breadcrumb{
-          padding-top: 15px;
-          padding-left: 20px;
-          padding-bottom: 15px;
-          background: #ffffff;
-        }
-      }
-      .module-content{
-        height: 100%;
-        padding: 10px;
-        margin-left: 20px;
-        margin-right: 20px;
-        background: #ffffff;
-        .module-aside{
-          height: 100%;
-          border-radius: 6px;
-          border: 1px solid #cccccc;
-        }
-        .module-main{
-          padding-top: 0;
-          padding-right: 10px;
-          padding-bottom: 0;
-          padding-left: 20px;
-          overflow: scroll;
-          .search{
-            padding: 5px 0;
-            .search-input{
-              display: flex;
-              .item{
-                align-items: center;
-                margin-right: 20px;
-                span{
-                  width: 70px;
-                  display: inline-block;
-                  font-size: 14px;
-                }
-              }
-              .date{
-                width: 420px;
-              }
-              .operate{
-                align-items: center;
-                flex-grow: 1;
-                text-align: right;
-              }
-            }
-          }
-        }
-      }
-    }
+    padding: 5px;
+    overflow: auto;
   }
 </style>

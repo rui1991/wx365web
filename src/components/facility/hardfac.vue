@@ -1,112 +1,110 @@
 <template>
-  <div class="hardfac">
-    <el-container class="module-container">
-      <el-header class="module-header">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>设备管理</el-breadcrumb-item>
-          <el-breadcrumb-item>硬件设备管理</el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-header>
-      <el-main class="module-main">
-        <div class="search">
-          <div class="search-input" style="margin-bottom: 10px;">
-            <div class="item">
-              <span>mac地址</span>
-              <el-input style="width: 160px;" v-model.trim="nowSearch.mac"></el-input>
-            </div>
-            <div class="item">
-              <span>设备类型</span>
-              <el-select v-model="nowSearch.type" clearable style="width: 160px;" placeholder="请选择设备类型">
-                <el-option
-                  v-for="item in typeOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </div>
-            <div class="operate">
-              <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" @click="addDialog = true">新增</el-button>
-            </div>
+  <div class="module-container">
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>设备管理</el-breadcrumb-item>
+        <el-breadcrumb-item>硬件设备管理</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <div class="module-main">
+      <div class="main-search main-search-multi">
+        <div class="search-row">
+          <div class="item">
+            <span>mac地址</span>
+            <el-input style="width: 160px;" v-model.trim="nowSearch.mac"></el-input>
           </div>
-          <div class="search-input">
-            <div class="item">
-              <span>设备名称</span>
-              <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
-            </div>
-            <div class="item">
-              <span>设备状态</span>
-              <el-select v-model="nowSearch.state" clearable style="width: 160px;" placeholder="请选择设备状态">
-                <el-option
-                  v-for="item in stateOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </div>
-            <div class="operate">
-              <el-button type="primary" @click="warnDialog = true">告警推送</el-button>
-            </div>
+          <div class="item">
+            <span>设备类型</span>
+            <el-select v-model="nowSearch.type" clearable style="width: 160px;" placeholder="请选择设备类型">
+              <el-option
+                v-for="item in typeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
+          <div class="operate">
+            <el-button type="primary" @click="searchList">搜索</el-button>
+            <el-button type="primary" @click="addDialog = true">新增</el-button>
           </div>
         </div>
-        <el-table class="list-table" :data="tableData" border style="width: 100%">
-          <el-table-column type="index" width="50" label="序号"></el-table-column>
-          <el-table-column label="设备名称" :show-overflow-tooltip="true">
-            <template slot-scope="scope">
-              <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row)">{{ scope.row.dname }}</a>
-            </template>
-          </el-table-column>
-          <el-table-column label="MAC地址/序列号" :show-overflow-tooltip="true">
-            <template slot-scope="scope">
-              <span>{{scope.row.mac | filterMac(scope.row.dtype)}}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="设备类型">
-            <template slot-scope="scope">
-              <span v-if="scope.row.dtype === 'dwjz'">定位基站</span>
-              <span v-else-if="scope.row.dtype === 'cjk'">采集卡</span>
-              <span v-else-if="scope.row.dtype === 'sjwg'">数据网关</span>
-              <span v-else-if="scope.row.dtype === 'kqj'">考勤机</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="设备位置">
-            <template slot-scope="scope">
-              <span v-if="scope.row.location_name">{{ scope.row.location_name }}</span>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="gl" label="是否已关联数据网关"></el-table-column>
-          <el-table-column label="设备状态">
-            <template slot-scope="scope">
-              <span v-if="scope.row.device_state === 0">在线</span>
-              <span v-else-if="scope.row.device_state === 1">离线</span>
-              <span v-else-if="scope.row.device_state === 2">电量不足</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="140">
-            <template slot-scope="scope">
-              <!--<a href="javascript:void(0);" class="operate com" @click="relateClick(scope.row.id, scope.row.dtype)" v-if="scope.row.dtype === 'sjwg'">设备关联</a>-->
-              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)" v-if="scope.row.dtype === 'sjwg' || scope.row.dtype === 'kqj'">编辑</a>
-              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.id, scope.row.dtype)" v-if="scope.row.dtype === 'sjwg' || scope.row.dtype === 'kqj'">删除</a>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          prev-text="上一页"
-          next-text="下一页"
-          :current-page="nowPage"
-          layout="sizes, prev, pager, next, total"
-          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-          :page-size="limit"
-          @size-change="handleSizeChange"
-          @current-change="pageChang"
-          :total="total">
-        </el-pagination>
-      </el-main>
-    </el-container>
+        <div class="search-row">
+          <div class="item">
+            <span>设备名称</span>
+            <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
+          </div>
+          <div class="item">
+            <span>设备状态</span>
+            <el-select v-model="nowSearch.state" clearable style="width: 160px;" placeholder="请选择设备状态">
+              <el-option
+                v-for="item in stateOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
+          <div class="operate">
+            <el-button type="primary" @click="warnDialog = true">告警推送</el-button>
+          </div>
+        </div>
+      </div>
+      <el-table class="list-table" :data="tableData" border style="width: 100%">
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column label="设备名称" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <a href="javascript:void(0);" class="details blue" @click="detClick(scope.row)">{{ scope.row.dname }}</a>
+          </template>
+        </el-table-column>
+        <el-table-column label="MAC地址/序列号" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <span>{{scope.row.mac | filterMac(scope.row.dtype)}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="设备类型">
+          <template slot-scope="scope">
+            <span v-if="scope.row.dtype === 'dwjz'">定位基站</span>
+            <span v-else-if="scope.row.dtype === 'cjk'">采集卡</span>
+            <span v-else-if="scope.row.dtype === 'sjwg'">数据网关</span>
+            <span v-else-if="scope.row.dtype === 'kqj'">考勤机</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="设备位置">
+          <template slot-scope="scope">
+            <span v-if="scope.row.location_name">{{ scope.row.location_name }}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="gl" label="是否已关联数据网关"></el-table-column>
+        <el-table-column label="设备状态">
+          <template slot-scope="scope">
+            <span v-if="scope.row.device_state === 0">在线</span>
+            <span v-else-if="scope.row.device_state === 1">离线</span>
+            <span v-else-if="scope.row.device_state === 2">电量不足</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="140">
+          <template slot-scope="scope">
+            <!--<a href="javascript:void(0);" class="operate com" @click="relateClick(scope.row.id, scope.row.dtype)" v-if="scope.row.dtype === 'sjwg'">设备关联</a>-->
+            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)" v-if="scope.row.dtype === 'sjwg' || scope.row.dtype === 'kqj'">编辑</a>
+            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.id, scope.row.dtype)" v-if="scope.row.dtype === 'sjwg' || scope.row.dtype === 'kqj'">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        background
+        prev-text="上一页"
+        next-text="下一页"
+        :current-page="nowPage"
+        layout="sizes, prev, pager, next, total"
+        :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+        :page-size="limit"
+        @size-change="handleSizeChange"
+        @current-change="pageChang"
+        :total="total">
+      </el-pagination>
+    </div>
     <!-- 新增 -->
     <add-module
       :parentDialog="addDialog"
@@ -383,53 +381,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-.hardfac{
-  height: 100%;
-  padding-bottom: 20px;
-  .module-container{
-    height: 100%;
-    padding: 0;
-    .module-header{
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 20px;
-      .el-breadcrumb{
-        padding-top: 15px;
-        padding-left: 20px;
-        padding-bottom: 15px;
-        background: #ffffff;
-      }
-    }
-    .module-main{
-      padding: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      background: #ffffff;
-      .search{
-        padding: 5px 0;
-        .search-input{
-          display: table;
-          width: 100%;
-          .item{
-            display: table-cell;
-            vertical-align: middle;
-            width: 280px;
-            font-size: 0;
-            span{
-              width: 70px;
-              display: inline-block;
-              line-height: 34px;
-              font-size: 14px;
-            }
-          }
-          .operate{
-            display: table-cell;
-            vertical-align: middle;
-            text-align: right;
-          }
-        }
-      }
-    }
-  }
-}
+  @import '../../assets/css/base-column.css';
 </style>
