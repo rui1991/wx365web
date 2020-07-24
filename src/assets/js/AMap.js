@@ -6,7 +6,7 @@ export default function MapLoader () {
       var script = document.createElement('script')
       script.type = 'text/javascript'
       script.async = true
-      script.src = 'http://webapi.amap.com/maps?v=1.3&callback=initAMap&key=029d9ad0a207a8d9de0d50d8e3240472&plugin=AMap.MouseTool'
+      script.src = 'http://webapi.amap.com/maps?v=1.3&callback=initAMap&key=1e6a37c2a282a05fb5bcff5471d3f0b3&plugin=AMap.MouseTool'
       script.onerror = reject
       document.head.appendChild(script)
     }

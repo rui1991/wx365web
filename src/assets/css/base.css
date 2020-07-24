@@ -278,6 +278,11 @@ input[type="number"]{
   -moz-appearance: textfield;
 }
 
+/* 去除Element-ui折叠面板背景颜色 */
+.el-carousel__mask, .el-cascader-menu, .el-cascader-menu__item.is-disabled:hover, .el-collapse-item__header, .el-collapse-item__wrap{
+  background-color: transparent;
+}
+
 /* 对话框 */
 .el-dialog {
   border-radius: 6px;
@@ -427,4 +432,8 @@ input[type="number"]{
 }
 .anchorBL{
   display: none;
+}
+/* 去除高德地图图标 */
+.amap-copyright, .amap-logo{
+  display: none!important;
 }

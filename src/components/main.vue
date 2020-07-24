@@ -248,6 +248,21 @@
                 <el-menu-item index="/main/loracon">lora数据查询</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="16" class="submenu-item" v-if="deviceUid.indexOf(userId) !== -1">
+              <template slot="title"><i class="iconfont icon-duijie"></i>定位服务</template>
+              <el-menu-item-group>
+                <el-menu-item index="/main/vehicle-admin">GPS车辆管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/vehicle-monit">GPS车辆监控</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/bangle-admin">GPS手环管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/bangle-monit">GPS手环监控</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
           </el-menu>
         </el-aside>
         <el-main class="main-module">
@@ -280,7 +295,7 @@ import introModule from '@/components/profile/main-intro'
 // 引入修改密码组件
 import pwdModule from '@/components/profile/main-pwd'
 export default{
-  name: 'App',
+  name: 'index',
   data () {
     return {
       menuActive: '',

@@ -291,7 +291,7 @@ export default{
       this.itemId = id
       let day = value.replace(/size/g, '')
       day = day.padStart(2, '0')
-      this.itemDate = this.searchDate + '-' + day
+      this.itemDate = this.search.date + '-' + day
       this.detDialog = true
     },
     detClose () {

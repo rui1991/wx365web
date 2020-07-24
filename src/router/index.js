@@ -182,6 +182,24 @@ const Pronorm = () => import(/* webpackChunkName: "group-norm" */ '@/components/
 // 标准检查项
 const Normitem = () => import(/* webpackChunkName: "group-norm" */ '@/components/norm/normitem')
 
+/* 定位服务 */
+// GPS车辆管理
+const VehicleAdmin = () => import(/* webpackChunkName: "group-external" */ '@/components/location/vehicle-admin')
+// GPS车辆管理 => 轨迹详情
+const VehicleAdminTrack = () => import(/* webpackChunkName: "group-external" */ '@/components/location/vehicle-admin-track')
+// GPS车辆监控
+const VehicleMonit = () => import(/* webpackChunkName: "group-external" */ '@/components/location/vehicle-monit')
+// 车辆围栏
+const VehicleFence = () => import(/* webpackChunkName: "group-external" */ '@/components/location/vehicle-fence')
+// GPS手环管理
+const BangleAdmin = () => import(/* webpackChunkName: "group-external" */ '@/components/location/bangle-admin')
+// GPS手环监控
+const BangleMonit = () => import(/* webpackChunkName: "group-external" */ '@/components/location/bangle-monit')
+// GPS手环监控 => 人员轨迹
+const BangleMonitTrack = () => import(/* webpackChunkName: "group-external" */ '@/components/location/bangle-monit-track')
+// 手环围栏
+const BangleFence = () => import(/* webpackChunkName: "group-external" */ '@/components/location/bangle-fence')
+
 /* 硬件对接 */
 // 硬件管控
 const Hardcon = () => import(/* webpackChunkName: "group-external" */ '@/components/external/hardcon')
@@ -234,7 +252,7 @@ export default new Router({
     },
     {
       path: '/main',
-      name: 'main',
+      name: 'index',
       component: Main,
       redirect: '/main/home',
       children: [
@@ -784,6 +802,70 @@ export default new Router({
           path: 'normitem',
           name: 'normitem',
           component: Normitem,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'vehicle-admin',
+          name: 'vehicleAdmin',
+          component: VehicleAdmin,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'vehicle-admin-track',
+          name: 'vehicleAdminTrack',
+          component: VehicleAdminTrack,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'vehicle-monit',
+          name: 'vehicleMonit',
+          component: VehicleMonit,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'vehicle-fence',
+          name: 'vehicleFence',
+          component: VehicleFence,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'bangle-admin',
+          name: 'bangleAdmin',
+          component: BangleAdmin,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'bangle-monit',
+          name: 'bangleMonit',
+          component: BangleMonit,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'bangle-monit-track',
+          name: 'bangleMonitTrack',
+          component: BangleMonitTrack,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'bangle-fence',
+          name: 'bangleFence',
+          component: BangleFence,
           meta: {
             keepAlive: false
           }
