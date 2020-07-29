@@ -60,7 +60,7 @@
               <span slot="title" style="font-size: 18px;">首页</span>
             </el-menu-item>
             <el-submenu index="1" class="submenu-item" v-if="authority.organ || authority.user || authority.shift || authority.approval">
-              <template slot="title"><i class="iconfont icon-qiye"></i>企业配置</template>
+              <template slot="title"><i class="iconfont iconqiye"></i>企业配置</template>
               <el-menu-item-group v-if="authority.organ && companyId === 1">
                 <el-menu-item index="/main/organBC">组织管理</el-menu-item>
               </el-menu-item-group>
@@ -84,7 +84,7 @@
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="2" class="submenu-item" v-if="authority.site">
-              <template slot="title"><i class="iconfont icon-shezhi"></i>基础配置</template>
+              <template slot="title"><i class="iconfont iconshezhi"></i>基础配置</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/position">位置管理</el-menu-item>
               </el-menu-item-group>
@@ -93,7 +93,7 @@
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="3" class="submenu-item">
-              <template slot="title"><i class="iconfont icon-pinzhibaozhang"></i>品质过程管理</template>
+              <template slot="title"><i class="iconfont iconpinzhibaozhang"></i>品质过程管理</template>
               <el-menu-item-group v-if="authority.plan">
                 <el-menu-item index="/main/crewcollect">人员管理汇总</el-menu-item>
               </el-menu-item-group>
@@ -114,7 +114,7 @@
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="4" class="submenu-item">
-              <template slot="title"><i class="iconfont icon-xunjianguanli"></i>巡检巡查</template>
+              <template slot="title"><i class="iconfont iconxunjianguanli"></i>巡检巡查</template>
               <el-menu-item-group v-if="authority.plan">
                 <el-menu-item index="/main/group">组管理</el-menu-item>
               </el-menu-item-group>
@@ -138,7 +138,7 @@
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="5" class="submenu-item" v-if="authority.plan">
-              <template slot="title"><i class="iconfont icon-guding"></i>固定岗管理</template>
+              <template slot="title"><i class="iconfont iconguding"></i>固定岗管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/fixedpost-rep">固定岗打卡报表</el-menu-item>
               </el-menu-item-group>
@@ -147,7 +147,7 @@
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="6" class="submenu-item" v-if="authority.plan">
-              <template slot="title"><i class="iconfont icon-dianmin"></i>点名管理</template>
+              <template slot="title"><i class="iconfont icondianmin"></i>点名管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/callname-set">点名设置</el-menu-item>
               </el-menu-item-group>
@@ -156,7 +156,7 @@
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="7" class="submenu-item" v-if="authority.shift">
-              <template slot="title"><i class="iconfont icon-kaoqinguanli"></i>考勤管理</template>
+              <template slot="title"><i class="iconfont iconkaoqinguanli"></i>考勤管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/nosalary">无感考勤报表</el-menu-item>
               </el-menu-item-group>
@@ -165,7 +165,7 @@
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="8" class="submenu-item">
-              <template slot="title"><i class="iconfont icon-ccgl-fahuodanguanli-5"></i>工单管理</template>
+              <template slot="title"><i class="iconfont iconccgl-fahuodanguanli-5"></i>工单管理</template>
               <el-menu-item-group v-if="authority.work">
                 <el-menu-item index="/main/work">工单列表</el-menu-item>
               </el-menu-item-group>
@@ -174,7 +174,7 @@
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="9" class="submenu-item" v-if="authority.polcard">
-              <template slot="title"><i class="iconfont icon-jianzhuanquan"></i>环境监控管理</template>
+              <template slot="title"><i class="iconfont iconjianzhuanquan"></i>环境监控管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/envmonit">环境监控设置</el-menu-item>
               </el-menu-item-group>
@@ -186,13 +186,13 @@
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="10" class="submenu-item" v-if="authority.polcard">
-              <template slot="title"><i class="iconfont icon-shebeiguanli1"></i>设备管理</template>
+              <template slot="title"><i class="iconfont iconshebeiguanli1"></i>设备管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/hardfac">硬件设备管理</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="11" class="submenu-item" v-if="authority.polReport || authority.workReport">
-              <template slot="title"><i class="iconfont icon-baobiaoguanli"></i>报表管理</template>
+              <template slot="title"><i class="iconfont iconbaobiaoguanli"></i>报表管理</template>
               <el-menu-item-group v-if="authority.polReport">
                 <el-menu-item index="/main/report-task">巡检任务执行报表</el-menu-item>
               </el-menu-item-group>
@@ -210,7 +210,7 @@
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="12" class="submenu-item" v-if="authority.videoSetting || authority.videoPlaza">
-              <template slot="title"><i class="iconfont icon-jiankong"></i>视频监控</template>
+              <template slot="title"><i class="iconfont iconjiankong"></i>视频监控</template>
               <el-menu-item-group v-if="authority.videoSetting">
                 <el-menu-item index="/main/video-setting">视频监控设置</el-menu-item>
               </el-menu-item-group>
@@ -219,13 +219,13 @@
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="13" class="submenu-item" v-if="authority.event">
-              <template slot="title"><i class="iconfont icon-shijian"></i>事件管理</template>
+              <template slot="title"><i class="iconfont iconshijian"></i>事件管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/event">事件列表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="14" class="submenu-item" v-if="authority.event">
-              <template slot="title"><i class="iconfont icon-ic_biaozhunkuguanli"></i>标准库管理</template>
+              <template slot="title"><i class="iconfont iconic_biaozhunkuguanli"></i>标准库管理</template>
               <el-menu-item-group v-if="deviceUid.indexOf(userId) !== -1">
                 <el-menu-item index="/main/planorm">平台标准维护</el-menu-item>
               </el-menu-item-group>
@@ -237,7 +237,7 @@
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="15" class="submenu-item" v-if="deviceUid.indexOf(userId) !== -1">
-              <template slot="title"><i class="iconfont icon-duijie"></i>硬件对接</template>
+              <template slot="title"><i class="iconfont iconduijie"></i>硬件对接</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/hardcon">硬件管控</el-menu-item>
               </el-menu-item-group>
@@ -248,8 +248,8 @@
                 <el-menu-item index="/main/loracon">lora数据查询</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="16" class="submenu-item" v-if="deviceUid.indexOf(userId) !== -1">
-              <template slot="title"><i class="iconfont icon-duijie"></i>定位服务</template>
+            <el-submenu index="16" class="submenu-item">
+              <template slot="title"><i class="iconfont icondingwei"></i>定位服务</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/vehicle-admin">GPS车辆管理</el-menu-item>
               </el-menu-item-group>
@@ -563,7 +563,7 @@ export default{
             background: #1d2c3e !important;
           }
           .el-icon-arrow-down:before {
-            content: "\E60E";
+            content: "\e791";
           }
           .el-submenu.is-opened>.el-submenu__title .el-submenu__icon-arrow{
             transform: rotateZ(90deg);

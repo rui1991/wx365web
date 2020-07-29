@@ -5,7 +5,7 @@
         <el-input v-model.trim="parentForm.deviceNum" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="所属部门" prop="sector">
-        <el-select v-model="parentForm.sector" placeholder="请选择所属部门" @change="sectionChang">
+        <el-select v-model="parentForm.sector" disabled placeholder="请选择所属部门" @change="sectionChang">
           <el-option
             v-for="item in parentSectorOptions"
             :key="item.base_id"
@@ -69,43 +69,37 @@ export default{
   },
   methods: {
     comInit () {
-      const sector = this.parentForm.sector
-      let nowSector = this.parentSectorOptions.find(item => {
-        return item.base_id === sector
-      })
       // 获取部门人员
-      const sectorId = nowSector.id
-      this.getCrewData(sectorId)
+      const sector = this.parentForm.sector
+      this.getCrewData(sector)
     },
     // 切换部门
     sectionChang (val) {
-      let nowSector = this.parentSectorOptions.find(item => {
-        return item.base_id === val
-      })
       // 清空已选人员
       this.parentForm.crewId = ''
       // 获取部门人员
-      const sectorId = nowSector.id
-      this.getCrewData(sectorId)
+      this.getCrewData(val)
     },
     // 获取部门人员
     getCrewData (id) {
       let params = {
-        organize_id: id,
-        user_name: '',
-        user_phone: '',
-        role_id: '',
-        page: 1,
-        limit1: 10000
+        ogz_id: id
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.2/selUser',
+        url: this.gpsApi() + '/selGpsBraceletCanBindUsers',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          this.crewOptions = res.data.data1.users
+          let crewOptions = res.data.data1 || []
+          if (this.parentForm.crewId) {
+            crewOptions.push({
+              user_id: this.parentForm.crewId,
+              user_name: this.parentForm.crewName
+            })
+          }
+          this.crewOptions = crewOptions
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({

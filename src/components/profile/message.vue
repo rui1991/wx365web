@@ -14,8 +14,8 @@
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column width="80" label="状态">
           <template slot-scope="scope">
-            <i class="iconfont icon-noread" style="color: #569ade; cursor: default;" v-if="scope.row.state === 0"></i>
-            <i class="iconfont icon-ready" style="color: #cccccc; cursor: default;" v-else-if="scope.row.state === 1"></i>
+            <i class="iconfont iconnoread" style="color: #569ade; cursor: default;" v-if="scope.row.state === 0"></i>
+            <i class="iconfont iconready" style="color: #cccccc; cursor: default;" v-else-if="scope.row.state === 1"></i>
           </template>
         </el-table-column>
         <el-table-column width="180" label="标题">

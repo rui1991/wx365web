@@ -8,23 +8,22 @@
     </div>
     <div class="module-main">
       <div id="container"></div>
-      <el-collapse class="list-card" accordion>
-        <el-collapse-item>
+      <el-collapse class="list-card" v-model="activeName" accordion>
+        <el-collapse-item name="1">
           <template slot="title">
             <i class="title-name">人员列表</i>
-            <i class="title-value">{{ bangleNormal }}</i>
-            <i class="title-value">{{ bangleAbnormal }}</i>
+            <i class="title-value blue" @click="checkUserDetails('0')">{{ bangleNormal }}</i>
+            <i class="title-value red" @click="checkUserDetails('1')">{{ bangleAbnormal }}</i>
           </template>
           <div class="list-search">
             <el-input v-model="searchText" placeholder="请输入内容"></el-input>
           </div>
           <div class="list">
-            <div class="list-item" :class="{ active: itemId === 1 }" v-for="item in nowList" :key="item.car_number" @click="listChange(1)">
+            <div class="list-item" :class="{ active: itemId === item.gps_number }" v-for="item in nowList" :key="item.car_number" @click="checkItemDevice(item.gps_number, item.user_name)">
               <div class="mes">
-                <span>{{ item.car_number }}</span>
-                <span>{{ item.car_type }}</span>
+                <span>{{ item.user_name }}({{ item.ogz_name }})</span>
               </div>
-              <a href="javascript:void(0);" class="blue details" @click.stop="checkItemTrack(item.gps_number)">轨迹</a>
+              <a href="javascript:void(0);" class="blue details" @click.stop="checkItemTrack(item.gps_number, item.user_name)">足迹</a>
             </div>
           </div>
         </el-collapse-item>
@@ -37,45 +36,94 @@
         <transition name="slide-tool">
           <div class="tool" v-show="toolSwitch">
             <div class="tool-item bd-right">
-              <a href="javascript:void(0);" class="blue">全部</a>
+              <a href="javascript:void(0);" class="blue" @click="checkAllDevice()"><i class="iconfont iconliebiao"></i>&nbsp;全部</a>
             </div>
             <div class="tool-item bd-right">
-              <router-link class="blue" :to="{ path: '/main/bangle-fence' }">围栏</router-link>
+              <el-popover
+                placement="bottom"
+                trigger="hover">
+                <el-table :data="sosData" max-height="360">
+                  <el-table-column type="index" width="50" label="序号"></el-table-column>
+                  <el-table-column width="100" property="user_name" label="姓名"></el-table-column>
+                  <el-table-column width="100" property="ogz_name" label="部门"></el-table-column>
+                  <el-table-column width="200" label="时间">
+                    <template slot-scope="scope">
+                      <span>{{ scope.row.time | formatDate }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column width="300" property="str" label="地点" :show-overflow-tooltip="true"></el-table-column>
+                </el-table>
+                <a href="javascript:void(0);" class="red" slot="reference"><i class="iconfont icongaojing2"></i>&nbsp;SOS<i v-show="sosData.length > 0" class="red">&nbsp;({{ sosData.length }})</i></a>
+              </el-popover>
             </div>
             <div class="tool-item bd-right">
-              <a href="javascript:void(0);" class="blue">预警</a>
+              <router-link class="blue" :to="{ path: '/main/bangle-fence' }"><i class="iconfont iconweilan"></i>&nbsp;围栏</router-link>
+            </div>
+            <div class="tool-item bd-right">
+              <el-popover
+                placement="bottom"
+                trigger="hover">
+                <el-table :data="alarmData" max-height="360">
+                  <el-table-column type="index" width="50" label="序号"></el-table-column>
+                  <el-table-column width="100" property="user_name" label="姓名"></el-table-column>
+                  <el-table-column width="100" property="ogz_name" label="部门"></el-table-column>
+                  <el-table-column width="100" property="ev" label="类型"></el-table-column>
+                  <el-table-column width="300" property="content" label="内容" :show-overflow-tooltip="true"></el-table-column>
+                </el-table>
+                <a href="javascript:void(0);" class="red" slot="reference"><i class="iconfont icongaojing2"></i>&nbsp;预警<i v-show="alarmData.length > 0" class="red">&nbsp;({{ alarmData.length }})</i></a>
+              </el-popover>
             </div>
             <div class="tool-item">
-              <a href="javascript:void(0);" class="blue">全屏</a>
+              <a href="javascript:void(0);" class="blue" @click="clickFullSkip"><i class="iconfont iconquanping"></i>&nbsp;全屏</a>
             </div>
           </div>
         </transition>
       </div>
     </div>
+    <!-- 人员状态详情 -->
+    <user-module
+      :parentDialog="userDialog"
+      :parentState="userState"
+      :parentData="userNowData"
+      @parentClose="userClose">
+    </user-module>
   </div>
 </template>
 
 <script>
+/*
+* gps_type:  0手环    1车辆
+* */
 import AMap from 'AMap'
 import { mapState } from 'vuex'
 import icon from '../../assets/images/person.png'
+// 引入人员状态详情组件
+import userModule from '@/components/location/bangle-monit-user'
 export default{
   name: 'bangleMonit',
   data () {
     return {
       map: null,
+      mapCenter: [116.434381, 39.898515],
+      activeName: '1',
       bangleNormal: 0,
       bangleAbnormal: 0,
+      userAllData: [],
+      userNowData: [],
+      userState: '0',
       searchText: '',
-      searchState: false,
+      searchName: '',
       list: [],
       itemId: 0,
       toolSwitch: true,
       fenceData: [],
       monitTimer: null,
-      speed: 10000,
+      speed: 60000,
       markerGroups: null,
-      icon: icon
+      icon: icon,
+      alarmData: [],
+      sosData: [],
+      userDialog: false
     }
   },
   created () {
@@ -92,8 +140,13 @@ export default{
     this.getFenceData()
     // 获取手环列表
     this.getBangleList()
+    // 获取列表数据
+    this.getBangleLocation()
     // 启动定时器
     this.startTimer()
+  },
+  components: {
+    userModule
   },
   computed: {
     ...mapState('user', [
@@ -108,7 +161,7 @@ export default{
       let reg = new RegExp(search, 'i')
       if (search) {
         return this.list.filter(item => {
-          if (item.car_number.match(reg)) {
+          if (item.user_name.match(reg)) {
             return item
           }
         })
@@ -136,6 +189,7 @@ export default{
           let mapCenter = coord.split(',').map(item => {
             return Number.parseFloat(item)
           })
+          this.mapCenter = mapCenter
           // 设置地图中心坐标
           this.map.setCenter(mapCenter)
         } else {
@@ -264,7 +318,10 @@ export default{
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          this.list = res.data.data1.mes || []
+          const resData = res.data.data1.mes || []
+          this.list = resData.filter(item => {
+            return item.user_id
+          })
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -281,6 +338,27 @@ export default{
         })
       })
     },
+    // 查看人员状态详情
+    checkUserDetails (state) {
+      this.userState = state
+      let userAllData = this.userAllData
+      let userNowData = []
+      if (state === '0') {
+        userNowData = userAllData.filter(item => {
+          return item.state === '正常'
+        })
+      } else if (state === '1') {
+        userNowData = userAllData.filter(item => {
+          return item.state === '异常'
+        })
+      }
+      this.userNowData = userNowData
+      this.userDialog = true
+    },
+    // 关闭人员状态详情
+    userClose () {
+      this.userDialog = false
+    },
 
     /* 查询人员实时位置 */
     // 启动定时器
@@ -290,15 +368,11 @@ export default{
         this.getBangleLocation()
       }, this.speed)
     },
-    // 销毁定时器
-    beforeDestroy () {
-      // 清除轨迹列表定时器
-      clearInterval(this.monitTimer)
-    },
+    // 获取实时数据
     getBangleLocation () {
       let params = {
         project_id: this.projectId,
-        user_ogz_name: ''
+        user_ogz_name: this.searchName
         // gps_type: 0
       }
       params = this.$qs.stringify(params)
@@ -310,10 +384,17 @@ export default{
         if (res.data.result === 'Sucess') {
           const resData = res.data.data1
           // 正常
-          this.bangleNormal = resData.zc
+          this.bangleNormal = resData.zc || 0
           // 异常
-          this.bangleAbnormal = resData.yc
-          let gpsData = resData.gps.data
+          this.bangleAbnormal = resData.yc || 0
+          // 设备状态数据
+          this.userAllData = resData.userList || []
+          // 告警
+          this.alarmData = resData.alarms || []
+          // SOS
+          this.sosData = resData.sos_mes || []
+          // 绘制标记
+          let gpsData = resData.gps.data || []
           this.drawMarkerGroup(gpsData)
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
@@ -337,13 +418,29 @@ export default{
         this.markerGroups.clearOverlays()
       }
       let markers = []
-      data.forEach((item) => {
+
+      let infoWindow = new AMap.InfoWindow({offset: new AMap.Pixel(0, -30)})
+      data.forEach((item, index) => {
         var marker = new AMap.Marker({
           position: new AMap.LngLat(item.lon, item.lat),
           icon: this.icon,
           extData: {
             mid: item.mid
           }
+        })
+        let content = `<div class="marker-content"><p style="line-height: 35px; text-align: center; color: #272727; font-weight: 600;">${item.name_ogz}</p><p>设备号：${item.mid}</p><p>位置：${item.str}</p><p>电量：${item.b}%</p></div>`
+        if (item.Desc) {
+          content += `<p>设备状态：${item.Desc}</p>`
+        } else {
+          content += `<p>设备状态：正常</p>`
+        }
+        marker.content = content
+        marker.on('mouseover', e => {
+          infoWindow.setContent(e.target.content)
+          infoWindow.open(this.map, e.target.getPosition())
+        })
+        marker.on('mouseout', e => {
+          infoWindow.close()
         })
         markers.push(marker)
       })
@@ -352,18 +449,37 @@ export default{
       this.markerGroups = overlayGroups
       this.map.add(overlayGroups)
     },
+    // 查看全部
+    checkAllDevice () {
+      this.itemId = ''
+      this.searchName = ''
+      this.getBangleLocation()
+    },
     // 查看单个手环
-    listChange (id) {
+    checkItemDevice (id = '', name = '') {
       this.itemId = id
-      console.log(id)
+      this.searchName = name
+      this.getBangleLocation()
     },
     // 查看单个轨迹
-    checkItemTrack (id) {
+    checkItemTrack (id, name) {
       this.$router.push({
         path: '/main/bangle-monit-track',
-        query: { id: id }
+        query: {
+          id: id,
+          name: name
+        }
       })
+    },
+    // 全屏跳转
+    clickFullSkip () {
+      const openUrl = this.baseUrl() + '/wx365web/#/monitbangle?projectId=' + this.projectId + '&pointLon=' + this.mapCenter[0] + '&pointLat=' + this.mapCenter[1]
+      window.open(openUrl)
     }
+  },
+  beforeDestroy () {
+    // 清除定时器
+    clearInterval(this.monitTimer)
   }
 }
 </script>
@@ -414,9 +530,9 @@ export default{
         overflow: auto;
         .list-item{
           display: flex;
-          height: 56px;
-          padding-left: 20px;
-          padding-right: 20px;
+          height: 46px;
+          padding-left: 10px;
+          padding-right: 10px;
           border-top: 1px solid #cdcdcd;
           justify-content: space-between;
           align-items: center;
@@ -453,7 +569,7 @@ export default{
       }
       .tool{
         display: flex;
-        width: 360px;
+        width: 450px;
         .tool-item{
           flex-grow: 1;
           height: 40px;
@@ -465,6 +581,12 @@ export default{
       .bd-right{
         border-right: 1px solid #cdcdcd;
       }
+    }
+  }
+  .marker-content {
+    p{
+      height: 35px;
+      line-height: 35px;
     }
   }
 </style>

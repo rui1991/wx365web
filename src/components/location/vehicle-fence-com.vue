@@ -1,13 +1,16 @@
 <template>
   <div>
-    <el-dialog title="新增围栏" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
-      <el-form class="divide-from" :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
+    <el-dialog title="编辑围栏" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+      <el-form class="divide-from" :model="parentForm" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
         <el-form-item label="围栏名称" prop="name">
-          <el-input v-model.trim="formData.name" auto-complete="off"></el-input>
+          <el-input v-model.trim="parentForm.name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="人员" prop="crewName">
-          <el-input :disabled="true" type="textarea" v-model="formData.crewName"></el-input>
-          <el-button type="primary" style="vertical-align: top;" @click="deviceDialog = true">选择人员</el-button>
+        <el-form-item label="车辆" prop="carNums">
+          <el-input :disabled="true" type="textarea" v-model="parentForm.carNums"></el-input>
+          <el-button type="primary" style="vertical-align: top;" @click="deviceDialog = true">选择车辆</el-button>
+        </el-form-item>
+        <el-form-item label="时速" prop="speed">
+          <el-input v-model.number="parentForm.speed" type="number" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -15,12 +18,12 @@
         <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
-    <!-- 手环设备 -->
+    <!-- 车辆设备 -->
     <device-module
       :parentDialog="deviceDialog"
       :parentProid="projectId"
-      :parentFence="0"
-      :parentIds="formData.deviceId"
+      :parentFence="parentId"
+      :parentIds="parentForm.deviceId"
       @parentUpdata="deviceUpdata"
       @parentCancel="deviceCancel">
     </device-module>
@@ -38,9 +41,9 @@
 * */
 import { mapState } from 'vuex'
 // 引入手环设备组件
-import deviceModule from '@/components/location/bangle-checkbox'
+import deviceModule from '@/components/location/vehicle-checkbox'
 export default{
-  props: ['parentDialog', 'parentType', 'parentCenter', 'parentRadius', 'parentPath'],
+  props: ['parentDialog', 'parentId', 'parentForm'],
   data () {
     return {
       formLabelWidth: '100px',
@@ -48,11 +51,6 @@ export default{
         name: [
           { required: true, message: '请输入围栏名称', trigger: 'blur' }
         ]
-      },
-      formData: {
-        name: '',
-        crewName: '',
-        deviceId: []
       },
       disabled: false,
       deviceDialog: false
@@ -70,13 +68,6 @@ export default{
     ])
   },
   methods: {
-    addInit () {
-      this.formData = {
-        name: '',
-        crewName: '',
-        deviceId: []
-      }
-    },
     // 验证表单
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
@@ -93,24 +84,24 @@ export default{
     },
     // 提交
     sendRequest () {
-      let deviceId = this.formData.deviceId
+      let deviceId = this.parentForm.deviceId
       deviceId = deviceId.join(',')
       let params = {
         user_id: this.userId,
         project_id: this.projectId,
-        type: 0,
-        gps_type: 0,
+        type: 1,
+        id: this.parentId,
+        gps_type: 1,
+        enc_type: this.parentForm.graphType,
         enclosure_name: this.formData.name,
-        speed_limit: 0,
+        speed_limit: this.formData.speed,
         gps_id: deviceId
       }
-      if (this.parentType === 'circle') {
-        params.enc_type = 0
-        params.central_point = this.parentCenter
-        params.radius = this.parentRadius
-      } else if (this.parentType === 'polygon') {
-        params.enc_type = 1
-        params.xy = this.parentPath
+      if (this.parentForm.graphType === 0) {
+        params.central_point = this.parentForm.circleCenter
+        params.radius = this.parentForm.circleRadius
+      } else if (this.parentForm.graphType === 1) {
+        params.xy = this.parentForm.polygonPath
       }
       params = this.$qs.stringify(params)
       this.disabled = true
@@ -127,7 +118,7 @@ export default{
           this.$emit('parentUpdata')
           this.$message({
             showClose: true,
-            message: '围栏新增成功！',
+            message: '围栏编辑成功！',
             type: 'success'
           })
         } else {
@@ -155,8 +146,8 @@ export default{
     },
     /* 手环设备 */
     deviceUpdata (data) {
-      this.formData.crewName = data.names
-      this.formData.deviceId = data.ids
+      this.parentForm.carNums = data.names
+      this.parentForm.deviceId = data.ids
       this.deviceDialog = false
     },
     deviceCancel () {
@@ -164,11 +155,7 @@ export default{
     }
   },
   watch: {
-    parentDialog (val, oldVal) {
-      if (val) {
-        this.addInit()
-      }
-    }
+
   }
 }
 </script>

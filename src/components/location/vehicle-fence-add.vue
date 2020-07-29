@@ -5,9 +5,12 @@
         <el-form-item label="围栏名称" prop="name">
           <el-input v-model.trim="formData.name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="人员" prop="crewName">
-          <el-input :disabled="true" type="textarea" v-model="formData.crewName"></el-input>
-          <el-button type="primary" style="vertical-align: top;" @click="deviceDialog = true">选择人员</el-button>
+        <el-form-item label="车辆" prop="carNums">
+          <el-input :disabled="true" type="textarea" v-model="formData.carNums"></el-input>
+          <el-button type="primary" style="vertical-align: top;" @click="deviceDialog = true">选择车辆</el-button>
+        </el-form-item>
+        <el-form-item label="时速" prop="speed">
+          <el-input v-model.number="formData.speed" type="number" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -38,7 +41,7 @@
 * */
 import { mapState } from 'vuex'
 // 引入手环设备组件
-import deviceModule from '@/components/location/bangle-checkbox'
+import deviceModule from '@/components/location/vehicle-checkbox'
 export default{
   props: ['parentDialog', 'parentType', 'parentCenter', 'parentRadius', 'parentPath'],
   data () {
@@ -51,8 +54,9 @@ export default{
       },
       formData: {
         name: '',
-        crewName: '',
-        deviceId: []
+        carNums: '',
+        deviceId: [],
+        speed: 0
       },
       disabled: false,
       deviceDialog: false
@@ -73,8 +77,9 @@ export default{
     addInit () {
       this.formData = {
         name: '',
-        crewName: '',
-        deviceId: []
+        carNums: '',
+        deviceId: [],
+        speed: 0
       }
     },
     // 验证表单
@@ -99,9 +104,9 @@ export default{
         user_id: this.userId,
         project_id: this.projectId,
         type: 0,
-        gps_type: 0,
+        gps_type: 1,
         enclosure_name: this.formData.name,
-        speed_limit: 0,
+        speed_limit: this.formData.speed,
         gps_id: deviceId
       }
       if (this.parentType === 'circle') {
@@ -155,7 +160,7 @@ export default{
     },
     /* 手环设备 */
     deviceUpdata (data) {
-      this.formData.crewName = data.names
+      this.formData.carNums = data.names
       this.formData.deviceId = data.ids
       this.deviceDialog = false
     },

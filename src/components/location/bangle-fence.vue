@@ -9,8 +9,8 @@
     </div>
     <div class="module-main">
       <div id="container"></div>
-      <el-collapse class="list-card" accordion v-show="listSwitch">
-        <el-collapse-item>
+      <el-collapse class="list-card" v-model="activeName" accordion v-show="listSwitch">
+        <el-collapse-item name="1">
           <template slot="title">
             <i class="title-name">围栏列表</i>
           </template>
@@ -18,7 +18,7 @@
             <el-input v-model="searchText" placeholder="请输入内容"></el-input>
           </div>
           <div class="list">
-            <div class="list-item" :class="{ active: itemId === 1 }" v-for="item in nowList" :key="item.car_number" @click="listChange(item)">
+            <div class="list-item" :class="{ active: itemId === item.id }" v-for="item in nowList" :key="item.car_number" @click="checkItemFence(item)">
               <i class="blue details">{{ item.enclosure_name }}</i>
             </div>
           </div>
@@ -48,7 +48,7 @@
       </div>
       <div class="operate-card" v-show="operateStart === 1">
         <div class="operate-item">
-          <el-button type="primary" round>查看详情</el-button>
+          <el-button type="primary" round @click="detClick">查看详情</el-button>
         </div>
         <div class="operate-item">
           <el-button type="primary" round @click="comGraph">编辑图形</el-button>
@@ -79,6 +79,12 @@
       @parentUpdata="addUpdata"
       @parentCancel="addCancel">
     </add-module>
+    <!-- 详情 -->
+    <det-module
+      :parentDialog="detDialog"
+      :parentForm="itemForm"
+      @parentClose="detClose">
+    </det-module>
     <!-- 编辑 -->
     <com-module
       :parentDialog="comDialog"
@@ -114,6 +120,8 @@ import { mapState, mapActions } from 'vuex'
 // 引入新增组件
 import addModule from '@/components/location/bangle-fence-add'
 // 引入编辑组件
+import detModule from '@/components/location/bangle-fence-det'
+// 引入编辑组件
 import comModule from '@/components/location/bangle-fence-com'
 // 引入删除组件
 import delModule from '@/components/location/bangle-fence-del'
@@ -121,8 +129,8 @@ export default{
   name: 'bangleFence',
   data () {
     return {
-      parentPathName: '',
       map: null,
+      activeName: '1',
       searchText: '',
       list: [],
       itemData: {},
@@ -146,6 +154,7 @@ export default{
       circleRadius: 0,
       polygonPath: '',
       addDialog: false,
+      detDialog: false,
       comDialog: false,
       operateStart: 0,
       graphEditor: null,
@@ -176,6 +185,7 @@ export default{
   },
   components: {
     addModule,
+    detModule,
     comModule,
     delModule
   },
@@ -274,6 +284,8 @@ export default{
 
     /* 展示所有围栏 */
     checkAllData () {
+      this.itemId = 0
+      this.operateStart = 0
       // 清除所有图形
       this.map.clearMap()
       let graphGroup = []
@@ -350,6 +362,7 @@ export default{
     /* 绘制图形 */
     // 开始绘制
     drawStart (type) {
+      this.itemId = 0
       // 隐藏列表
       this.listSwitch = false
       // 清除所有图形
@@ -406,7 +419,7 @@ export default{
     },
 
     /* 查看单个围栏 */
-    listChange (data) {
+    checkItemFence (data) {
       this.itemData = data
       this.itemId = data.id
       this.operateStart = 1
@@ -477,6 +490,22 @@ export default{
       })
     },
 
+    /* 详情 */
+    detClick () {
+      this.itemForm = {
+        graphType: this.itemData.enc_type,
+        circleCenter: this.itemData.central_point,
+        circleRadius: this.itemData.radius,
+        polygonPath: this.itemData.xy,
+        name: this.itemData.enclosure_name,
+        crewName: this.itemData.user_names,
+        deviceId: []
+      }
+      this.detDialog = true
+    },
+    detClose () {
+      this.detDialog = false
+    },
     /* 编辑围栏 */
     // 编辑图形
     comGraph () {
@@ -586,12 +615,15 @@ export default{
       this.comDialog = false
     },
     /* 删除 */
-    delClick (id) {
-      this.itemId = id
+    delClick () {
       this.delDialog = true
     },
     delUpdata () {
       this.delDialog = false
+      this.itemId = 0
+      this.operateStart = 0
+      // 清除所有图形
+      this.map.clearMap()
       // 获取围栏列表
       this.getListData()
     },

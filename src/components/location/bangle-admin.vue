@@ -55,15 +55,10 @@
         <el-table-column prop="user_name" label="绑定人员"></el-table-column>
         <el-table-column prop="gps_phone" label="通讯卡"></el-table-column>
         <el-table-column prop="push_user_names" :show-overflow-tooltip="true" label="告警推送人"></el-table-column>
-        <el-table-column width="120" label="状态">
-          <template slot-scope="scope">
-            <span>{{ scope.row.bracelet_type | filterDeviceState }}</span>
-          </template>
-        </el-table-column>
         <el-table-column width="240" label="操作">
           <template slot-scope="scope">
-            <a href="javascript:void(0);" class="operate blue" @click="spoorClick(scope.row.gps_number)">足迹</a>
-            <a href="javascript:void(0);" class="operate red" @click="untieClick(scope.row)">解绑</a>
+            <a href="javascript:void(0);" class="operate blue" @click="trackClick(scope.row.gps_number)">足迹</a>
+            <a href="javascript:void(0);" class="operate red" v-if="scope.row.user_id" @click="untieClick(scope.row)">解绑</a>
             <a href="javascript:void(0);" class="operate blue" @click="comClick(scope.row)">编辑</a>
             <a href="javascript:void(0);" class="operate red" @click="delClick(scope.row.bracelet_id)">删除</a>
           </template>
@@ -83,11 +78,11 @@
       </el-pagination>
     </div>
     <!-- 足迹 -->
-    <spoor-module
-      :parentDialog="spoorDialog"
+    <track-module
+      :parentDialog="trackDialog"
       :parentDeviceNum="itemDeviceNum"
-      @parentClose="spoorClose">
-    </spoor-module>
+      @parentClose="trackClose">
+    </track-module>
     <!-- 新增 -->
     <add-module
       :parentDialog="addDialog"
@@ -132,7 +127,7 @@ import { mapState } from 'vuex'
 // 引入新增组件
 import addModule from '@/components/location/bangle-admin-add'
 // 引入新增组件
-import spoorModule from '@/components/location/bangle-admin-spoor'
+import trackModule from '@/components/location/bangle-admin-track'
 // 引入新增组件
 import untieModule from '@/components/location/bangle-admin-untie'
 // 引入新增组件
@@ -176,7 +171,7 @@ export default{
       limit: 10,
       itemId: 0,
       itemDeviceNum: '',
-      spoorDialog: false,
+      trackDialog: false,
       addDialog: false,
       untieDialog: false,
       comDialog: false,
@@ -184,7 +179,8 @@ export default{
       itemForm: {
         deviceNum: '',
         sector: '',
-        crewId: '',
+        crewId: 0,
+        crewName: '',
         mesCard: ''
       },
       alarmDialog: false
@@ -201,7 +197,7 @@ export default{
   },
   components: {
     addModule,
-    spoorModule,
+    trackModule,
     untieModule,
     comModule,
     alarmModule,
@@ -285,12 +281,12 @@ export default{
       this.addDialog = false
     },
     /* 足迹 */
-    spoorClick (num) {
+    trackClick (num) {
       this.itemDeviceNum = num
-      this.spoorDialog = true
+      this.trackDialog = true
     },
-    spoorClose () {
-      this.spoorDialog = false
+    trackClose () {
+      this.trackDialog = false
     },
     /* 解绑 */
     untieClick (data) {
@@ -318,6 +314,7 @@ export default{
         deviceNum: data.gps_number,
         sector: data.ogz_id,
         crewId: data.user_id,
+        crewName: data.user_name,
         mesCard: data.gps_phone
       }
       this.comDialog = true

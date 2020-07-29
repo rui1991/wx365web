@@ -4,6 +4,7 @@
       日期
       <el-date-picker
         v-model="date"
+        value-format="yyyy-MM-dd"
         @change="dateChange"
         type="date"
         :clearable="false"

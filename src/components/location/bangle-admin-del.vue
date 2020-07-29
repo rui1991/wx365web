@@ -16,7 +16,7 @@ import { mapState } from 'vuex'
 * bracelet_number: 通讯卡
 * */
 export default{
-  props: ['parentDialog', 'parentForm'],
+  props: ['parentDialog', 'parentId'],
   data () {
     return {
       disabled: false

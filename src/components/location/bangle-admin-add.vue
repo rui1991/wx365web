@@ -84,33 +84,24 @@ export default{
     },
     // 切换部门
     sectionChang (val) {
-      let nowSector = this.parentSectorOptions.find(item => {
-        return item.base_id === val
-      })
       // 清空已选人员
       this.formData.crewId = ''
       // 获取部门人员
-      const sectorId = nowSector.id
-      this.getCrewData(sectorId)
+      this.getCrewData(val)
     },
-    // 获取部门人员
+    // 获取可绑定人员
     getCrewData (id) {
       let params = {
-        organize_id: id,
-        user_name: '',
-        user_phone: '',
-        role_id: '',
-        page: 1,
-        limit1: 10000
+        ogz_id: id
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.2/selUser',
+        url: this.gpsApi() + '/selGpsBraceletCanBindUsers',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          this.crewOptions = res.data.data1.users
+          this.crewOptions = res.data.data1
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({

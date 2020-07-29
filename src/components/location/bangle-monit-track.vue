@@ -9,15 +9,16 @@
     </div>
     <div class="module-main">
       <div id="container"></div>
-      <el-collapse class="list-card" accordion>
-        <el-collapse-item>
+      <el-collapse class="list-card" v-model="activeName" accordion>
+        <el-collapse-item name="1">
           <template slot="title">
-            <i class="title-name">XX的轨迹</i>
+            <i class="title-name">{{this.$route.query.name}}的足迹</i>
           </template>
           <div class="list-search">
             <div class="date">
               <el-date-picker
                 v-model="date"
+                value-format="yyyy-MM-dd"
                 @change="dateChange"
                 type="date"
                 :clearable="false"
@@ -27,17 +28,32 @@
             <div class="hint">跨越<i class="red">{{ cityNum }}</i>个城市<i class="red">{{ spoorNum }}</i>个足迹</div>
           </div>
           <div class="list">
-            <el-timeline :reverse="reverse">
+            <el-timeline :reverse="true">
               <el-timeline-item
-                v-for="(i, index) in list"
+                v-for="(item, index) in list"
                 :key="index"
-                :timestamp="i.ct">
-                {{i.str}}
+                :timestamp="item.ct">
+                <p style="font-size: 12px;">{{item.str}}</p>
+                <p class="red" style="font-size: 12px;" v-if="item.tag === 1">{{ item.ct | countDuration(item.ut) }}</p>
               </el-timeline-item>
             </el-timeline>
           </div>
         </el-collapse-item>
       </el-collapse>
+      <div class="tool-card">
+        <div class="tool-item">
+          <el-button type="primary" round @click="startAnimation">开始动画</el-button>
+        </div>
+        <div class="tool-item">
+          <el-button type="primary" round @click="pauseAnimation">暂停动画</el-button>
+        </div>
+        <div class="tool-item">
+          <el-button type="primary" round @click="resumeAnimation">继续动画</el-button>
+        </div>
+        <div class="tool-item">
+          <el-button type="primary" round @click="stopAnimation">停止动画</el-button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -46,16 +62,21 @@
 import AMap from 'AMap'
 import { mapState } from 'vuex'
 import icon from '../../assets/images/person.png'
-export default{
+export default {
   name: 'bangleMonitTrack',
   data () {
     return {
       map: null,
+      activeName: '1',
       date: this.$common.getNowDate('yyyy-mm-dd'),
       cityNum: 0,
       spoorNum: 0,
       list: [],
-      icon: icon
+      icon: icon,
+      lineArr: [],
+      marker: null,
+      duration: 200,
+      polyline: null
     }
   },
   created () {
@@ -213,6 +234,13 @@ export default{
       })
     },
 
+    // 选择日期
+    dateChange () {
+      // 清除所有覆盖物
+      this.map.clearMap()
+      // 获取轨迹
+      this.getTrackList()
+    },
     // 查询人员轨迹
     getTrackList () {
       let params = {
@@ -237,6 +265,8 @@ export default{
           // 足迹数
           this.spoorNum = listData.length
           this.list = listData
+          // 绘制轨迹
+          this.drawTrack()
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -253,9 +283,88 @@ export default{
         })
       })
     },
-    // 选择日期
-    dateChange () {
-      this.getTrackList()
+    // 绘制轨迹
+    drawTrack () {
+      let list = this.list
+      let lineArr = []
+      list.forEach(item => {
+        let dataItem = [item.lon, item.lat]
+        lineArr.push(dataItem)
+      })
+      this.lineArr = lineArr
+      let marker = new AMap.Marker({
+        map: this.map,
+        position: lineArr[0],
+        icon: this.icon,
+        offset: new AMap.Pixel(-9, -24),
+        autoRotation: true
+        // angle: -90
+      })
+      this.marker = marker
+      // 绘制轨迹
+      let polyline = new AMap.Polyline({
+        map: this.map,
+        path: lineArr,
+        showDir: true,
+        strokeColor: '#28F',
+        strokeWeight: 6
+      })
+      this.polyline = polyline
+      let passedPolyline = new AMap.Polyline({
+        map: this.map,
+        // path: lineArr,
+        strokeColor: '#AF5',
+        strokeWeight: 6
+      })
+
+      this.marker.on('moving', e => {
+        passedPolyline.setPath(e.passedPath)
+      })
+      // 调整地图
+      this.map.setFitView()
+    },
+    // 开始动画
+    startAnimation () {
+      this.marker.moveAlong(this.lineArr, this.duration)
+    },
+    // 暂停动画
+    pauseAnimation () {
+      this.marker.pauseMove()
+    },
+    // 继续动画
+    resumeAnimation () {
+      this.marker.resumeMove()
+    },
+    // 停止动画
+    stopAnimation () {
+      this.marker.stopMove()
+    }
+  },
+  filters: {
+    countDuration (start, end) {
+      let startTime = new Date(start).getTime()
+      let endTime = new Date(end).getTime()
+      let timeDiffer = endTime - startTime
+      // 天
+      let day = timeDiffer / (1000 * 60 * 60 * 24)
+      day = Math.floor(day)
+      // 时
+      let hours = timeDiffer / (1000 * 60 * 60) - day * 24
+      hours = Math.floor(hours)
+      // 分
+      let minute = timeDiffer / (1000 * 60) - (24 * 60 * day) - (60 * hours)
+      minute = Math.floor(minute)
+      // 秒
+      let seconds = (timeDiffer / 1000) % 60
+      if (day > 0) {
+        return '停留' + day + '天' + hours + '小时' + minute + '分钟' + seconds + '秒'
+      } else if (hours > 0) {
+        return '停留' + hours + '小时' + minute + '分钟' + seconds + '秒'
+      } else if (minute > 0) {
+        return '停留' + minute + '分钟' + seconds + '秒'
+      } else if (seconds > 0) {
+        return '停留' + seconds + '秒'
+      }
     }
   }
 }
@@ -316,6 +425,21 @@ export default{
       .list{
         max-height: 420px;
         overflow: auto;
+      }
+    }
+    .tool-card{
+      width: 140px;
+      padding-top: 10px;
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      border-radius: 6px;
+      background: #ffffff;
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
+      .tool-item{
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: center;
       }
     }
   }

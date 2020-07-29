@@ -55,6 +55,12 @@
 <script>
 /*
 * type: 0  添加车辆   1编辑车辆
+* car_number：车牌号
+* gps_number: 设备号
+* car_type：车辆类型
+* ogz_id：部门id(base_id)
+* users: 人员
+* remarks：备注
 * */
 import { mapState } from 'vuex'
 // 引入人员组件
@@ -146,8 +152,8 @@ export default{
     },
     // 切换部门
     sectionChang () {
-      this.parentForm.crewName = ''
-      this.parentForm.crewId = []
+      this.formData.crewName = ''
+      this.formData.crewId = []
     },
     // 验证表单
     submitForm (formName) {

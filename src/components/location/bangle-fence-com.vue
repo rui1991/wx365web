@@ -19,6 +19,7 @@
     <device-module
       :parentDialog="deviceDialog"
       :parentProid="projectId"
+      :parentFence="parentId"
       :parentIds="parentForm.deviceId"
       @parentUpdata="deviceUpdata"
       @parentCancel="deviceCancel">
@@ -38,9 +39,6 @@ export default{
       rules: {
         name: [
           { required: true, message: '请输入围栏名称', trigger: 'blur' }
-        ],
-        crewName: [
-          { required: true, message: '请选择关联人员', trigger: 'change' }
         ]
       },
       disabled: false,
@@ -91,7 +89,7 @@ export default{
       if (this.parentForm.graphType === 0) {
         params.central_point = this.parentForm.circleCenter
         params.radius = this.parentForm.circleRadius
-      } else if (this.parentType === 1) {
+      } else if (this.parentForm.graphType === 1) {
         params.xy = this.parentForm.polygonPath
       }
       params = this.$qs.stringify(params)
@@ -146,7 +144,9 @@ export default{
     }
   },
   watch: {
+    parentDialog (val, oldVal) {
 
+    }
   }
 }
 </script>

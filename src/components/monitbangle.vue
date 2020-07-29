@@ -1,66 +1,70 @@
 <template>
   <div class="module-container">
-    <div class="module-header">
-      <el-breadcrumb separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item>定位服务</el-breadcrumb-item>
-        <el-breadcrumb-item>GPS车辆监控</el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
-    <div class="module-main">
-      <div id="container"></div>
-      <el-collapse class="list-card" v-model="activeName" accordion>
-        <el-collapse-item name="1">
-          <template slot="title">
-            <i class="title-name">车辆列表</i>
-            <i class="title-value blue" @click="checkUserDetails('0')">{{ bangleNormal }}</i>
-            <i class="title-value red" @click="checkUserDetails('1')">{{ bangleAbnormal }}</i>
-          </template>
-          <div class="list-search">
-            <el-input v-model="searchText" placeholder="请输入内容"></el-input>
-          </div>
-          <div class="list">
-            <div class="list-item" :class="{ active: itemId === item.gps_number }" v-for="item in nowList" :key="item.car_number" @click="checkItemDevice(item.gps_number, item.user_name)">
-              <div class="mes">
-                <span>{{ item.user_name }}({{ item.ogz_name }})</span>
-              </div>
-              <a href="javascript:void(0);" class="blue details" @click.stop="checkItemTrack(item.gps_number, item.user_name)">轨迹</a>
-            </div>
-          </div>
-        </el-collapse-item>
-      </el-collapse>
-      <div class="tool-card">
-        <div class="tool-switch bd-right">
-          <a href="javascript:void(0);" class="blue" @click="toolSwitch = false" v-show="toolSwitch">收起&nbsp;<i class="el-icon-d-arrow-right"></i></a>
-          <a href="javascript:void(0);" class="blue" @click="toolSwitch = true" v-show="!toolSwitch"><i class="el-icon-d-arrow-left"></i>&nbsp;展开</a>
+    <div id="container"></div>
+    <el-collapse class="list-card" v-model="activeName" accordion>
+      <el-collapse-item name="1">
+        <template slot="title">
+          <i class="title-name">人员列表</i>
+          <i class="title-value blue" @click="checkUserDetails('0')">{{ bangleNormal }}</i>
+          <i class="title-value red" @click="checkUserDetails('1')">{{ bangleAbnormal }}</i>
+        </template>
+        <div class="list-search">
+          <el-input v-model="searchText" placeholder="请输入内容"></el-input>
         </div>
-        <transition name="slide-tool">
-          <div class="tool" v-show="toolSwitch">
-            <div class="tool-item bd-right">
-              <a href="javascript:void(0);" class="blue" @click="checkAllDevice()"><i class="iconfont iconliebiao"></i>&nbsp;全部</a>
+        <div class="list">
+          <div class="list-item" :class="{ active: itemId === item.gps_number }" v-for="item in nowList" :key="item.car_number" @click="checkItemDevice(item.gps_number, item.user_name)">
+            <div class="mes">
+              <span>{{ item.user_name }}({{ item.ogz_name }})</span>
             </div>
-            <div class="tool-item bd-right">
-              <router-link class="blue" :to="{ path: '/main/vehicle-fence' }"><i class="iconfont iconweilan"></i>&nbsp;围栏</router-link>
-            </div>
-            <div class="tool-item bd-right">
-              <el-popover
-                placement="bottom"
-                trigger="hover">
-                <el-table :data="alarmData" max-height="360">
-                  <el-table-column type="index" width="50" label="序号"></el-table-column>
-                  <el-table-column width="100" property="user_name" label="姓名"></el-table-column>
-                  <el-table-column width="100" property="ogz_name" label="部门"></el-table-column>
-                  <el-table-column width="100" property="ev" label="类型"></el-table-column>
-                  <el-table-column width="300" property="content" label="内容" :show-overflow-tooltip="true"></el-table-column>
-                </el-table>
-                <a href="javascript:void(0);" class="red" slot="reference"><i class="iconfont icongaojing2"></i>&nbsp;预警<i v-show="alarmData.length > 0" class="red">&nbsp;({{ alarmData.length }})</i></a>
-              </el-popover>
-            </div>
-            <div class="tool-item">
-              <a href="javascript:void(0);" class="blue" @click="clickFullSkip"><i class="iconfont iconquanping"></i>&nbsp;全屏</a>
-            </div>
+            <a href="javascript:void(0);" class="blue details" @click.stop="checkItemTrack(item.gps_number, item.user_name)">足迹</a>
           </div>
-        </transition>
+        </div>
+      </el-collapse-item>
+    </el-collapse>
+    <div class="tool-card">
+      <div class="tool-switch bd-right">
+        <a href="javascript:void(0);" class="blue" @click="toolSwitch = false" v-show="toolSwitch">收起&nbsp;<i class="el-icon-d-arrow-right"></i></a>
+        <a href="javascript:void(0);" class="blue" @click="toolSwitch = true" v-show="!toolSwitch"><i class="el-icon-d-arrow-left"></i>&nbsp;展开</a>
       </div>
+      <transition name="slide-tool">
+        <div class="tool" v-show="toolSwitch">
+          <div class="tool-item bd-right">
+            <a href="javascript:void(0);" class="blue" @click="checkItemDevice()"><i class="iconfont iconliebiao"></i>&nbsp;全部</a>
+          </div>
+          <div class="tool-item bd-right">
+            <el-popover
+              placement="bottom"
+              trigger="hover">
+              <el-table :data="sosData" max-height="360">
+                <el-table-column type="index" width="50" label="序号"></el-table-column>
+                <el-table-column width="100" property="user_name" label="姓名"></el-table-column>
+                <el-table-column width="100" property="ogz_name" label="部门"></el-table-column>
+                <el-table-column width="200" label="时间">
+                  <template slot-scope="scope">
+                    <span>{{ scope.row.time | formatDate }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column width="300" property="str" label="地点" :show-overflow-tooltip="true"></el-table-column>
+              </el-table>
+              <a href="javascript:void(0);" class="red" slot="reference"><i class="iconfont icongaojing2"></i>&nbsp;SOS<i v-show="sosData.length > 0" class="red">&nbsp;({{ sosData.length }})</i></a>
+            </el-popover>
+          </div>
+          <div class="tool-item bd-right">
+            <el-popover
+              placement="bottom"
+              trigger="hover">
+              <el-table :data="alarmData" max-height="360">
+                <el-table-column type="index" width="50" label="序号"></el-table-column>
+                <el-table-column width="100" property="user_name" label="姓名"></el-table-column>
+                <el-table-column width="100" property="ogz_name" label="部门"></el-table-column>
+                <el-table-column width="100" property="ev" label="类型"></el-table-column>
+                <el-table-column width="300" property="content" label="内容" :show-overflow-tooltip="true"></el-table-column>
+              </el-table>
+              <a href="javascript:void(0);" class="red" slot="reference"><i class="iconfont icongaojing2"></i>&nbsp;预警<i v-show="alarmData.length > 0" class="red">&nbsp;({{ alarmData.length }})</i></a>
+            </el-popover>
+          </div>
+        </div>
+      </transition>
     </div>
     <!-- 人员状态详情 -->
     <user-module
@@ -73,19 +77,15 @@
 </template>
 
 <script>
-/*
-* gps_type:  0手环    1车辆
-* */
 import AMap from 'AMap'
-import { mapState } from 'vuex'
+import icon from '../assets/images/person.png'
 // 引入人员状态详情组件
 import userModule from '@/components/location/bangle-monit-user'
 export default{
-  name: 'bangleMonit',
+  name: 'monitfull',
   data () {
     return {
       map: null,
-      mapCenter: [116.434381, 39.898515],
       activeName: '1',
       bangleNormal: 0,
       bangleAbnormal: 0,
@@ -101,7 +101,9 @@ export default{
       monitTimer: null,
       speed: 60000,
       markerGroups: null,
+      icon: icon,
       alarmData: [],
+      sosData: [],
       userDialog: false
     }
   },
@@ -109,32 +111,25 @@ export default{
 
   },
   mounted () {
+    let pointLon = Number.parseFloat(this.$route.query.pointLon) || 116.434381
+    let pointLat = Number.parseFloat(this.$route.query.pointLat) || 39.898515
     this.map = new AMap.Map('container', {
-      center: [116.434381, 39.898515],
+      center: [pointLon, pointLat],
       zoom: 16
     })
-    // 获取项目坐标
-    this.getProjectDetails()
     // 获取围栏
     this.getFenceData()
     // 获取手环列表
-    // this.getVehicleList()
+    this.getBangleList()
     // 获取列表数据
-    // this.getVehicleLocation()
+    this.getBangleLocation()
     // 启动定时器
-    // this.startTimer()
+    this.startTimer()
   },
   components: {
     userModule
   },
   computed: {
-    ...mapState('user', [
-      'userId'
-    ]),
-    ...mapState('other', [
-      'projectId',
-      'projectOrgId'
-    ]),
     nowList () {
       let search = this.searchText
       let reg = new RegExp(search, 'i')
@@ -149,51 +144,12 @@ export default{
     }
   },
   methods: {
-    // 获取项目坐标
-    getProjectDetails () {
-      let params = {
-        organize_id: this.projectOrgId,
-        organize_type: 3,
-        base_id: this.projectId
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.2/selOrganizeTreeType',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          let coord = res.data.data1.coordinate || ''
-          if (!coord) return
-          let mapCenter = coord.split(',').map(item => {
-            return Number.parseFloat(item)
-          })
-          this.mapCenter = mapCenter
-          // 设置地图中心坐标
-          this.map.setCenter(mapCenter)
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
-
     /* 创建围栏组 */
     // 获取围栏数据
     getFenceData () {
       let params = {
-        project_id: this.projectId,
-        gps_type: 1
+        project_id: this.$route.query.projectId,
+        gps_type: 0
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -281,9 +237,9 @@ export default{
     },
 
     /* 获取手环列表 */
-    getVehicleList () {
+    getBangleList () {
       let params = {
-        project_id: this.projectId,
+        project_id: this.$route.query.projectId,
         user_name: '',
         ogz_id: '',
         bracelet_type: '',
@@ -344,14 +300,15 @@ export default{
     startTimer () {
       this.monitTimer = setInterval(() => {
         // 获取列表数据
-        this.getVehicleLocation()
+        this.getBangleLocation()
       }, this.speed)
     },
     // 获取实时数据
-    getVehicleLocation () {
+    getBangleLocation () {
       let params = {
-        project_id: this.projectId,
+        project_id: this.$route.query.projectId,
         user_ogz_name: this.searchName
+        // gps_type: 0
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -369,6 +326,8 @@ export default{
           this.userAllData = resData.userList || []
           // 告警
           this.alarmData = resData.alarms || []
+          // SOS
+          this.sosData = resData.sos_mes || []
           // 绘制标记
           let gpsData = resData.gps.data || []
           this.drawMarkerGroup(gpsData)
@@ -394,11 +353,12 @@ export default{
         this.markerGroups.clearOverlays()
       }
       let markers = []
+
       let infoWindow = new AMap.InfoWindow({offset: new AMap.Pixel(0, -30)})
       data.forEach((item, index) => {
         var marker = new AMap.Marker({
           position: new AMap.LngLat(item.lon, item.lat),
-          icon: 'https://webapi.amap.com/images/car.png',
+          icon: this.icon,
           extData: {
             mid: item.mid
           }
@@ -424,17 +384,11 @@ export default{
       this.markerGroups = overlayGroups
       this.map.add(overlayGroups)
     },
-    // 查看全部
-    checkAllDevice () {
-      this.itemId = ''
-      this.searchName = ''
-      this.getVehicleLocation()
-    },
-    // 查看单个车辆
+    // 查看单个手环
     checkItemDevice (id = '', name = '') {
       this.itemId = id
       this.searchName = name
-      this.getVehicleLocation()
+      this.getBangleLocation()
     },
     // 查看单个轨迹
     checkItemTrack (id, name) {
@@ -445,22 +399,17 @@ export default{
           name: name
         }
       })
-    },
-    // 全屏跳转
-    clickFullSkip () {
-      const openUrl = this.baseUrl() + '/wx365web/#/monitbangle?projectId=' + this.projectId + '&pointLon=' + this.mapCenter[0] + '&pointLat=' + this.mapCenter[1]
-      window.open(openUrl)
     }
   },
+  // 销毁定时器
   beforeDestroy () {
-    // 清除定时器
+    // 清除轨迹列表定时器
     clearInterval(this.monitTimer)
   }
 }
 </script>
 
 <style lang="less" scoped>
-  @import '../../assets/css/base-column.css';
   .slide-tool-enter-active {
     transition: all .3s ease;
   }
@@ -471,8 +420,9 @@ export default{
     transform: translateX(270px);
     opacity: 0;
   }
-  .module-container .module-main{
-    padding: 0;
+  .module-container{
+    width: 100%;
+    height: 100%;
     position: relative;
     #container{
       width: 100%;
@@ -544,7 +494,7 @@ export default{
       }
       .tool{
         display: flex;
-        width: 360px;
+        width: 270px;
         .tool-item{
           flex-grow: 1;
           height: 40px;
@@ -556,12 +506,6 @@ export default{
       .bd-right{
         border-right: 1px solid #cdcdcd;
       }
-    }
-  }
-  .marker-content {
-    p{
-      height: 35px;
-      line-height: 35px;
     }
   }
 </style>

@@ -11,7 +11,7 @@
         <el-col :span="12">
           <div class="grid-content bg-purple warning">
             <div class="warning-title">
-              <h3 class="title-text"><i class="iconfont icon-gaojing"></i>通知与告警</h3>
+              <h3 class="title-text"><i class="iconfont icongaojing"></i>通知与告警</h3>
               <div class="operate">
                 <el-button type="primary" @click="addWarning">添加</el-button>
               </div>
@@ -33,7 +33,7 @@
         <el-col :span="12">
           <div class="grid-content bg-purple rule-set">
             <div class="rule-title">
-              <h3 class="title-text"><i class="iconfont icon-shezhi"></i>规则设置</h3>
+              <h3 class="title-text"><i class="iconfont iconshezhi"></i>规则设置</h3>
             </div>
             <div class="rule-item top-radius">
               <div class="item-title clearfix">

@@ -1,14 +1,14 @@
 <template>
-  <el-dialog title="选择关联人员" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+  <el-dialog title="选择关联车辆" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
     <el-transfer
       filterable
       ref="myTransfer"
       :filter-method="filterMethod"
-      filter-placeholder="请输入人员姓名"
+      filter-placeholder="请输入车牌号"
       v-model="checkBangle"
       :props="props"
       :titles="['人员列表', '已选择']"
-      :data="bangleData">
+      :data="vehicleData">
     </el-transfer>
     <div slot="footer" class="dialog-footer">
       <el-button @click="cancelClick">取 消</el-button>
@@ -22,19 +22,19 @@ export default{
   props: ['parentDialog', 'parentProid', 'parentFence', 'parentIds'],
   data () {
     return {
-      bangleData: [],
+      vehicleData: [],
       props: {
-        label: 'user_name',
-        key: 'bracelet_id'
+        label: 'car_number',
+        key: 'car_id'
       },
       checkBangle: [],
       filterMethod (query, item) {
-        return item.user_name.indexOf(query) > -1
+        return item.car_number.indexOf(query) > -1
       }
     }
   },
   methods: {
-    bangleInit () {
+    vehicleInit () {
       this.checkBangle = this.parentIds
       this.getBangleData()
       if (this.$refs.myTransfer) {
@@ -59,8 +59,8 @@ export default{
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          let bangleData = res.data.data1
-          this.bangleData = bangleData
+          let vehicleData = res.data.data1
+          this.vehicleData = vehicleData
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -79,27 +79,27 @@ export default{
     },
     // 确定
     confirmClick () {
-      const bangleData = this.bangleData
+      const vehicleData = this.vehicleData
       const checkBangle = this.checkBangle
-      let bangleArr = []
+      let vehicleArr = []
       checkBangle.forEach(itemValue => {
-        let temp = bangleData.find((item, index, array) => {
-          return itemValue === item.bracelet_id
+        let temp = vehicleData.find((item, index, array) => {
+          return itemValue === item.car_id
         })
         if (temp) {
-          bangleArr.push(temp)
+          vehicleArr.push(temp)
         }
       })
       let crewName = []
-      let bangleId = []
-      bangleArr.forEach(item => {
-        crewName.push(item.user_name)
-        bangleId.push(item.bracelet_id)
+      let vehicleId = []
+      vehicleArr.forEach(item => {
+        crewName.push(item.car_number)
+        vehicleId.push(item.car_id)
       })
       crewName = crewName.join('、')
       const obj = {
         names: crewName,
-        ids: bangleId
+        ids: vehicleId
       }
       this.$emit('parentUpdata', obj)
     },
@@ -111,7 +111,7 @@ export default{
   watch: {
     parentDialog (val, oldVal) {
       if (val) {
-        this.bangleInit()
+        this.vehicleInit()
       }
     }
   }

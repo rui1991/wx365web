@@ -19,7 +19,7 @@
                   <p class="chunk-title blue">{{ chunk.node_name }}</p>
                   <div class="chunk-body">
                     <div class="chunk-icon">
-                      <i class="iconfont icon-wenshidu"></i>
+                      <i class="iconfont iconwenshidu"></i>
                       <span class="icon-text">{{ chunk.lora_type }}</span>
                     </div>
                     <div class="chunk-content">
@@ -42,7 +42,7 @@
                   <p class="chunk-title blue">{{ chunk.node_name }}</p>
                   <div class="chunk-body">
                     <div class="chunk-icon">
-                      <i class="iconfont icon-shuijin"></i>
+                      <i class="iconfont iconshuijin"></i>
                       <span class="icon-text">{{ chunk.lora_type }}</span>
                     </div>
                     <div class="chunk-content">
@@ -58,7 +58,7 @@
                   <p class="chunk-title blue">{{ chunk.node_name }}</p>
                   <div class="chunk-body">
                     <div class="chunk-icon">
-                      <i class="iconfont icon-yalichuanganqi"></i>
+                      <i class="iconfont iconyalichuanganqi"></i>
                       <span class="icon-text">{{ chunk.lora_type }}</span>
                     </div>
                     <div class="chunk-content">
@@ -75,7 +75,7 @@
                   <p class="chunk-title blue">{{ chunk.node_name }}</p>
                   <div class="chunk-body">
                     <div class="chunk-icon">
-                      <i class="iconfont icon-yeweiji"></i>
+                      <i class="iconfont iconyeweiji"></i>
                       <span class="icon-text">{{ chunk.lora_type }}</span>
                     </div>
                     <div class="chunk-content">
@@ -92,7 +92,7 @@
                   <p class="chunk-title blue">{{ chunk.node_name }}</p>
                   <div class="chunk-body">
                     <div class="chunk-icon">
-                      <i class="iconfont icon-yangan"></i>
+                      <i class="iconfont iconyangan"></i>
                       <span class="icon-text">{{ chunk.lora_type }}</span>
                     </div>
                     <div class="chunk-content">
@@ -106,7 +106,7 @@
                   <p class="chunk-title blue">{{ chunk.node_name }}</p>
                   <div class="chunk-body">
                     <div class="chunk-icon">
-                      <i class="iconfont icon-keranqiti"></i>
+                      <i class="iconfont iconkeranqiti"></i>
                       <span class="icon-text">{{ chunk.lora_type }}</span>
                     </div>
                     <div class="chunk-content">
@@ -121,7 +121,7 @@
                   <p class="chunk-title blue">{{ chunk.node_name }}</p>
                   <div class="chunk-body">
                     <div class="chunk-icon">
-                      <i class="iconfont icon-yijian"></i>
+                      <i class="iconfont iconyijian"></i>
                       <span class="icon-text">{{ chunk.lora_type }}</span>
                     </div>
                     <div class="chunk-content">
@@ -136,7 +136,7 @@
                   <p class="chunk-title blue">{{ chunk.node_name }}</p>
                   <div class="chunk-body">
                     <div class="chunk-icon">
-                      <i class="iconfont icon-hongwai"></i>
+                      <i class="iconfont iconhongwai"></i>
                       <span class="icon-text">{{ chunk.lora_type }}</span>
                     </div>
                     <div class="chunk-content">
@@ -153,7 +153,7 @@
                   <p class="chunk-title blue">{{ chunk.node_name }}</p>
                   <div class="chunk-body">
                     <div class="chunk-icon">
-                      <i class="iconfont icon-anquanyongdian"></i>
+                      <i class="iconfont iconanquanyongdian"></i>
                       <span class="icon-text">{{ chunk.lora_type }}</span>
                     </div>
                     <div class="chunk-content">
