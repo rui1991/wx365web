@@ -101,6 +101,7 @@ export default{
         if (type === 3) {
           obj = {
             id: data.id,
+            name: data.name,
             type: type,
             proId: data.base_id,
             secId: 0,
@@ -109,6 +110,7 @@ export default{
         } else if (type === 4) {
           obj = {
             id: data.id,
+            name: data.name,
             type: type,
             proId: 0,
             secId: data.base_id,
@@ -117,6 +119,7 @@ export default{
         } else {
           obj = {
             id: data.id,
+            name: data.name,
             type: type,
             proId: 0,
             secId: 0,

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="新增GPS手环" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+  <el-dialog title="新增手环" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
     <el-form class="divide-from" :model="formData" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
       <el-form-item label="手环IMEI" prop="deviceNum">
         <el-input v-model.trim="formData.deviceNum" auto-complete="off"></el-input>
@@ -140,8 +140,10 @@ export default{
         project_id: this.projectId,
         gps_number: this.formData.deviceNum,
         ogz_id: this.formData.sector,
-        bind_user: this.formData.crewId,
         gps_phone: this.formData.mesCard
+      }
+      if (this.formData.crewId) {
+        params.bind_user = this.formData.crewId
       }
       params = this.$qs.stringify(params)
       this.disabled = true

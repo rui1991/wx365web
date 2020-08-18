@@ -1,49 +1,37 @@
 <template>
   <el-dialog title="提示" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="hint-dialog">
-    <p class="hint-text"><i class="el-icon-warning"></i>是否要删除该手环？</p>
+    <p class="hint-text"><i class="el-icon-warning"></i>是否要关闭该消息推送？</p>
     <div slot="footer" class="dialog-footer">
       <el-button @click="cancelClick">取 消</el-button>
-      <el-button type="primary" :disabled="disabled" @click="submitForm">确 定</el-button>
+      <el-button type="primary" :disabled="disabled" @click="submitClick">确 定</el-button>
     </div>
   </el-dialog>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-/*
-* type: 0  添加   1编辑    2删除
-* gps_number: 设备号
-* bracelet_number: 通讯卡
-* */
 export default{
-  props: ['parentDialog', 'parentId'],
+  props: ['parentDialog', 'parentId', 'parentType'],
   data () {
     return {
       disabled: false
     }
   },
-  computed: {
-    ...mapState('user', [
-      'userId'
-    ]),
-    ...mapState('other', [
-      'projectId'
-    ])
+  created () {
+
   },
   methods: {
     // 确定
-    submitForm () {
+    submitClick () {
       let params = {
-        type: 2,
-        user_id: this.userId,
-        project_id: this.projectId,
-        bracelet_id: this.parentId
+        state: 1,
+        project_id: this.parentId,
+        type: this.parentType
       }
       params = this.$qs.stringify(params)
       this.disabled = true
       this.$axios({
         method: 'post',
-        url: this.gpsApi() + '/setGpsBracelet',
+        url: this.sysetApi() + '/main/pushSetOO',
         data: params
       }).then((res) => {
         this.disabled = false

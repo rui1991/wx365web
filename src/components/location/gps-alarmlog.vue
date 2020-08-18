@@ -7,20 +7,27 @@
     element-loading-background="rgba(0, 0, 0, 0.6)">
     <div class="module-header">
       <el-breadcrumb separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item>巡检巡查</el-breadcrumb-item>
-        <el-breadcrumb-item>异常检查项</el-breadcrumb-item>
+        <el-breadcrumb-item>定位服务</el-breadcrumb-item>
+        <el-breadcrumb-item>告警记录</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="module-main">
       <div class="main-search main-search-multi">
         <div class="search-row">
           <div class="item">
-            <span>巡检地址</span>
-            <el-input style="width: 160px;" v-model.trim="nowSearch.site"></el-input>
+            <span>设备名称</span>
+            <el-input style="width: 160px;" v-model.trim="nowSearch.name" placeholder="请输入手环名称/车牌号"></el-input>
           </div>
           <div class="item">
-            <span>检查项</span>
-            <el-input style="width: 160px;" v-model.trim="nowSearch.checkItem"></el-input>
+            <span>设备类型</span>
+            <el-select v-model="nowSearch.type" style="width: 160px;" clearable placeholder="请选择设备类型">
+              <el-option
+                v-for="item in typeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
           </div>
           <div class="item">
             <span>执行部门</span>
@@ -37,7 +44,7 @@
         </div>
         <div class="search-row">
           <div class="item date">
-            <span>执行时段</span>
+            <span>告警时段</span>
             <el-date-picker
               style="width: 280px;"
               v-model="nowSearch.date"
@@ -58,29 +65,22 @@
       </div>
       <el-table class="list-table" :data="tableData" border style="width: 100%">
         <el-table-column type="index" width="50" label="序号"></el-table-column>
-        <el-table-column label="提交时间" :show-overflow-tooltip="true">
+        <el-table-column label="手环名称/车牌号" :show-overflow-tooltip="true">
           <template slot-scope="scope">
-            <span>{{ scope.row.handle_time | formatDate }}</span>
+            <span>{{ scope.row.user_name }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="inspect_name" label="检查项" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column prop="position_name" label="检查地址" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column prop="standard_name" label="所属标准" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column prop="duty_name" label="所属任务" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column label="任务执行时间" :show-overflow-tooltip="true">
+        <el-table-column prop="gps_type" label="属性"></el-table-column>
+        <el-table-column prop="gps_number" label="GPS设备号" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="ogz_name" label="所属部门" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="ev" label="告警类型" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column label="告警时间" :show-overflow-tooltip="true">
           <template slot-scope="scope">
-            <span>{{ scope.row.start_time | formatDate }} ~ {{ scope.row.end_time | formatDate }}</span>
+            <span>{{ scope.row.create_time | formatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="ogz_name" label="执行部门" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column label="执行人">
-          <template slot-scope="scope">
-            <span v-if="scope.row.user_name">{{ scope.row.user_name }}</span>
-            <span v-else>-</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="inspect_contents" label="检查内容及要求" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column prop="abnormal_value" label="异常检查结果" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="content" label="告警内容" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="user_names" :show-overflow-tooltip="true" label="告警推送人"></el-table-column>
       </el-table>
       <el-pagination
         background
@@ -101,19 +101,19 @@
 <script>
 import { mapState } from 'vuex'
 export default{
-  name: 'abnormal',
+  name: 'gpsAlarmlog',
   data () {
     return {
       loading: false,
       search: {
-        site: '',
-        checkItem: '',
+        name: '',
+        type: '',
         sector: '',
         date: []
       },
       nowSearch: {
-        site: '',
-        checkItem: '',
+        name: '',
+        type: '',
         sector: '',
         date: []
       },
@@ -122,6 +122,16 @@ export default{
           return time.getTime() > Date.now()
         }
       },
+      typeOptions: [
+        {
+          label: 'GPS手环',
+          value: 0
+        },
+        {
+          label: 'GPS车辆',
+          value: 1
+        }
+      ],
       sectorOptions: [],
       tableData: [],
       total: 0,
@@ -158,12 +168,16 @@ export default{
     // 获取列表数据
     getListData () {
       let date = this.search.date
+      let gpsType = this.search.type
+      if (gpsType === '') {
+        gpsType = 99
+      }
       let params = {
         project_id: this.projectId,
-        position_name: this.search.site,
+        dev_name: this.search.name,
         start_date: date[0] || '',
         end_date: date[1] || '',
-        inspect_name: this.search.checkItem,
+        gps_type: gpsType,
         ogz_id: this.search.sector,
         page: this.nowPage,
         limit1: this.limit
@@ -172,7 +186,7 @@ export default{
       this.loading = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/selInsHandleAbnormalMesList',
+        url: this.gpsApi() + '/selGpsAlarmMes',
         data: params
       }).then((res) => {
         this.loading = false
@@ -243,12 +257,16 @@ export default{
     /* 导出 */
     downFile () {
       let date = this.search.date
+      let gpsType = this.search.type
+      if (gpsType === '') {
+        gpsType = 99
+      }
       let params = {
         project_id: this.projectId,
-        position_name: this.search.site,
-        start_date: date[0],
-        end_date: date[1],
-        inspect_name: this.search.checkItem,
+        dev_name: this.search.name,
+        start_date: date[0] || '',
+        end_date: date[1] || '',
+        gps_type: gpsType,
         ogz_id: this.search.sector
       }
       params = this.$qs.stringify(params)
@@ -256,7 +274,17 @@ export default{
       setTimeout(() => {
         this.downDisabled = false
       }, 5000)
-      window.location.href = this.sysetApi() + '/selInsHandleAbnormalMesListEO?' + params
+      window.location.href = this.gpsApi() + '/alarmExcelExport?' + params
+    }
+  },
+  filters: {
+    filterProperty (val) {
+      if (!val) return ''
+      if (val === 0) {
+        return 'GPS手环'
+      } else if (val === 1) {
+        return 'GPS车辆'
+      }
     }
   }
 }

@@ -3,7 +3,7 @@
     <div class="module-header">
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item>定位服务</el-breadcrumb-item>
-        <el-breadcrumb-item>GPS车辆管理</el-breadcrumb-item>
+        <el-breadcrumb-item>车辆管理</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="module-main">

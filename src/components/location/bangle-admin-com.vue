@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="编辑GPS手环" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+  <el-dialog title="编辑手环" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
     <el-form class="divide-from" :model="parentForm" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
       <el-form-item label="手环IMEI" prop="deviceNum">
         <el-input v-model.trim="parentForm.deviceNum" auto-complete="off"></el-input>

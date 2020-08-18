@@ -18,12 +18,12 @@
             </el-select>
           </div>
           <div class="nav-item" v-if="authority.log">
-            <router-link class="log" to="/main/log"><i class="iconfont icon-log" style="font-size: 32px;"></i></router-link>
+            <router-link class="log" to="/main/log"><i class="iconfont iconlog" style="font-size: 32px;"></i></router-link>
           </div>
           <div class="nav-item">
             <router-link to="/main/message">
               <el-badge :value="unreadMesCount" :max="99" class="mes-hint">
-                <i class="iconfont icon-xiaoxi"></i>
+                <i class="iconfont iconxiaoxi"></i>
               </el-badge>
             </router-link>
           </div>
@@ -56,7 +56,7 @@
             background-color="#2f4055"
             active-text-color="#fff">
             <el-menu-item index="/main/home" style="font-size: 0;">
-              <i class="iconfont icon-yemian-copy-copy-copy-copy"></i>
+              <i class="iconfont iconyemian-copy-copy-copy-copy"></i>
               <span slot="title" style="font-size: 18px;">首页</span>
             </el-menu-item>
             <el-submenu index="1" class="submenu-item" v-if="authority.organ || authority.user || authority.shift || authority.approval">
@@ -236,7 +236,25 @@
                 <el-menu-item index="/main/pronorm">项目标准维护</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="15" class="submenu-item" v-if="deviceUid.indexOf(userId) !== -1">
+            <el-submenu index="15" class="submenu-item">
+              <template slot="title"><i class="iconfont icondingwei"></i>定位服务</template>
+              <el-menu-item-group>
+                <el-menu-item index="/main/vehicle-admin">车辆管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/vehicle-monit">车辆监控</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/bangle-admin">手环管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/bangle-monit">手环监控</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/gps-alarmlog">告警记录</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="16" class="submenu-item" v-if="deviceUid.indexOf(userId) !== -1">
               <template slot="title"><i class="iconfont iconduijie"></i>硬件对接</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/hardcon">硬件管控</el-menu-item>
@@ -247,20 +265,8 @@
               <el-menu-item-group>
                 <el-menu-item index="/main/loracon">lora数据查询</el-menu-item>
               </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="16" class="submenu-item">
-              <template slot="title"><i class="iconfont icondingwei"></i>定位服务</template>
               <el-menu-item-group>
-                <el-menu-item index="/main/vehicle-admin">GPS车辆管理</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group>
-                <el-menu-item index="/main/vehicle-monit">GPS车辆监控</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group>
-                <el-menu-item index="/main/bangle-admin">GPS手环管理</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group>
-                <el-menu-item index="/main/bangle-monit">GPS手环监控</el-menu-item>
+                <el-menu-item index="/main/mespush">推送设置</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
           </el-menu>

@@ -3,7 +3,7 @@
     <div class="module-header">
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item>定位服务</el-breadcrumb-item>
-        <el-breadcrumb-item>GPS手环监控</el-breadcrumb-item>
+        <el-breadcrumb-item>手环监控</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="module-main">
@@ -68,7 +68,21 @@
                   <el-table-column width="100" property="user_name" label="姓名"></el-table-column>
                   <el-table-column width="100" property="ogz_name" label="部门"></el-table-column>
                   <el-table-column width="100" property="ev" label="类型"></el-table-column>
-                  <el-table-column width="300" property="content" label="内容" :show-overflow-tooltip="true"></el-table-column>
+                  <el-table-column label="内容" width="300" :show-overflow-tooltip="true">
+                    <template slot-scope="scope">
+                      <el-popover
+                        placement="top-start"
+                        title="位置"
+                        width="300"
+                        trigger="hover"
+                        @show="alarmPositionShow(scope.row.content)"
+                        v-if="scope.row.ev === '越界'"
+                        :content="alarmContent">
+                        <a href="javascript:void(0);" class="blue" slot="reference">查看位置</a>
+                      </el-popover>
+                      <span v-else>{{ scope.row.content }}</span>
+                    </template>
+                  </el-table-column>
                 </el-table>
                 <a href="javascript:void(0);" class="red" slot="reference"><i class="iconfont icongaojing2"></i>&nbsp;预警<i v-show="alarmData.length > 0" class="red">&nbsp;({{ alarmData.length }})</i></a>
               </el-popover>
@@ -122,6 +136,7 @@ export default{
       markerGroups: null,
       icon: icon,
       alarmData: [],
+      alarmContent: '',
       sosData: [],
       userDialog: false
     }
@@ -429,8 +444,8 @@ export default{
           }
         })
         let content = `<div class="marker-content"><p style="line-height: 35px; text-align: center; color: #272727; font-weight: 600;">${item.name_ogz}</p><p>设备号：${item.mid}</p><p>位置：${item.str}</p><p>电量：${item.b}%</p></div>`
-        if (item.Desc) {
-          content += `<p>设备状态：${item.Desc}</p>`
+        if (item.desc) {
+          content += `<p>设备状态：${item.desc}</p>`
         } else {
           content += `<p>设备状态：正常</p>`
         }
@@ -471,6 +486,26 @@ export default{
         }
       })
     },
+
+    // 查看告警位置
+    alarmPositionShow (point) {
+      if (!point) {
+        this.alarmContent = ''
+        return
+      }
+      AMap.plugin('AMap.Geocoder', () => {
+        var geocoder = new AMap.Geocoder({
+          city: '全国'
+        })
+        let lnglat = point.split(',')
+        geocoder.getAddress(lnglat, (status, result) => {
+          if (status === 'complete' && result.info === 'OK') {
+            this.alarmContent = result.regeocode.formattedAddress
+          }
+        })
+      })
+    },
+
     // 全屏跳转
     clickFullSkip () {
       const openUrl = this.baseUrl() + '/wx365web/#/monitbangle?projectId=' + this.projectId + '&pointLon=' + this.mapCenter[0] + '&pointLat=' + this.mapCenter[1]

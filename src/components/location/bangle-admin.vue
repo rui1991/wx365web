@@ -3,49 +3,30 @@
     <div class="module-header">
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item>定位服务</el-breadcrumb-item>
-        <el-breadcrumb-item>GPS手环管理</el-breadcrumb-item>
+        <el-breadcrumb-item>手环管理</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="module-main">
-      <div class="main-search main-search-multi">
-        <div class="search-row">
-          <div class="item">
-            <span>姓名</span>
-            <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
-          </div>
-          <div class="item date">
-            <span>所属部门</span>
-            <el-select v-model="nowSearch.sector" style="width: 160px;" clearable filterable placeholder="请选择所属部门">
-              <el-option
-                v-for="item in sectorOptions"
-                :key="item.base_id"
-                :label="item.name"
-                :value="item.base_id">
-              </el-option>
-            </el-select>
-          </div>
-          <div class="operate">
-            <el-button type="primary" @click="searchList">搜索</el-button>
-            <el-button type="primary" @click="addDialog = true">新增</el-button>
-          </div>
+      <div class="main-search main-search-single">
+        <div class="item">
+          <span>姓名</span>
+          <el-input style="width: 160px;" v-model.trim="nowSearch.name"></el-input>
         </div>
-        <div class="search-row">
-          <div class="item date">
-            <span>状态</span>
-            <el-select v-model="nowSearch.state" style="width: 160px;" clearable placeholder="请选择手环状态">
-              <el-option
-                v-for="item in stateOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-          <div class="operate">
-            <el-button type="primary" @click="alarmDialog = true">告警推送人</el-button>
-            <el-button type="primary">定时开关</el-button>
-            <el-button type="primary">导入</el-button>
-          </div>
+        <div class="item date">
+          <span>所属部门</span>
+          <el-select v-model="nowSearch.sector" style="width: 160px;" clearable filterable placeholder="请选择所属部门">
+            <el-option
+              v-for="item in sectorOptions"
+              :key="item.base_id"
+              :label="item.name"
+              :value="item.base_id">
+            </el-option>
+          </el-select>
+        </div>
+        <div class="operate">
+          <el-button type="primary" @click="searchList">搜索</el-button>
+          <el-button type="primary" @click="addDialog = true">新增</el-button>
+          <el-button type="primary" @click="alarmDialog = true">告警推送人</el-button>
         </div>
       </div>
       <el-table class="list-table" :data="tableData" border style="width: 100%">
@@ -54,6 +35,11 @@
         <el-table-column prop="ogz_name" label="所属部门"></el-table-column>
         <el-table-column prop="user_name" label="绑定人员"></el-table-column>
         <el-table-column prop="gps_phone" label="通讯卡"></el-table-column>
+        <el-table-column label="电量">
+          <template slot-scope="scope">
+            <span>{{ scope.row.B }}%</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="push_user_names" :show-overflow-tooltip="true" label="告警推送人"></el-table-column>
         <el-table-column width="240" label="操作">
           <template slot-scope="scope">
@@ -313,9 +299,9 @@ export default{
       this.itemForm = {
         deviceNum: data.gps_number,
         sector: data.ogz_id,
-        crewId: data.user_id,
-        crewName: data.user_name,
-        mesCard: data.gps_phone
+        crewId: data.user_id || '',
+        crewName: data.user_name || '',
+        mesCard: data.gps_phone || ''
       }
       this.comDialog = true
     },
@@ -343,6 +329,8 @@ export default{
     /* 告警 */
     alarmClose () {
       this.alarmDialog = false
+      // 更新列表
+      this.getListData()
     },
     /* 部门 */
     getSectorOptions () {

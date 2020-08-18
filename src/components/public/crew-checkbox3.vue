@@ -12,7 +12,7 @@
     </el-transfer>
     <div slot="footer" class="dialog-footer">
       <el-button @click="cancelClick">取 消</el-button>
-      <el-button type="primary" :disabled="disabled" @click="confirmClick">确 定</el-button>
+      <el-button type="primary" @click="confirmClick">确 定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -20,7 +20,7 @@
 <script>
 /*
 * 说明：
-*   适用范围：组织机构不变，人员列表不需要变化的多人员选择，必须选择人员
+*   适用范围：组织机构不变，人员列表不需要变化的多人员选择，可不选中人员
 *   接收参数：
 *      parentOrgid： 组织id(用于获取人员列表)
 *      parentIds： 选中人员id； 格式 [1, 2]
@@ -43,8 +43,7 @@ export default{
       checkCrew: [],
       filterMethod (query, item) {
         return item.user_name.indexOf(query) > -1
-      },
-      disabled: true
+      }
     }
   },
   methods: {
@@ -131,13 +130,6 @@ export default{
     parentDialog (val, oldVal) {
       if (val) {
         this.crewInit()
-      }
-    },
-    checkCrew (val, oldVal) {
-      if (val.length === 0) {
-        this.disabled = true
-      } else {
-        this.disabled = false
       }
     }
   }

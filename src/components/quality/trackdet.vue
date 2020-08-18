@@ -37,7 +37,7 @@
         </div>
         <div class="search-row">
           <div class="item date">
-            <span>选择时段</span>
+            <span>打卡时段</span>
             <el-date-picker
               style="width: 280px;"
               v-model="nowSearch.date"
@@ -59,6 +59,11 @@
         <el-table-column label="打卡时间">
           <template slot-scope="scope">
             <span>{{ scope.row.check_time | formatDate }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="上传时间">
+          <template slot-scope="scope">
+            <span>{{ scope.row.upload_time | formatDate }}</span>
           </template>
         </el-table-column>
       </el-table>

@@ -253,7 +253,8 @@ export default{
       this.getListData()
     },
     // 选择时间
-    dateChange (date) {
+    dateChange () {
+      let date = this.search.date
       let whether = false
       if (this.nowMonth === date) {
         whether = true

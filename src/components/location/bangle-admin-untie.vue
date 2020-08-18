@@ -1,6 +1,6 @@
 <template>
   <el-dialog title="提示" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="hint-dialog">
-    <p class="hint-text"><i class="el-icon-warning"></i>是否要将人员与该GPS手环解绑？</p>
+    <p class="hint-text"><i class="el-icon-warning"></i>是否要将人员与该手环解绑？</p>
     <div slot="footer" class="dialog-footer">
       <el-button @click="cancelClick">取 消</el-button>
       <el-button type="primary" :disabled="disabled" @click="submitForm">确 定</el-button>

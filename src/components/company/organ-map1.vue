@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import AMap from 'AMap'
+import BMap from 'BMap'
 export default{
   props: ['parentDialog', 'parentCoord'],
   data () {
@@ -21,7 +21,7 @@ export default{
       map: null,
       position: '',
       disabled: true,
-      marker: null
+      coord: ''
     }
   },
   created () {
@@ -31,76 +31,74 @@ export default{
     mapInit () {
       // 清空搜索框
       this.position = ''
-      // 创建地图对象
-      this.map = null
-      this.marker = null
-      let _map = null
-      let _marker = null
-      _map = new AMap.Map('container', {
-        resizeEnable: true,
-        center: [116.434381, 39.898515],
-        zoom: 16
+      // 创建map实例
+      let map = new BMap.Map('container', {
+        enableMapClick: false
       })
-
       // 判断是否有坐标
       const coordStr = this.parentCoord
+      // 保存坐标
+      this.coord = coordStr
+      // 开启滚轮缩放地图
+      map.enableScrollWheelZoom()
+      // 禁用双击放大
+      map.disableDoubleClickZoom()
       if (coordStr) {
         let pointArr = coordStr.split(',')
         const pointLng = Number.parseFloat(pointArr[0])
         const pointLat = Number.parseFloat(pointArr[1])
-        // 调整地图中心点坐标和地图级别
-        _map.setZoom(19)
-        _map.setCenter([pointLng, pointLat])
+        // 初始化地图,设置中心点坐标和地图级别
+        let point = new BMap.Point(pointLng, pointLat)
+        map.centerAndZoom(point, 16)
         // 创建标注
-        _marker = new AMap.Marker({
-          position: [pointLng, pointLat],
-          offset: new AMap.Pixel(-13, -30),
-          draggable: true,
-          cursor: 'move'
+        let marker = new BMap.Marker(point)
+        // 将标注添加到地图中
+        map.addOverlay(marker)
+        // 开启标注拖拽功能
+        marker.enableDragging()
+        marker.addEventListener('dragend', e => {
+          this.coord = e.point.lng + ',' + e.point.lat
         })
-        _marker.setMap(_map)
-        this.marker = _marker
+      } else {
+        // 默认以北京天安门为中心创建Map实例，初始化地图,设置中心点坐标和地图级别
+        map.centerAndZoom(new BMap.Point(116.404, 39.915), 12)
       }
       // 点击地图
-      _map.on('click', e => {
+      map.addEventListener('click', e => {
+        // 获取当前地图级别
+        const level = map.getZoom()
         // 清除地图上的所有标点
-        _map.clearMap()
-        let lng = e.lnglat.getLng()
-        let lat = e.lnglat.getLat()
-        _marker = new AMap.Marker({
-          position: [lng, lat],
-          offset: new AMap.Pixel(-13, -30),
-          draggable: true,
-          cursor: 'move'
+        map.clearOverlays()
+        let point = new BMap.Point(e.point.lng, e.point.lat)
+        map.centerAndZoom(point, level)
+        // 创建标注
+        let marker = new BMap.Marker(point)
+        // 将标注添加到地图中
+        map.addOverlay(marker)
+        this.coord = e.point.lng + ',' + e.point.lat
+        // 开启标注拖拽功能
+        marker.enableDragging()
+        marker.addEventListener('dragend', e => {
+          this.coord = e.point.lng + ',' + e.point.lat
         })
-        _marker.setMap(_map)
-        this.marker = _marker
       })
-      this.map = _map
+      this.map = map
     },
     seaechClick () {
-      let geocoder = new AMap.Geocoder({
-        city: '全国'
-      })
+      // 获取map实例
+      const map = this.map
       // 获取地址名称
       const position = this.position
-      geocoder.getLocation(position, (status, result) => {
-        if (status === 'complete' && result.geocodes.length) {
-          let lnglat = result.geocodes[0].location
-          this.map.setZoom(19)
-          this.map.setCenter(lnglat)
-        } else {
-          this.$message({
-            showClose: true,
-            message: '根据地址查询位置失败',
-            type: 'error'
-          })
+      // 创建地址解析器实例
+      let myGeo = new BMap.Geocoder()
+      myGeo.getPoint(position, pt => {
+        if (pt) {
+          map.centerAndZoom(pt, 16)
         }
       })
     },
     confirmClick () {
-      let point = this.marker.getPosition()
-      let coord = point.lng + ',' + point.lat
+      const coord = this.coord
       this.$emit('parentUpdata', coord)
     },
     // 取消
@@ -117,7 +115,7 @@ export default{
         // this.mapInit()
       }
     },
-    marker (val, oldVal) {
+    coord (val, oldVal) {
       if (val) {
         this.disabled = false
       } else {

@@ -422,6 +422,9 @@ const errorCodeHint = code => {
     case 10130:
       hintMes = '非本项目网关！'
       break
+    case 10131:
+      hintMes = '手环已经存在请不要重复添加！'
+      break
     default:
       hintMes = '网络连接超时，请稍后再试！'
   }

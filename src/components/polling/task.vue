@@ -35,7 +35,10 @@
               <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
           </div>
-          <div class="operate"></div>
+          <div class="operate">
+            <el-button type="primary" @click="searchList">搜索</el-button>
+            <el-button type="primary" :disabled="downDisabled" v-if="authority.down" @click="downFile">导出</el-button>
+          </div>
         </div>
         <div class="search-row">
           <div class="item">
@@ -64,8 +67,7 @@
             </el-date-picker>
           </div>
           <div class="operate">
-            <el-button type="primary" @click="searchList">搜索</el-button>
-            <el-button type="primary" :disabled="downDisabled" v-if="authority.down" @click="downFile">导出</el-button>
+            <el-button type="primary" @click="pushDialog = true">推送设置</el-button>
           </div>
         </div>
       </div>
@@ -196,6 +198,13 @@
       @parentUpdata="crewUpdata"
       @parentCancel="crewCancel">
     </crew-module>
+    <!-- 推送设置 -->
+    <push-module
+      :parentDialog="pushDialog"
+      :parentPro="projectId"
+      :parentSector="sectorOptions"
+      @parentClose="pushClose">
+    </push-module>
   </div>
 </template>
 
@@ -209,6 +218,8 @@ import { mapState } from 'vuex'
 import detModule from '@/components/polling/task-det'
 // 引入人员组件
 import crewModule from '@/components/polling/task-crew'
+// 引入人员组件
+import pushModule from '@/components/polling/task-push'
 export default{
   name: 'task',
   data () {
@@ -266,7 +277,8 @@ export default{
       disType: 1,
       crewDialog: false,
       downDisabled: false,
-      loading: false
+      loading: false,
+      pushDialog: false
     }
   },
   created () {
@@ -295,7 +307,8 @@ export default{
   },
   components: {
     detModule,
-    crewModule
+    crewModule,
+    pushModule
   },
   computed: {
     ...mapState('user', [
@@ -733,6 +746,10 @@ export default{
           type: 'error'
         })
       })
+    },
+    /* 推送设置 */
+    pushClose () {
+      this.pushDialog = false
     }
   },
   filters: {

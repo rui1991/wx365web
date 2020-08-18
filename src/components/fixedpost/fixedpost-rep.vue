@@ -47,6 +47,7 @@
           </div>
           <div class="operate">
             <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+            <el-button type="primary" @click="pushDialog = true">推送设置</el-button>
           </div>
         </div>
       </div>
@@ -95,6 +96,11 @@
       :parentType="detType"
       @parentClose="detClose">
     </det-module>
+    <!-- 推送设置 -->
+    <push-module
+      :parentDialog="pushDialog"
+      @parentClose="pushClose">
+    </push-module>
   </div>
 </template>
 
@@ -102,6 +108,8 @@
 import { mapState } from 'vuex'
 // 引入详情组件
 import detModule from '@/components/fixedpost/fixedpost-det1'
+// 引入详情组件
+import pushModule from '@/components/fixedpost/fixedpost-push'
 export default{
   name: 'fixedpostRep',
   data () {
@@ -129,7 +137,8 @@ export default{
       detDate: '',
       detPos: 0,
       detType: 0,
-      downDisabled: false
+      downDisabled: false,
+      pushDialog: false
     }
   },
   created () {
@@ -143,7 +152,8 @@ export default{
     this.getStationOptions()
   },
   components: {
-    detModule
+    detModule,
+    pushModule
   },
   computed: {
     ...mapState('user', [
@@ -289,6 +299,10 @@ export default{
     /* 设置 */
     setClick () {
       this.$router.push({ path: '/main/fixedpost-set' })
+    },
+    /* 推送设置 */
+    pushClose () {
+      this.pushDialog = false
     }
   }
 }

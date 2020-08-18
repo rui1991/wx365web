@@ -3,7 +3,7 @@
     <div class="module-header">
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item>定位服务</el-breadcrumb-item>
-        <el-breadcrumb-item><router-link to="/main/bangle-monit">GPS手环监控</router-link></el-breadcrumb-item>
+        <el-breadcrumb-item><router-link to="/main/bangle-monit">手环监控</router-link></el-breadcrumb-item>
         <el-breadcrumb-item>手环围栏</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
@@ -365,6 +365,8 @@ export default{
       this.itemId = 0
       // 隐藏列表
       this.listSwitch = false
+      // 隐藏操作面板
+      this.operateStart = 0
       // 清除所有图形
       this.map.clearMap()
       this.overlay = null

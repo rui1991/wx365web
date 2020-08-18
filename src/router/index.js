@@ -202,6 +202,8 @@ const BangleMonit = () => import(/* webpackChunkName: "group-external" */ '@/com
 const BangleMonitTrack = () => import(/* webpackChunkName: "group-external" */ '@/components/location/bangle-monit-track')
 // 手环围栏
 const BangleFence = () => import(/* webpackChunkName: "group-external" */ '@/components/location/bangle-fence')
+// gps告警记录
+const GpsAlarmlog = () => import(/* webpackChunkName: "group-external" */ '@/components/location/gps-alarmlog')
 
 /* 硬件对接 */
 // 硬件管控
@@ -210,6 +212,8 @@ const Hardcon = () => import(/* webpackChunkName: "group-external" */ '@/compone
 const Cardcon = () => import(/* webpackChunkName: "group-external" */ '@/components/external/cardcon')
 // lora数据查询
 const Loracon = () => import(/* webpackChunkName: "group-external" */ '@/components/external/loracon')
+// 推送设置
+const Mespush = () => import(/* webpackChunkName: "group-external" */ '@/components/external/mespush')
 
 Vue.use(Router)
 
@@ -879,6 +883,14 @@ export default new Router({
           }
         },
         {
+          path: 'gps-alarmlog',
+          name: 'gpsAlarmlog',
+          component: GpsAlarmlog,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
           path: 'hardcon',
           name: 'hardcon',
           component: Hardcon,
@@ -898,6 +910,14 @@ export default new Router({
           path: 'loracon',
           name: 'loracon',
           component: Loracon,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'mespush',
+          name: 'mespush',
+          component: Mespush,
           meta: {
             keepAlive: false
           }

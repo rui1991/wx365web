@@ -1,115 +1,87 @@
 <template>
-  <div class="module-container">
-    <div class="module-header">
-      <el-breadcrumb separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item>定位服务</el-breadcrumb-item>
-        <el-breadcrumb-item><router-link to="/main/vehicle-admin">GPS车辆管理</router-link></el-breadcrumb-item>
-        <el-breadcrumb-item>轨迹详情</el-breadcrumb-item>
-      </el-breadcrumb>
+  <el-dialog title="足迹详情" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+    <div class="date">
+      日期
+      <el-date-picker
+        v-model="date"
+        value-format="yyyy-MM-dd"
+        @change="dateChange"
+        type="date"
+        :clearable="false"
+        placeholder="选择日期">
+      </el-date-picker>
     </div>
-    <div class="module-main">
-      <div class="main-search main-search-single">
-        <div class="item">
-          <span>日期</span>
-          <el-date-picker
-            v-model="date"
-            type="date"
-            placeholder="选择日期">
-          </el-date-picker>
-        </div>
-      </div>
-      <el-table class="list-table" :data="tableData" border style="width: 100%">
-        <el-table-column type="index" width="50" label="序号"></el-table-column>
-        <el-table-column label="上传时间">
-          <template slot-scope="scope">
-            <span>{{ scope.row.up_time }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="position_name" label="位置名称"></el-table-column>
-        <el-table-column prop="ogz_name" label="速度"></el-table-column>
-        <el-table-column prop="person_user_name" label="停留状态"></el-table-column>
-        <el-table-column prop="gps_number" label="电量状态"></el-table-column>
-        <el-table-column prop="gps_number" label="设备状态"></el-table-column>
-      </el-table>
-      <el-pagination
-        background
-        prev-text="上一页"
-        next-text="下一页"
-        :current-page="nowPage"
-        layout="sizes, prev, pager, next, total"
-        :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-        :page-size="limit"
-        @size-change="handleSizeChange"
-        @current-change="pageChang"
-        :total="total">
-      </el-pagination>
+    <el-table class="select-table" :data="tableData" style="width: 100%">
+      <el-table-column type="index" width="50" label="序号"></el-table-column>
+      <el-table-column prop="ct" :show-overflow-tooltip="true" label="时间"></el-table-column>
+      <el-table-column :show-overflow-tooltip="true" label="位置">
+        <template slot-scope="scope">
+          <span>{{ scope.row.city }}{{ scope.row.dist }}{{ scope.row.str }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :show-overflow-tooltip="true" label="是否停留">
+        <template slot-scope="scope">
+          <span v-if="scope.row.tag === 0">经过</span>
+          <span v-else-if="scope.row.tag === 1">{{ scope.row.ct | countDuration(scope.row.ut) }}</span>
+          <span v-else-if="scope.row.tag === 2">没数据</span>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="closeClick">关 闭</el-button>
     </div>
-  </div>
+  </el-dialog>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-export default{
-  name: 'vehicleAdminTrack',
+/*
+* type: 0 设置   1 清除
+* */
+import {mapState} from 'vuex'
+
+export default {
+  props: ['parentDialog', 'parentId', 'parentDeviceNum'],
   data () {
     return {
-      date: this.$common.getNowDate('yyyy-mm-dd'),
-      tableData: [],
-      total: 0,
-      nowPage: 1,
-      limit: 10
+      date: '2020-07-23',
+      tableData: []
     }
-  },
-  created () {
-
-  },
-  mounted () {
-    // 获取列表数据
-    this.getListData()
   },
   computed: {
     ...mapState('user', [
       'userId'
     ]),
     ...mapState('other', [
-      'projectId',
-      'projectOrgId'
+      'projectId'
     ])
   },
   methods: {
-    ...mapActions('other', [
-      'setProDisabled'
-    ]),
-    // 搜索
-    searchList () {
-      this.search = JSON.parse(JSON.stringify(this.nowSearch))
-      // 当前页码初始化
-      this.nowPage = 1
-      // 获取列表数据
-      this.getListData()
+    spoorInit () {
+      this.date = this.$common.getNowDate('yyyy-mm-dd')
+      this.getSpoorList()
     },
-    // 获取列表数据
-    getListData () {
+    getSpoorList () {
       let params = {
-        project_id: this.projectId,
-        date: this.date,
-        page: this.nowPage,
-        limit1: this.limit
+        MID: this.parentDeviceNum,
+        date: this.date
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.gpsApi() + '/selGpsCarMes',
+        url: this.gpsApi() + '/setCarGpsTrajectory',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          this.total = res.data.data1.total
-          this.tableData = res.data.data1.mes
-          // 检验是否列表为空
-          if (this.tableData.length === 0 && this.nowPage > 1) {
-            this.nowPage--
-            this.getListData()
-          }
+          const resData = res.data.data1.data.pos || []
+          let listData = []
+          resData.forEach(item => {
+            let itemArr = item.detail || []
+            itemArr.forEach(inItem => {
+              inItem.city = item.city
+            })
+            listData = listData.concat(itemArr)
+          })
+          this.tableData = listData
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -126,29 +98,54 @@ export default{
         })
       })
     },
-    // 切换单页大小
-    handleSizeChange (limit) {
-      // 设置大小
-      this.limit = limit
-      // 初始化页码
-      this.nowPage = 1
-      // 获取列表数据
-      this.getListData()
+    // 选择日期
+    dateChange () {
+      this.getSpoorList()
     },
-    // 点击分页
-    pageChang (page) {
-      this.nowPage = page
-      // 获取列表数据
-      this.getListData()
-    },
-    beforeDestroy () {
-      // 设置全局项目禁用
-      this.setProDisabled(false)
+    // 关闭
+    closeClick () {
+      this.$emit('parentClose')
+    }
+  },
+  filters: {
+    countDuration (start, end) {
+      let startTime = new Date(start).getTime()
+      let endTime = new Date(end).getTime()
+      let timeDiffer = endTime - startTime
+      // 天
+      let day = timeDiffer / (1000 * 60 * 60 * 24)
+      day = Math.floor(day)
+      // 时
+      let hours = timeDiffer / (1000 * 60 * 60) - day * 24
+      hours = Math.floor(hours)
+      // 分
+      let minute = timeDiffer / (1000 * 60) - (24 * 60 * day) - (60 * hours)
+      minute = Math.floor(minute)
+      // 秒
+      let seconds = (timeDiffer / 1000) % 60
+      if (day > 0) {
+        return '停留' + day + '天' + hours + '小时' + minute + '分钟' + seconds + '秒'
+      } else if (hours > 0) {
+        return '停留' + hours + '小时' + minute + '分钟' + seconds + '秒'
+      } else if (minute > 0) {
+        return '停留' + minute + '分钟' + seconds + '秒'
+      } else if (seconds > 0) {
+        return '停留' + seconds + '秒'
+      }
+    }
+  },
+  watch: {
+    parentDialog(val, oldVal) {
+      if (val) {
+        this.spoorInit()
+      }
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-  @import '../../assets/css/base-column.css';
+  .date {
+    margin-bottom: 10px;
+  }
 </style>
