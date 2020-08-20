@@ -16,7 +16,7 @@
             <div class="mes">
               <span>{{ item.user_name }}({{ item.ogz_name }})</span>
             </div>
-            <a href="javascript:void(0);" class="blue details" @click.stop="checkItemTrack(item.gps_number, item.user_name)">足迹</a>
+<!--            <a href="javascript:void(0);" class="blue details" @click.stop="checkItemTrack(item.gps_number, item.user_name)">足迹</a>-->
           </div>
         </div>
       </el-collapse-item>
@@ -82,7 +82,7 @@ import icon from '../assets/images/person.png'
 // 引入人员状态详情组件
 import userModule from '@/components/location/bangle-monit-user'
 export default{
-  name: 'monitfull',
+  name: 'monitbangle',
   data () {
     return {
       map: null,

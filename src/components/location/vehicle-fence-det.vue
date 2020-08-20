@@ -7,9 +7,9 @@
       <el-form-item label="车辆">
         <el-input type="textarea" disabled v-model="parentForm.carNums"></el-input>
       </el-form-item>
-      <el-form-item label="时速">
-        <el-input v-model="parentForm.speed" type="number" disabled auto-complete="off"></el-input>
-      </el-form-item>
+<!--      <el-form-item label="时速">-->
+<!--        <el-input v-model="parentForm.speed" disabled auto-complete="off"></el-input>-->
+<!--      </el-form-item>-->
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="closeClick">关 闭</el-button>

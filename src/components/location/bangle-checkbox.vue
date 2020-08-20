@@ -18,6 +18,10 @@
 </template>
 
 <script>
+/*
+* parentFence: 围栏的id
+* parentIds: 绑定人员id [1, 2]
+* */
 export default{
   props: ['parentDialog', 'parentProid', 'parentFence', 'parentIds'],
   data () {

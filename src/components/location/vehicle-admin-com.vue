@@ -1,9 +1,12 @@
 <template>
   <div>
-    <el-dialog title="编辑GPS车辆" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+    <el-dialog title="编辑车辆" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
       <el-form class="divide-from" :model="parentForm" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
         <el-form-item label="车牌号" prop="mark">
           <el-input v-model.trim="parentForm.mark" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="设备号" prop="deviceNum">
+          <el-input v-model.trim="parentForm.deviceNum" disabled auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="车辆类型" prop="type">
           <el-select v-model="parentForm.type" placeholder="请选择车辆类型">
@@ -16,7 +19,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="所属部门" prop="sector">
-          <el-select v-model="parentForm.sector" placeholder="请选择所属部门" @change="sectionChang">
+          <el-select v-model="parentForm.sector" disabled placeholder="请选择所属部门" >
             <el-option
               v-for="item in parentSectorOptions"
               :key="item.base_id"
@@ -28,9 +31,6 @@
         <el-form-item label="人员" prop="crewName">
           <el-input :disabled="true" v-model="parentForm.crewName"></el-input>
           <el-button type="primary" :disabled="crewDisabled" @click="crewClick">选择人员</el-button>
-        </el-form-item>
-        <el-form-item label="设备号" prop="deviceNum">
-          <el-input v-model.trim="parentForm.deviceNum" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input type="textarea" maxlength="100" placeholder="文本长度不得超过100个字符" v-model.trim="parentForm.remark"></el-input>
@@ -64,9 +64,9 @@
 * */
 import { mapState } from 'vuex'
 // 引入人员组件
-import crewModule from '@/components/public/crew-checkbox2'
+import crewModule from '@/components/public/crew-checkbox3'
 export default{
-  props: ['parentDialog', 'parentSectorOptions', 'parentForm'],
+  props: ['parentDialog', 'parentSectorOptions', 'parentId', 'parentForm'],
   data () {
     return {
       formLabelWidth: '100px',
@@ -103,6 +103,9 @@ export default{
       rules: {
         mark: [
           { required: true, message: '请输入车牌号', trigger: 'blur' }
+        ],
+        deviceNum: [
+          { required: true, message: '请输入设备号', trigger: 'blur' }
         ],
         type: [
           { required: true, message: '请选择车辆类型', trigger: 'change' }
@@ -154,18 +157,21 @@ export default{
     },
     // 提交
     sendRequest () {
-      let crewId = this.parentForm.crewId
-      crewId = crewId.join(',')
       let params = {
         type: 1,
         user_id: this.userId,
         project_id: this.projectId,
+        car_id: this.parentId,
         car_number: this.parentForm.mark,
         car_type: this.parentForm.type,
         ogz_id: this.parentForm.sector,
-        users: crewId,
         gps_number: this.parentForm.deviceNum,
         remarks: this.parentForm.remark
+      }
+      let crewId = this.parentForm.crewId
+      if (crewId.length > 0) {
+        crewId = crewId.join(',')
+        params.users = crewId
       }
       params = this.$qs.stringify(params)
       this.disabled = true

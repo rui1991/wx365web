@@ -9,16 +9,18 @@
           <el-input :disabled="true" type="textarea" v-model="formData.carNums"></el-input>
           <el-button type="primary" style="vertical-align: top;" @click="deviceDialog = true">选择车辆</el-button>
         </el-form-item>
-        <el-form-item label="时速" prop="speed">
-          <el-input v-model.number="formData.speed" type="number" auto-complete="off"></el-input>
-        </el-form-item>
+<!--        <el-form-item label="时速" prop="speed">-->
+<!--          <el-input v-model.number="formData.speed" type="number" auto-complete="off">-->
+<!--            <template slot="append">km/h</template>-->
+<!--          </el-input>-->
+<!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancelClick">取 消</el-button>
         <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
-    <!-- 手环设备 -->
+    <!-- 车辆设备 -->
     <device-module
       :parentDialog="deviceDialog"
       :parentProid="projectId"

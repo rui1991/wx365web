@@ -9,9 +9,11 @@
           <el-input :disabled="true" type="textarea" v-model="parentForm.carNums"></el-input>
           <el-button type="primary" style="vertical-align: top;" @click="deviceDialog = true">选择车辆</el-button>
         </el-form-item>
-        <el-form-item label="时速" prop="speed">
-          <el-input v-model.number="parentForm.speed" type="number" auto-complete="off"></el-input>
-        </el-form-item>
+<!--        <el-form-item label="时速" prop="speed">-->
+<!--          <el-input v-model.number="parentForm.speed" type="number" auto-complete="off">-->
+<!--            <template slot="append">km/h</template>-->
+<!--          </el-input>-->
+<!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancelClick">取 消</el-button>
@@ -92,9 +94,9 @@ export default{
         type: 1,
         id: this.parentId,
         gps_type: 1,
+        enclosure_name: this.parentForm.name,
         enc_type: this.parentForm.graphType,
-        enclosure_name: this.formData.name,
-        speed_limit: this.formData.speed,
+        speed_limit: this.parentForm.speed,
         gps_id: deviceId
       }
       if (this.parentForm.graphType === 0) {

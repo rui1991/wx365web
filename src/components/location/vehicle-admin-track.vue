@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="足迹详情" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+  <el-dialog title="轨迹详情" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
     <div class="date">
       日期
       <el-date-picker

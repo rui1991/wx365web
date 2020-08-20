@@ -126,7 +126,7 @@ import comModule from '@/components/location/vehicle-fence-com'
 // 引入删除组件
 import delModule from '@/components/location/bangle-fence-del'
 export default{
-  name: 'bangleFence',
+  name: 'vehicleFence',
   data () {
     return {
       map: null,
@@ -501,9 +501,9 @@ export default{
         circleRadius: this.itemData.radius,
         polygonPath: this.itemData.xy,
         name: this.itemData.enclosure_name,
-        carNums: '',
+        carNums: this.itemData.car_numbers,
         deviceId: [],
-        speed: this.itemData.speed_limit
+        speed: this.itemData.speed_limit + 'km/h'
       }
       this.detDialog = true
     },
@@ -534,7 +534,7 @@ export default{
         enclosure_name: this.itemData.enclosure_name,
         enc_type: this.itemData.enc_type,
         speed_limit: this.itemData.speed_limit,
-        gps_id: this.itemData.gps_ids
+        gps_id: this.itemData.gps_ids || ''
       }
       if (this.itemData.enc_type === 0) {
         // 获取圆形中心点
@@ -605,7 +605,7 @@ export default{
         circleRadius: this.itemData.radius,
         polygonPath: this.itemData.xy,
         name: this.itemData.enclosure_name,
-        carNums: '',
+        carNums: this.itemData.car_numbers,
         deviceId: deviceId,
         speed: this.itemData.speed_limit
       }

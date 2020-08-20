@@ -5,9 +5,9 @@
       ref="myTransfer"
       :filter-method="filterMethod"
       filter-placeholder="请输入车牌号"
-      v-model="checkBangle"
+      v-model="checkVehicle"
       :props="props"
-      :titles="['人员列表', '已选择']"
+      :titles="['车辆列表', '已选择']"
       :data="vehicleData">
     </el-transfer>
     <div slot="footer" class="dialog-footer">
@@ -25,9 +25,9 @@ export default{
       vehicleData: [],
       props: {
         label: 'car_number',
-        key: 'car_id'
+        key: 'id'
       },
-      checkBangle: [],
+      checkVehicle: [],
       filterMethod (query, item) {
         return item.car_number.indexOf(query) > -1
       }
@@ -35,7 +35,7 @@ export default{
   },
   methods: {
     vehicleInit () {
-      this.checkBangle = this.parentIds
+      this.checkVehicle = this.parentIds
       this.getBangleData()
       if (this.$refs.myTransfer) {
         // 清空左边搜索
@@ -55,7 +55,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.gpsApi() + '/selGpsEnclosureCanBindDevice',
+        url: this.gpsApi() + '/selGpsCarCanBind',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -80,11 +80,11 @@ export default{
     // 确定
     confirmClick () {
       const vehicleData = this.vehicleData
-      const checkBangle = this.checkBangle
+      const checkVehicle = this.checkVehicle
       let vehicleArr = []
-      checkBangle.forEach(itemValue => {
+      checkVehicle.forEach(itemValue => {
         let temp = vehicleData.find((item, index, array) => {
-          return itemValue === item.car_id
+          return itemValue === item.id
         })
         if (temp) {
           vehicleArr.push(temp)
@@ -94,7 +94,7 @@ export default{
       let vehicleId = []
       vehicleArr.forEach(item => {
         crewName.push(item.car_number)
-        vehicleId.push(item.car_id)
+        vehicleId.push(item.id)
       })
       crewName = crewName.join('、')
       const obj = {

@@ -3,8 +3,8 @@
     <div class="module-header">
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item>定位服务</el-breadcrumb-item>
-        <el-breadcrumb-item><router-link to="/main/bangle-monit">手环监控</router-link></el-breadcrumb-item>
-        <el-breadcrumb-item>人员轨迹</el-breadcrumb-item>
+        <el-breadcrumb-item><router-link to="/main/vehicle-monit">车辆监控</router-link></el-breadcrumb-item>
+        <el-breadcrumb-item>车辆轨迹</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="module-main">
@@ -12,7 +12,7 @@
       <el-collapse class="list-card" v-model="activeName" accordion>
         <el-collapse-item name="1">
           <template slot="title">
-            <i class="title-name">{{this.$route.query.name}}的足迹</i>
+            <i class="title-name">{{this.$route.query.name}}的轨迹</i>
           </template>
           <div class="list-search">
             <div class="date">
@@ -25,7 +25,7 @@
                 placeholder="选择日期">
               </el-date-picker>
             </div>
-            <div class="hint">跨越<i class="red">{{ cityNum }}</i>个城市<i class="red">{{ spoorNum }}</i>个足迹</div>
+            <div class="hint">跨越<i class="red">{{ cityNum }}</i>个城市<i class="red">{{ spoorNum }}</i>个轨迹</div>
           </div>
           <div class="list">
             <el-timeline :reverse="true">
@@ -61,7 +61,7 @@
 <script>
 import AMap from 'AMap'
 import { mapState } from 'vuex'
-import icon from '../../assets/images/person.png'
+import icon from '../../assets/images/car.png'
 export default {
   name: 'bangleMonitTrack',
   data () {
@@ -147,7 +147,7 @@ export default {
     getFenceData () {
       let params = {
         project_id: this.projectId,
-        gps_type: 0
+        gps_type: 1
       }
       params = this.$qs.stringify(params)
       this.$axios({
@@ -250,7 +250,7 @@ export default {
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.gpsApi() + '/selBraceletGpsTrajectory',
+        url: this.gpsApi() + '/setCarGpsTrajectory',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -295,6 +295,7 @@ export default {
       let marker = new AMap.Marker({
         map: this.map,
         position: lineArr[0],
+        // icon: 'https://webapi.amap.com/images/car.png',
         icon: this.icon,
         offset: new AMap.Pixel(-9, -24),
         autoRotation: true

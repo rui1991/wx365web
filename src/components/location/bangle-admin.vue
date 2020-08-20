@@ -112,13 +112,13 @@
 import { mapState } from 'vuex'
 // 引入新增组件
 import addModule from '@/components/location/bangle-admin-add'
-// 引入新增组件
+// 引入足迹组件
 import trackModule from '@/components/location/bangle-admin-track'
-// 引入新增组件
+// 引入新解绑件
 import untieModule from '@/components/location/bangle-admin-untie'
-// 引入新增组件
+// 引入编辑组件
 import comModule from '@/components/location/bangle-admin-com'
-// 引入新增组件
+// 引入删除组件
 import delModule from '@/components/location/bangle-admin-del'
 // 引入设置告警人组件
 import alarmModule from '@/components/location/bangle-admin-alarm'

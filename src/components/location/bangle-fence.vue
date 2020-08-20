@@ -532,7 +532,7 @@ export default{
         enclosure_name: this.itemData.enclosure_name,
         enc_type: this.itemData.enc_type,
         speed_limit: 0,
-        gps_id: this.itemData.gps_ids
+        gps_id: this.itemData.gps_ids || ''
       }
       if (this.itemData.enc_type === 0) {
         // 获取圆形中心点

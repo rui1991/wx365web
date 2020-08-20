@@ -9,10 +9,12 @@ const Cipher = () => import(/* webpackChunkName: "group-login" */ '@/components/
 const Authcode = () => import(/* webpackChunkName: "group-login" */ '@/components/login/authcode')
 
 /* 展会环境监控管理 */
-const Monitfull = () => import(/* webpackChunkName: "group-login" */ '@/components/monitfull')
+const Monitfull = () => import(/* webpackChunkName: "group-monit" */ '@/components/monitfull')
 
-/* GPS手环监控全屏 */
-const Monitbangle = () => import(/* webpackChunkName: "group-login" */ '@/components/monitbangle')
+/* 手环监控全屏 */
+const Monitbangle = () => import(/* webpackChunkName: "group-monit" */ '@/components/monitbangle')
+/* 车辆监控全屏 */
+const Monitvehicle = () => import(/* webpackChunkName: "group-monit" */ '@/components/monitvehicle')
 
 /* 位置打卡记录汇总 */
 const OldPosclockall = () => import(/* webpackChunkName: "group-posclock" */ '@/components/quality/old-posclockall')
@@ -192,6 +194,8 @@ const VehicleAdmin = () => import(/* webpackChunkName: "group-external" */ '@/co
 const VehicleAdminTrack = () => import(/* webpackChunkName: "group-external" */ '@/components/location/vehicle-admin-track')
 // GPS车辆监控
 const VehicleMonit = () => import(/* webpackChunkName: "group-external" */ '@/components/location/vehicle-monit')
+// GPS手环监控 => 人员轨迹
+const VehicleMonitTrack = () => import(/* webpackChunkName: "group-external" */ '@/components/location/vehicle-monit-track')
 // 车辆围栏
 const VehicleFence = () => import(/* webpackChunkName: "group-external" */ '@/components/location/vehicle-fence')
 // GPS手环管理
@@ -256,6 +260,11 @@ export default new Router({
       path: '/monitbangle',
       name: 'monitbangle',
       component: Monitbangle
+    },
+    {
+      path: '/monitvehicle',
+      name: 'monitvehicle',
+      component: Monitvehicle
     },
     {
       path: '/old-posclockall',
@@ -838,6 +847,14 @@ export default new Router({
           path: 'vehicle-monit',
           name: 'vehicleMonit',
           component: VehicleMonit,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'vehicle-monit-track',
+          name: 'vehicleMonitTrack',
+          component: VehicleMonitTrack,
           meta: {
             keepAlive: false
           }

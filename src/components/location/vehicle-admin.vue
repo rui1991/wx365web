@@ -52,16 +52,17 @@
         <el-table-column :show-overflow-tooltip="true" prop="car_number" label="车牌号"></el-table-column>
         <el-table-column width="120" label="车种">
           <template slot-scope="scope">
-            <span v-if="scope.row.ogz_id">{{ scope.row.car_type | filterType }}</span>
+            <span>{{ scope.row.car_type | filterType }}</span>
           </template>
         </el-table-column>
         <el-table-column width="180" :show-overflow-tooltip="true" prop="ogz_name" label="所属部门"></el-table-column>
         <el-table-column width="240" :show-overflow-tooltip="true" prop="person_user_name" label="负责人"></el-table-column>
-        <el-table-column :show-overflow-tooltip="true" prop="gps_number" label="GPS设备号"></el-table-column>
+        <el-table-column :show-overflow-tooltip="true" prop="gps_number" label="设备号"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
+            <a href="javascript:void(0);" class="operate blue" @click="trackClick(scope.row.gps_number)">轨迹</a>
             <a href="javascript:void(0);" class="operate blue" @click="comClick(scope.row)">编辑</a>
-            <router-link :to="{ path: '/main/vehicle-admin-track', query: { id: 123}}" class="operate blue">轨迹</router-link>
+            <a href="javascript:void(0);" class="operate red" @click="delClick(scope.row.id, scope.row.car_number)">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -89,10 +90,25 @@
     <com-module
       :parentDialog="comDialog"
       :parentSectorOptions="sectorOptions"
+      :parentId="itemId"
       :parentForm="formData"
       @parentUpdata="comUpdata"
       @parentCancel="comCancel">
     </com-module>
+    <!-- 删除 -->
+    <del-module
+      :parentDialog="delDialog"
+      :parentId="itemId"
+      :parentCarNumber="carNumber"
+      @parentUpdata="delUpdata"
+      @parentCancel="delCancel">
+    </del-module>
+    <!-- 轨迹 -->
+    <track-module
+      :parentDialog="trackDialog"
+      :parentDeviceNum="itemDeviceNum"
+      @parentClose="trackClose">
+    </track-module>
     <!-- 告警推送人 -->
     <alarm-module
       :parentDialog="alarmDialog"
@@ -112,7 +128,11 @@ import { mapState } from 'vuex'
 import addModule from '@/components/location/vehicle-admin-add'
 // 引入编辑组件
 import comModule from '@/components/location/vehicle-admin-com'
-// 引入编辑组件
+// 引入删除组件
+import delModule from '@/components/location/vehicle-admin-del'
+// 引入轨迹组件
+import trackModule from '@/components/location/vehicle-admin-track'
+// 引入告警推送人组件
 import alarmModule from '@/components/location/vehicle-admin-alarm'
 // 引入导入组件
 import upModule from '@/components/location/vehicle-admin-up'
@@ -168,6 +188,7 @@ export default{
       addDialog: false,
       comDialog: false,
       itemId: 0,
+      carNumber: '',
       formData: {
         mark: '',
         type: '',
@@ -177,6 +198,9 @@ export default{
         deviceNum: '',
         remark: ''
       },
+      delDialog: false,
+      trackDialog: false,
+      itemDeviceNum: '',
       alarmDialog: false,
       upDialog: false
     }
@@ -193,6 +217,8 @@ export default{
   components: {
     addModule,
     comModule,
+    delModule,
+    trackModule,
     alarmModule,
     upModule
   },
@@ -280,6 +306,7 @@ export default{
     },
     /* 编辑 */
     comClick (data) {
+      this.itemId = data.id
       const sids = data.person_user_id
       let aids = []
       if (sids) {
@@ -307,12 +334,31 @@ export default{
     comCancel () {
       this.comDialog = false
     },
-    /* 告警推送人 */
-    alarmClose () {
-      this.alarmDialog = false
+    /* 删除 */
+    delClick (id, num) {
+      this.itemId = id
+      this.carNumber = num
+      this.delDialog = true
+    },
+    delUpdata () {
+      this.delDialog = false
+      // 更新列表
+      this.getListData()
     },
     delCancel () {
       this.delDialog = false
+    },
+    /* 足迹 */
+    trackClick (num) {
+      this.itemDeviceNum = num
+      this.trackDialog = true
+    },
+    trackClose () {
+      this.trackDialog = false
+    },
+    /* 告警推送人 */
+    alarmClose () {
+      this.alarmDialog = false
     },
     /* 导入 */
     upUpdata () {

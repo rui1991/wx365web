@@ -29,18 +29,18 @@ export default{
     return {
       reqUrl: '',
       reqHead: {
-        token: '',
-        user_id: 0
+        // token: '',
+        // user_id: 0
       },
       fileList: []
     }
   },
   created () {
     // 设置上传参数
-    this.reqHead = {
-      token: sessionStorage.getItem('wxWebToken'),
-      user_id: this.userId
-    }
+    // this.reqHead = {
+    //   token: sessionStorage.getItem('wxWebToken'),
+    //   user_id: this.userId
+    // }
   },
   computed: {
     ...mapState('user', [
