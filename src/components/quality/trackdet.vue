@@ -246,6 +246,10 @@ export default{
     },
     /* 轨迹 */
     // 人员轨迹
+    /**
+     * 53: 黑卡测试
+     * 134：御景湖山
+     * */
     clickTrack () {
       let params = {
         user_id: this.userId,
@@ -253,7 +257,8 @@ export default{
         project_id: this.projectId
       }
       params = this.$qs.stringify(params)
-      if (this.projectId === 53) {
+      // trackimg 非实时展示           trackreal 实时展示
+      if (this.projectId === 53 || this.projectId === 134) {
         const openUrl = this.baseUrl() + '/trackimg/#/home?' + params
         window.open(openUrl)
       } else {

@@ -360,8 +360,8 @@ export default{
           }
         })
         let content = `<div class="marker-content"><p style="line-height: 35px; text-align: center; color: #272727; font-weight: 600;">${item.name_ogz}</p><p>设备号：${item.mid}</p><p>位置：${item.str}</p></div>`
-        if (item.Desc) {
-          content += `<p>设备状态：${item.Desc}</p>`
+        if (item.desc) {
+          content += `<p>设备状态：${item.desc}</p>`
         } else {
           content += `<p>设备状态：正常</p>`
         }

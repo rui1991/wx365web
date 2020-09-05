@@ -71,7 +71,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="gps_type" label="属性"></el-table-column>
-        <el-table-column prop="gps_number" label="GPS设备号" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="gps_number" label="设备号" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column prop="ogz_name" label="所属部门" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column prop="ev" label="告警类型" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column label="告警时间" :show-overflow-tooltip="true">
@@ -124,11 +124,11 @@ export default{
       },
       typeOptions: [
         {
-          label: 'GPS手环',
+          label: '手环',
           value: 0
         },
         {
-          label: 'GPS车辆',
+          label: '车辆',
           value: 1
         }
       ],

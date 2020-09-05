@@ -5,7 +5,7 @@
         <el-input v-model.trim="formData.deviceNum" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="所属部门" prop="sector">
-        <el-select v-model="formData.sector" disabled placeholder="请选择所属部门" @change="sectionChang">
+        <el-select v-model="formData.sector" placeholder="请选择所属部门" @change="sectionChang">
           <el-option
             v-for="item in parentSectorOptions"
             :key="item.base_id"

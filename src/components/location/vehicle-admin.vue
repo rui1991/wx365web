@@ -55,9 +55,9 @@
             <span>{{ scope.row.car_type | filterType }}</span>
           </template>
         </el-table-column>
+        <el-table-column :show-overflow-tooltip="true" prop="gps_number" label="设备号"></el-table-column>
         <el-table-column width="180" :show-overflow-tooltip="true" prop="ogz_name" label="所属部门"></el-table-column>
         <el-table-column width="240" :show-overflow-tooltip="true" prop="person_user_name" label="负责人"></el-table-column>
-        <el-table-column :show-overflow-tooltip="true" prop="gps_number" label="设备号"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <a href="javascript:void(0);" class="operate blue" @click="trackClick(scope.row.gps_number)">轨迹</a>
@@ -117,6 +117,7 @@
     <!-- 导入 -->
     <up-module
       :parentDialog="upDialog"
+      @parentUpdata="upUpdata"
       @parentClose="upClose">
     </up-module>
   </div>

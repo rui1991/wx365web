@@ -269,6 +269,18 @@
                 <el-menu-item index="/main/mespush">推送设置</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="17" class="submenu-item" v-if="companyId === 1">
+              <template slot="title"><i class="iconfont iconjiankong1"></i>数据监控</template>
+              <el-menu-item-group>
+                <el-menu-item index="/main/abnfacmon">异常设备监控</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/dataswgmon">数据网关心跳监控</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/loraswgmon">lora网关心跳监控</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
           </el-menu>
         </el-aside>
         <el-main class="main-module">
@@ -309,7 +321,7 @@ export default{
       introDialog: false,
       pwdDialog: false,
       nowProjectId: 0,
-      deviceUid: [1, 2, 816, 819, 830]
+      deviceUid: [1, 2, 816, 819, 830, 3442]
     }
   },
   created () {

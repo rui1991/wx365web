@@ -1,18 +1,17 @@
 <template>
-  <el-dialog title="导入GPS车辆" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
+  <el-dialog title="导入车辆" :visible.sync="parentDialog" :show-close="false" :close-on-click-modal="false" custom-class="medium-dialog">
     <div class="up-file">
       <span class="txt">导入文件</span>
       <el-upload
         class="upload-demo"
         :action="reqUrl"
-        :headers="reqHead"
         :on-success="upFileSuccess"
         :on-error="upFileError"
         :multiple="false"
         :file-list="fileList">
         <el-button size="small" type="primary">点击导入</el-button>
       </el-upload>
-      <p class="up-hint">注：请提前按照模板文件<a href="javascript:;" class="blue" @click="downTemplate">excel示例</a>的格式编辑地址信息</p>
+      <p class="up-hint">注：请提前按照模板文件<a href="javascript:;" class="blue" @click="downTemplate">excel示例</a>的格式填写车辆信息</p>
       <!--<p class="up-hint">&nbsp;&nbsp;&nbsp;&nbsp;2.导入的用户文件仅支持excel文件</p>-->
     </div>
     <div slot="footer" class="dialog-footer">
@@ -65,7 +64,7 @@ export default{
     },
     // 成功
     upFileSuccess (data) {
-      if (data[0].msg === '0') {
+      if (data === '成功') {
         this.$message({
           showClose: true,
           message: '文件导入成功',
@@ -73,10 +72,10 @@ export default{
         })
         // 更新数据
         this.$emit('parentUpdata')
-      } else if (data[0].msg === '1') {
+      } else if (data === '失败') {
         this.$message({
           showClose: true,
-          message: '请检查文档填写是否符合规范且名称和MAC地址是否重复！',
+          message: '请检查文档填写是否符合规范且车牌和设备号是否重复！',
           type: 'error'
         })
       } else {

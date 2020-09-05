@@ -63,12 +63,13 @@ Object.keys(custom).forEach(key => {
 Vue.prototype.$common = common
 
 // 配置公共变量
-Vue.prototype.baseUrl = () => 'http://szydak.eicp.net:82'
-Vue.prototype.sysetApi = () => 'http://szydak.eicp.net:82/ezx_syset'
-Vue.prototype.reportApi = () => 'http://szydak.eicp.net:8089'
-Vue.prototype.loraApi = () => 'http://szydak.eicp.net:8099'
-Vue.prototype.deviceApi = () => 'http://szydak.eicp.net:8885'
-Vue.prototype.gpsApi = () => 'http://szydak.eicp.net:8901'
+// Vue.prototype.baseUrl = () => 'http://szydak.eicp.net:82'
+// Vue.prototype.sysetApi = () => 'http://szydak.eicp.net:82/ezx_syset'
+// Vue.prototype.reportApi = () => 'http://szydak.eicp.net:8089'
+// Vue.prototype.loraApi = () => 'http://szydak.eicp.net:8099'
+// Vue.prototype.deviceApi = () => 'http://szydak.eicp.net:8885'
+// Vue.prototype.gpsApi = () => 'http://szydak.eicp.net:8901'
+// Vue.prototype.runApi = () => 'http://szydak.eicp.net:8900'
 // Vue.prototype.gpsApi = () => '/api'
 
 // Vue.prototype.baseUrl = () => 'http://192.168.1.199:82'
@@ -79,13 +80,14 @@ Vue.prototype.gpsApi = () => 'http://szydak.eicp.net:8901'
 
 // Vue.prototype.reportApi = () => '/api'
 
-// Vue.prototype.baseUrl = () => 'http://www.allsps.com'
-// Vue.prototype.sysetApi = () => 'http://www.allsps.com/ezx_syset'
-// Vue.prototype.reportApi = () => 'http://www.allsps.com:8089'
-// Vue.prototype.loraApi = () => 'http://www.bczdd.com:8099'
-// Vue.prototype.deviceApi = () => 'http://www.bczdd.com:8885'
-// Vue.prototype.videoApi = () => 'http://www.allsps.com:8083'
-// Vue.prototype.gpsApi = () => 'http://www.allsps.com:8901'
+Vue.prototype.baseUrl = () => 'http://www.allsps.com'
+Vue.prototype.sysetApi = () => 'http://www.allsps.com/ezx_syset'
+Vue.prototype.reportApi = () => 'http://www.allsps.com:8089'
+Vue.prototype.loraApi = () => 'http://www.bczdd.com:8099'
+Vue.prototype.deviceApi = () => 'http://www.bczdd.com:8885'
+Vue.prototype.videoApi = () => 'http://www.allsps.com:8083'
+Vue.prototype.gpsApi = () => 'http://www.allsps.com:8901'
+Vue.prototype.runApi = () => 'http://www.allsps.com:8900'
 
 Vue.config.productionTip = false
 
@@ -95,7 +97,7 @@ axios.interceptors.request.use((config) => {
   const userId = store.state.user.userId
   const newUrl = config.url
   // const reqMethod = config.method.toLowerCase()
-  if (token && newUrl.indexOf(':8083') === -1 && newUrl.indexOf(':8089') === -1 && newUrl.indexOf(':8099') === -1 && newUrl.indexOf(':8885') === -1 && newUrl.indexOf(':8901') === -1) {
+  if (token && newUrl.indexOf('/ezx_syset') !== -1) {
     config.headers.token = token
     config.headers.user_id = userId
   }

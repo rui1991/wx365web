@@ -219,6 +219,16 @@ const Loracon = () => import(/* webpackChunkName: "group-external" */ '@/compone
 // 推送设置
 const Mespush = () => import(/* webpackChunkName: "group-external" */ '@/components/external/mespush')
 
+/* 数据监控 */
+// 异常设备监控
+const Abnfacmon = () => import(/* webpackChunkName: "group-external" */ '@/components/datamon/abnfacmon')
+// 异常设备监控 => 项目异常数据设备
+const Proabnfac = () => import(/* webpackChunkName: "group-external" */ '@/components/datamon/proabnfac')
+// 数据网关心跳监控
+const Dataswgmon = () => import(/* webpackChunkName: "group-external" */ '@/components/datamon/dataswgmon')
+// lora网关心跳监控
+const Loraswgmon = () => import(/* webpackChunkName: "group-external" */ '@/components/datamon/loraswgmon')
+
 Vue.use(Router)
 
 export default new Router({
@@ -935,6 +945,38 @@ export default new Router({
           path: 'mespush',
           name: 'mespush',
           component: Mespush,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'abnfacmon',
+          name: 'abnfacmon',
+          component: Abnfacmon,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'proabnfac',
+          name: 'proabnfac',
+          component: Proabnfac,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'dataswgmon',
+          name: 'dataswgmon',
+          component: Dataswgmon,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'loraswgmon',
+          name: 'loraswgmon',
+          component: Loraswgmon,
           meta: {
             keepAlive: false
           }
