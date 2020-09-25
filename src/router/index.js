@@ -209,6 +209,12 @@ const BangleFence = () => import(/* webpackChunkName: "group-external" */ '@/com
 // gps告警记录
 const GpsAlarmlog = () => import(/* webpackChunkName: "group-external" */ '@/components/location/gps-alarmlog')
 
+/* 水表数据管理 */
+// 抄表设备管理
+const WaterAdmin = () => import(/* webpackChunkName: "group-external" */ '@/components/water/water-admin')
+// 水表监控
+const WaterMonit = () => import(/* webpackChunkName: "group-external" */ '@/components/water/water-monit')
+
 /* 硬件对接 */
 // 硬件管控
 const Hardcon = () => import(/* webpackChunkName: "group-external" */ '@/components/external/hardcon')
@@ -228,6 +234,10 @@ const Proabnfac = () => import(/* webpackChunkName: "group-external" */ '@/compo
 const Dataswgmon = () => import(/* webpackChunkName: "group-external" */ '@/components/datamon/dataswgmon')
 // lora网关心跳监控
 const Loraswgmon = () => import(/* webpackChunkName: "group-external" */ '@/components/datamon/loraswgmon')
+// 设备维修记录
+const Maintainlog = () => import(/* webpackChunkName: "group-external" */ '@/components/datamon/maintainlog')
+// 设备维修汇总
+const Maintainall = () => import(/* webpackChunkName: "group-external" */ '@/components/datamon/maintainall')
 
 Vue.use(Router)
 
@@ -918,6 +928,22 @@ export default new Router({
           }
         },
         {
+          path: 'water-admin',
+          name: 'waterAdmin',
+          component: WaterAdmin,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'water-monit',
+          name: 'waterMonit',
+          component: WaterMonit,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
           path: 'hardcon',
           name: 'hardcon',
           component: Hardcon,
@@ -977,6 +1003,22 @@ export default new Router({
           path: 'loraswgmon',
           name: 'loraswgmon',
           component: Loraswgmon,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'maintainlog',
+          name: 'maintainlog',
+          component: Maintainlog,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'maintainall',
+          name: 'maintainall',
+          component: Maintainall,
           meta: {
             keepAlive: false
           }

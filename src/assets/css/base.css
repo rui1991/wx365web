@@ -247,6 +247,9 @@ input:-webkit-autofill {
   padding: 8px 0;
   border-bottom: none;
 }
+.select-table .el-table__footer-wrapper tr td{
+  text-align: center;
+}
 .show-table {
   padding: 8px 0;
   border-bottom: none;

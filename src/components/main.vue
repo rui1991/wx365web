@@ -254,7 +254,16 @@
                 <el-menu-item index="/main/gps-alarmlog">告警记录</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="16" class="submenu-item" v-if="deviceUid.indexOf(userId) !== -1">
+            <el-submenu index="16" class="submenu-item">
+              <template slot="title"><i class="iconfont iconshuibiao"></i>水表数据管理</template>
+              <el-menu-item-group>
+                <el-menu-item index="/main/water-admin">抄表设备管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/water-monit">水表监控</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="17" class="submenu-item" v-if="deviceUid.indexOf(userId) !== -1">
               <template slot="title"><i class="iconfont iconduijie"></i>硬件对接</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/hardcon">硬件管控</el-menu-item>
@@ -269,7 +278,7 @@
                 <el-menu-item index="/main/mespush">推送设置</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="17" class="submenu-item" v-if="companyId === 1">
+            <el-submenu index="18" class="submenu-item" v-if="companyId === 1">
               <template slot="title"><i class="iconfont iconjiankong1"></i>数据监控</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/abnfacmon">异常设备监控</el-menu-item>
@@ -279,6 +288,12 @@
               </el-menu-item-group>
               <el-menu-item-group>
                 <el-menu-item index="/main/loraswgmon">lora网关心跳监控</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/maintainlog">设备维修记录</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="/main/maintainall">设备维修汇总</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
           </el-menu>
