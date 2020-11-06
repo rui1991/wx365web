@@ -18,7 +18,7 @@
         </div>
         <div class="operate">
           <el-button type="primary" @click="searchList">搜索</el-button>
-          <el-button type="primary" @click="addDialog = true">获取设备</el-button>
+          <el-button type="primary" @click="addDialog = true" v-if="authority.indexOf(198) !== -1">获取设备</el-button>
         </div>
       </div>
       <el-table class="list-table" :data="tableData" border style="width: 100%">
@@ -35,10 +35,10 @@
         <el-table-column prop="create_date" label="初始化日期"></el-table-column>
         <el-table-column width="360" label="操作">
           <template slot-scope="scope">
-            <a href="javascript:void(0);" class="operate blue" @click="monthClick(scope.row)">月用水量</a>
-            <a href="javascript:void(0);" class="operate blue" @click="logClick(scope.row)">历史抄表</a>
-            <a href="javascript:void(0);" class="operate blue" @click="rateClick(scope.row.wm_number)">设置倍数</a>
-            <a href="javascript:void(0);" class="operate red" @click="delClick(scope.row.wm_number)">移除</a>
+            <a href="javascript:void(0);" class="operate blue" @click="monthClick(scope.row)" v-if="authority.indexOf(200) !== -1">月用水量</a>
+            <a href="javascript:void(0);" class="operate blue" @click="logClick(scope.row)" v-if="authority.indexOf(200) !== -1">历史抄表</a>
+            <a href="javascript:void(0);" class="operate blue" @click="rateClick(scope.row.wm_number)" v-if="authority.indexOf(199) !== -1">设置倍数</a>
+            <a href="javascript:void(0);" class="operate red" @click="delClick(scope.row.wm_number)" v-if="authority.indexOf(201) !== -1">移除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -136,6 +136,10 @@ export default{
 
   },
   mounted () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取列表数据
     this.getListData()
   },
@@ -150,6 +154,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.waterAdmin,
+      authority: state => state.detAuthority.waterAdmin
+    }),
     ...mapState('other', [
       'projectId'
     ])

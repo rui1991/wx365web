@@ -26,7 +26,7 @@
           </div>
           <div class="operate">
             <el-button type="primary" @click="searchList">搜索</el-button>
-            <el-button type="primary" @click="addDialog = true">新增</el-button>
+            <el-button type="primary" @click="addDialog = true" v-if="authority.indexOf(175) !== -1">新增</el-button>
           </div>
         </div>
         <div class="search-row">
@@ -42,8 +42,8 @@
             </el-select>
           </div>
           <div class="operate">
-            <el-button type="primary" @click="upDialog = true">导入</el-button>
-            <el-button type="primary" @click="alarmDialog = true">告警推送人</el-button>
+            <el-button type="primary" @click="upDialog = true" v-if="authority.indexOf(175) !== -1">导入</el-button>
+            <el-button type="primary" @click="alarmDialog = true" v-if="authority.indexOf(178) !== -1">告警推送人</el-button>
           </div>
         </div>
       </div>
@@ -60,9 +60,9 @@
         <el-table-column width="240" :show-overflow-tooltip="true" prop="person_user_name" label="负责人"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <a href="javascript:void(0);" class="operate blue" @click="trackClick(scope.row.gps_number)">轨迹</a>
-            <a href="javascript:void(0);" class="operate blue" @click="comClick(scope.row)">编辑</a>
-            <a href="javascript:void(0);" class="operate red" @click="delClick(scope.row.id, scope.row.car_number)">删除</a>
+            <a href="javascript:void(0);" class="operate blue" @click="trackClick(scope.row.gps_number)" v-if="authority.indexOf(179) !== -1">轨迹</a>
+            <a href="javascript:void(0);" class="operate blue" @click="comClick(scope.row)" v-if="authority.indexOf(176) !== -1">编辑</a>
+            <a href="javascript:void(0);" class="operate red" @click="delClick(scope.row.id, scope.row.car_number)" v-if="authority.indexOf(177) !== -1">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -210,6 +210,10 @@ export default{
 
   },
   mounted () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取列表数据
     this.getListData()
     // 获取部门
@@ -227,6 +231,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.vehicleAdmin,
+      authority: state => state.detAuthority.vehicleAdmin
+    }),
     ...mapState('other', [
       'projectId',
       'projectOrgId'

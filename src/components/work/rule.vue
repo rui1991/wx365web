@@ -13,7 +13,7 @@
             <div class="warning-title">
               <h3 class="title-text"><i class="iconfont icongaojing"></i>通知与告警</h3>
               <div class="operate">
-                <el-button type="primary" @click="addWarning">添加</el-button>
+                <el-button type="primary" @click="addWarning" v-if="authority.indexOf(130) !== -1">添加</el-button>
               </div>
             </div>
             <p class="warning-hint">最多可添加5个指定联系人</p>
@@ -22,7 +22,7 @@
               <el-table-column prop="user_name" label="姓名"></el-table-column>
               <el-table-column prop="user_phone" label="联系方式"></el-table-column>
               <el-table-column prop="role_name" label="角色"></el-table-column>
-              <el-table-column label="操作">
+              <el-table-column label="操作" v-if="authority.indexOf(130) !== -1">
                 <template slot-scope="scope">
                   <i class="el-icon-delete" style="font-size: 18px; color: #fe4c51; cursor: pointer;" @click="delClick(scope.row.wp_id)"></i>
                 </template>
@@ -56,7 +56,7 @@
                     <h5 class="title"><el-checkbox style="margin-right: 10px;" v-model="skillSelect">按用户技能分配</el-checkbox></h5>
                     <p class="text">根据工单业务类别，分配至拥有该技能的人员</p>
                   </div>
-                  <div class="operate">
+                  <div class="operate" v-if="authority.indexOf(130) !== -1">
                     <el-button type="primary" :disabled="sendDisabled" @click="clickSend">保 存</el-button>
                     <el-button @click="cancelSend">取 消</el-button>
                   </div>
@@ -86,7 +86,7 @@
                       </el-input>
                     </div>
                   </div>
-                  <div class="operate">
+                  <div class="operate" v-if="authority.indexOf(130) !== -1">
                     <el-button type="primary" :disabled="resDisabled" @click="clickResponse">保 存</el-button>
                     <el-button @click="cancelResponse">取 消</el-button>
                   </div>
@@ -116,7 +116,7 @@
                       </el-input>
                     </div>
                   </div>
-                  <div class="operate">
+                  <div class="operate" v-if="authority.indexOf(130) !== -1">
                     <el-button type="primary" :disabled="disDisabled" @click="clickDispose">保 存</el-button>
                     <el-button @click="cancelDispose">取 消</el-button>
                   </div>
@@ -193,6 +193,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取告警人
     this.getWarning()
     // 获取自动派单规则
@@ -206,6 +210,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.rule,
+      authority: state => state.detAuthority.rule
+    }),
     ...mapState('other', [
       'companyId',
       'projectId',

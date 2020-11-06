@@ -98,6 +98,10 @@ export default{
     }
   },
   created () {
+    if (this.authority.indexOf(83) === -1) {
+      this.$router.go(-1)
+      return
+    }
     // 设置全局项目禁用
     this.setProDisabled(true)
     // 查询列表数据
@@ -112,6 +116,9 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      authority: state => state.detAuthority.fixedpostRep
+    }),
     ...mapState('other', [
       'companyId',
       'projectId'

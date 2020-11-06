@@ -17,7 +17,7 @@
               </el-option>
             </el-select>
           </div>
-          <div class="nav-item" v-if="authority.log">
+          <div class="nav-item" v-if="modAuthority.log">
             <router-link class="log" to="/main/log"><i class="iconfont iconlog" style="font-size: 32px;"></i></router-link>
           </div>
           <div class="nav-item">
@@ -59,208 +59,217 @@
               <i class="iconfont iconyemian-copy-copy-copy-copy"></i>
               <span slot="title" style="font-size: 18px;">首页</span>
             </el-menu-item>
-            <el-submenu index="1" class="submenu-item" v-if="authority.organ || authority.user || authority.shift || authority.approval">
+            <el-submenu index="1" class="submenu-item" v-if="modAuthority.organ || modAuthority.user || modAuthority.approval">
               <template slot="title"><i class="iconfont iconqiye"></i>企业配置</template>
-              <el-menu-item-group v-if="authority.organ && companyId === 1">
+              <el-menu-item-group v-if="modAdminUid.indexOf(userId) !== -1">
+                <el-menu-item index="/main/moduleAdmin">模块管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="modAdminUid.indexOf(userId) !== -1">
+                <el-menu-item index="/main/role">角色管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.organ && companyId === 1">
                 <el-menu-item index="/main/organBC">组织管理</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.organ && companyId !== 1">
+              <el-menu-item-group v-if="modAuthority.organ && companyId !== 1">
                 <el-menu-item index="/main/organKH">组织管理</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.user && companyId === 1">
+              <el-menu-item-group v-if="modAuthority.user && companyId === 1">
                 <el-menu-item index="/main/userBC">用户管理</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.user && companyId !== 1">
+              <el-menu-item-group v-if="modAuthority.user && companyId !== 1">
                 <el-menu-item index="/main/userKH">用户管理</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.approval">
+              <el-menu-item-group v-if="modAuthority.approval">
                 <el-menu-item index="/main/approval">审批管理</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.shift">
-                <el-menu-item index="/main/shift">编制排班</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group v-if="authority.shift">
-                <el-menu-item index="/main/schedul">排班管理</el-menu-item>
-              </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="2" class="submenu-item" v-if="authority.site">
+            <el-submenu index="2" class="submenu-item" v-if="modAuthority.position || modAuthority.site">
               <template slot="title"><i class="iconfont iconshezhi"></i>基础配置</template>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.position">
                 <el-menu-item index="/main/position">位置管理</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.site">
                 <el-menu-item index="/main/site">地址管理</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="3" class="submenu-item">
+            <el-submenu index="3" class="submenu-item" v-if="modAuthority.crewcollect || modAuthority.poscover || modAuthority.trackall || modAuthority.trackdet">
               <template slot="title"><i class="iconfont iconpinzhibaozhang"></i>品质过程管理</template>
-              <el-menu-item-group v-if="authority.plan">
+              <el-menu-item-group v-if="modAuthority.crewcollect">
                 <el-menu-item index="/main/crewcollect">人员管理汇总</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.plan">
-                <el-menu-item index="/main/crewclock">人员打卡率报表</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group v-if="authority.plan">
+              <el-menu-item-group v-if="modAuthority.poscover">
                 <el-menu-item index="/main/poscover">位置巡查覆盖率</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.plan">
-                <el-menu-item index="/main/posclock">位置打卡记录</el-menu-item>
+              <el-menu-item-group v-if="modAuthority.posclockall">
+                <el-menu-item index="/main/posclockall">位置打卡汇总</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.plan">
+              <el-menu-item-group v-if="modAuthority.trackall">
                 <el-menu-item index="/main/trackall">轨迹记录总览</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.plan">
+              <el-menu-item-group v-if="modAuthority.trackdet">
                 <el-menu-item index="/main/trackdet">轨迹记录详情</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="4" class="submenu-item">
+            <el-submenu index="4" class="submenu-item" v-if="modAuthority.group || modAuthority.plan || modAuthority.task || modAuthority.calendar || modAuthority.normoam || modAuthority.abnormal || modAuthority.normexecute">
               <template slot="title"><i class="iconfont iconxunjianguanli"></i>巡检巡查</template>
-              <el-menu-item-group v-if="authority.plan">
+              <el-menu-item-group v-if="modAuthority.group">
                 <el-menu-item index="/main/group">组管理</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.plan">
+              <el-menu-item-group v-if="modAuthority.plan">
                 <el-menu-item index="/main/plan">巡检计划管理</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.task">
+              <el-menu-item-group v-if="modAuthority.task">
                 <el-menu-item index="/main/task">巡检任务</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.calendar">
                 <el-menu-item index="/main/calendar">巡检日历</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.plan">
+              <el-menu-item-group v-if="modAuthority.normoam">
                 <el-menu-item index="/main/normoam">标准维护管理</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.abnormal">
+              <el-menu-item-group v-if="modAuthority.abnormal">
                 <el-menu-item index="/main/abnormal">异常检查项</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.abnormal">
+              <el-menu-item-group v-if="modAuthority.normexecute">
                 <el-menu-item index="/main/normexecute">巡检标准执行汇总</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="5" class="submenu-item" v-if="authority.plan">
+            <el-submenu index="5" class="submenu-item" v-if="modAuthority.fixedpostRep || modAuthority.fixedpostLog">
               <template slot="title"><i class="iconfont iconguding"></i>固定岗管理</template>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.fixedpostRep">
                 <el-menu-item index="/main/fixedpost-rep">固定岗打卡报表</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.fixedpostLog">
                 <el-menu-item index="/main/fixedpost-log">固定岗打卡记录</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="6" class="submenu-item" v-if="authority.plan">
+            <el-submenu index="6" class="submenu-item" v-if="modAuthority.callnameSet || modAuthority.callnameRep || modAuthority.crewclockrate || modAuthority.crewclockdet">
               <template slot="title"><i class="iconfont icondianmin"></i>点名管理</template>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.callnameSet">
                 <el-menu-item index="/main/callname-set">点名设置</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.callnameRep">
                 <el-menu-item index="/main/callname-rep">点名报表</el-menu-item>
               </el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.crewclockrate">
+                <el-menu-item index="/main/crewclockrate">人员打卡率报表</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.crewclockdet">
+                <el-menu-item index="/main/crewclockdet">人员打卡详情</el-menu-item>
+              </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="7" class="submenu-item" v-if="authority.shift">
+            <el-submenu index="7" class="submenu-item" v-if="modAuthority.shift || modAuthority.schedul || modAuthority.nosalary || modAuthority.salary">
               <template slot="title"><i class="iconfont iconkaoqinguanli"></i>考勤管理</template>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.shift">
+                <el-menu-item index="/main/shift">编制排班</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.schedul">
+                <el-menu-item index="/main/schedul">排班管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.nosalary">
                 <el-menu-item index="/main/nosalary">无感考勤报表</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.salary">
                 <el-menu-item index="/main/salary">设备考勤报表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="8" class="submenu-item">
+            <el-submenu index="8" class="submenu-item" v-if="modAuthority.work || modAuthority.rule">
               <template slot="title"><i class="iconfont iconccgl-fahuodanguanli-5"></i>工单管理</template>
-              <el-menu-item-group v-if="authority.work">
+              <el-menu-item-group v-if="modAuthority.work">
                 <el-menu-item index="/main/work">工单列表</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.rule">
+              <el-menu-item-group v-if="modAuthority.rule">
                 <el-menu-item index="/main/rule">异常处理规则设置</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="9" class="submenu-item" v-if="authority.polcard">
+            <el-submenu index="9" class="submenu-item" v-if="modAuthority.envmonit || modAuthority.monitman || modAuthority.envalarm">
               <template slot="title"><i class="iconfont iconjianzhuanquan"></i>环境监控管理</template>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.envmonit">
                 <el-menu-item index="/main/envmonit">环境监控设置</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.monitman">
                 <el-menu-item index="/main/monitman">环境监控</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.envalarm">
                 <el-menu-item index="/main/envalarm">告警记录</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="10" class="submenu-item" v-if="authority.polcard">
+            <el-submenu index="10" class="submenu-item" v-if="modAuthority.hardfac">
               <template slot="title"><i class="iconfont iconshebeiguanli1"></i>设备管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/hardfac">硬件设备管理</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="11" class="submenu-item" v-if="authority.polReport || authority.workReport">
+            <el-submenu index="11" class="submenu-item" v-if="modAuthority.comnorm || modAuthority.pronorm">
+              <template slot="title"><i class="iconfont iconic_biaozhunkuguanli"></i>标准库管理</template>
+              <el-menu-item-group v-if="planormUid.indexOf(userId) !== -1">
+                <el-menu-item index="/main/planorm">平台标准维护</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.comnorm">
+                <el-menu-item index="/main/comnorm">企业标准维护</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.pronorm">
+                <el-menu-item index="/main/pronorm">项目标准维护</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="12" class="submenu-item" v-if="modAuthority.vehicleAdmin || modAuthority.vehicleMonit || modAuthority.bangleAdmin || modAuthority.bangleMonit || modAuthority.gpsAlarmlog">
+              <template slot="title"><i class="iconfont icondingwei"></i>定位服务</template>
+              <el-menu-item-group v-if="modAuthority.vehicleAdmin">
+                <el-menu-item index="/main/vehicle-admin">车辆管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.vehicleMonit">
+                <el-menu-item index="/main/vehicle-monit">车辆监控</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.bangleAdmin">
+                <el-menu-item index="/main/bangle-admin">手环管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.bangleMonit">
+                <el-menu-item index="/main/bangle-monit">手环监控</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.gpsAlarmlog">
+                <el-menu-item index="/main/gps-alarmlog">告警记录</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="13" class="submenu-item" v-if="modAuthority.waterAdmin || modAuthority.waterMonit">
+              <template slot="title"><i class="iconfont iconshuibiao"></i>水表数据管理</template>
+              <el-menu-item-group v-if="modAuthority.waterAdmin">
+                <el-menu-item index="/main/water-admin">抄表设备管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group v-if="modAuthority.waterMonit">
+                <el-menu-item index="/main/water-monit">水表监控</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="14" class="submenu-item" v-if="modAuthority.reportTask || modAuthority.reportSite || modAuthority.reportStaff || modAuthority.reportWorkpro || modAuthority.reportWorksta">
               <template slot="title"><i class="iconfont iconbaobiaoguanli"></i>报表管理</template>
-              <el-menu-item-group v-if="authority.polReport">
+              <el-menu-item-group v-if="modAuthority.reportTask">
                 <el-menu-item index="/main/report-task">巡检任务执行报表</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.polReport">
+              <el-menu-item-group v-if="modAuthority.reportSite">
                 <el-menu-item index="/main/report-site">巡检地址信息报表</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.polReport">
+              <el-menu-item-group v-if="modAuthority.reportStaff">
                 <el-menu-item index="/main/report-staff">个人巡检执行报表</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.workReport">
+              <el-menu-item-group v-if="modAuthority.reportWorkpro">
                 <el-menu-item index="/main/report-workpro">项目工单报表</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="authority.workReport">
+              <el-menu-item-group v-if="modAuthority.reportWorksta">
                 <el-menu-item index="/main/report-worksta">员工工单报表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="12" class="submenu-item" v-if="authority.videoSetting || authority.videoPlaza">
-              <template slot="title"><i class="iconfont iconjiankong"></i>视频监控</template>
-              <el-menu-item-group v-if="authority.videoSetting">
-                <el-menu-item index="/main/video-setting">视频监控设置</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group v-if="authority.videoPlaza">
-                <el-menu-item index="/main/video-plaza">视频广场</el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="13" class="submenu-item" v-if="authority.event">
+            <el-submenu index="15" class="submenu-item" v-if="modAuthority.event">
               <template slot="title"><i class="iconfont iconshijian"></i>事件管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/main/event">事件列表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="14" class="submenu-item" v-if="authority.event">
-              <template slot="title"><i class="iconfont iconic_biaozhunkuguanli"></i>标准库管理</template>
-              <el-menu-item-group v-if="deviceUid.indexOf(userId) !== -1">
-                <el-menu-item index="/main/planorm">平台标准维护</el-menu-item>
+            <el-submenu index="16" class="submenu-item" v-if="modAuthority.videoSetting || modAuthority.videoPlaza">
+              <template slot="title"><i class="iconfont iconjiankong"></i>视频监控</template>
+              <el-menu-item-group v-if="modAuthority.videoSetting">
+                <el-menu-item index="/main/video-setting">视频监控设置</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group v-if="roleId === 500">
-                <el-menu-item index="/main/comnorm">企业标准维护</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group v-if="authority.plan">
-                <el-menu-item index="/main/pronorm">项目标准维护</el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="15" class="submenu-item">
-              <template slot="title"><i class="iconfont icondingwei"></i>定位服务</template>
-              <el-menu-item-group>
-                <el-menu-item index="/main/vehicle-admin">车辆管理</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group>
-                <el-menu-item index="/main/vehicle-monit">车辆监控</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group>
-                <el-menu-item index="/main/bangle-admin">手环管理</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group>
-                <el-menu-item index="/main/bangle-monit">手环监控</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group>
-                <el-menu-item index="/main/gps-alarmlog">告警记录</el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="16" class="submenu-item">
-              <template slot="title"><i class="iconfont iconshuibiao"></i>水表数据管理</template>
-              <el-menu-item-group>
-                <el-menu-item index="/main/water-admin">抄表设备管理</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group>
-                <el-menu-item index="/main/water-monit">水表监控</el-menu-item>
+              <el-menu-item-group v-if="modAuthority.videoPlaza">
+                <el-menu-item index="/main/video-plaza">视频广场</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="17" class="submenu-item" v-if="deviceUid.indexOf(userId) !== -1">
@@ -335,8 +344,7 @@ export default{
       iconUrl: '',
       introDialog: false,
       pwdDialog: false,
-      nowProjectId: 0,
-      deviceUid: [1, 2, 816, 819, 830, 3442]
+      nowProjectId: 0
     }
   },
   created () {
@@ -367,7 +375,10 @@ export default{
       'userId',
       'userName',
       'userPhoto',
-      'authority'
+      'modAdminUid',
+      'planormUid',
+      'deviceUid',
+      'modAuthority'
     ]),
     ...mapState('other', [
       'allProject',

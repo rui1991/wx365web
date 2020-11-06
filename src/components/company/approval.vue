@@ -88,7 +88,7 @@
             <span v-else-if="scope.row.audit_state === 2">不通过</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" v-if="authority">
+        <el-table-column label="操作" v-if="authority.indexOf(23) !== -1">
           <template slot-scope="scope">
             <span class="operate forbid" v-if="scope.row.audit_state === 0 && scope.row.apply_user === userId">审批</span>
             <a href="javascript:void(0);" class="operate com" @click="appClick(scope.row.adt_id, scope.row.apply_type)" v-else-if="scope.row.audit_state === 0">审批</a>
@@ -202,11 +202,12 @@ export default{
     }
   },
   created () {
-
-  },
-  mounted () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 权限
-    if (!this.authority) {
+    if (this.authority.indexOf(23) === -1 && this.authority.indexOf(25) === -1) {
       const userName = this.userName
       this.search.creCrew = userName
       this.nowSearch.creCrew = userName
@@ -214,6 +215,9 @@ export default{
     }
     // 获取列表数据
     this.getListData()
+  },
+  mounted () {
+
   },
   components: {
     detModule,
@@ -225,7 +229,8 @@ export default{
       'userName'
     ]),
     ...mapState('user', {
-      authority: state => state.authority.approval
+      modVisit: state => state.modAuthority.approval,
+      authority: state => state.detAuthority.approval
     }),
     ...mapState('other', [
       'companyId',

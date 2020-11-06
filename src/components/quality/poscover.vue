@@ -146,6 +146,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     const nowDate = this.$common.getBeforeDate()
     this.search.date = [nowDate, nowDate]
     this.nowSearch.date = [nowDate, nowDate]
@@ -157,7 +161,10 @@ export default{
   computed: {
     ...mapState('user', [
       'userId'
-    ])
+    ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.poscover
+    })
   },
   methods: {
     // 组织树

@@ -63,10 +63,6 @@ const mutations = {
   SET_ORGAN_DATA (state, arr) {
     state.orgData = arr
   },
-  // 设置位置打卡导航
-  SET_POSCLOCK_Nav (state, num) {
-    state.posclockNav = num
-  },
   // 设置标准组织
   SET_NORM_ORGAN (state, obj) {
     // 组织类型
@@ -125,10 +121,6 @@ const actions = {
   // 设置机构树
   setOrganData ({ commit }, value) {
     commit('SET_ORGAN_DATA', value)
-  },
-  // 设置位置打卡导航
-  setPosclockNav ({ commit }, value) {
-    commit('SET_POSCLOCK_Nav', value)
   },
   // 设置标准组织
   setNormOrgan ({ commit }, value) {

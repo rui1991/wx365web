@@ -61,8 +61,8 @@
             </el-select>
           </div>
           <div class="operate">
-            <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
-            <el-button type="primary" :disabled="downAllDisabled" @click="downAllFile">导出汇总</el-button>
+            <el-button type="primary" :disabled="downDisabled" @click="downFile" v-if="authority.indexOf(97) !== -1">导出</el-button>
+            <el-button type="primary" :disabled="downAllDisabled" @click="downAllFile" v-if="authority.indexOf(97) !== -1">导出汇总</el-button>
           </div>
         </div>
       </div>
@@ -162,9 +162,10 @@ export default{
     }
   },
   created () {
-
-  },
-  mounted () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     const nowDate = this.$common.getBeforeDate()
     this.search.date = [nowDate, nowDate]
     this.nowSearch.date = [nowDate, nowDate]
@@ -194,6 +195,9 @@ export default{
       this.getListData()
     }
   },
+  mounted () {
+
+  },
   components: {
     detModule
   },
@@ -201,6 +205,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.callnameRep,
+      authority: state => state.detAuthority.callnameRep
+    }),
     ...mapState('other', [
       'companyId',
       'allProject',

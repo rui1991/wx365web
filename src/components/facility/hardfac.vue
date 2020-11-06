@@ -26,7 +26,7 @@
           </div>
           <div class="operate">
             <el-button type="primary" @click="searchList">搜索</el-button>
-            <el-button type="primary" @click="addDialog = true">新增</el-button>
+            <el-button type="primary" @click="addDialog = true" v-if="authority.indexOf(152) !== -1">新增</el-button>
           </div>
         </div>
         <div class="search-row">
@@ -46,7 +46,7 @@
             </el-select>
           </div>
           <div class="operate">
-            <el-button type="primary" @click="warnDialog = true">告警推送</el-button>
+            <el-button type="primary" @click="warnDialog = true" v-if="authority.indexOf(153) !== -1">告警推送</el-button>
           </div>
         </div>
       </div>
@@ -87,8 +87,8 @@
         <el-table-column label="操作" width="140">
           <template slot-scope="scope">
             <!--<a href="javascript:void(0);" class="operate com" @click="relateClick(scope.row.id, scope.row.dtype)" v-if="scope.row.dtype === 'sjwg'">设备关联</a>-->
-            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)" v-if="scope.row.dtype === 'sjwg' || scope.row.dtype === 'kqj'">编辑</a>
-            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.id, scope.row.dtype)" v-if="scope.row.dtype === 'sjwg' || scope.row.dtype === 'kqj'">删除</a>
+            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)" v-if="(scope.row.dtype === 'sjwg' || scope.row.dtype === 'kqj') && authority.indexOf(225) !== -1">编辑</a>
+            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.id, scope.row.dtype)" v-if="(scope.row.dtype === 'sjwg' || scope.row.dtype === 'kqj') && authority.indexOf(226) !== -1">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -216,6 +216,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取列表
     this.getListData()
   },
@@ -230,6 +234,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.hardfac,
+      authority: state => state.detAuthority.hardfac
+    }),
     ...mapState('other', [
       'companyId',
       'projectId'

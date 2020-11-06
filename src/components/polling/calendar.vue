@@ -78,6 +78,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取当前月份
     let mydata = new Date()
     let year = mydata.getFullYear()
@@ -94,7 +98,8 @@ export default{
       'userId'
     ]),
     ...mapState('user', {
-      authority: state => state.authority.calendar
+      modVisit: state => state.modAuthority.calendar,
+      authority: state => state.detAuthority.calendar
     }),
     ...mapState('other', [
       'companyId',
@@ -111,7 +116,7 @@ export default{
     getCalendarData () {
       this.loading = true
       let params = {}
-      if (this.authority) {
+      if (this.authority.indexOf(216) !== -1) {
         params = {
           company_id: this.companyId,
           user_id: this.userId,

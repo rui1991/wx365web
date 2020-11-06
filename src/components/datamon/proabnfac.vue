@@ -43,6 +43,7 @@
  * */
 // 引入详情组件
 import detModule from '@/components/datamon/proabnfac-det'
+import {mapState} from 'vuex'
 export default{
   name: 'proabnfac',
   data () {
@@ -59,6 +60,9 @@ export default{
 
   },
   mounted () {
+    if (this.companyId !== 1) {
+      this.$router.go(-1)
+    }
     const facType = this.$route.query.facType
     switch (facType) {
       case 'collector':
@@ -86,6 +90,9 @@ export default{
     detModule
   },
   computed: {
+    ...mapState('user', [
+      'companyId'
+    ]),
     tableData () {
       let search = this.searchText
       let reg = new RegExp(search, 'i')

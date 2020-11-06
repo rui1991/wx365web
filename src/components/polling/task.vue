@@ -37,7 +37,7 @@
           </div>
           <div class="operate">
             <el-button type="primary" @click="searchList">搜索</el-button>
-            <el-button type="primary" :disabled="downDisabled" v-if="authority.down" @click="downFile">导出</el-button>
+            <el-button type="primary" :disabled="downDisabled" v-if="authority.indexOf(67) !== -1" @click="downFile">导出</el-button>
           </div>
         </div>
         <div class="search-row">
@@ -66,7 +66,7 @@
               end-placeholder="结束日期">
             </el-date-picker>
           </div>
-          <div class="operate">
+          <div class="operate" v-if="authority.indexOf(69) !== -1">
             <el-button type="primary" @click="pushDialog = true">推送设置</el-button>
           </div>
         </div>
@@ -157,15 +157,15 @@
         </el-table-column>
         <el-table-column width="260" label="操作">
           <template slot-scope="scope">
-            <a href="javascript:void(0);" class="operate com" @click="drawClick(scope.row.id_id)" v-if="scope.row.draw === 1 && authority.draw">领取</a>
-            <span class="operate forbid" v-else-if="scope.row.draw === 2 && authority.draw">领取</span>
-            <span class="operate forbid" v-else-if="scope.row.draw === 3 && authority.draw">已领取</span>
-            <a href="javascript:void(0);" class="operate com" @click="dispatchClick(scope.row.id_id, scope.row.ogz_id)" v-if="scope.row.dispatch === 1 && authority.dispatch">派遣</a>
-            <span class="operate forbid" v-else-if="scope.row.dispatch === 2 && authority.dispatch">派遣</span>
-            <a href="javascript:void(0);" class="operate com" @click="tradeClick(scope.row.id_id, scope.row.ogz_id)" v-if="scope.row.trade === 1 && authority.dispatch">换人</a>
-            <span class="operate forbid" v-else-if="scope.row.trade === 2 && authority.dispatch">换人</span>
-            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.id_id)" v-if="scope.row.com === 1 && authority.com">维护</a>
-            <span class="operate forbid" v-if="scope.row.com === 2 && authority.com">维护</span>
+            <a href="javascript:void(0);" class="operate com" @click="drawClick(scope.row.id_id)" v-if="scope.row.draw === 1 && authority.indexOf(64) !== -1">领取</a>
+            <span class="operate forbid" v-else-if="scope.row.draw === 2 && authority.indexOf(64) !== -1">领取</span>
+            <span class="operate forbid" v-else-if="scope.row.draw === 3 && authority.indexOf(64) !== -1">已领取</span>
+            <a href="javascript:void(0);" class="operate com" @click="dispatchClick(scope.row.id_id, scope.row.ogz_id)" v-if="scope.row.dispatch === 1 && authority.indexOf(63) !== -1">派遣</a>
+            <span class="operate forbid" v-else-if="scope.row.dispatch === 2 && authority.indexOf(63) !== -1">派遣</span>
+            <a href="javascript:void(0);" class="operate com" @click="tradeClick(scope.row.id_id, scope.row.ogz_id)" v-if="scope.row.trade === 1 && authority.indexOf(65) !== -1">换人</a>
+            <span class="operate forbid" v-else-if="scope.row.trade === 2 && authority.indexOf(65) !== -1">换人</span>
+            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.id_id)" v-if="scope.row.com === 1 && authority.indexOf(66) !== -1">维护</a>
+            <span class="operate forbid" v-if="scope.row.com === 2 && authority.indexOf(66) !== -1">维护</span>
           </template>
         </el-table-column>
       </el-table>
@@ -224,12 +224,6 @@ export default{
   name: 'task',
   data () {
     return {
-      authority: {
-        draw: true,
-        down: true,
-        com: true,
-        dispatch: true
-      },
       search: {
         name: '',
         startDate: '',
@@ -282,6 +276,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取当天日期
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
     this.search.date = [nowDate, nowDate]
@@ -295,12 +293,6 @@ export default{
     this.getSectorOptions()
     // 获取项目人员
     this.getCrewOptions()
-    // 权限
-    let autDet = this.autDet
-    autDet.indexOf(36) === -1 ? this.authority.draw = false : this.authority.draw = true
-    autDet.indexOf(37) === -1 ? this.authority.down = false : this.authority.down = true
-    autDet.indexOf(38) === -1 ? this.authority.com = false : this.authority.com = true
-    autDet.indexOf(39) === -1 ? this.authority.dispatch = false : this.authority.dispatch = true
   },
   mounted () {
 
@@ -317,7 +309,8 @@ export default{
       'sectorId'
     ]),
     ...mapState('user', {
-      autDet: state => state.autDet.task
+      modVisit: state => state.modAuthority.task,
+      authority: state => state.detAuthority.task
     }),
     ...mapState('other', [
       'companyId',

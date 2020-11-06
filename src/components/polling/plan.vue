@@ -46,7 +46,7 @@
           </div>
           <div class="operate">
             <el-button type="primary" @click="searchList">搜索</el-button>
-            <el-button type="primary" @click="addClick">新增</el-button>
+            <el-button type="primary" @click="addClick" v-if="authority.indexOf(58) !== -1">新增</el-button>
           </div>
         </div>
       </div>
@@ -80,8 +80,8 @@
         <el-table-column prop="end_date" label="结束时间"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <router-link class="operate com" :to="{ path: '/main/plan-com', query:{id: scope.row.plan_id}}">编辑</router-link>
-            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.plan_id)">删除</a>
+            <router-link class="operate com" :to="{ path: '/main/plan-com', query:{id: scope.row.plan_id}}" v-if="authority.indexOf(59) !== -1">编辑</router-link>
+            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.plan_id)" v-if="authority.indexOf(60) !== -1">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -149,6 +149,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取列表数据
     this.getListData()
     // 获取部门
@@ -162,6 +166,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.plan,
+      authority: state => state.detAuthority.plan
+    }),
     ...mapState('other', [
       'companyId',
       'projectId',

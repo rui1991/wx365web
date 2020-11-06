@@ -26,7 +26,7 @@
             </el-date-picker>
           </div>
           <div class="operate">
-            <el-button type="primary" @click="setDialog = true">设置</el-button>
+            <el-button type="primary" @click="setDialog = true" v-if="authority.indexOf(115) !== -1">设置</el-button>
           </div>
         </div>
         <div class="search-row">
@@ -156,6 +156,10 @@ export default{
 
   },
   mounted () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     const myDate = new Date()
     const year = myDate.getFullYear()
     const month = myDate.getMonth() + 1
@@ -193,6 +197,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.nosalary,
+      authority: state => state.detAuthority.nosalary
+    }),
     ...mapState('other', [
       'projectId',
       'projectOrgId'

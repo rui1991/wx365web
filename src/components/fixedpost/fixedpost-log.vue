@@ -137,6 +137,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取当天日期
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
     this.search.date = [nowDate, nowDate]
@@ -150,6 +154,9 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.fixedpostLog
+    }),
     ...mapState('other', [
       'companyId',
       'projectId'

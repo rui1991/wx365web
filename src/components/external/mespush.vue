@@ -78,6 +78,10 @@ export default{
     }
   },
   created () {
+    if (this.deviceUid.indexOf(this.userId) === -1) {
+      this.$router.go(-1)
+      return
+    }
     // 获取设置列表
     this.getListData()
   },
@@ -88,7 +92,8 @@ export default{
   },
   computed: {
     ...mapState('user', [
-      'userId'
+      'userId',
+      'deviceUid'
     ])
   },
   filters: {

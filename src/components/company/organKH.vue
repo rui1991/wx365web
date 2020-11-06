@@ -10,7 +10,7 @@
       <div class="module-aside">
         <div class="aside-header">
           <p class="title">组织机构</p>
-          <div class="operate">
+          <div class="operate" v-if="authority.indexOf(10) !== -1">
             <a href="javascript:;" class="blue" @click="modType = 2" v-show="addShow">新建组织</a>
           </div>
         </div>
@@ -82,6 +82,7 @@
 *   3：项目
 *   4：部门
 * */
+import { mapState } from 'vuex'
 // 引入组织树组件
 import treeModule from '@/components/company/organ-tree'
 // 引入编辑企业组件
@@ -107,7 +108,9 @@ export default{
     }
   },
   created () {
-
+    if (!this.modVisit) {
+      this.$router.go(-1)
+    }
   },
   mounted () {
 
@@ -118,6 +121,12 @@ export default{
     typeModule,
     addModule,
     comModule
+  },
+  computed: {
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.organ,
+      authority: state => state.detAuthority.organ
+    })
   },
   methods: {
     /* 组织树 */

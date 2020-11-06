@@ -18,10 +18,10 @@
         <div class="work">
           <p class="work-item" v-for="day in item.work" :key="day.work_user">
             <span>{{ day.user_name }}</span>
-            <i class="el-icon-remove" @click="delClick(item.date, day.work_user)" v-show="item.date === showDate"></i>
+            <i class="el-icon-remove" @click="delClick(item.date, day.work_user)" v-if="authority.indexOf(112) !== -1" v-show="item.date === showDate"></i>
           </p>
         </div>
-        <i class="el-icon-circle-plus add" @click.stop="addClick(item.date)" v-show="item.date === showDate"></i>
+        <i class="el-icon-circle-plus add" @click.stop="addClick(item.date)" v-if="authority.indexOf(110) !== -1" v-show="item.date === showDate"></i>
       </div>
       <div class="rl-table-td rl-table-item minor" v-for="item in nextData" :key="item">
         <span class="sun">{{item}}</span>
@@ -86,6 +86,9 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      authority: state => state.detAuthority.schedul
+    }),
     ...mapState('other', [
       'companyId',
       'projectId'

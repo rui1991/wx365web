@@ -213,8 +213,10 @@ import Chart from '@/components/public/chart'
 // 引入详情
 import perModule from '@/components/profile/quality-per'
 import posModule from '@/components/profile/quality-pos'
+import {mapState} from 'vuex'
 
 /*
+* 品质监控（人员/位置）详情
 * 参数说明：
 *   switchType：用于控制模块切换
 *     1：企业（黑卡，企业，分公司）
@@ -454,6 +456,9 @@ export default{
 
   },
   mounted () {
+    if (this.authority.indexOf(4) === -1) {
+      this.$router.go(-1)
+    }
     const type = Number.parseInt(this.$route.query.type)
     const baseId = Number.parseInt(this.$route.query.baseId)
     this.orgBase = baseId
@@ -479,6 +484,11 @@ export default{
     Chart,
     perModule,
     posModule
+  },
+  computed: {
+    ...mapState('user', {
+      authority: state => state.detAuthority.home
+    })
   },
   methods: {
     // 项目数据

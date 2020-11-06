@@ -24,8 +24,8 @@
       <div class="module-main">
         <div class="main-search main-search-single">
           <div class="operate">
-            <el-button type="primary" :disabled="impDisabled" @click="importPlatform(0)">引入平台标准库</el-button>
-            <el-button type="primary" :disabled="addDisabled" @click="addDialog = true">新增</el-button>
+            <el-button type="primary" :disabled="impDisabled" @click="importPlatform(0)" v-if="authority.indexOf(168) !== -1">引入平台标准库</el-button>
+            <el-button type="primary" :disabled="addDisabled" @click="addDialog = true" v-if="authority.indexOf(168) !== -1">新增</el-button>
           </div>
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
@@ -35,9 +35,9 @@
           <el-table-column prop="csize" width="120" label="检查项数量"></el-table-column>
           <el-table-column label="操作" width="200">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
-              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row)">删除</a>
-              <a href="javascript:void(0);" class="operate com" @click="skipClick(scope.row)" v-if="scope.row.depth === 3">检查项</a>
+              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)" v-if="authority.indexOf(168) !== -1">编辑</a>
+              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row)" v-if="authority.indexOf(168) !== -1">删除</a>
+              <a href="javascript:void(0);" class="operate com" @click="skipClick(scope.row)" v-if="authority.indexOf(168) !== -1 && scope.row.depth === 3">检查项</a>
             </template>
           </el-table-column>
         </el-table>
@@ -125,6 +125,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取标准树
     this.getNormData()
   },
@@ -147,6 +151,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.comnorm,
+      authority: state => state.detAuthority.comnorm
+    }),
     ...mapState('other', [
       'companyId'
     ])

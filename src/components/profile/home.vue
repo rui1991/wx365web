@@ -15,11 +15,11 @@
         <span>组织机构</span>
         <el-input style="width: 240px; margin-left: 10px; margin-right: 20px;" :disabled="true" v-model="orgName"></el-input>
         <el-button type="primary" @click="orgDialog = true">选择组织</el-button>
-        <div class="operate">
+        <div class="operate" v-if="authority.indexOf(7) !== -1">
           <el-button type="primary" @click="clickTrack" v-if="roleId === 500">人员轨迹</el-button>
         </div>
       </div>
-      <div class="pandect" :class="{ clickable: switchType !== 1 }" @click="skipSurvey">
+      <div class="pandect" :class="{ clickable: switchType !== 1 }" @click="skipSurvey" v-if="authority.indexOf(2) !== -1">
         <h3 class="pandect-title">
           <span class="chunk"></span>
           <span class="txt">{{ pandectTitle }}</span>
@@ -40,7 +40,7 @@
       </div>
       <div class="survey">
         <el-row :gutter="10" style="margin-bottom: 10px; margin-left: 0; margin-right: 0;">
-          <el-col :span="12">
+          <el-col :span="12" v-if="authority.indexOf(3) !== -1">
             <div class="item" :class="{ clickable: switchType !== 1 }" @click="skipTask">
               <div class="item-title">
                 <span class="chunk"></span>
@@ -62,7 +62,7 @@
               </div>
             </div>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" v-if="authority.indexOf(4) !== -1">
             <div class="item" :class="{ clickable: switchType !== 1 }" @click="skipQuality">
               <div class="item-title">
                 <span class="chunk"></span>
@@ -87,7 +87,7 @@
           </el-col>
         </el-row>
         <el-row :gutter="10" style="margin-left: 0; margin-right: 0;">
-          <el-col :span="12">
+          <el-col :span="12" v-if="authority.indexOf(5) !== -1">
             <div class="item" :class="{ clickable: switchType !== 1 }" @click="skipCallname">
               <div class="item-title">
                 <span class="chunk"></span>
@@ -109,7 +109,7 @@
               </div>
             </div>
           </el-col>
-          <el-col :span="12" v-show="switchType !== 3">
+          <el-col :span="12" v-show="switchType !== 3" v-if="authority.indexOf(6) !== -1">
             <div class="item" :class="{ clickable: switchType !== 1 }" @click="skipFixation">
               <div class="item-title">
                 <span class="chunk"></span>
@@ -528,6 +528,9 @@ export default{
       'roleId',
       'userPhone'
     ]),
+    ...mapState('user', {
+      authority: state => state.detAuthority.home
+    }),
     ...mapState('other', [
       'orgTree'
     ])
@@ -1017,7 +1020,7 @@ export default{
         }
       })
     },
-    /* 详情 */
+    /* 固定岗管理 */
     skipFixation () {
       if (this.switchType !== 2) return
       this.$router.push({

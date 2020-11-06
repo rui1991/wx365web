@@ -43,6 +43,10 @@ const Message = () => import(/* webpackChunkName: "group-message" */ '@/componen
 const Log = () => import(/* webpackChunkName: "group-log" */ '@/components/profile/log')
 
 /* 企业配置 */
+// 模块管理
+const ModuleAdmin = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/moduleAdmin')
+// 角色管理
+const Role = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/role')
 // 组织管理（黑卡）
 const OrganBC = () => import(/* webpackChunkName: "group-organ" */ '@/components/company/organBC')
 // 组织管理（客户）
@@ -51,12 +55,8 @@ const OrganKH = () => import(/* webpackChunkName: "group-organ" */ '@/components
 const UserBC = () => import(/* webpackChunkName: "group-user" */ '@/components/company/userBC')
 // 用户管理（客户）
 const UserKH = () => import(/* webpackChunkName: "group-user" */ '@/components/company/userKH')
-// 审批列表
+// 审批管理
 const Approval = () => import(/* webpackChunkName: "group-approval" */ '@/components/company/approval')
-// 考勤排班
-const Shift = () => import(/* webpackChunkName: "group-Shift" */ '@/components/company/shift')
-// 排班管理
-const Schedul = () => import(/* webpackChunkName: "group-schedul" */ '@/components/company/schedul')
 
 /* 基础配置 */
 // 位置管理
@@ -67,18 +67,12 @@ const Site = () => import(/* webpackChunkName: "group-site" */ '@/components/bas
 /* 品质过程管理 */
 // 人员管理汇总
 const Crewcollect = () => import(/* webpackChunkName: "group-loccollect" */ '@/components/quality/crewcollect')
-// 人员管理汇总详情
+// 人员管理汇总 => 详情
 const CrewcollectDet = () => import(/* webpackChunkName: "group-loccollect" */ '@/components/quality/crewcollect-det')
-// 人员打卡率报表
-const Crewclock = () => import(/* webpackChunkName: "group-crewclock" */ '@/components/quality/crewclock')
 // 位置巡查覆盖率
 const Poscover = () => import(/* webpackChunkName: "group-poscover" */ '@/components/quality/poscover')
-// 位置打卡记录
-const Posclock = () => import(/* webpackChunkName: "group-posclock" */ '@/components/quality/posclock')
-// 位置打卡记录汇总
+// 位置打卡汇总
 const Posclockall = () => import(/* webpackChunkName: "group-posclock" */ '@/components/quality/posclockall')
-// 人员打卡记录详情
-const Posclockdet = () => import(/* webpackChunkName: "group-posclock" */ '@/components/quality/posclockdet')
 // 轨迹记录总览
 const Trackall = () => import(/* webpackChunkName: "group-trackall" */ '@/components/quality/trackall')
 // 轨迹记录详情
@@ -96,7 +90,7 @@ const Task = () => import(/* webpackChunkName: "group-task" */ '@/components/pol
 const TaskCom = () => import(/* webpackChunkName: "group-task" */ '@/components/polling/task-com')
 // 巡检日历
 const Calendar = () => import(/* webpackChunkName: "group-calendar" */ '@/components/polling/calendar')
-// 巡检日历详情
+// 巡检日历 => 巡检日历详情
 const CalendarItem = () => import(/* webpackChunkName: "group-calendar" */ '@/components/polling/calendar-item')
 // 标准维护管理
 const Normoam = () => import(/* webpackChunkName: "group-norm" */ '@/components/polling/normoam')
@@ -116,12 +110,20 @@ const FixedpostLog = () => import(/* webpackChunkName: "group-fixedpost" */ '@/c
 /* 点名管理 */
 // 点名设置
 const CallnameSet = () => import(/* webpackChunkName: "group-callname" */ '@/components/callname/callname-set')
-// 点名管理
+// 点名报表
 const CallnameRep = () => import(/* webpackChunkName: "group-callname" */ '@/components/callname/callname-rep')
+// 人员打卡率报表
+const Crewclockrate = () => import(/* webpackChunkName: "group-crewclock" */ '@/components/callname/crewclockrate')
+// 人员打卡详情
+const Crewclockdet = () => import(/* webpackChunkName: "group-posclock" */ '@/components/callname/crewclockdet')
 
 /* 考勤管理 */
+// 考勤排班
+const Shift = () => import(/* webpackChunkName: "group-Shift" */ '@/components/attend/shift')
+// 排班管理
+const Schedul = () => import(/* webpackChunkName: "group-schedul" */ '@/components/attend/schedul')
 // 无感考勤报表
-const Nosalary = () => import(/* webpackChunkName: "group-salary" */ '@/components/attend/nosalary')
+const Nosalary = () => import(/* webpackChunkName: "group-nosalary" */ '@/components/attend/nosalary')
 // 设备考勤报表
 const Salary = () => import(/* webpackChunkName: "group-salary" */ '@/components/attend/salary')
 
@@ -140,42 +142,16 @@ const Envccd = () => import(/* webpackChunkName: "group-envmonit" */ '@/componen
 const EnvccdLog = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/envmon/envccd-log')
 // 环境监控网关
 const Envswg = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/envmon/envswg')
+// 环境监控管理
+const Monitman = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/envmon/monitman')
 // 告警记录
 const Envalarm = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/envmon/envalarm')
 // 告警设置
 const EnvalarmSet = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/envmon/envalarm-set')
-// 环境监控管理
-const Monitman = () => import(/* webpackChunkName: "group-envmonit" */ '@/components/envmon/monitman')
 
 /* 设备管理 */
 // 硬件设备管理
 const Hardfac = () => import(/* webpackChunkName: "group-hardfac" */ '@/components/facility/hardfac')
-
-/* 报表管理 */
-// 巡检任务执行报表
-const ReportTask = () => import(/* webpackChunkName: "group-report" */ '@/components/report/task')
-// 任务报表详情
-const ReportTaskItem = () => import(/* webpackChunkName: "group-calendar" */ '@/components/report/task-item')
-// 巡检地址信息报表
-const ReportSite = () => import(/* webpackChunkName: "group-report" */ '@/components/report/site')
-// 个人巡检执行报表
-const ReportStaff = () => import(/* webpackChunkName: "group-report" */ '@/components/report/staff')
-// 项目工单报表
-const ReportWorkpro = () => import(/* webpackChunkName: "group-report" */ '@/components/report/workpro')
-// 员工工单报表
-const ReportWorksta = () => import(/* webpackChunkName: "group-report" */ '@/components/report/worksta')
-
-/* 视频监控 */
-// 视频监控设置
-const VideoSetting = () => import(/* webpackChunkName: "group-video" */ '@/components/video/setting')
-// 视频广场
-const VideoPlaza = () => import(/* webpackChunkName: "group-video" */ '@/components/video/plaza')
-// 视频直播
-const VideoLiveroom = () => import(/* webpackChunkName: "group-video" */ '@/components/video/liveroom')
-
-/* 事件管理 */
-// 事件列表
-const Event = () => import(/* webpackChunkName: "group-event" */ '@/components/event/event')
 
 /* 标准维护 */
 // 平台标准维护
@@ -196,7 +172,7 @@ const VehicleAdminTrack = () => import(/* webpackChunkName: "group-external" */ 
 const VehicleMonit = () => import(/* webpackChunkName: "group-external" */ '@/components/location/vehicle-monit')
 // GPS手环监控 => 人员轨迹
 const VehicleMonitTrack = () => import(/* webpackChunkName: "group-external" */ '@/components/location/vehicle-monit-track')
-// 车辆围栏
+// GPS车辆监控 => 车辆围栏
 const VehicleFence = () => import(/* webpackChunkName: "group-external" */ '@/components/location/vehicle-fence')
 // GPS手环管理
 const BangleAdmin = () => import(/* webpackChunkName: "group-external" */ '@/components/location/bangle-admin')
@@ -204,9 +180,9 @@ const BangleAdmin = () => import(/* webpackChunkName: "group-external" */ '@/com
 const BangleMonit = () => import(/* webpackChunkName: "group-external" */ '@/components/location/bangle-monit')
 // GPS手环监控 => 人员轨迹
 const BangleMonitTrack = () => import(/* webpackChunkName: "group-external" */ '@/components/location/bangle-monit-track')
-// 手环围栏
+// GPS手环监控 => 手环围栏
 const BangleFence = () => import(/* webpackChunkName: "group-external" */ '@/components/location/bangle-fence')
-// gps告警记录
+// GPS 告警记录
 const GpsAlarmlog = () => import(/* webpackChunkName: "group-external" */ '@/components/location/gps-alarmlog')
 
 /* 水表数据管理 */
@@ -214,6 +190,32 @@ const GpsAlarmlog = () => import(/* webpackChunkName: "group-external" */ '@/com
 const WaterAdmin = () => import(/* webpackChunkName: "group-external" */ '@/components/water/water-admin')
 // 水表监控
 const WaterMonit = () => import(/* webpackChunkName: "group-external" */ '@/components/water/water-monit')
+
+/* 报表管理 */
+// 巡检任务执行报表
+const ReportTask = () => import(/* webpackChunkName: "group-report" */ '@/components/report/task')
+// 任务报表详情
+const ReportTaskItem = () => import(/* webpackChunkName: "group-calendar" */ '@/components/report/task-item')
+// 巡检地址信息报表
+const ReportSite = () => import(/* webpackChunkName: "group-report" */ '@/components/report/site')
+// 个人巡检执行报表
+const ReportStaff = () => import(/* webpackChunkName: "group-report" */ '@/components/report/staff')
+// 项目工单报表
+const ReportWorkpro = () => import(/* webpackChunkName: "group-report" */ '@/components/report/workpro')
+// 员工工单报表
+const ReportWorksta = () => import(/* webpackChunkName: "group-report" */ '@/components/report/worksta')
+
+/* 事件管理 */
+// 事件列表
+const Event = () => import(/* webpackChunkName: "group-event" */ '@/components/event/event')
+
+/* 视频监控 */
+// 视频监控设置
+const VideoSetting = () => import(/* webpackChunkName: "group-video" */ '@/components/video/setting')
+// 视频广场
+const VideoPlaza = () => import(/* webpackChunkName: "group-video" */ '@/components/video/plaza')
+// 视频广场 => 视频直播
+const VideoLiveroom = () => import(/* webpackChunkName: "group-video" */ '@/components/video/liveroom')
 
 /* 硬件对接 */
 // 硬件管控
@@ -293,7 +295,7 @@ export default new Router({
     },
     {
       path: '/main',
-      name: 'index',
+      name: 'main',
       component: Main,
       redirect: '/main/home',
       children: [
@@ -354,6 +356,22 @@ export default new Router({
           }
         },
         {
+          path: 'moduleAdmin',
+          name: 'moduleAdmin',
+          component: ModuleAdmin,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'role',
+          name: 'role',
+          component: Role,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
           path: 'organBC',
           name: 'organBC',
           component: OrganBC,
@@ -402,22 +420,6 @@ export default new Router({
           }
         },
         {
-          path: 'shift',
-          name: 'shift',
-          component: Shift,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
-          path: 'schedul',
-          name: 'schedul',
-          component: Schedul,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
           path: 'position',
           name: 'position',
           component: Position,
@@ -450,14 +452,6 @@ export default new Router({
           }
         },
         {
-          path: 'crewclock',
-          name: 'crewclock',
-          component: Crewclock,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
           path: 'poscover',
           name: 'poscover',
           component: Poscover,
@@ -466,31 +460,12 @@ export default new Router({
           }
         },
         {
-          path: 'posclock',
-          name: 'posclock',
-          component: Posclock,
-          // redirect: '/main/posclock/posclockall',
+          path: 'posclockall',
+          name: 'posclockall',
+          component: Posclockall,
           meta: {
-            keepAlive: false
-          },
-          children: [
-            {
-              path: 'posclockall',
-              name: 'posclockall',
-              component: Posclockall,
-              meta: {
-                keepAlive: true
-              }
-            },
-            {
-              path: 'posclockdet',
-              name: 'posclockdet',
-              component: Posclockdet,
-              meta: {
-                keepAlive: true
-              }
-            }
-          ]
+            keepAlive: true
+          }
         },
         {
           path: 'trackall',
@@ -637,6 +612,38 @@ export default new Router({
           }
         },
         {
+          path: 'crewclockrate',
+          name: 'crewclockrate',
+          component: Crewclockrate,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'crewclockdet',
+          name: 'crewclockdet',
+          component: Crewclockdet,
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: 'shift',
+          name: 'shift',
+          component: Shift,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'schedul',
+          name: 'schedul',
+          component: Schedul,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
           path: 'nosalary',
           name: 'nosalary',
           component: Nosalary,
@@ -672,7 +679,7 @@ export default new Router({
           path: 'envmonit',
           name: 'envmonit',
           component: Envmonit,
-          redirect: '/main/envmonit/envccd',
+          // redirect: '/main/envmonit/envccd',
           meta: {
             keepAlive: false
           },
@@ -733,86 +740,6 @@ export default new Router({
           component: Hardfac,
           meta: {
             keepAlive: false
-          }
-        },
-        {
-          path: 'report-task',
-          name: 'reportTask',
-          component: ReportTask,
-          meta: {
-            keepAlive: true
-          }
-        },
-        {
-          path: 'report-task-item',
-          name: 'reportTaskItem',
-          component: ReportTaskItem,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
-          path: 'report-site',
-          name: 'reportSite',
-          component: ReportSite,
-          meta: {
-            keepAlive: true
-          }
-        },
-        {
-          path: 'report-staff',
-          name: 'reportStaff',
-          component: ReportStaff,
-          meta: {
-            keepAlive: true
-          }
-        },
-        {
-          path: 'report-workpro',
-          name: 'reportWorkpro',
-          component: ReportWorkpro,
-          meta: {
-            keepAlive: true
-          }
-        },
-        {
-          path: 'report-worksta',
-          name: 'reportWorksta',
-          component: ReportWorksta,
-          meta: {
-            keepAlive: true
-          }
-        },
-        {
-          path: 'video-setting',
-          name: 'videoSetting',
-          component: VideoSetting,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
-          path: 'video-plaza',
-          name: 'videoPlaza',
-          component: VideoPlaza,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
-          path: 'video-liveroom',
-          name: 'videoLiveroom',
-          component: VideoLiveroom,
-          meta: {
-            keepAlive: false
-          }
-        },
-        {
-          path: 'event',
-          name: 'event',
-          component: Event,
-          meta: {
-            keepAlive: true
           }
         },
         {
@@ -939,6 +866,86 @@ export default new Router({
           path: 'water-monit',
           name: 'waterMonit',
           component: WaterMonit,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'report-task',
+          name: 'reportTask',
+          component: ReportTask,
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: 'report-task-item',
+          name: 'reportTaskItem',
+          component: ReportTaskItem,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'report-site',
+          name: 'reportSite',
+          component: ReportSite,
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: 'report-staff',
+          name: 'reportStaff',
+          component: ReportStaff,
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: 'report-workpro',
+          name: 'reportWorkpro',
+          component: ReportWorkpro,
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: 'report-worksta',
+          name: 'reportWorksta',
+          component: ReportWorksta,
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: 'event',
+          name: 'event',
+          component: Event,
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: 'video-setting',
+          name: 'videoSetting',
+          component: VideoSetting,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'video-plaza',
+          name: 'videoPlaza',
+          component: VideoPlaza,
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: 'video-liveroom',
+          name: 'videoLiveroom',
+          component: VideoLiveroom,
           meta: {
             keepAlive: false
           }

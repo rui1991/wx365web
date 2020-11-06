@@ -7,7 +7,7 @@
       ref="tree"
       :props="defaultProps">
     </el-tree>
-    <div class="config-operate">
+    <div class="config-operate" v-if="authority.indexOf(12) !== -1">
       <el-button type="primary" :disabled="disabled" @click="submitClick">确 定</el-button>
     </div>
   </div>
@@ -40,21 +40,17 @@ export default{
   computed: {
     ...mapState('user', [
       'userId'
-    ])
+    ]),
+    ...mapState('user', {
+      authority: state => state.detAuthority.organ
+    })
   },
   methods: {
     // 获取权限树
     getTreeData () {
-      let params = {
-        company_id: this.parentBaseId,
-        user_id: this.userId,
-        project_id: 0
-      }
-      params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/selPermissionTree',
-        data: params
+        url: this.sysetApi() + '/selFunTree'
       }).then((res) => {
         if (res.data.result === 'Sucess') {
           const treeData = res.data.data1

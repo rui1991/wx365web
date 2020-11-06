@@ -27,7 +27,7 @@
           </div>
           <div class="operate">
             <el-button type="primary" @click="searchList">搜索</el-button>
-            <el-button type="primary" @click="addDialog = true">新增</el-button>
+            <el-button type="primary" @click="addDialog = true" v-if="authority.indexOf(121) !== -1">新增</el-button>
           </div>
         </div>
         <div class="search-row">
@@ -57,7 +57,7 @@
             </el-date-picker>
           </div>
           <div class="operate">
-            <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+            <el-button type="primary" :disabled="downDisabled" @click="downFile" v-if="authority.indexOf(128) !== -1">导出</el-button>
           </div>
         </div>
       </div>
@@ -143,6 +143,10 @@ export default{
 
   },
   mounted () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取业务类别
     this.getSortOptions()
     // 获取项目人员
@@ -156,6 +160,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.work,
+      authority: state => state.detAuthority.work
+    }),
     ...mapState('other', [
       'companyId',
       'projectId',

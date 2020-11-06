@@ -132,6 +132,7 @@ import corgModule from '@/components/external/hardcon-corg'
 import addModule from '@/components/external/hardcon-add'
 // 引入删除设备组件
 import delModule from '@/components/external/hardcon-del'
+import {mapState} from 'vuex'
 export default{
   name: 'hardcon',
   data () {
@@ -222,6 +223,10 @@ export default{
 
   },
   mounted () {
+    if (this.deviceUid.indexOf(this.userId) === -1) {
+      this.$router.go(-1)
+      return
+    }
     // 获取机构树
     this.getOrganTree()
   },
@@ -230,6 +235,12 @@ export default{
     corgModule,
     addModule,
     delModule
+  },
+  computed: {
+    ...mapState('user', [
+      'userId',
+      'deviceUid'
+    ])
   },
   methods: {
     // 获取机构树

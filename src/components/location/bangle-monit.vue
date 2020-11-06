@@ -12,8 +12,8 @@
         <el-collapse-item name="1">
           <template slot="title">
             <i class="title-name">人员列表</i>
-            <i class="title-value blue" @click="checkUserDetails('0')">{{ bangleNormal }}</i>
-            <i class="title-value red" @click="checkUserDetails('1')">{{ bangleAbnormal }}</i>
+            <i class="title-value blue" @click.stop="checkUserDetails('0')">{{ bangleNormal }}</i>
+            <i class="title-value red" @click.stop="checkUserDetails('1')">{{ bangleAbnormal }}</i>
           </template>
           <div class="list-search">
             <el-input v-model="searchText" placeholder="请输入内容"></el-input>
@@ -56,7 +56,7 @@
                 <a href="javascript:void(0);" class="red" slot="reference"><i class="iconfont icongaojing2"></i>&nbsp;SOS<i v-show="sosData.length > 0" class="red">&nbsp;({{ sosData.length }})</i></a>
               </el-popover>
             </div>
-            <div class="tool-item bd-right">
+            <div class="tool-item bd-right" v-if="authority.indexOf(192) !== -1">
               <router-link class="blue" :to="{ path: '/main/bangle-fence' }"><i class="iconfont iconweilan"></i>&nbsp;围栏</router-link>
             </div>
             <div class="tool-item bd-right">
@@ -145,6 +145,10 @@ export default{
 
   },
   mounted () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     this.map = new AMap.Map('container', {
       center: [116.434381, 39.898515],
       zoom: 16
@@ -167,6 +171,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.bangleMonit,
+      authority: state => state.detAuthority.bangleMonit
+    }),
     ...mapState('other', [
       'projectId',
       'projectOrgId'

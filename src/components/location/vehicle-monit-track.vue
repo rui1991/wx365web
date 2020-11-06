@@ -91,7 +91,7 @@ export default {
     this.getProjectDetails()
     // 获取围栏
     this.getFenceData()
-    // 获取人员轨迹
+    // 获取车辆轨迹
     this.getTrackList()
   },
   computed: {
@@ -241,20 +241,21 @@ export default {
       // 获取轨迹
       this.getTrackList()
     },
-    // 查询人员轨迹
+    // 查询车辆轨迹
     getTrackList () {
       let params = {
-        MID: this.$route.query.id,
+        UID: this.$route.query.id,
         date: this.date
       }
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.gpsApi() + '/setCarGpsTrajectory',
+        // url: this.gpsApi() + '/setCarGpsTrajectory',
+        url: this.gpsApi() + '/setCarGpsTrajectory4App',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          const resData = res.data.data1.data.pos || []
+          const resData = res.data.data1.pos || []
           // 城市数
           this.cityNum = resData.length
           // 列表

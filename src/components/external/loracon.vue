@@ -101,6 +101,8 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
+
 export default{
   name: 'loracon',
   data () {
@@ -181,6 +183,10 @@ export default{
 
   },
   mounted () {
+    if (this.deviceUid.indexOf(this.userId) === -1) {
+      this.$router.go(-1)
+      return
+    }
     // 获取当天日期
     let startTime = this.$common.getNowDate('yyyy-mm-dd')
     startTime = startTime + ' 00:00:00'
@@ -189,6 +195,12 @@ export default{
     this.nowSearch.date = [startTime, endTime]
     // 获取机构树
     this.getOrganTree()
+  },
+  computed: {
+    ...mapState('user', [
+      'userId',
+      'deviceUid'
+    ])
   },
   methods: {
     // 获取机构树

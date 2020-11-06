@@ -22,7 +22,7 @@
             </div>
             <div class="operate">
               <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" :disabled="addDisabled" @click="addDialog = true">新增</el-button>
+              <el-button type="primary" :disabled="addDisabled" @click="addDialog = true" v-if="authority.indexOf(14) !== -1">新增</el-button>
             </div>
           </div>
           <div class="search-row">
@@ -31,8 +31,8 @@
               <el-input style="width: 200px;" v-model.trim="nowSearch.phone"></el-input>
             </div>
             <div class="operate">
-              <el-button type="primary" :disabled="upDisabled" @click="upClick">导入</el-button>
-              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+              <el-button type="primary" :disabled="upDisabled" @click="upClick" v-if="authority.indexOf(14) !== -1">导入</el-button>
+              <el-button type="primary" :disabled="downDisabled" @click="downFile" v-if="authority.indexOf(19) !== -1">导出</el-button>
             </div>
           </div>
         </div>
@@ -54,10 +54,10 @@
           </el-table-column>
           <el-table-column label="操作" width="178">
             <template slot-scope="scope" v-if="operateShow">
-              <a href="javascript:void(0);" class="operate com" @click="bindClick(scope.row.user_id, scope.row.project_id)" v-if="scope.row.project_id && !scope.row.card_mac">绑卡</a>
-              <a href="javascript:void(0);" class="operate del" @click="untieClick(scope.row.user_id, scope.row.project_id, scope.row.card_mac)" v-if="scope.row.project_id && scope.row.card_mac">解绑</a>
-              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.user_id)">编辑</a>
-              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.user_id)" v-if="roleId !== 502">删除</a>
+              <a href="javascript:void(0);" class="operate com" @click="bindClick(scope.row.user_id, scope.row.project_id)" v-if="authority.indexOf(18) !== -1 && scope.row.project_id && !scope.row.card_mac">绑卡</a>
+              <a href="javascript:void(0);" class="operate del" @click="untieClick(scope.row.user_id, scope.row.project_id, scope.row.card_mac)" v-if="authority.indexOf(18) !== -1 && scope.row.project_id && scope.row.card_mac">解绑</a>
+              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.user_id)" v-if="authority.indexOf(15) !== -1">编辑</a>
+              <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.user_id)" v-if="authority.indexOf(17) !== -1 && roleId !== 502">删除</a>
             </template>
           </el-table-column>
         </el-table>
@@ -169,13 +169,11 @@ export default{
     return {
       search: {
         name: '',
-        phone: '',
-        role: ''
+        phone: ''
       },
       nowSearch: {
         name: '',
-        phone: '',
-        role: ''
+        phone: ''
       },
       organType: '',
       organId: 0,
@@ -203,8 +201,9 @@ export default{
     }
   },
   created () {
-    // 获取角色
-    this.getRoleOptions()
+    if (this.companyId !== 1 || !this.modVisit) {
+      this.$router.go(-1)
+    }
   },
   components: {
     treeModule,
@@ -221,7 +220,11 @@ export default{
       'companyId',
       'userId',
       'roleId'
-    ])
+    ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.user,
+      authority: state => state.detAuthority.user
+    })
   },
   methods: {
     /* 组织树 */
@@ -240,13 +243,11 @@ export default{
       // 清空搜索框
       this.search = {
         name: '',
-        phone: '',
-        role: ''
+        phone: ''
       }
       this.nowSearch = {
         name: '',
-        phone: '',
-        role: ''
+        phone: ''
       }
       // 当前页码初始化
       this.nowPage = 1
@@ -270,7 +271,6 @@ export default{
         organize_id: this.organId,
         user_name: name,
         user_phone: this.search.phone,
-        role_id: this.search.role,
         page: this.nowPage,
         limit1: this.limit
       }
@@ -318,39 +318,6 @@ export default{
       this.nowPage = page
       // 获取列表数据
       this.getListData()
-    },
-    /* 角色 */
-    getRoleOptions () {
-      let params = {
-        company_id: this.companyId,
-        user_id: this.userId,
-        s_role_name: '',
-        s_role_mark: ''
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.sysetApi() + '/v3.2/selRole',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const roleData = res.data.data1
-          this.roleOptions = roleData
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
     },
     /* 新增 */
     addUpdata () {
@@ -442,8 +409,7 @@ export default{
         user_id: this.userId,
         organize_id: this.organId,
         user_name: this.search.name,
-        user_phone: this.search.phone,
-        role_id: this.search.role
+        user_phone: this.search.phone
       }
       params = this.$qs.stringify(params)
       this.downDisabled = true

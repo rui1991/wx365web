@@ -138,6 +138,10 @@ export default{
 
   },
   mounted () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     const myDate = new Date()
     const year = myDate.getFullYear()
     const month = myDate.getMonth() + 1
@@ -171,6 +175,9 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.salary
+    }),
     ...mapState('other', [
       'projectId',
       'projectOrgId'

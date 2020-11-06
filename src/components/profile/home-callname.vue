@@ -184,8 +184,10 @@
 import Chart from '@/components/public/chart'
 // 引入详情
 import detModule from '@/components/profile/callname-det'
+import {mapState} from 'vuex'
 
 /*
+* 点名管理详情
 * 参数说明：
 *   switchType：用于控制模块切换
 *     1：企业（黑卡，企业，分公司）
@@ -352,6 +354,9 @@ export default{
 
   },
   mounted () {
+    if (this.authority.indexOf(5) === -1) {
+      this.$router.go(-1)
+    }
     const type = Number.parseInt(this.$route.query.type)
     const baseId = Number.parseInt(this.$route.query.baseId)
     this.orgBase = baseId
@@ -376,6 +381,11 @@ export default{
   components: {
     Chart,
     detModule
+  },
+  computed: {
+    ...mapState('user', {
+      authority: state => state.detAuthority.home
+    })
   },
   methods: {
     // 项目数据

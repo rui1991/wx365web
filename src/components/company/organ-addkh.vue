@@ -11,6 +11,16 @@
       <el-form-item label="联系电话" prop="phone">
         <el-input v-model.trim="formData.phone" auto-complete="off"></el-input>
       </el-form-item>
+      <el-form-item label="角色分配" prop="roles">
+        <el-select style="width: 100%;" v-model="formData.roles" multiple collapse-tags placeholder="请选择角色">
+          <el-option
+            v-for="item in roleOptions"
+            :key="item.role_id"
+            :label="item.role_name"
+            :value="item.role_id">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="企业性质" prop="nature">
         <el-select style="width: 100%;" v-model="formData.nature" clearable placeholder="请选择企业性质">
           <el-option
@@ -93,6 +103,7 @@ export default{
     }
     return {
       formLabelWidth: '100px',
+      roleOptions: [],
       natureOptions: [
         {
           value: '民营企业',
@@ -185,6 +196,9 @@ export default{
         phone: [
           { required: true, validator: checkPhone, trigger: 'blur' }
         ],
+        roles: [
+          { required: true, message: '请选择角色', trigger: 'change' }
+        ],
         area: [
           { required: true, message: '请输入行政区域', trigger: 'change' }
         ],
@@ -196,6 +210,7 @@ export default{
         name: '',
         linkman: '',
         phone: '',
+        roles: [],
         nature: '',
         area: '',
         trade: '',
@@ -211,13 +226,15 @@ export default{
 
   },
   mounted () {
-
+    // 获取角色列表
+    this.getRoleOptions()
   },
   components: {
     mapModule
   },
   computed: {
     ...mapState('user', [
+      'companyId',
       'userId'
     ])
   },
@@ -238,6 +255,8 @@ export default{
     },
     // 提交
     sendRequest () {
+      let roles = this.formData.roles
+      roles = roles.join(',')
       let params = {
         user_id: this.userId,
         parent_id: this.parentOrgId,
@@ -245,6 +264,7 @@ export default{
         organize_name: this.formData.name,
         user_name: this.formData.linkman,
         user_phone: this.formData.phone,
+        role_ids: roles,
         nature: this.formData.nature,
         area: this.formData.area,
         industry: this.formData.trade,
@@ -256,7 +276,7 @@ export default{
       this.disabled = true
       this.$axios({
         method: 'post',
-        url: this.sysetApi() + '/v3.2/addOrganizeTree',
+        url: this.sysetApi() + '/v3.3/addOrganizeTree',
         data: params
       }).then((res) => {
         this.disabled = false
@@ -288,6 +308,36 @@ export default{
     // 取消
     cancelClick () {
       this.$emit('parentCancel')
+    },
+    /* 角色 */
+    getRoleOptions () {
+      let params = {
+        company_id: this.companyId,
+        user_id: this.userId
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.2/selRole',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          this.roleOptions = res.data.data1 || []
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
     },
     /* 地图坐标 */
     mapUpdata (data) {

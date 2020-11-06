@@ -35,7 +35,7 @@
     <div style="text-align: center; overflow-x: hidden;" v-show="parentOrgType === 3">
       <img :src="imgUrl" height="240" alt="">
     </div>
-    <div class="module-operate">
+    <div class="module-operate" v-if="authority.indexOf(11) !== -1">
       <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
       <el-upload
         style="display: inline-block;"
@@ -142,7 +142,10 @@ export default{
   computed: {
     ...mapState('user', [
       'userId'
-    ])
+    ]),
+    ...mapState('user', {
+      authority: state => state.detAuthority.organ
+    })
   },
   methods: {
     // 初始化数据

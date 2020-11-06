@@ -5,8 +5,8 @@
       <el-collapse-item name="1">
         <template slot="title">
           <i class="title-name">人员列表</i>
-          <i class="title-value blue" @click="checkUserDetails('0')">{{ bangleNormal }}</i>
-          <i class="title-value red" @click="checkUserDetails('1')">{{ bangleAbnormal }}</i>
+          <i class="title-value blue" @click.stop="checkUserDetails('0')">{{ bangleNormal }}</i>
+          <i class="title-value red" @click.stop="checkUserDetails('1')">{{ bangleAbnormal }}</i>
         </template>
         <div class="list-search">
           <el-input v-model="searchText" placeholder="请输入内容"></el-input>

@@ -28,7 +28,7 @@
         </div>
         <div class="operate">
           <el-button type="primary" @click="searchList">搜索</el-button>
-          <el-button type="primary" @click="addDialog = true">新增</el-button>
+          <el-button type="primary" @click="addDialog = true" v-if="authority.indexOf(54) !== -1">新增</el-button>
         </div>
       </div>
       <el-table class="list-table" :data="tableData" border style="width: 100%">
@@ -48,8 +48,8 @@
         <el-table-column prop="user_names" :show-overflow-tooltip="true" label="人员名称"></el-table-column>
         <el-table-column width="160" label="操作">
           <template slot-scope="scope">
-            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
-            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.group_id)">删除</a>
+            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)" v-if="authority.indexOf(55) !== -1">编辑</a>
+            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.group_id)" v-if="authority.indexOf(56) !== -1">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -132,11 +132,15 @@ export default{
     }
   },
   created () {
-
-  },
-  mounted () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取列表数据
     this.getListData()
+  },
+  mounted () {
+
   },
   components: {
     addModule,
@@ -147,6 +151,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.group,
+      authority: state => state.detAuthority.group
+    }),
     ...mapState('other', [
       'companyId',
       'projectId'

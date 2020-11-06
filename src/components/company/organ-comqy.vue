@@ -22,7 +22,7 @@
         <el-button type="primary" @click="mapDialog = true">选择坐标</el-button>
       </el-form-item>
     </el-form>
-    <div class="module-operate">
+    <div class="module-operate" v-if="authority.indexOf(11) !== -1">
       <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
     </div>
     <!-- 地图坐标 -->
@@ -86,7 +86,10 @@ export default{
   computed: {
     ...mapState('user', [
       'userId'
-    ])
+    ]),
+    ...mapState('user', {
+      authority: state => state.detAuthority.organ
+    })
   },
   methods: {
     // 获取人员

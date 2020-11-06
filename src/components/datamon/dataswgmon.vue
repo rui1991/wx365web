@@ -79,6 +79,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 // 引入详情组件
 import detModule from '@/components/datamon/dataswgmon-det'
 export default{
@@ -110,6 +111,9 @@ export default{
 
   },
   mounted () {
+    if (this.companyId !== 1) {
+      this.$router.go(-1)
+    }
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
     const startTime = nowDate + ' 00:00:00'
     const nowTime = this.$common.getNowDate('yyyy-mm-dd hh:mm:ss')
@@ -120,6 +124,11 @@ export default{
   },
   components: {
     detModule
+  },
+  computed: {
+    ...mapState('user', [
+      'companyId'
+    ])
   },
   methods: {
     /* 搜索 */

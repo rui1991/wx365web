@@ -9,8 +9,8 @@
     <div class="module-main">
       <div class="nav">
         <el-radio-group v-model="navActive">
-          <el-radio-button :label="1">环境监控传感器</el-radio-button>
-          <el-radio-button :label="2">环境监控网关</el-radio-button>
+          <el-radio-button :label="1" v-if="envccd">环境监控传感器</el-radio-button>
+          <el-radio-button :label="2" v-if="envswg">环境监控网关</el-radio-button>
         </el-radio-group>
       </div>
       <keep-alive>
@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default{
   name: 'envmonit',
   data () {
@@ -30,12 +31,19 @@ export default{
     }
   },
   created () {
-    const nowPath = this.$route.path
-    if (nowPath === '/main/envmonit/envccd') {
+    if (this.envccd) {
+      this.$router.push({ path: '/main/envmonit/envccd' })
       this.navActive = '1'
-    } else if (nowPath === '/main/envmonit/envswg') {
+    } else if (this.envswg) {
+      this.$router.push({ path: '/main/envmonit/envswg' })
       this.navActive = '2'
     }
+  },
+  computed: {
+    ...mapState('user', {
+      envccd: state => state.modAuthority.envccd,
+      envswg: state => state.modAuthority.envswg
+    })
   },
   watch: {
     navActive (val, oldVal) {

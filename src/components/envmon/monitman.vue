@@ -265,11 +265,18 @@ export default{
 
   },
   mounted () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     this.getListData()
     // 启动定时器
     this.startTimer()
   },
   computed: {
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.monitman
+    }),
     ...mapState('other', [
       'projectId'
     ])

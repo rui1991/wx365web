@@ -10,7 +10,7 @@
       <div class="module-aside">
         <div class="aside-header">
           <p class="title">项目位置</p>
-          <div class="operate">
+          <div class="operate" v-if="authority.indexOf(28) !== -1">
             <a href="javascript:void(0);" class="blue" @click="modType = 2">新建</a>
             <a href="javascript:void(0);" class="blue" @click="modType = 3">批量新建</a>
           </div>
@@ -81,6 +81,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取位置树
     this.getPositionTree()
   },
@@ -96,6 +100,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.position,
+      authority: state => state.detAuthority.position
+    }),
     ...mapState('other', [
       'companyId',
       'projectId',

@@ -38,9 +38,9 @@
               <el-input style="width: 160px;" v-model.trim="nowSearch.mac"></el-input>
             </div>
             <div class="operate">
-              <el-button type="danger" :disabled="handleDisabled" @click="delDialog = true">删除</el-button>
+              <el-button type="danger" :disabled="handleDisabled" @click="delDialog = true" v-if="authority.indexOf(34) !== -1">删除</el-button>
               <el-button type="primary" @click="searchList">搜索</el-button>
-              <el-button type="primary" :disabled="addDisabled" @click="addDialog = true">新增</el-button>
+              <el-button type="primary" :disabled="addDisabled" @click="addDialog = true" v-if="authority.indexOf(32) !== -1">新增</el-button>
             </div>
           </div>
           <div class="search-row">
@@ -56,9 +56,9 @@
               </el-select>
             </div>
             <div class="operate">
-              <el-button type="primary" :disabled="qrDisabled" @click="qrDialog = true">生成二维码</el-button>
-              <el-button type="primary" @click="upClick">导入</el-button>
-              <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+              <el-button type="primary" :disabled="qrDisabled" @click="qrDialog = true" v-if="authority.indexOf(35) !== -1">生成二维码</el-button>
+              <el-button type="primary" @click="upClick" v-if="authority.indexOf(32) !== -1">导入</el-button>
+              <el-button type="primary" :disabled="downDisabled" @click="downFile" v-if="authority.indexOf(36) !== -1">导出</el-button>
             </div>
           </div>
         </div>
@@ -81,7 +81,7 @@
           <el-table-column prop="parent_address" label="上级位置"></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.position_id)">编辑</a>
+              <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row.position_id)" v-if="authority.indexOf(33) !== -1">编辑</a>
             </template>
           </el-table-column>
         </el-table>
@@ -210,6 +210,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取地址树
     this.getSiteTree()
   },
@@ -225,6 +229,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.site,
+      authority: state => state.detAuthority.site
+    }),
     ...mapState('other', [
       'companyId',
       'projectId',

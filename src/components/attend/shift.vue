@@ -2,14 +2,14 @@
   <div class="module-container">
     <div class="module-header">
       <el-breadcrumb separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item>企业配置</el-breadcrumb-item>
+        <el-breadcrumb-item>考勤管理</el-breadcrumb-item>
         <el-breadcrumb-item>编制排班</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="module-main">
       <div class="main-search main-search-single">
         <div class="operate">
-          <el-button type="primary" @click="addDialog = true">新增</el-button>
+          <el-button type="primary" @click="addDialog = true" v-if="authority.indexOf(105) !== -1">新增</el-button>
         </div>
       </div>
       <el-table class="list-table" :data="tableData" border style="width: 100%">
@@ -25,8 +25,8 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)">编辑</a>
-            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.work_id)">删除</a>
+            <a href="javascript:void(0);" class="operate com" @click="comClick(scope.row)" v-if="authority.indexOf(106) !== -1">编辑</a>
+            <a href="javascript:void(0);" class="operate del" @click="delClick(scope.row.work_id)" v-if="authority.indexOf(107) !== -1">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -58,11 +58,11 @@
 <script>
 import { mapState } from 'vuex'
 // 引入新增组件
-import addModule from '@/components/company/shift-add'
+import addModule from '@/components/attend/shift-add'
 // 引入编辑组件
-import comModule from '@/components/company/shift-com'
+import comModule from '@/components/attend/shift-com'
 // 引入删除组件
-import delModule from '@/components/company/shift-del'
+import delModule from '@/components/attend/shift-del'
 export default{
   name: 'shift',
   data () {
@@ -80,6 +80,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取列表
     this.getListData()
   },
@@ -92,6 +96,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.shift,
+      authority: state => state.detAuthority.shift
+    }),
     ...mapState('other', [
       'companyId',
       'projectId'

@@ -10,8 +10,8 @@
       <el-main class="module-main">
         <div class="nav">
           <el-radio-group v-model="plazaType">
-            <el-radio-button :label="1">直播广场</el-radio-button>
-            <el-radio-button :label="2">录像广场</el-radio-button>
+            <el-radio-button :label="1" v-if="authority.indexOf(211) !== -1">直播广场</el-radio-button>
+            <el-radio-button :label="2" v-if="authority.indexOf(212) !== -1">录像广场</el-radio-button>
           </el-radio-group>
         </div>
         <video-live v-if="plazaType === 1"></video-live>
@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 // 导入直播广场
 import videoLive from '@/components/video/live'
 // 导入录像广场
@@ -34,11 +35,32 @@ export default{
     }
   },
   created () {
-
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
+    if (this.authority.indexOf(211) !== -1) {
+      this.plazaType = 1
+    } else if (this.authority.indexOf(212) !== -1) {
+      this.plazaType = 2
+    }
   },
   components: {
     videoLive,
     videoRecord
+  },
+  computed: {
+    ...mapState('user', [
+      'userId'
+    ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.videoPlaza,
+      authority: state => state.detAuthority.videoPlaza
+    }),
+    ...mapState('other', [
+      'companyId',
+      'projectId'
+    ])
   },
   methods: {
 

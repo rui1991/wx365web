@@ -31,7 +31,7 @@
           </div>
           <div class="operate">
             <el-button type="primary" @click="searchList">搜索</el-button>
-            <el-button type="primary" @click="clickTrack">人员轨迹</el-button>
+            <el-button type="primary" @click="clickTrack" v-if="authority.indexOf(52) !== -1">人员轨迹</el-button>
             <!--<el-button type="primary" :disabled="downProDisa" @click="downProject">导出</el-button>-->
           </div>
         </div>
@@ -116,6 +116,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
     this.search.date = [nowDate, nowDate]
     this.nowSearch.date = [nowDate, nowDate]
@@ -126,6 +130,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.trackdet,
+      authority: state => state.detAuthority.trackdet
+    }),
     ...mapState('other', [
       'companyId',
       'projectId',

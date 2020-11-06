@@ -93,6 +93,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default{
   name: 'abnfacmon',
   data () {
@@ -121,12 +122,20 @@ export default{
 
   },
   mounted () {
+    if (this.companyId !== 1) {
+      this.$router.go(-1)
+    }
     // 异常数据设备
     this.getDataFacility()
     // 异常网关设备
     this.getSwgFacility()
     // 异常传感器设备
     this.getSensorFacility()
+  },
+  computed: {
+    ...mapState('user', [
+      'companyId'
+    ])
   },
   methods: {
     /* 异常数据设备 */

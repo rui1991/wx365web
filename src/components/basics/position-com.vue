@@ -43,7 +43,7 @@
       </div>
       <!--<p class="img-hint" v-else>未上传图片</p>-->
     </div>
-    <div class="operate">
+    <div class="operate" v-if="authority.indexOf(29) !== -1">
       <el-button type="primary" :disabled="disabled" @click="submitForm('ruleForm')">确 定</el-button>
     </div>
   </div>
@@ -122,6 +122,9 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      authority: state => state.detAuthority.position
+    }),
     ...mapState('other', [
       'companyId',
       'projectId'

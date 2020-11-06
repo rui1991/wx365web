@@ -128,19 +128,26 @@ export default{
     }
   },
   created () {
-
-  },
-  mounted () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     const nowDate = this.$common.getBeforeDate()
     this.search.date = [nowDate, nowDate]
     this.nowSearch.date = [nowDate, nowDate]
     // 获取列表
     this.getListData()
   },
+  mounted () {
+
+  },
   computed: {
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.crewcollect
+    }),
     ...mapState('other', [
       'allProject'
     ])

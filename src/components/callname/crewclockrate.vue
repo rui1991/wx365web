@@ -7,7 +7,7 @@
     element-loading-background="rgba(0, 0, 0, 0.6)">
     <div class="module-header">
       <el-breadcrumb separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item>品质过程管理</el-breadcrumb-item>
+        <el-breadcrumb-item>点名管理</el-breadcrumb-item>
         <el-breadcrumb-item>人员打卡率报表</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
@@ -158,7 +158,7 @@ import { mapState } from 'vuex'
 // 引入组织树组件
 import orgModule from '@/components/public/report-org1'
 // 引入详情组件
-import detModule from '@/components/quality/crewclock-det'
+import detModule from '@/components/callname/crewclockrate-det'
 export default{
   name: 'crewclock',
   data () {
@@ -196,6 +196,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     const nowDate = this.$common.getBeforeDate()
     this.search.date = [nowDate, nowDate]
     this.nowSearch.date = [nowDate, nowDate]
@@ -207,7 +211,10 @@ export default{
   computed: {
     ...mapState('user', [
       'userId'
-    ])
+    ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.crewclockrate
+    })
   },
   filters: {
     countRate (want, already) {

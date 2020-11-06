@@ -104,8 +104,10 @@
 import Chart from '@/components/public/chart'
 // 引入详情
 import detModule from '@/components/profile/fixation-det'
+import {mapState} from 'vuex'
 
 /*
+* 固定岗管理详情
 * 参数说明：
 *   resData: 用于保存1天，7天，30天的数据
 *   *State: 用于记录数据状态
@@ -206,6 +208,9 @@ export default{
 
   },
   mounted () {
+    if (this.authority.indexOf(6) === -1) {
+      this.$router.go(-1)
+    }
     this.projectName = this.$route.query.name
     const type = Number.parseInt(this.$route.query.type)
     const baseId = Number.parseInt(this.$route.query.baseId)
@@ -222,6 +227,11 @@ export default{
   components: {
     Chart,
     detModule
+  },
+  computed: {
+    ...mapState('user', {
+      authority: state => state.detAuthority.home
+    })
   },
   methods: {
     // 项目数据

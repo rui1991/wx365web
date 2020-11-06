@@ -30,7 +30,7 @@
           </div>
           <div class="operate">
             <el-button type="primary" @click="searchList">搜索</el-button>
-            <el-button type="primary" v-if="authority" @click="setClick">设置</el-button>
+            <el-button type="primary" v-if="authority.indexOf(83) !== -1" @click="setClick">设置</el-button>
           </div>
         </div>
         <div class="search-row">
@@ -46,8 +46,8 @@
             </el-select>
           </div>
           <div class="operate">
-            <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
-            <el-button type="primary" @click="pushDialog = true">推送设置</el-button>
+            <el-button type="primary" :disabled="downDisabled" @click="downFile" v-if="authority.indexOf(85) !== -1">导出</el-button>
+            <el-button type="primary" @click="pushDialog = true" v-if="authority.indexOf(84) !== -1">推送设置</el-button>
           </div>
         </div>
       </div>
@@ -142,6 +142,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取当天日期
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
     this.search.date = [nowDate, nowDate]
@@ -160,7 +164,8 @@ export default{
       'userId'
     ]),
     ...mapState('user', {
-      authority: state => state.authority.plan
+      modVisit: state => state.modAuthority.fixedpostRep,
+      authority: state => state.detAuthority.fixedpostRep
     }),
     ...mapState('other', [
       'companyId',

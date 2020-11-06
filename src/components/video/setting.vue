@@ -27,7 +27,7 @@
               <p class="txt">密码</p>
               <el-input style="width: 160px;" v-model.trim="basics.userPwd"></el-input>
             </div>
-            <div class="operate">
+            <div class="operate" v-if="authority.indexOf(207) !== -1">
               <el-button type="primary" :disabled="saveDisabled" @click="saveClick">保存</el-button>
             </div>
           </div>
@@ -35,7 +35,7 @@
         <div class="search">
           <div class="operate">
             <!--<el-button type="primary" icon="el-icon-circle-plus-outline" @click="addClick">新增</el-button>-->
-            <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+            <el-button type="primary" :disabled="downDisabled" @click="downFile" v-if="authority.indexOf(208) !== -1">导出</el-button>
           </div>
         </div>
         <el-table class="list-table" :data="tableData" border style="width: 100%">
@@ -54,7 +54,7 @@
           <el-table-column prop="Password" label="摄像机密码"></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <i class="el-icon-edit" @click="comClick(scope.row)"></i>
+              <i class="el-icon-edit" @click="comClick(scope.row)" v-if="authority.indexOf(207) !== -1"></i>
             </template>
           </el-table-column>
         </el-table>
@@ -178,6 +178,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取IP与端口
     this.getServerIp()
   },
@@ -185,6 +189,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.videoSetting,
+      authority: state => state.detAuthority.videoSetting
+    }),
     ...mapState('other', [
       'companyId',
       'projectId'

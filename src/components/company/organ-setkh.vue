@@ -88,8 +88,10 @@ export default{
       const orgType = this.parentOrgType
       if (orgType === 1) {
         this.modType = 1
+        this.activeName = 'company'
       } else if (orgType === 2) {
         this.modType = 2
+        this.activeName = 'company'
       }
     }
   }

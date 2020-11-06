@@ -29,6 +29,7 @@
  * 参数说明
  * detType   1 设备维修项目总数    2 设备维修总数    3 仅1次维修记录设备数量    4 2次及以上维修记录设备总数
  * */
+import {mapState} from 'vuex'
 // 引入详情组件
 import detModule from '@/components/datamon/maintainall-det'
 export default{
@@ -44,11 +45,19 @@ export default{
 
   },
   mounted () {
+    if (this.companyId !== 1) {
+      this.$router.go(-1)
+    }
     // 获取数据
     this.getOverviewData()
   },
   components: {
     detModule
+  },
+  computed: {
+    ...mapState('user', [
+      'companyId'
+    ])
   },
   methods: {
     // 获取数据

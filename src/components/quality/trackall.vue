@@ -155,7 +155,11 @@ export default{
       loading: false
     }
   },
-  mounted () {
+  created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     const nowDate = this.$common.getNowDate()
     this.search.date = [nowDate, nowDate]
     this.nowSearch.date = [nowDate, nowDate]
@@ -183,6 +187,9 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.trackall
+    }),
     ...mapState('other', [
       'companyId',
       'allProject',

@@ -112,6 +112,10 @@ export default{
     }
   },
   created () {
+    if (this.planormUid.indexOf(this.userId) === -1) {
+      this.$router.go(-1)
+      return
+    }
     // 获取标准树
     this.getNormData()
   },
@@ -131,7 +135,8 @@ export default{
   },
   computed: {
     ...mapState('user', [
-      'userId'
+      'userId',
+      'planormUid'
     ])
   },
   methods: {

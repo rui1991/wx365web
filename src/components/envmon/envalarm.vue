@@ -30,7 +30,7 @@
           </div>
           <div class="operate">
             <el-button type="primary" @click="searchList">搜索</el-button>
-            <el-button type="primary" @click="setClick">设置</el-button>
+            <el-button type="primary" @click="setClick" v-if="authority.indexOf(148) !== -1">设置</el-button>
           </div>
         </div>
         <div class="search-row">
@@ -49,7 +49,7 @@
             </el-date-picker>
           </div>
           <div class="operate">
-            <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+            <el-button type="primary" :disabled="downDisabled" @click="downFile" v-if="authority.indexOf(149) !== -1">导出</el-button>
           </div>
         </div>
       </div>
@@ -177,6 +177,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取当天日期
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
     this.search.date = [nowDate, nowDate]
@@ -193,6 +197,10 @@ export default{
       'userId',
       'userName'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.envalarm,
+      authority: state => state.detAuthority.envalarm
+    }),
     ...mapState('other', [
       'companyId',
       'projectId'

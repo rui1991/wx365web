@@ -49,7 +49,7 @@
           </div>
           <div class="operate">
             <el-button type="primary" @click="searchList">搜索</el-button>
-            <el-button type="primary" @click="addDialog = true">新增</el-button>
+            <el-button type="primary" @click="addDialog = true" v-if="authority.indexOf(214) !== -1">新增</el-button>
           </div>
         </div>
       </div>
@@ -185,6 +185,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 获取列表数据
     this.getListData()
     // 获取项目人员
@@ -199,6 +203,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.event,
+      authority: state => state.detAuthority.event
+    }),
     ...mapState('other', [
       'companyId',
       'projectId',

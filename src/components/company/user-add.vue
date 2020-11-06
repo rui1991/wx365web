@@ -18,7 +18,7 @@
        <el-form-item label="角色" prop="role">
          <el-select v-model="formData.role" filterable placeholder="请选择用户角色">
            <el-option
-             v-for="item in parentRoles"
+             v-for="item in roleOptions"
              :key="item.role_id"
              :label="item.role_name"
              :value="item.role_id">
@@ -98,7 +98,7 @@ import accreditbcModule from '@/components/company/userBC-accredit'
 // 引入客户授权范围组件
 import accreditkhModule from '@/components/company/userKH-accredit'
 export default{
-  props: ['parentDialog', 'parentType', 'parentRoles', 'parentOrgId', 'parentComId'],
+  props: ['parentDialog', 'parentType', 'parentOrgId', 'parentComId'],
   data () {
     let checkWorknum = (rule, value, callback) => {
       let regex = /^[0-9a-zA-Z]+$/
@@ -126,6 +126,7 @@ export default{
     }
     return {
       formLabelWidth: '100px',
+      roleOptions: [],
       skillOptions: [],
       rules: {
         name: [
@@ -191,6 +192,8 @@ export default{
         accreditId: [],
         skills: []
       }
+      // 获取角色列表
+      this.getRoleOptions()
       if (this.skillOptions.length === 0) {
         // 获取技能选项列表
         this.getSkillData()
@@ -282,6 +285,36 @@ export default{
     },
     accreditCancel () {
       this.accreditDialog = false
+    },
+    /* 角色 */
+    getRoleOptions () {
+      let params = {
+        company_id: this.parentComId
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.sysetApi() + '/v3.3/selComRole',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          const roleData = res.data.data1
+          this.roleOptions = roleData
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
     },
     /* 技能 */
     getSkillData (skills) {

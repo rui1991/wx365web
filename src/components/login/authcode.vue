@@ -257,136 +257,284 @@ export default{
           this.setNowProject(project)
           /* 存储权限 */
           const userAuts = loginData.permissions
-          let authority = {
-            organ: false,
+          // 模块权限
+          let modAuthority = {
+            home: false,
             log: false,
+            organ: false,
             user: false,
-            shift: false,
-            scheduling: false,
             approval: false,
+            position: false,
             site: false,
+            crewcollect: false,
+            poscover: false,
+            posclockall: false,
+            trackall: false,
+            trackdet: false,
+            group: false,
             plan: false,
             task: false,
             calendar: false,
-            norm: false,
+            normoam: false,
             abnormal: false,
+            normexecute: false,
+            fixedpostRep: false,
+            fixedpostLog: false,
+            callnameSet: false,
+            callnameRep: false,
+            crewclockrate: false,
+            crewclockdet: false,
+            shift: false,
+            schedul: false,
+            nosalary: false,
+            salary: false,
             work: false,
             rule: false,
-            polcard: false,
-            polReport: false,
-            workReport: false,
+            envmonit: false,
+            envccd: false,
+            envswg: false,
+            monitman: false,
+            envalarm: false,
+            hardfac: false,
+            comnorm: false,
+            pronorm: false,
+            vehicleAdmin: false,
+            vehicleMonit: false,
+            bangleAdmin: false,
+            bangleMonit: false,
+            gpsAlarmlog: false,
+            waterAdmin: false,
+            waterMonit: false,
+            reportTask: false,
+            reportSite: false,
+            reportStaff: false,
+            reportWorkpro: false,
+            reportWorksta: false,
+            event: false,
             videoSetting: false,
-            videoPlaza: false,
-            event: false
+            videoPlaza: false
           }
-          // 组织结构管理
-          let autOrgan = []
-          // 用户管理
-          let autUser = []
-          // 编制排班
-          let autShift = []
-          // 排班管理
-          let autScheduling = []
-          // 审批列表
-          let autApproval = []
-          // 地址管理
-          let autSite = []
-          // 巡检计划管理
-          let autPlan = []
-          // 巡检任务
-          let autTask = []
-          // 巡检日历
-          let autCalendar = []
-          // 巡检标准维护
-          let autNorm = []
-          // 巡检异常
-          let autAbnormal = []
-          // 工单列表
-          let autWork = []
-          // 异常处理规则设置
-          let autRule = []
-          // 巡检绑卡管理
-          let autPolcard = []
-          // 事件列表
-          let autEvent = []
+          // 权限详情
+          let detAuthority = {
+            home: [],
+            organ: [],
+            user: [],
+            approval: [],
+            position: [],
+            site: [],
+            crewcollect: [],
+            poscover: [],
+            posclockall: [],
+            trackall: [],
+            trackdet: [],
+            group: [],
+            plan: [],
+            task: [],
+            calendar: [],
+            normoam: [],
+            abnormal: [],
+            normexecute: [],
+            fixedpostRep: [],
+            fixedpostLog: [],
+            callnameSet: [],
+            callnameRep: [],
+            crewclockrate: [],
+            crewclockdet: [],
+            shift: [],
+            schedul: [],
+            nosalary: [],
+            salary: [],
+            work: [],
+            rule: [],
+            envccd: [],
+            envswg: [],
+            monitman: [],
+            envalarm: [],
+            hardfac: [],
+            comnorm: [],
+            pronorm: [],
+            vehicleAdmin: [],
+            vehicleMonit: [],
+            bangleAdmin: [],
+            bangleMonit: [],
+            gpsAlarmlog: [],
+            waterAdmin: [],
+            waterMonit: [],
+            reportTask: [],
+            reportSite: [],
+            reportStaff: [],
+            reportWorkpro: [],
+            reportWorksta: [],
+            event: [],
+            videoSetting: [],
+            videoPlaza: []
+          }
           userAuts.forEach(item => {
-            if (item.function_id === 3 || item.function_id === 4 || item.function_id === 5) { // 组织结构管理
-              authority.organ = true
-              autOrgan.push(item.function_id)
-            } else if (item.function_id === 18) { // 日志管理
-              authority.log = true
-            } else if (item.function_id === 15 || item.function_id === 16 || item.function_id === 17) { // 用户管理
-              authority.user = true
-              autUser.push(item.function_id)
-            } else if (item.function_id === 26 || item.function_id === 27 || item.function_id === 28) { // 地址管理
-              authority.site = true
-              autSite.push(item.function_id)
-            } else if (item.function_id === 30 || item.function_id === 31 || item.function_id === 34) { // 巡检计划管理
-              authority.plan = true
-              autPlan.push(item.function_id)
-            } else if (item.function_id === 36 || item.function_id === 37 || item.function_id === 38 || item.function_id === 39) { // 巡检任务
-              authority.task = true
-              autTask.push(item.function_id)
-            } else if (item.function_id === 40) { // 巡检日历
-              authority.calendar = true
-              autCalendar.push(item.function_id)
-            } else if (item.function_id === 42 || item.function_id === 44 || item.function_id === 45) { // 巡检标准维护
-              authority.norm = true
-              autNorm.push(item.function_id)
-            } else if (item.function_id === 47 || item.function_id === 181) { // 巡检异常
-              authority.abnormal = true
-              autAbnormal.push(item.function_id)
-            } else if (item.function_id === 50 || item.function_id === 51 || item.function_id === 52 || item.function_id === 53 || item.function_id === 54) { // 工单列表
-              authority.work = true
-              autWork.push(item.function_id)
-            } else if (item.function_id === 182 || item.function_id === 183 || item.function_id === 184) { // 异常处理规则设置
-              authority.rule = true
-              autRule.push(item.function_id)
-            } else if (item.function_id === 187 || item.function_id === 188 || item.function_id === 189) { // 编制排班
-              authority.shift = true
-              autShift.push(item.function_id)
-            } else if (item.function_id === 190 || item.function_id === 191) { // 排班管理
-              authority.scheduling = true
-              autScheduling.push(item.function_id)
-            } else if (item.function_id === 62) { // 审批列表
-              authority.approval = true
-              autApproval.push(item.function_id)
-            } else if (item.function_id === 21 || item.function_id === 22) { // 巡检绑卡管理
-              authority.polcard = true
-              autPolcard.push(item.function_id)
-            } else if (item.function_id === 192) { // 巡检报表
-              authority.polReport = true
-            } else if (item.function_id === 193) { // 工单报表
-              authority.workReport = true
-            } else if (item.function_id === 206) { // 视频监控设置
-              authority.videoSetting = true
-            } else if (item.function_id === 207) { // 视频广场
-              authority.videoPlaza = true
-            } else if (item.function_id === 78 || item.function_id === 79 || item.function_id === 80 || item.function_id === 81 || item.function_id === 82) { // 事件列表
-              authority.event = true
-              autEvent.push(item.function_id)
+            if (item.function_id === 2 || item.function_id === 3 || item.function_id === 4 || item.function_id === 5 || item.function_id === 6 || item.function_id === 7) { // 首页
+              modAuthority.home = true
+              detAuthority.home.push(item.function_id)
+            } else if (item.function_id === 224) { // 日志管理
+              modAuthority.log = true
+            } else if (item.function_id === 10 || item.function_id === 11 || item.function_id === 12 || item.function_id === 16) { // 组织管理
+              modAuthority.organ = true
+              detAuthority.organ.push(item.function_id)
+            } else if (item.function_id === 14 || item.function_id === 15 || item.function_id === 17 || item.function_id === 18 || item.function_id === 19 || item.function_id === 20) { // 用户管理
+              modAuthority.user = true
+              detAuthority.user.push(item.function_id)
+            } else if (item.function_id === 23 || item.function_id === 24 || item.function_id === 25) { // 审批管理
+              modAuthority.approval = true
+              detAuthority.approval.push(item.function_id)
+            } else if (item.function_id === 28 || item.function_id === 29 || item.function_id === 30) { // 位置管理
+              modAuthority.position = true
+              detAuthority.position.push(item.function_id)
+            } else if (item.function_id === 32 || item.function_id === 33 || item.function_id === 34 || item.function_id === 35 || item.function_id === 36 || item.function_id === 37) { // 地址管理
+              modAuthority.site = true
+              detAuthority.site.push(item.function_id)
+            } else if (item.function_id === 40) { // 人员管理汇总
+              modAuthority.crewcollect = true
+              detAuthority.crewcollect.push(item.function_id)
+            } else if (item.function_id === 42) { // 位置巡查覆盖率
+              modAuthority.poscover = true
+              detAuthority.poscover.push(item.function_id)
+            } else if (item.function_id === 44) { // 位置打卡汇总
+              modAuthority.posclockall = true
+              detAuthority.posclockall.push(item.function_id)
+            } else if (item.function_id === 46) { // 轨迹记录总览
+              modAuthority.trackall = true
+              detAuthority.trackall.push(item.function_id)
+            } else if (item.function_id === 49 || item.function_id === 52) { // 轨迹记录详情
+              modAuthority.trackdet = true
+              detAuthority.trackdet.push(item.function_id)
+            } else if (item.function_id === 54 || item.function_id === 55 || item.function_id === 56 || item.function_id === 57) { // 组管理
+              modAuthority.group = true
+              detAuthority.group.push(item.function_id)
+            } else if (item.function_id === 58 || item.function_id === 59 || item.function_id === 60 || item.function_id === 61) { // 巡检计划管理
+              modAuthority.plan = true
+              detAuthority.plan.push(item.function_id)
+            } else if (item.function_id === 63 || item.function_id === 64 || item.function_id === 65 || item.function_id === 66 || item.function_id === 67 || item.function_id === 68 || item.function_id === 69) { // 巡检任务
+              modAuthority.task = true
+              detAuthority.task.push(item.function_id)
+            } else if (item.function_id === 71 || item.function_id === 216) { // 巡检日历
+              modAuthority.calendar = true
+              detAuthority.calendar.push(item.function_id)
+            } else if (item.function_id === 73 || item.function_id === 74 || item.function_id === 75 || item.function_id === 76) { // 标准维护管理
+              modAuthority.normoam = true
+              detAuthority.normoam.push(item.function_id)
+            } else if (item.function_id === 78) { // 异常检查项
+              modAuthority.abnormal = true
+              detAuthority.abnormal.push(item.function_id)
+            } else if (item.function_id === 80) { // 巡检标准执行汇总
+              modAuthority.normexecute = true
+              detAuthority.normexecute.push(item.function_id)
+            } else if (item.function_id === 83 || item.function_id === 84 || item.function_id === 85 || item.function_id === 86) { // 固定岗打卡报表
+              modAuthority.fixedpostRep = true
+              detAuthority.fixedpostRep.push(item.function_id)
+            } else if (item.function_id === 88) { // 固定岗打卡记录
+              modAuthority.fixedpostLog = true
+              detAuthority.fixedpostLog.push(item.function_id)
+            } else if (item.function_id === 91 || item.function_id === 92 || item.function_id === 93 || item.function_id === 94) { // 点名设置
+              modAuthority.callnameSet = true
+              detAuthority.callnameSet.push(item.function_id)
+            } else if (item.function_id === 96 || item.function_id === 97) { // 点名报表
+              modAuthority.callnameRep = true
+              detAuthority.callnameRep.push(item.function_id)
+            } else if (item.function_id === 99) { // 人员打卡率报表
+              modAuthority.crewclockrate = true
+              detAuthority.crewclockrate.push(item.function_id)
+            } else if (item.function_id === 101 || item.function_id === 102) { // 人员打卡详情
+              modAuthority.crewclockdet = true
+              detAuthority.crewclockdet.push(item.function_id)
+            } else if (item.function_id === 105 || item.function_id === 106 || item.function_id === 107 || item.function_id === 108) { // 编制排班
+              modAuthority.shift = true
+              detAuthority.shift.push(item.function_id)
+            } else if (item.function_id === 110 || item.function_id === 112 || item.function_id === 113) { // 排班管理
+              modAuthority.schedul = true
+              detAuthority.schedul.push(item.function_id)
+            } else if (item.function_id === 115 || item.function_id === 116) { // 无感考勤报表
+              modAuthority.nosalary = true
+              detAuthority.nosalary.push(item.function_id)
+            } else if (item.function_id === 118) { // 设备考勤报表
+              modAuthority.salary = true
+              detAuthority.salary.push(item.function_id)
+            } else if (item.function_id === 121 || item.function_id === 122 || item.function_id === 123 || item.function_id === 126 || item.function_id === 127 || item.function_id === 128) { // 工单列表
+              modAuthority.work = true
+              detAuthority.work.push(item.function_id)
+            } else if (item.function_id === 130 || item.function_id === 131) { // 异常处理规则设置
+              modAuthority.rule = true
+              detAuthority.rule.push(item.function_id)
+            } else if (item.function_id === 135 || item.function_id === 136 || item.function_id === 137 || item.function_id === 138 || item.function_id === 139) { // 环境监控设置 => 环境监控传感器
+              modAuthority.envmonit = true
+              modAuthority.envccd = true
+              detAuthority.envccd.push(item.function_id)
+            } else if (item.function_id === 141 || item.function_id === 142 || item.function_id === 143 || item.function_id === 144) { // 环境监控设置 => 环境监控网关
+              modAuthority.envmonit = true
+              modAuthority.envswg = true
+              detAuthority.envswg.push(item.function_id)
+            } else if (item.function_id === 146) { // 环境监控
+              modAuthority.monitman = true
+              detAuthority.monitman.push(item.function_id)
+            } else if (item.function_id === 148 || item.function_id === 149) { // 告警记录
+              modAuthority.envalarm = true
+              detAuthority.envalarm.push(item.function_id)
+            } else if (item.function_id === 152 || item.function_id === 153 || item.function_id === 154 || item.function_id === 225 || item.function_id === 226) { // 硬件设备管理
+              modAuthority.hardfac = true
+              detAuthority.hardfac.push(item.function_id)
+            } else if (item.function_id === 168 || item.function_id === 169) { // 企业标准维护
+              modAuthority.comnorm = true
+              detAuthority.comnorm.push(item.function_id)
+            } else if (item.function_id === 171 || item.function_id === 172) { // 项目标准维护
+              modAuthority.pronorm = true
+              detAuthority.pronorm.push(item.function_id)
+            } else if (item.function_id === 175 || item.function_id === 176 || item.function_id === 177 || item.function_id === 178 || item.function_id === 179 || item.function_id === 180) { // 手环管理
+              modAuthority.vehicleAdmin = true
+              detAuthority.vehicleAdmin.push(item.function_id)
+            } else if (item.function_id === 182 || item.function_id === 183) { // 车辆监控
+              modAuthority.vehicleMonit = true
+              detAuthority.vehicleMonit.push(item.function_id)
+            } else if (item.function_id === 185 || item.function_id === 186 || item.function_id === 187 || item.function_id === 188 || item.function_id === 189 || item.function_id === 190) { // 车辆管理
+              modAuthority.bangleAdmin = true
+              detAuthority.bangleAdmin.push(item.function_id)
+            } else if (item.function_id === 192 || item.function_id === 193) { // 手环监控
+              modAuthority.bangleMonit = true
+              detAuthority.bangleMonit.push(item.function_id)
+            } else if (item.function_id === 195) { // 告警记录
+              modAuthority.gpsAlarmlog = true
+              detAuthority.gpsAlarmlog.push(item.function_id)
+            } else if (item.function_id === 198 || item.function_id === 199 || item.function_id === 200 || item.function_id === 201 || item.function_id === 202) { // 抄表设备管理
+              modAuthority.waterAdmin = true
+              detAuthority.waterAdmin.push(item.function_id)
+            } else if (item.function_id === 204) { // 水表监控
+              modAuthority.waterMonit = true
+              detAuthority.waterMonit.push(item.function_id)
+            } else if (item.function_id === 157) { // 巡检任务执行报表
+              modAuthority.reportTask = true
+              detAuthority.reportTask.push(item.function_id)
+            } else if (item.function_id === 159) { // 巡检地址信息报表
+              modAuthority.reportSite = true
+              detAuthority.reportSite.push(item.function_id)
+            } else if (item.function_id === 161) { // 个人巡检执行报表
+              modAuthority.reportStaff = true
+              detAuthority.reportStaff.push(item.function_id)
+            } else if (item.function_id === 163) { // 项目工单报表
+              modAuthority.reportWorkpro = true
+              detAuthority.reportWorkpro.push(item.function_id)
+            } else if (item.function_id === 165) { // 员工工单报表
+              modAuthority.reportWorksta = true
+              detAuthority.reportWorksta.push(item.function_id)
+            } else if (item.function_id === 214 || item.function_id === 215) { // 事件列表
+              modAuthority.event = true
+              detAuthority.event.push(item.function_id)
+            } else if (item.function_id === 207 || item.function_id === 208 || item.function_id === 209) { // 视频监控设置
+              modAuthority.videoSetting = true
+              detAuthority.videoSetting.push(item.function_id)
+            } else if (item.function_id === 211 || item.function_id === 212) { // 视频广场
+              modAuthority.videoPlaza = true
+              detAuthority.videoPlaza.push(item.function_id)
             }
           })
           // 存储权限
-          this.setModAuthority(authority)
-          const autDet = {
-            organ: autOrgan,
-            user: autUser,
-            shift: autShift,
-            scheduling: autScheduling,
-            approval: autApproval,
-            site: autSite,
-            plan: autPlan,
-            task: autTask,
-            calendar: autCalendar,
-            norm: autNorm,
-            abnormal: autAbnormal,
-            work: autWork,
-            rule: autRule,
-            polcard: autPolcard,
-            event: autEvent
-          }
-          this.setDetAuthority(autDet)
+          this.setModAuthority(modAuthority)
+          this.setDetAuthority(detAuthority)
           // 保存机构树
           const orgTree = loginData.trees
           // 处理公司部门

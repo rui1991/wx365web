@@ -35,11 +35,11 @@
           <a href="javascript:void(0);" class="operate com" @click="returnClick(scope.row.wo_id)" v-if="scope.row.wo_state === 1 && parentType === '5'">退单</a>
           <span class="operate forbid" v-else-if="scope.row.wo_state === 2 && parentType === '5'">退单</span>
           <!-- 待处理 -->
-          <a href="javascript:void(0);" class="operate com" @click="crewClick(scope.row.wo_id)" v-if="authority.dispatch && parentType === '0'">派单</a>
-          <a href="javascript:void(0);" class="operate com" @click="orderClick(scope.row.wo_id)" v-if="authority.order && parentType === '0'">接单</a>
+          <a href="javascript:void(0);" class="operate com" @click="crewClick(scope.row.wo_id)" v-if="authority.indexOf(122) !== -1 && parentType === '0'">派单</a>
+          <a href="javascript:void(0);" class="operate com" @click="orderClick(scope.row.wo_id)" v-if="authority.indexOf(123) !== -1 && parentType === '0'">接单</a>
           <!-- 催单 -->
-          <a href="javascript:void(0);" class="com" @click="reminderClick(scope.row.wo_id)" v-if="authority.reminder && parentType === '1'">催单</a>
-          <a href="javascript:void(0);" class="com" @click="reminderClick(scope.row.wo_id)" v-if="authority.reminder && parentType === '6'">催单</a>
+          <a href="javascript:void(0);" class="com" @click="reminderClick(scope.row.wo_id)" v-if="authority.indexOf(126) !== -1 && parentType === '1'">催单</a>
+          <a href="javascript:void(0);" class="com" @click="reminderClick(scope.row.wo_id)" v-if="authority.indexOf(126) !== -1 && parentType === '6'">催单</a>
         </template>
       </el-table-column>
     </el-table>
@@ -101,11 +101,6 @@ export default{
   props: ['parentType', 'parentSearch'],
   data () {
     return {
-      authority: {
-        dispatch: true,
-        order: true,
-        reminder: true
-      },
       tableData: [],
       total: 0,
       nowPage: 1,
@@ -120,11 +115,6 @@ export default{
   mounted () {
     // 获取列表数据
     this.getListData()
-    // 权限
-    let autDet = this.autDet
-    autDet.indexOf(51) === -1 ? this.authority.dispatch = false : this.authority.dispatch = true
-    autDet.indexOf(52) === -1 ? this.authority.order = false : this.authority.order = true
-    autDet.indexOf(53) === -1 ? this.authority.reminder = false : this.authority.reminder = true
   },
   components: {
     detModule,
@@ -136,6 +126,9 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      authority: state => state.detAuthority.work
+    }),
     ...mapState('user', {
       autDet: state => state.autDet.work
     }),

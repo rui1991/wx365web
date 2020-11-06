@@ -85,6 +85,8 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
+
 export default{
   name: 'loraswgmon',
   data () {
@@ -128,6 +130,9 @@ export default{
 
   },
   mounted () {
+    if (this.companyId !== 1) {
+      this.$router.go(-1)
+    }
     const nowDate = this.$common.getNowDate('yyyy-mm-dd')
     const startTime = nowDate + ' 00:00:00'
     const nowTime = this.$common.getNowDate('yyyy-mm-dd hh:mm:ss')
@@ -135,6 +140,11 @@ export default{
     this.nowSearch.date = [startTime, nowTime]
     // 获取列表数据
     this.getListData()
+  },
+  computed: {
+    ...mapState('user', [
+      'companyId'
+    ])
   },
   methods: {
     /* 搜索 */

@@ -215,7 +215,9 @@ import crewModule from '@/components/profile/survey-crew'
 import offModule from '@/components/profile/survey-off'
 // 引入基站低电量/采集卡低电量详情
 import lowModule from '@/components/profile/survey-low'
+import {mapState} from 'vuex'
 /*
+* 总览概况详情
 * 参数说明：
 *   switchType：用于控制模块切换
 *     1：企业（黑卡，企业，分公司）
@@ -371,6 +373,9 @@ export default{
 
   },
   mounted () {
+    if (this.authority.indexOf(2) === -1) {
+      this.$router.go(-1)
+    }
     const type = Number.parseInt(this.$route.query.type)
     const baseId = Number.parseInt(this.$route.query.baseId)
     this.orgBase = baseId
@@ -397,6 +402,11 @@ export default{
     crewModule,
     offModule,
     lowModule
+  },
+  computed: {
+    ...mapState('user', {
+      authority: state => state.detAuthority.home
+    })
   },
   methods: {
     // 项目数据

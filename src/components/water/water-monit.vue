@@ -218,6 +218,10 @@ export default{
 
   },
   mounted () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 监控窗口变化
     window.onresize = () => {
       const domWidth = this.$common.getDomClientSize().width
@@ -237,6 +241,9 @@ export default{
     ...mapState('other', [
       'projectId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.waterMonit
+    }),
     nowDetailList () {
       let search = this.searchName
       let reg = new RegExp(search, 'i')

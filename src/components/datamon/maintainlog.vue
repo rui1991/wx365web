@@ -139,6 +139,7 @@
 import addModule from '@/components/datamon/maintainlog-add'
 // 引入记录组件
 import logModule from '@/components/datamon/maintainlog-log'
+import {mapState} from 'vuex'
 export default{
   name: 'dataswgmon',
   data () {
@@ -224,12 +225,20 @@ export default{
 
   },
   mounted () {
+    if (this.companyId !== 1) {
+      this.$router.go(-1)
+    }
     // 获取列表数据
     this.getListData()
   },
   components: {
     addModule,
     logModule
+  },
+  computed: {
+    ...mapState('user', [
+      'companyId'
+    ])
   },
   methods: {
     /* 搜索 */

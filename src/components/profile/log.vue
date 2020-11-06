@@ -103,6 +103,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 设置全局项目禁用
     this.setProDisabled(true)
     // 设置初始化搜索时间
@@ -114,7 +118,10 @@ export default{
     ...mapState('user', [
       'companyId',
       'userId'
-    ])
+    ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.log
+    })
   },
   methods: {
     ...mapActions('other', [

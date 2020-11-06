@@ -3,7 +3,7 @@
     <el-container class="module-container">
       <el-header class="module-header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>企业配置</el-breadcrumb-item>
+          <el-breadcrumb-item>考勤管理</el-breadcrumb-item>
           <el-breadcrumb-item>排班管理</el-breadcrumb-item>
         </el-breadcrumb>
       </el-header>
@@ -32,7 +32,7 @@
               </el-radio-group>
             </div>
             <div class="operate">
-              <el-button type="primary" @click="upClick">导入排班</el-button>
+              <el-button type="primary" @click="upClick" v-if="authority.indexOf(110) !== -1">导入排班</el-button>
             </div>
           </div>
           <all-module
@@ -95,13 +95,13 @@
 <script>
 import { mapState } from 'vuex'
 // 引入排班概况
-import allModule from '@/components/company/schedul-all'
+import allModule from '@/components/attend/schedul-all'
 // 引入班次排班
-import shiftModule from '@/components/company/schedul-shift'
+import shiftModule from '@/components/attend/schedul-shift'
 // 引入休息概况
-import restModule from '@/components/company/schedul-rest'
+import restModule from '@/components/attend/schedul-rest'
 // 引入人员排班
-import crewModule from '@/components/company/schedul-crew'
+import crewModule from '@/components/attend/schedul-crew'
 export default{
   name: 'scheduling',
   data () {
@@ -129,6 +129,10 @@ export default{
     }
   },
   created () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 设置上传参数
     this.reqHead = {
       token: sessionStorage.getItem('wxWebToken'),
@@ -165,6 +169,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.schedul,
+      authority: state => state.detAuthority.schedul
+    }),
     ...mapState('other', [
       'companyId',
       'projectId',

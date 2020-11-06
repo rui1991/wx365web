@@ -5,14 +5,14 @@
       <el-collapse-item name="1">
         <template slot="title">
           <i class="title-name">车辆列表</i>
-          <i class="title-value blue" @click="checkCarDetails('0')">{{ bangleNormal }}</i>
-          <i class="title-value red" @click="checkCarDetails('1')">{{ bangleAbnormal }}</i>
+          <i class="title-value blue" @click.stop="checkCarDetails('0')">{{ bangleNormal }}</i>
+          <i class="title-value red" @click.stop="checkCarDetails('1')">{{ bangleAbnormal }}</i>
         </template>
         <div class="list-search">
           <el-input v-model="searchText" placeholder="请输入内容"></el-input>
         </div>
         <div class="list">
-          <div class="list-item" :class="{ active: itemId === item.gps_number }" v-for="item in nowList" :key="item.car_number" @click="checkItemDevice(item.gps_number, item.car_number)">
+          <div class="list-item" :class="{ active: itemId === item.gps_number }" v-for="item in nowList" :key="item.uid" @click="checkItemDevice(item.gps_number, item.car_number)">
             <div class="mes">
               <span>{{ item.car_number }}({{ item.car_type | filterCarType }})</span>
             </div>
@@ -78,7 +78,7 @@
 <script>
 import AMap from 'AMap'
 import icon from '../assets/images/car.png'
-// 引入人员状态详情组件
+// 引入车辆状态详情组件
 import carModule from '@/components/location/vehicle-monit-car'
 export default{
   name: 'monitvehicle',
@@ -99,7 +99,7 @@ export default{
       toolSwitch: true,
       fenceData: [],
       monitTimer: null,
-      speed: 60000,
+      speed: 10000,
       markerGroups: null,
       alarmData: [],
       alarmContent: '',
@@ -118,8 +118,6 @@ export default{
     })
     // 获取围栏
     this.getFenceData()
-    // 获取车辆列表
-    this.getVehicleList()
     // 获取列表数据
     this.getVehicleLocation()
     // 启动定时器
@@ -235,43 +233,6 @@ export default{
       })
     },
 
-    /* 获取车辆列表 */
-    getVehicleList () {
-      let params = {
-        project_id: this.$route.query.projectId,
-        car_number: '',
-        ogz_id: '',
-        car_type: '',
-        page: 1,
-        limit1: 1000
-      }
-      params = this.$qs.stringify(params)
-      this.$axios({
-        method: 'post',
-        url: this.gpsApi() + '/selGpsCarMes',
-        data: params
-      }).then((res) => {
-        if (res.data.result === 'Sucess') {
-          const resData = res.data.data1.mes || []
-          this.list = resData.filter(item => {
-            return item.gps_number
-          })
-        } else {
-          const errHint = this.$common.errorCodeHint(res.data.error_code)
-          this.$message({
-            showClose: true,
-            message: errHint,
-            type: 'error'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          message: '服务器连接失败！',
-          type: 'error'
-        })
-      })
-    },
     // 查看车辆状态详情
     checkCarDetails (state) {
       this.carState = state
@@ -289,12 +250,12 @@ export default{
       this.carNowData = carNowData
       this.carDialog = true
     },
-    // 关闭人员状态详情
+    // 关闭车辆状态详情
     carClose () {
       this.carDialog = false
     },
 
-    /* 查询人员实时位置 */
+    /* 查询车辆实时位置 */
     // 启动定时器
     startTimer () {
       this.monitTimer = setInterval(() => {
@@ -303,7 +264,7 @@ export default{
       }, this.speed)
     },
     // 获取实时数据
-    getVehicleLocation () {
+    getVehicleLocation (b = false) {
       let params = {
         project_id: this.$route.query.projectId,
         car_number: this.carNumber
@@ -327,6 +288,18 @@ export default{
           // 绘制标记
           let gpsData = resData.gps.data || []
           this.drawMarkerGroup(gpsData)
+          if (b) {
+            let list = []
+            gpsData.forEach(item => {
+              list.push({
+                car_number: item.name_ogz,
+                car_type: item.car_type,
+                gps_number: item.mid,
+                uid: item.uid
+              })
+            })
+            this.list = list
+          }
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({

@@ -1,75 +1,83 @@
 <template>
   <div
-    class="main-seed"
+    class="module-container"
     v-loading="loading"
     element-loading-text="拼命加载中"
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.6)">
-    <div class="main-search main-search-multi">
-      <div class="search-row">
-        <div class="item">
-          <span>执行部门</span>
-          <el-select v-model="nowSearch.sector" clearable style="width: 160px;" placeholder="请选择执行部门">
-            <el-option
-              v-for="item in sectorOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
-            </el-option>
-          </el-select>
-        </div>
-        <div class="item">
-          <span>执行人员</span>
-          <el-input style="width: 160px;" v-model.trim="nowSearch.crew" placeholder="请输入人员姓名"></el-input>
-        </div>
-        <div class="operate">
-          <el-button type="primary" @click="searchList">搜索</el-button>
-          <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
-        </div>
-      </div>
-      <div class="search-row">
-        <div class="item">
-          <el-date-picker
-            v-model="nowSearch.date"
-            type="month"
-            value-format="yyyy-MM"
-            :clearable="false"
-            :picker-options="pickerOptions"
-            placeholder="选择月">
-          </el-date-picker>
-        </div>
-        <div class="operate">
-          <el-button type="primary" @click="crewClick">设置</el-button>
-        </div>
-      </div>
+    <div class="module-header">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>点名管理</el-breadcrumb-item>
+        <el-breadcrumb-item>人员打卡详情</el-breadcrumb-item>
+      </el-breadcrumb>
     </div>
-    <el-table class="list-table" :data="tableData" border style="width: 100%">
-      <el-table-column type="index" fixed width="50" label="序号"></el-table-column>
-      <el-table-column prop="user_name" fixed width="80" label="姓名" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="position_name" fixed width="150" :show-overflow-tooltip="true" label="位置名称"></el-table-column>
-      <el-table-column label="日期">
-        <el-table-column width="80" v-for="item in days" :label="item.date" :key="item.date">
-          <template slot-scope="scope">
-            <span v-if="scope.row.position_id === 0" class="red">-</span>
-            <a href="javascript:void(0);" class="name" @click="detClick(scope.row.user_id, scope.row.position_id, item.value)" v-else-if="scope.row[item.value]">{{ scope.row[item.value] }}次</a>
-            <span class="red" v-else-if="item.state">未打卡</span>
-            <span v-else>-</span>
-          </template>
+    <div class="module-main">
+      <div class="main-search main-search-multi">
+        <div class="search-row">
+          <div class="item">
+            <span>执行部门</span>
+            <el-select v-model="nowSearch.sector" clearable style="width: 160px;" placeholder="请选择执行部门">
+              <el-option
+                v-for="item in sectorOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
+          </div>
+          <div class="item">
+            <span>执行人员</span>
+            <el-input style="width: 160px;" v-model.trim="nowSearch.crew" placeholder="请输入人员姓名"></el-input>
+          </div>
+          <div class="operate">
+            <el-button type="primary" @click="searchList">搜索</el-button>
+            <el-button type="primary" :disabled="downDisabled" @click="downFile">导出</el-button>
+          </div>
+        </div>
+        <div class="search-row">
+          <div class="item">
+            <el-date-picker
+              v-model="nowSearch.date"
+              type="month"
+              value-format="yyyy-MM"
+              :clearable="false"
+              :picker-options="pickerOptions"
+              placeholder="选择月">
+            </el-date-picker>
+          </div>
+          <div class="operate">
+            <el-button type="primary" @click="crewClick" v-if="authority.indexOf(101) !== -1">设置</el-button>
+          </div>
+        </div>
+      </div>
+      <el-table class="list-table" :data="tableData" border style="width: 100%">
+        <el-table-column type="index" fixed width="50" label="序号"></el-table-column>
+        <el-table-column prop="user_name" fixed width="80" label="姓名" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="position_name" fixed width="150" :show-overflow-tooltip="true" label="位置名称"></el-table-column>
+        <el-table-column label="日期">
+          <el-table-column width="80" v-for="item in days" :label="item.date" :key="item.date">
+            <template slot-scope="scope">
+              <span v-if="scope.row.position_id === 0" class="red">-</span>
+              <a href="javascript:void(0);" class="name" @click="detClick(scope.row.user_id, scope.row.position_id, item.value)" v-else-if="scope.row[item.value]">{{ scope.row[item.value] }}次</a>
+              <span class="red" v-else-if="item.state">未打卡</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
         </el-table-column>
-      </el-table-column>
-    </el-table>
-    <el-pagination
-      background
-      prev-text="上一页"
-      next-text="下一页"
-      :current-page="nowPage"
-      layout="sizes, prev, pager, next, total"
-      :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
-      :page-size="limit"
-      @size-change="handleSizeChange"
-      @current-change="pageChang"
-      :total="total">
-    </el-pagination>
+      </el-table>
+      <el-pagination
+        background
+        prev-text="上一页"
+        next-text="下一页"
+        :current-page="nowPage"
+        layout="sizes, prev, pager, next, total"
+        :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+        :page-size="limit"
+        @size-change="handleSizeChange"
+        @current-change="pageChang"
+        :total="total">
+      </el-pagination>
+    </div>
     <!-- 详情 -->
     <det-module
       :parentDialog="detDialog"
@@ -92,7 +100,7 @@
 <script>
 import { mapState } from 'vuex'
 // 引入详情组件
-import detModule from '@/components/quality/posclockdet-det'
+import detModule from '@/components/callname/crewclockdet-det'
 // 引入设置组件
 import crewModule from '@/components/public/crew-checkbox1'
 export default{
@@ -135,6 +143,10 @@ export default{
     }
   },
   mounted () {
+    if (!this.modVisit) {
+      this.$router.go(-1)
+      return
+    }
     // 日期
     const myDate = new Date()
     const year = myDate.getFullYear()
@@ -193,6 +205,10 @@ export default{
     ...mapState('user', [
       'userId'
     ]),
+    ...mapState('user', {
+      modVisit: state => state.modAuthority.crewclockdet,
+      authority: state => state.detAuthority.crewclockdet
+    }),
     ...mapState('other', [
       'allProject',
       'projectId',
@@ -469,32 +485,5 @@ export default{
 </script>
 
 <style lang="less" scoped>
-  .main-seed{
-    .main-search-multi {
-      .search-row{
-        display: flex;
-        height: 50px;
-        align-items: center;
-      }
-    }
-    .main-search{
-      .item{
-        width: 280px;
-        display: flex;
-        align-items: center;
-        span{
-          width: 70px;
-          font-size: 14px;
-        }
-      }
-      .date{
-        width: 420px;
-      }
-      .operate{
-        display: flex;
-        flex-grow: 1;
-        justify-content: flex-end;
-      }
-    }
-  }
+  @import '../../assets/css/base-column.css';
 </style>
