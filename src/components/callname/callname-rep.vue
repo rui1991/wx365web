@@ -335,7 +335,7 @@ export default{
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
-          const nodeData = res.data.data1[0].children
+          const nodeData = res.data.data1[0].children || []
           let sectorOptions = []
           let ids = []
           nodeData.forEach(item => {

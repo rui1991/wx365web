@@ -167,7 +167,7 @@ export default{
     searchList () {
       this.search = JSON.parse(JSON.stringify(this.nowSearch))
       // 当前页码初始化
-      this.nowPage = 1
+      // this.nowPage = 1
       // 获取列表数据
       this.getListData()
     },
@@ -176,9 +176,9 @@ export default{
       let params = {
         project_id: this.projectId,
         user_name: this.search.name,
-        wm_number: this.search.deviceNum,
-        page: this.nowPage,
-        limit1: this.limit
+        wm_number: this.search.deviceNum
+        // page: this.nowPage,
+        // limit1: this.limit
       }
       params = this.$qs.stringify(params)
       this.$axios({

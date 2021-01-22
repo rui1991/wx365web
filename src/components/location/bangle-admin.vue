@@ -40,11 +40,18 @@
             <span>{{ scope.row.B }}%</span>
           </template>
         </el-table-column>
-        <el-table-column prop="push_user_names" :show-overflow-tooltip="true" label="告警推送人"></el-table-column>
-        <el-table-column width="240" label="操作">
+        <el-table-column prop="sos_phone" label="SOS号码"></el-table-column>
+        <el-table-column label="定位频率">
+          <template slot-scope="scope">
+            <span v-if="scope.row.fqcy">{{ scope.row.fqcy }}秒</span>
+            <span v-else>60秒</span>
+          </template>
+        </el-table-column>
+        <el-table-column width="360" label="操作">
           <template slot-scope="scope">
             <a href="javascript:void(0);" class="operate blue" @click="trackClick(scope.row.gps_number)" v-if="authority.indexOf(189) !== -1">足迹</a>
-            <a href="javascript:void(0);" class="operate red" v-if="authority.indexOf(186) !== -1 && scope.row.user_id" @click="untieClick(scope.row)">解绑</a>
+            <a href="javascript:void(0);" class="operate blue" @click="sosClick(scope.row.uid, scope.row.sos_phone)" v-if="authority.indexOf(186) !== -1">SOS号码</a>
+            <a href="javascript:void(0);" class="operate blue" @click="freqClick(scope.row.gps_number, scope.row.fqcy)" v-if="companyId === 1">定位频率</a>
             <a href="javascript:void(0);" class="operate blue" @click="comClick(scope.row)" v-if="authority.indexOf(186) !== -1">编辑</a>
             <a href="javascript:void(0);" class="operate red" @click="delClick(scope.row.bracelet_id)" v-if="authority.indexOf(187) !== -1">删除</a>
           </template>
@@ -76,14 +83,23 @@
       @parentUpdata="addUpdata"
       @parentCancel="addCancel">
     </add-module>
-    <!-- 解绑 -->
-    <untie-module
-      :parentDialog="untieDialog"
-      :parentId="itemId"
-      :parentForm="itemForm"
-      @parentUpdata="untieUpdata"
-      @parentCancel="untieCancel">
-    </untie-module>
+    <!-- 编辑 -->
+    <sos-module
+      :parentDialog="sosDialog"
+      :parentUid="itemUid"
+      :parentPhone="itemPhone"
+      @parentUpdata="sosUpdata"
+      @parentCancel="sosCancel">
+    </sos-module>
+    <!-- 定位频率 -->
+    <freq-module
+      :parentDialog="freqDialog"
+      :parentGpsType="'bracelet'"
+      :parentDeviceNum="itemDeviceNum"
+      :parentFreqNum="itemFreqNum"
+      @parentUpdata="freqUpdata"
+      @parentCancel="freqCancel">
+    </freq-module>
     <!-- 编辑 -->
     <com-module
       :parentDialog="comDialog"
@@ -114,8 +130,10 @@ import { mapState } from 'vuex'
 import addModule from '@/components/location/bangle-admin-add'
 // 引入足迹组件
 import trackModule from '@/components/location/bangle-admin-track'
-// 引入新解绑件
-import untieModule from '@/components/location/bangle-admin-untie'
+// 引入SOS组件
+import sosModule from '@/components/location/bangle-admin-sos'
+// 引入定位频率组件
+import freqModule from '@/components/location/gps-admin-freq'
 // 引入编辑组件
 import comModule from '@/components/location/bangle-admin-com'
 // 引入删除组件
@@ -159,7 +177,11 @@ export default{
       itemDeviceNum: '',
       trackDialog: false,
       addDialog: false,
-      untieDialog: false,
+      sosDialog: false,
+      itemUid: '',
+      itemPhone: '',
+      freqDialog: false,
+      itemFreqNum: 60,
       comDialog: false,
       delDialog: false,
       itemForm: {
@@ -188,13 +210,15 @@ export default{
   components: {
     addModule,
     trackModule,
-    untieModule,
+    sosModule,
+    freqModule,
     comModule,
     alarmModule,
     delModule
   },
   computed: {
     ...mapState('user', [
+      'companyId',
       'userId'
     ]),
     ...mapState('user', {
@@ -282,24 +306,33 @@ export default{
     trackClose () {
       this.trackDialog = false
     },
-    /* 解绑 */
-    untieClick (data) {
-      this.itemId = data.bracelet_id
-      this.itemForm = {
-        deviceNum: data.gps_number,
-        sector: data.ogz_id,
-        crewId: data.user_id,
-        mesCard: data.gps_phone
-      }
-      this.untieDialog = true
+    /* SOS号码 */
+    sosClick (uid, phone = '') {
+      this.itemUid = uid
+      this.itemPhone = phone
+      this.sosDialog = true
     },
-    untieUpdata () {
-      this.untieDialog = false
+    sosUpdata () {
+      this.sosDialog = false
       // 更新列表
       this.getListData()
     },
-    untieCancel () {
-      this.untieDialog = false
+    sosCancel () {
+      this.sosDialog = false
+    },
+    /* 定位频率 */
+    freqClick (deviceNum, freqNum) {
+      this.itemDeviceNum = deviceNum
+      this.itemFreqNum = freqNum
+      this.freqDialog = true
+    },
+    freqUpdata () {
+      this.freqDialog = false
+      // 更新列表
+      this.getListData()
+    },
+    freqCancel () {
+      this.freqDialog = false
     },
     /* 编辑 */
     comClick (data) {

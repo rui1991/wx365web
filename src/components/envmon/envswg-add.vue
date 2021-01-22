@@ -9,9 +9,9 @@
         <el-form-item label="网关ID" prop="id">
           <el-input v-model.trim="formData.id" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="授权码" prop="code">
-          <el-input v-model.trim="formData.code" auto-complete="off"></el-input>
-        </el-form-item>
+<!--        <el-form-item label="授权码" prop="code">-->
+<!--          <el-input v-model.trim="formData.code" auto-complete="off"></el-input>-->
+<!--        </el-form-item>-->
         <el-form-item label="网关位置" prop="posName">
           <el-input :disabled="true" v-model="formData.posName"></el-input>
           <el-button type="primary" @click="posDialog = true">选择位置</el-button>
@@ -56,9 +56,9 @@ export default{
         id: [
           { required: true, message: '请输入网关ID', trigger: 'blur' }
         ],
-        code: [
-          { required: true, message: '请输入验证码', trigger: 'blur' }
-        ],
+        // code: [
+        //   { required: true, message: '请输入验证码', trigger: 'blur' }
+        // ],
         posName: [
           { required: true, message: '请选择网关位置', trigger: 'change' }
         ]

@@ -262,7 +262,8 @@ export default{
       let params = {
         user_id: this.userId,
         token: sessionStorage.getItem('wxWebToken'),
-        project_id: this.projectId
+        project_id: this.projectId,
+        organize_id: this.projectOrgId
       }
       params = this.$qs.stringify(params)
       // trackimg 非实时展示           trackreal 实时展示

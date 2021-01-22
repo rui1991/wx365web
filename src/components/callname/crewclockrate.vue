@@ -249,18 +249,6 @@ export default{
     },
     // 搜索
     searchList () {
-      let date = this.search.date || []
-      const startDate = date[0]
-      const endDate = date[1]
-      const fate = this.getDateDiff(startDate, endDate)
-      if (fate) {
-        this.$message({
-          showClose: true,
-          message: '查询时长不能超过31天',
-          type: 'warning'
-        })
-        return
-      }
       this.search = JSON.parse(JSON.stringify(this.nowSearch))
       // 当前页码初始化
       this.nowPage = 1
@@ -282,11 +270,22 @@ export default{
         return
       }
       let date = this.search.date || []
+      const startDate = date[0]
+      const endDate = date[1]
+      const fate = this.getDateDiff(startDate, endDate)
+      if (fate) {
+        this.$message({
+          showClose: true,
+          message: '查询时长不能超过31天',
+          type: 'warning'
+        })
+        return
+      }
       let params = {
         user_id: this.userId,
         ogz_id: this.orgId,
-        start_date: date[0] || '',
-        end_date: date[1] || '',
+        start_date: startDate,
+        end_date: endDate,
         page: this.nowPage,
         limit1: this.limit
       }
@@ -321,6 +320,17 @@ export default{
     // 获取项目数据
     getProjectData () {
       let date = this.search.date || []
+      const startDate = date[0]
+      const endDate = date[1]
+      const fate = this.getDateDiff(startDate, endDate)
+      if (fate) {
+        this.$message({
+          showClose: true,
+          message: '查询时长不能超过31天',
+          type: 'warning'
+        })
+        return
+      }
       let mac = this.search.mac
       mac = mac.replace(/:/g, '')
       let params = {
@@ -328,8 +338,8 @@ export default{
         project_id: this.proId,
         user_name: this.search.name,
         card_mac: mac,
-        start_date: date[0] || '',
-        end_date: date[1] || '',
+        start_date: startDate,
+        end_date: endDate,
         page: this.nowPage,
         limit1: this.limit
       }
@@ -364,6 +374,17 @@ export default{
     // 获取部门数据
     getSectionData () {
       let date = this.search.date || []
+      const startDate = date[0]
+      const endDate = date[1]
+      const fate = this.getDateDiff(startDate, endDate)
+      if (fate) {
+        this.$message({
+          showClose: true,
+          message: '查询时长不能超过31天',
+          type: 'warning'
+        })
+        return
+      }
       let mac = this.search.mac
       mac = mac.replace(/:/g, '')
       let params = {
@@ -371,8 +392,8 @@ export default{
         ogz_id: this.secId,
         user_name: this.search.name,
         card_mac: mac,
-        start_date: date[0] || '',
-        end_date: date[1] || '',
+        start_date: startDate,
+        end_date: endDate,
         page: this.nowPage,
         limit1: this.limit
       }
@@ -706,6 +727,18 @@ export default{
     },
     /* 导出 */
     downFile () {
+      let date = this.search.date || []
+      const startDate = date[0]
+      const endDate = date[1]
+      const fate = this.getDateDiff(startDate, endDate)
+      if (fate) {
+        this.$message({
+          showClose: true,
+          message: '导出时长不能超过31天',
+          type: 'warning'
+        })
+        return
+      }
       if (this.orgType === 3) {
         this.downProject()
       } else if (this.orgType === 4) {

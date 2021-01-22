@@ -58,9 +58,16 @@
         <el-table-column :show-overflow-tooltip="true" prop="gps_number" label="设备号"></el-table-column>
         <el-table-column width="180" :show-overflow-tooltip="true" prop="ogz_name" label="所属部门"></el-table-column>
         <el-table-column width="240" :show-overflow-tooltip="true" prop="person_user_name" label="负责人"></el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="定位频率">
+          <template slot-scope="scope">
+            <span v-if="scope.row.fqcy">{{ scope.row.fqcy }}秒</span>
+            <span v-else>60秒</span>
+          </template>
+        </el-table-column>
+        <el-table-column width="320" label="操作">
           <template slot-scope="scope">
             <a href="javascript:void(0);" class="operate blue" @click="trackClick(scope.row.gps_number)" v-if="authority.indexOf(179) !== -1">轨迹</a>
+            <a href="javascript:void(0);" class="operate blue" @click="freqClick(scope.row.gps_number, scope.row.fqcy)" v-if="companyId === 1">定位频率</a>
             <a href="javascript:void(0);" class="operate blue" @click="comClick(scope.row)" v-if="authority.indexOf(176) !== -1">编辑</a>
             <a href="javascript:void(0);" class="operate red" @click="delClick(scope.row.id, scope.row.car_number)" v-if="authority.indexOf(177) !== -1">删除</a>
           </template>
@@ -109,6 +116,15 @@
       :parentDeviceNum="itemDeviceNum"
       @parentClose="trackClose">
     </track-module>
+    <!-- 定位频率 -->
+    <freq-module
+      :parentDialog="freqDialog"
+      :parentGpsType="'car'"
+      :parentDeviceNum="itemDeviceNum"
+      :parentFreqNum="itemFreqNum"
+      @parentUpdata="freqUpdata"
+      @parentCancel="freqCancel">
+    </freq-module>
     <!-- 告警推送人 -->
     <alarm-module
       :parentDialog="alarmDialog"
@@ -133,6 +149,8 @@ import comModule from '@/components/location/vehicle-admin-com'
 import delModule from '@/components/location/vehicle-admin-del'
 // 引入轨迹组件
 import trackModule from '@/components/location/vehicle-admin-track'
+// 引入定位频率组件
+import freqModule from '@/components/location/gps-admin-freq'
 // 引入告警推送人组件
 import alarmModule from '@/components/location/vehicle-admin-alarm'
 // 引入导入组件
@@ -201,7 +219,9 @@ export default{
       },
       delDialog: false,
       trackDialog: false,
+      freqDialog: false,
       itemDeviceNum: '',
+      itemFreqNum: 60,
       alarmDialog: false,
       upDialog: false
     }
@@ -224,11 +244,13 @@ export default{
     comModule,
     delModule,
     trackModule,
+    freqModule,
     alarmModule,
     upModule
   },
   computed: {
     ...mapState('user', [
+      'companyId',
       'userId'
     ]),
     ...mapState('user', {
@@ -364,6 +386,20 @@ export default{
     },
     trackClose () {
       this.trackDialog = false
+    },
+    /* 定位频率 */
+    freqClick (deviceNum, freqNum) {
+      this.itemDeviceNum = deviceNum
+      this.itemFreqNum = freqNum
+      this.freqDialog = true
+    },
+    freqUpdata () {
+      this.freqDialog = false
+      // 更新列表
+      this.getListData()
+    },
+    freqCancel () {
+      this.freqDialog = false
     },
     /* 告警推送人 */
     alarmClose () {

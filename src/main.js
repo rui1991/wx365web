@@ -63,13 +63,13 @@ Object.keys(custom).forEach(key => {
 Vue.prototype.$common = common
 
 // 配置公共变量
-Vue.prototype.baseUrl = () => 'http://szydak.eicp.net:82'
-Vue.prototype.sysetApi = () => 'http://szydak.eicp.net:82/ezx_syset'
-Vue.prototype.reportApi = () => 'http://szydak.eicp.net:8089'
-Vue.prototype.loraApi = () => 'http://szydak.eicp.net:8099'
-Vue.prototype.deviceApi = () => 'http://szydak.eicp.net:8885'
-Vue.prototype.gpsApi = () => 'http://szydak.eicp.net:8901'
-Vue.prototype.runApi = () => 'http://szydak.eicp.net:8900'
+// Vue.prototype.baseUrl = () => 'http://szydak.eicp.net:82'
+// Vue.prototype.sysetApi = () => 'http://szydak.eicp.net:82/ezx_syset'
+// Vue.prototype.reportApi = () => 'http://szydak.eicp.net:8089'
+// Vue.prototype.loraApi = () => 'http://szydak.eicp.net:8099'
+// Vue.prototype.deviceApi = () => 'http://szydak.eicp.net:8885'
+// Vue.prototype.gpsApi = () => 'http://szydak.eicp.net:8901'
+// Vue.prototype.runApi = () => 'http://szydak.eicp.net:8900'
 // Vue.prototype.gpsApi = () => '/api'
 
 // Vue.prototype.baseUrl = () => 'http://192.168.1.199:82'
@@ -77,17 +77,23 @@ Vue.prototype.runApi = () => 'http://szydak.eicp.net:8900'
 // Vue.prototype.reportApi = () => 'http://192.168.1.199:8089'
 // Vue.prototype.loraApi = () => 'http://192.168.1.199:8099'
 // Vue.prototype.deviceApi = () => 'http://192.168.1.199:8885'
+// Vue.prototype.gpsApi = () => 'http://192.168.1.199:8901'
+// Vue.prototype.runApi = () => 'http://192.168.1.199:8900'
+
+// Vue.prototype.gpsApi = () => '/api'
 
 // Vue.prototype.reportApi = () => '/api'
 
-// Vue.prototype.baseUrl = () => 'http://www.allsps.com'
-// Vue.prototype.sysetApi = () => 'http://www.allsps.com/ezx_syset'
-// Vue.prototype.reportApi = () => 'http://www.allsps.com:8089'
-// Vue.prototype.loraApi = () => 'http://www.bczdd.com:8099'
-// Vue.prototype.deviceApi = () => 'http://www.bczdd.com:8885'
+// Vue.prototype.loraApi = () => 'http://192.168.1.177:8099'
+
+Vue.prototype.baseUrl = () => 'http://www.allsps.com'
+Vue.prototype.sysetApi = () => 'http://www.allsps.com/ezx_syset'
+Vue.prototype.reportApi = () => 'http://www.allsps.com:8089'
+Vue.prototype.loraApi = () => 'http://www.bczdd.com:8099'
+Vue.prototype.deviceApi = () => 'http://www.bczdd.com:8885'
 Vue.prototype.videoApi = () => 'http://www.allsps.com:8083'
-// Vue.prototype.gpsApi = () => 'http://www.allsps.com:8901'
-// Vue.prototype.runApi = () => 'http://www.allsps.com:8900'
+Vue.prototype.gpsApi = () => 'http://www.allsps.com:8901'
+Vue.prototype.runApi = () => 'http://www.allsps.com:8900'
 
 Vue.config.productionTip = false
 

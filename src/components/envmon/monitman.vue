@@ -30,7 +30,7 @@
                   <div class="chunk" v-if="chunk.lora_type === '温湿度'">
                     <p class="chunk-title blue">{{ chunk.node_name }}</p>
                     <div class="chunk-body">
-                      <div class="chunk-icon">
+                      <div class="chunk-icon" :class="{'offline': chunk.online === '离线'}">
                         <i class="iconfont iconwenshidu"></i>
                         <span class="icon-text">{{ chunk.lora_type }}</span>
                       </div>
@@ -53,13 +53,15 @@
                   <div class="chunk" v-else-if="chunk.lora_type === '无线水浸'">
                     <p class="chunk-title blue">{{ chunk.node_name }}</p>
                     <div class="chunk-body">
-                      <div class="chunk-icon">
+                      <div class="chunk-icon" :class="{'offline': chunk.online === '离线'}">
                         <i class="iconfont iconshuijin"></i>
                         <span class="icon-text">{{ chunk.lora_type }}</span>
                       </div>
                       <div class="chunk-content">
-                        <p class="content-single" :class="{'red': chunk.dry_wet === 'wet'}" v-if="chunk.sensor_state === '水浸'">设备状态：水浸</p>
-                        <p class="content-single" :class="{'red': chunk.dry_wet === 'dry'}" v-else-if="chunk.sensor_state === '未被水浸'">设备状态：未被水浸</p>
+                        <p class="content-single" :class="{'red': chunk.dry_wet === 'dry'}" v-if="chunk.sensor_state === '未被水浸'">设备状态：未被水浸</p>
+                        <p class="content-single" :class="{'red': chunk.dry_wet === 'dry'}" v-else-if="chunk.sensor_state === '未被水浸;'">设备状态：未被水浸</p>
+                        <p class="content-single" :class="{'red': chunk.dry_wet === 'wet'}" v-else-if="chunk.sensor_state === '被水浸'">设备状态：被水浸</p>
+                        <p class="content-single" :class="{'red': chunk.dry_wet === 'wet'}" v-else-if="chunk.sensor_state === '被水浸;'">设备状态：被水浸</p>
                         <p class="content-single" v-else>设备状态：{{ chunk.sensor_state }}</p>
                         <p class="content-single" :class="{'red': chunk.battery_state !== '电压正常'}">电压状态：{{ chunk.battery_state }}</p>
                         <p class="content-single">当前电压：{{ chunk.voltage_value }}</p>
@@ -69,7 +71,7 @@
                   <div class="chunk" v-else-if="chunk.lora_type === '无线压力变送器'">
                     <p class="chunk-title blue">{{ chunk.node_name }}</p>
                     <div class="chunk-body">
-                      <div class="chunk-icon">
+                      <div class="chunk-icon" :class="{'offline': chunk.online === '离线'}">
                         <i class="iconfont iconyalichuanganqi"></i>
                         <span class="icon-text">{{ chunk.lora_type }}</span>
                       </div>
@@ -86,7 +88,7 @@
                   <div class="chunk" v-else-if="chunk.lora_type === '无线液位变送器'">
                     <p class="chunk-title blue">{{ chunk.node_name }}</p>
                     <div class="chunk-body">
-                      <div class="chunk-icon">
+                      <div class="chunk-icon" :class="{'offline': chunk.online === '离线'}">
                         <i class="iconfont iconyeweiji"></i>
                         <span class="icon-text">{{ chunk.lora_type }}</span>
                       </div>
@@ -103,7 +105,7 @@
                   <div class="chunk" v-else-if="chunk.lora_type === '无线烟感'">
                     <p class="chunk-title blue">{{ chunk.node_name }}</p>
                     <div class="chunk-body">
-                      <div class="chunk-icon">
+                      <div class="chunk-icon" :class="{'offline': chunk.online === '离线'}">
                         <i class="iconfont iconyangan"></i>
                         <span class="icon-text">{{ chunk.lora_type }}</span>
                       </div>
@@ -117,7 +119,7 @@
                   <div class="chunk" v-else-if="chunk.lora_type === '燃气报警'">
                     <p class="chunk-title blue">{{ chunk.node_name }}</p>
                     <div class="chunk-body">
-                      <div class="chunk-icon">
+                      <div class="chunk-icon" :class="{'offline': chunk.online === '离线'}">
                         <i class="iconfont iconkeranqiti"></i>
                         <span class="icon-text">{{ chunk.lora_type }}</span>
                       </div>
@@ -132,7 +134,7 @@
                   <div class="chunk" v-else-if="chunk.lora_type === '一键报警'">
                     <p class="chunk-title blue">{{ chunk.node_name }}</p>
                     <div class="chunk-body">
-                      <div class="chunk-icon">
+                      <div class="chunk-icon" :class="{'offline': chunk.online === '离线'}">
                         <i class="iconfont iconyijian"></i>
                         <span class="icon-text">{{ chunk.lora_type }}</span>
                       </div>
@@ -147,7 +149,7 @@
                   <div class="chunk" v-else-if="chunk.lora_type === '红外报警'">
                     <p class="chunk-title blue">{{ chunk.node_name }}</p>
                     <div class="chunk-body">
-                      <div class="chunk-icon">
+                      <div class="chunk-icon" :class="{'offline': chunk.online === '离线'}">
                         <i class="iconfont iconhongwai"></i>
                         <span class="icon-text">{{ chunk.lora_type }}</span>
                       </div>
@@ -164,7 +166,7 @@
                   <div class="chunk elect">
                     <p class="chunk-title blue">{{ chunk.node_name }}</p>
                     <div class="chunk-body">
-                      <div class="chunk-icon">
+                      <div class="chunk-icon" :class="{'offline': chunk.online === '离线'}">
                         <i class="iconfont iconanquanyongdian"></i>
                         <span class="icon-text">{{ chunk.lora_type }}</span>
                       </div>
@@ -249,6 +251,30 @@
 </template>
 
 <script>
+/**
+ * 参数说明：
+ * node_name设备名称；
+ * lora_type设备类型；
+ * sensor_state设备状态；
+ * demolition_state防拆状态；
+ * battery_state电压状态；
+ * voltage_value当前电压；
+ * 温湿度：sensor_state设备状态（正常/正常）；min_temperature最小温度；max_temperature最大温度；temperature当前温度；
+ *        min_humidity最小湿度；max_humidity最小湿度；humidity当前湿度；
+ *        sensor_state !== '正常/正常' demolition_state !== '正常'   battery_state !== '正常'
+ * 无线水浸：dry_wet报警状态 wet（浸水自动报警）dry（无水自动报警）；
+ * 无线压力变送器：min_pressure最小压力；max_pressure最大压力；pressure当前压力
+ * 无线液位变送器：min_liquid最小液位；max_liquid最大液位；liquid当前液位；
+ * 无线烟感：
+ * 燃气报警：concentration当前浓度；
+ * 一键报警：
+ * 红外报警：battery_state电池状态
+ * 安全用电：trip_state脱扣状态；leave_electricity剩余电流；
+ *          min_voltage最小电压；max_voltage最大电压；a_voltage电压A；b_voltage电压B；c_voltage电压C；
+ *          min_current最小电流；max_current最大电流；a_current电流A；b_current电流B；c_current电流C；
+ *          a_power功率A；b_power功率B；c_power功率C；
+ *          min_temp最小温度；max_temp最大温度；temp01温度01；temp02温度02；temp03温度03；
+ * */
 import { mapState } from 'vuex'
 export default{
   name: 'monitman',
@@ -301,7 +327,7 @@ export default{
       params = this.$qs.stringify(params)
       this.$axios({
         method: 'post',
-        url: this.loraApi() + '/lora/selNodeSquare',
+        url: this.loraApi() + '/lora/v4.9.3/selNodeSquare',
         data: params
       }).then((res) => {
         if (res.data.result === 'Sucess') {
@@ -404,6 +430,14 @@ export default{
                   margin-top: 10px;
                   font-size: 12px;
                   color: #409EFF;
+                }
+                &.offline{
+                  .iconfont {
+                    color: #797979;
+                  }
+                  .icon-text{
+                    color: #797979;
+                  }
                 }
               }
               .chunk-content{

@@ -91,8 +91,10 @@ export default {
     this.getProjectDetails()
     // 获取围栏
     this.getFenceData()
-    // 获取车辆轨迹
-    this.getTrackList()
+    // 获取左侧车辆数据（数据已过滤）
+    this.getListData()
+    // 获取车辆轨迹数据（数据未过滤）
+    this.getTrackData()
   },
   computed: {
     ...mapState('user', [
@@ -238,13 +240,15 @@ export default {
     dateChange () {
       // 清除所有覆盖物
       this.map.clearMap()
-      // 获取轨迹
-      this.getTrackList()
+      // 获取左侧车辆数据（数据已过滤）
+      this.getListData()
+      // 获取车辆轨迹数据（数据未过滤）
+      this.getTrackData()
     },
-    // 查询车辆轨迹
-    getTrackList () {
+    // 查询左侧车辆数据（数据已过滤）
+    getListData () {
       let params = {
-        UID: this.$route.query.id,
+        UID: this.$route.query.uid,
         date: this.date
       }
       params = this.$qs.stringify(params)
@@ -266,8 +270,43 @@ export default {
           // 足迹数
           this.spoorNum = listData.length
           this.list = listData
+        } else {
+          const errHint = this.$common.errorCodeHint(res.data.error_code)
+          this.$message({
+            showClose: true,
+            message: errHint,
+            type: 'error'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          message: '服务器连接失败！',
+          type: 'error'
+        })
+      })
+    },
+    // 查询车辆轨迹数据（数据未过滤）
+    getTrackData () {
+      let params = {
+        MID: this.$route.query.mid,
+        date: this.date
+      }
+      params = this.$qs.stringify(params)
+      this.$axios({
+        method: 'post',
+        url: this.gpsApi() + '/setCarGpsTrajectory',
+        data: params
+      }).then((res) => {
+        if (res.data.result === 'Sucess') {
+          const resData = res.data.data1.data.pos || []
+          // 列表
+          let listData = []
+          resData.forEach(item => {
+            listData = listData.concat(item.detail)
+          })
           // 绘制轨迹
-          this.drawTrack()
+          this.drawTrack(listData)
         } else {
           const errHint = this.$common.errorCodeHint(res.data.error_code)
           this.$message({
@@ -285,10 +324,9 @@ export default {
       })
     },
     // 绘制轨迹
-    drawTrack () {
-      let list = this.list
+    drawTrack (data) {
       let lineArr = []
-      list.forEach(item => {
+      data.forEach(item => {
         let dataItem = [item.lon, item.lat]
         lineArr.push(dataItem)
       })

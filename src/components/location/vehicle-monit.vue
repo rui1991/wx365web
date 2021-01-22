@@ -23,7 +23,7 @@
               <div class="mes">
                 <span>{{ item.car_number }}({{ item.car_type | filterCarType }})</span>
               </div>
-              <a href="javascript:void(0);" class="blue details" @click.stop="checkItemTrack(item.uid, item.car_number)">轨迹</a>
+              <a href="javascript:void(0);" class="blue details" @click.stop="checkItemTrack(item.uid, item.gps_number, item.car_number)">轨迹</a>
             </div>
           </div>
         </el-collapse-item>
@@ -441,11 +441,12 @@ export default{
       this.getVehicleLocation()
     },
     // 查看单个轨迹
-    checkItemTrack (id, name) {
+    checkItemTrack (uid, mid, name) {
       this.$router.push({
         path: '/main/vehicle-monit-track',
         query: {
-          id: id,
+          uid: uid,
+          mid: mid,
           name: name
         }
       })

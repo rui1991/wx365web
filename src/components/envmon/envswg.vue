@@ -1,4 +1,5 @@
 <template>
+  <!-- 环境监控网关 -->
   <div class="main-seed">
     <div class="main-search main-search-multi">
       <div class="search-row">

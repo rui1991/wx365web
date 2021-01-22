@@ -148,11 +148,11 @@
           <el-input :disabled="true" v-model="formData.posName"></el-input>
           <el-button type="primary" @click="posDialog = true">选择位置</el-button>
         </el-form-item>
-        <el-form-item label="心跳间隔" prop="beat">
-          <el-input placeholder="请输入心跳间隔" type="number" v-model="formData.beat">
-            <template slot="append">分钟</template>
-          </el-input>
-        </el-form-item>
+<!--        <el-form-item label="心跳间隔" prop="beat">-->
+<!--          <el-input placeholder="请输入心跳间隔" type="number" v-model="formData.beat">-->
+<!--            <template slot="append">分钟</template>-->
+<!--          </el-input>-->
+<!--        </el-form-item>-->
         <el-form-item label="描述" prop="describe">
           <el-input type="textarea" maxlength="100" placeholder="文本长度不得超过100个字符" v-model.trim="formData.describe"></el-input>
         </el-form-item>
@@ -239,10 +239,10 @@ export default{
         ],
         AppKey: [
           { required: true, message: '请输入设备AppKey', trigger: 'blur' }
-        ],
-        beat: [
-          { required: true, message: '请输入设备心跳时间', trigger: 'blur' }
         ]
+        // beat: [
+        //   { required: true, message: '请输入设备心跳时间', trigger: 'blur' }
+        // ]
       },
       formData: {
         name: '',
@@ -265,7 +265,7 @@ export default{
         posName: '',
         posId: '',
         DevEui: '',
-        beat: '',
+        // beat: '',
         describe: ''
       },
       posDialog: false,
@@ -311,7 +311,7 @@ export default{
         posName: '',
         posId: '',
         DevEui: '',
-        beat: '',
+        // beat: '',
         describe: ''
       }
     },
@@ -434,7 +434,7 @@ export default{
         max_current: electMaxVal,
         location_id: this.formData.posId,
         devEUI: this.formData.DevEui,
-        out_time: this.formData.beat,
+        out_time: 1,
         description: this.formData.describe
       }
       params = this.$qs.stringify(params)

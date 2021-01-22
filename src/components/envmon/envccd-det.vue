@@ -177,7 +177,7 @@ export default{
         posName: '',
         posId: '',
         DevEui: '',
-        beat: '',
+        // beat: '',
         lastTime: '',
         describe: ''
       }

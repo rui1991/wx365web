@@ -1,4 +1,8 @@
 /* 用户信息 */
+// modAdminUid   企业配置（角色管理、模块管理）
+// planormUid   平台标准库
+// planormUid   硬件对接
+// user_id:  1杨小珍   2魏明    816罗娘佐    830老田   3442罗文景
 const state = {
   companyId: '',
   companyName: '',
@@ -8,7 +12,7 @@ const state = {
   sectorId: '',
   userPhone: '',
   userPhoto: '',
-  modAdminUid: [1, 2, 816, 830, 3442],
+  modAdminUid: [1],
   planormUid: [1, 3442],
   deviceUid: [1, 2, 816, 830, 3442],
   modAuthority: {

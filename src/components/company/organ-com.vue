@@ -6,8 +6,8 @@
         <el-input v-model.trim="formData.name" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="上级机构" prop="parent">
-        <el-input :disabled="true" v-model="formData.parentName" style="width: 360px; margin-right: 20px;"></el-input>
-        <el-button type="primary" :disabled="parentDisabled" @click="parDialog = true">选择上级</el-button>
+        <el-input :disabled="true" v-model="formData.parentName"></el-input>
+<!--        <el-button type="primary" :disabled="parentDisabled" @click="parDialog = true">选择上级</el-button>-->
       </el-form-item>
       <el-form-item label="联系人" prop="linkman">
         <el-input v-model.trim="formData.linkman" auto-complete="off"></el-input>

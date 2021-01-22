@@ -1,5 +1,11 @@
 <template>
-  <div class="main-seed">
+  <!-- 环境监控传感器 -->
+  <div
+    class="main-seed"
+    v-loading="loading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.6)">
     <div class="main-search main-search-multi">
       <div class="search-row">
         <div class="item">
@@ -209,12 +215,13 @@ export default{
         posName: '',
         posId: '',
         DevEui: '',
-        beat: '',
+        // beat: '',
         lastTime: '',
         describe: ''
       },
       itemId: '',
-      delDialog: false
+      delDialog: false,
+      loading: false
     }
   },
   created () {
@@ -267,11 +274,13 @@ export default{
         type: this.search.type
       }
       params = this.$qs.stringify(params)
+      this.loading = true
       this.$axios({
         method: 'post',
         url: this.loraApi() + '/lora/selNodeList',
         data: params
       }).then((res) => {
+        this.loading = false
         if (res.data.result === 'Sucess') {
           const tableAllData = res.data.data1
           this.total = tableAllData.length
@@ -298,6 +307,7 @@ export default{
           })
         }
       }).catch(() => {
+        this.loading = false
         this.$message({
           showClose: true,
           message: '服务器连接失败！',
@@ -360,7 +370,7 @@ export default{
         posName: data.location_name,
         posId: data.location_id,
         DevEui: data.devEUI,
-        beat: data.out_time || '',
+        // beat: data.out_time || '',
         lastTime: data.onlineTime,
         describe: data.description
       }
@@ -398,7 +408,7 @@ export default{
         posName: data.location_name,
         posId: data.location_id,
         DevEui: data.devEUI,
-        beat: data.out_time || '',
+        // beat: data.out_time || '',
         lastTime: data.onlineTime,
         describe: data.description
       }
@@ -439,6 +449,7 @@ export default{
 
 <style lang="less" scoped>
   .main-seed{
+    height: 100%;
     .main-search-multi {
       .search-row{
         display: flex;

@@ -16,7 +16,7 @@
         <el-input style="width: 240px; margin-left: 10px; margin-right: 20px;" :disabled="true" v-model="orgName"></el-input>
         <el-button type="primary" @click="orgDialog = true">选择组织</el-button>
         <div class="operate" v-if="authority.indexOf(7) !== -1">
-          <el-button type="primary" @click="clickTrack" v-if="roleId === 500">人员轨迹</el-button>
+          <el-button type="primary" @click="clickTrack">人员轨迹</el-button>
         </div>
       </div>
       <div class="pandect" :class="{ clickable: switchType !== 1 }" @click="skipSurvey" v-if="authority.indexOf(2) !== -1">
@@ -85,8 +85,6 @@
               </div>
             </div>
           </el-col>
-        </el-row>
-        <el-row :gutter="10" style="margin-left: 0; margin-right: 0;">
           <el-col :span="12" v-if="authority.indexOf(5) !== -1">
             <div class="item" :class="{ clickable: switchType !== 1 }" @click="skipCallname">
               <div class="item-title">
@@ -1088,8 +1086,8 @@ export default{
         }
       }
       .survey{
-        margin-top: 10px;
         .item{
+          margin-top: 10px;
           display: flex;
           flex-direction: column;
           padding: 10px 20px;
